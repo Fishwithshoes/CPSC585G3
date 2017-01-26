@@ -2,6 +2,17 @@
 #include "ButtonCode.h"
 #include "Input.h"
 
+Camera::Camera()
+{
+	transform = Transform::identity();
+	verticalFOV = Mathf::PI / 180 * 60;
+	nearClipPlane = 0.1;
+	farClipPlane = 2000.0;
+	mode = Modes::MODE_FREE;
+	up = Transform::Up();
+	right = Transform::Right();
+	forward = Transform::Forward();
+}
 Camera::Camera(Transform transformIn)
 {
 	transform = transformIn;
@@ -19,6 +30,13 @@ Camera::~Camera()
 	
 }
 
+//Use this for initialization
+void Camera::Start()
+{
+	
+}
+
+//Use this for behaviour
 void Camera::Update()
 {
 	switch(mode)
@@ -26,33 +44,33 @@ void Camera::Update()
 	case Modes::MODE_FREE:
 		if (Input::GetButton(ButtonCode::A))
 		{
-			transform.position -= (float)0.001 * right;
+			transform.Translate(-(float)0.1 * right);
 		}
 		if (Input::GetButton(ButtonCode::D))
 		{
-			transform.position += (float)0.001 * right;
+			transform.Translate((float)0.1 * right);
 		}
 		if (Input::GetButton(ButtonCode::W))
 		{
-			transform.position -= (float)0.001 * forward;
+			transform.Translate(-(float)0.1 * forward);
 		}
 		if (Input::GetButton(ButtonCode::S))
 		{
-			transform.position += (float)0.001 * forward;
+			transform.Translate((float)0.1 * forward);
 		}
 		if (Input::GetButton(ButtonCode::E))
 		{
-			transform.position.y += 0.001;
+			transform.Translate((float)0.1 * up);
 		}
 		if (Input::GetButton(ButtonCode::Q))
 		{
-			transform.position.y -= 0.001;
+			transform.Translate(-(float)0.1 * up);
 		}
 		if (Input::GetButton(ButtonCode::RightMouse))
 		{
 			//Orient camera (pitch and yaw)
-			transform.rotation.x -= Input::GetMouseDelta().y * 0.001;
-			transform.rotation.y += Input::GetMouseDelta().x * 0.001;
+			transform.Rotate((float)(Input::GetMouseDelta().y * 0.001) * Transform::Right());
+			transform.Rotate((float)(Input::GetMouseDelta().x * 0.001) * Transform::Up());
 
 			//Update right and forward vectors
 			mat3 pitch(
@@ -65,9 +83,11 @@ void Camera::Update()
 				0, 1, 0,
 				-sin(-transform.rotation.y), 0, cos(-transform.rotation.y));
 
-			forward = pitch * Transform::Forward();
+			forward = pitch * yaw * Transform::Forward();
 			right = yaw * Transform::Right();
 		}
+		if (Input::GetButton(ButtonCode::SPACE))
+			transform = Transform::Transform(vec3(0, 5, -10), vec3(0), vec3(1));
 		break;
 	case Modes::MODE_GAME:
 		break;
@@ -125,12 +145,12 @@ void Camera::SetVerticalFOV(float degrees)
 	verticalFOV = Mathf::PI / 180 * degrees;
 }
 
-void Camera::SetNearClipPlane(float near)
+void Camera::SetNearClipPlane(float nearClip)
 {
-	nearClipPlane = Mathf::Clamp(near, 0.01, 50);
+	nearClipPlane = Mathf::Clamp(nearClip, 0.01, 50);
 }
 
-void Camera::SetFarClipPlane(float far)
+void Camera::SetFarClipPlane(float farClip)
 {
-	nearClipPlane = Mathf::Clamp(far, 100, 4000);
+	nearClipPlane = Mathf::Clamp(farClip, 100, 4000);
 }

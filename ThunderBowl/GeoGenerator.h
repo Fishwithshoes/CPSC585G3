@@ -4,9 +4,13 @@
 class GeoGenerator
 {
 public:
+	//3D - For World and Particle GameObjects
 	static Mesh MakeSphere(float radius, int lattitudes, int longitudes);
 	static Mesh MakePlane(float width, float height, int widthSegs, int heightSegs);
-	static Mesh MakeCylinder();
+	static Mesh MakeCylinder(float radius, float height, int segments);
+
+	//2D - For Overlay GameObjects
+	static Mesh MakeCircle(float sweep, int segments, float radius);//sweep from 0-1
 protected:
 
 private:

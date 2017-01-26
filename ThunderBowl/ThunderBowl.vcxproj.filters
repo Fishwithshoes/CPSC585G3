@@ -27,9 +27,6 @@
     <ClInclude Include="GeoGenerator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ShaderUtility.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Structs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -51,11 +48,18 @@
     <ClInclude Include="Input.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Renderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RendererUtility.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Component.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="fragment.glsl" />
     <None Include="main" />
-    <None Include="vertex.glsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Game.cpp">
@@ -68,9 +72,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ShaderUtility.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Camera.cpp">
@@ -89,6 +90,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Input.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RendererUtility.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Component.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
