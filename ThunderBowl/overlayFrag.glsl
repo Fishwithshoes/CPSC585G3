@@ -10,7 +10,8 @@ out vec4 FragmentColor;
 
 void main()
 {
-	FragmentColor = vec4(color.xyz * texture2D(mainTexture, TexCoord).xyz, color.w);
+	vec4 mainTex = texture2D(mainTexture, TexCoord);
+	FragmentColor = vec4(color.xyz * mainTex.xyz, color.w * mainTex.w);
 	
 	//FragmentColor = vec4(1,1,1,1);
 	//FragmentColor = vec4(Color.xyz, 1);

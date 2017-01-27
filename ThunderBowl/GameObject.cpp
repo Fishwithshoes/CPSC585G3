@@ -20,14 +20,15 @@ GameObject::GameObject()
 	standardMat.selfIllumColor = vec3(1);
 	standardMat.rimLevel = 0.0;
 	standardMat.rimColor = vec3(1);
-	standardMat.rimPower = 10.0;
+	standardMat.rimPower = 2.0;
 	standardMat.tileUV = vec2(1, 1);
 	standardMat.offsetUV = vec2(0, 0);
 
-	standardMat.diffuseMap = MAP_CHECKER;
-	standardMat.mirrorMap = MAP_MIRROR;
-	standardMat.roughnessMap = MAP_WHITE;
+	standardMat.diffuseMap = MAP_WHITE;
 	standardMat.normalMap = MAP_NORMAL;
+	standardMat.mirrorMap = MAP_MIRROR;
+	standardMat.envMap = MAP_ENV;
+	standardMat.roughnessMap = MAP_WHITE;
 
 	//Initialize ParticleOverlay Shader Props (Used to draw Particles or Overlay)
 	particleOverlayMat.color = vec4(1, 1, 1, 1);
@@ -41,7 +42,7 @@ GameObject::~GameObject()
 	mesh.normals = {};
 	mesh.texcoords = {};
 	mesh.elementCount = 0;
-	mesh.indicies = {};
+	mesh.indices = {};
 }
 
 //Use this for initialization

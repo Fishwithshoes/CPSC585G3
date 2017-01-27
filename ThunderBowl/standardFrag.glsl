@@ -27,6 +27,7 @@ uniform float rimPower;
 uniform sampler2D diffuseMap;
 uniform sampler2D normalMap;
 uniform sampler2D mirrorMap;
+uniform samplerCube envMap;
 uniform sampler2D roughnessMap;
 
 //Texture Coords
@@ -46,9 +47,18 @@ struct Hit
 	vec3 normal;
 };
 Hit hit;
-float EPSILON = 0.01;
-float LIGHT_RADIUS = 1;
-int SHADOW_SAMPLES = 4;//4 is quite high enough, methinks!
+
+//OHH SUCH CHOICES!!
+const float EPSILON = 0.003;
+const float LIGHT_RADIUS = 1;//Set to 0 if SHADOW_SAMPLES = 1
+const int SHADOW_SAMPLES = 4;//4 is quite high enough, methinks!
+const float GLOSSY_STRETCH = 0.5;//Set to 0 i GLOSSY_SAMPLES = 1;
+const int GLOSSY_SAMPLES = 8;//Again, 4 should satisfy thee!
+//Eat memory, gain perfomance!
+const float SHADOW_CONTRIB = 1.0/(SHADOW_SAMPLES*SHADOW_SAMPLES);
+const float GLOSSY_CONTRIB = 1.0/(GLOSSY_SAMPLES*GLOSSY_SAMPLES);
+const float SHADOW_STRIDE = LIGHT_RADIUS/SHADOW_SAMPLES * 2.0;
+const float GLOSSY_STRIDE = GLOSSY_STRETCH/GLOSSY_SAMPLES * 2.0;
 
 void RunSceneCollisions(vec3 ray, vec3 origin);
 
@@ -59,57 +69,87 @@ void TestTriangle(vec3 p1, vec3 p2, vec3 p3, vec3 ray, vec3 origin);
 
 void main()
 {
-	vec3 ambientColor = vec3(0.1);
+	float ambientLevel = 0.2;
 	
 	//WORLD CALCULATIONS
 	vec3 lightDir = normalize(lightPos.xyz-Position);
 	float lightDist = length(lightPos.xyz-Position);
 	vec3 viewDir = normalize(cameraPos-Position);
+	float viewDist = length(cameraPos-Position);
 	
 	//TILE AND OFFSET UVs
 	vec2 _texCoord = TexCoord * tileUV + offsetUV;
 	
 	//GET MAP TEXTELS
 	vec3 diffuseTex = texture2D(diffuseMap, _texCoord).xyz;
-	vec3 roughnessTex = texture2D(roughnessMap, _texCoord).xyz;
 	vec3 normalTex = texture2D(normalMap, _texCoord).xyz;
-	vec3 mirrorTex = texture2D(mirrorMap, _texCoord).xyz;
+	vec3 roughnessTex = texture2D(roughnessMap, _texCoord).xyz;
+	
+	//SEE THE NORMALS. BE THE NORMALS. QUICK AND DIRTY VARIANT.
+	normalTex -= vec3(0.5, 0.5, 1.0);
+	vec3 normalDir = normalize(Normal + normalTex*bumpLevel);
+	
+	//ENVIRONMENT MAPPING - FLAT IMAGE REFLECTION WITH BOX BLUR. WATCH THAT SAMPLE RATE!
+	vec3 red = reflect(-viewDir, normalDir);
+	vec3 mirrorTex = vec3(0);
+	float totalStride = GLOSSY_STRETCH*roughness*roughnessTex.x;
+	
+	for(int i = 0; i < GLOSSY_SAMPLES; i++)
+	{
+		float x = red.x - totalStride + i*GLOSSY_STRIDE;
+		float fadeX = 1.0 - abs(i - GLOSSY_SAMPLES*0.5)/(GLOSSY_SAMPLES*0.5);
+		for(int j = 0; j < GLOSSY_SAMPLES; j++)
+		{
+			float y = red.y - totalStride + j*GLOSSY_STRIDE;
+			float fadeY = 1.0 - abs(j - GLOSSY_SAMPLES*0.5)/(GLOSSY_SAMPLES*0.5);
+			mirrorTex += texture2D(mirrorMap, vec2(x, y)).xyz * GLOSSY_CONTRIB * (fadeX + fadeY);
+		}
+	}
+	
+	//ENVIRONMENT MAPPING - CUBEMAP REFLECTION WITH BOX BLUR. WATCH THAT SAMPLE RATE!
+	vec3 envTex = vec3(0);
+	envTex = texture(envMap, red).xyz;
+	
 	
 	//FRESNEL AND PHYSICAL CONSIDERATIONS
-	float focus = clamp(dot(viewDir, Normal), 0, 1);
+	float focus = clamp(dot(viewDir, normalDir), 0, 1);
 	float edge = 1 - focus;
 	float _reflectivity = (reflectivity-focus) * _90degRef * pow(edge, 5 - curveShape) + (_0degRef * reflectivity);
 	_reflectivity = clamp(_reflectivity, 0, 1);	
 	float _diffuseLevel = clamp(diffuseLevel - _reflectivity, 0, 1);
 	
-	//FINAL LIGHTING CONTRIBUTIONS	
-	vec3 diffuse = _diffuseLevel * diffuseColor * diffuseTex * clamp(dot(lightDir, Normal), 0, 1);
-	vec3 specular = _reflectivity * lightColor.xyz * reflectColor * pow(clamp(dot(viewDir, reflect(-lightDir, Normal)), 0, 1), (1.02-roughness)*50);
-	vec3 rim = rimColor * clamp(dot(Normal, lightDir), 0, 1) * pow(1 - clamp(dot(viewDir, Normal), 0, 1), rimPower);
+	//FINAL PSUEDO-PHONG LIGHTING CONTRIBUTIONS
+	_diffuseLevel *= clamp(dot(lightDir, normalDir), 0, 1);
+	vec3 diffuse = _diffuseLevel * diffuseColor * diffuseTex;
+	vec3 specular = _reflectivity * lightColor.xyz * reflectColor * pow(clamp(dot(viewDir, reflect(-lightDir, normalDir)), 0, 1), (1.04-roughness*roughnessTex.x)*25) * (1-roughness*roughnessTex.x*0.6);
+	vec3 reflection = _reflectivity * reflectColor * envTex;
+	vec3 selfIllum = selfIllumLevel * selfIllumColor * envTex;
+	vec3 rim = rimLevel * rimColor * clamp(dot(normalDir, lightDir), 0, 1) * pow(1 - clamp(dot(viewDir, normalDir), 0, 1), rimPower);
 	
-	//SHADOWS!!
+	//SHADOWS!! BUT WATCH THAT SAMPLE RATE!
 	vec3 ray = lightDir;
 	vec3 origin = Position;
 	
 	float shadow = 0;
-	vec3 east = normalize(cross(lightPos.xyz-Position, Normal));
+	vec3 east = normalize(cross(lightPos.xyz-Position, normalDir));
 	vec3 north = normalize(cross(lightPos.xyz-Position, east));
-	for(int i = 0; i < SHADOW_SAMPLES; i++)
+	//Simple floating-plane shadows, use the processed normals for increased sample jitter
+	if(dot(ray, normalDir) > EPSILON)//Don't trace fragments pointing away from light
 	{
-		for(int j = 0; j < SHADOW_SAMPLES; j++)
-		{		
-			if(dot(ray,Normal) > EPSILON)//Don't trace fragments pointing away from light
+		for(int i = 0; i < SHADOW_SAMPLES; i++)
+		{
+			for(int j = 0; j < SHADOW_SAMPLES; j++)
 			{
 				vec3 destination = lightPos.xyz;
-				destination += -LIGHT_RADIUS*east + i*(LIGHT_RADIUS/SHADOW_SAMPLES)*2*east;
-				destination += -LIGHT_RADIUS*north + j*(LIGHT_RADIUS/SHADOW_SAMPLES)*2*north;
+				destination += -LIGHT_RADIUS*east + i*SHADOW_STRIDE*east;
+				destination += -LIGHT_RADIUS*north + j*SHADOW_STRIDE*north;
 				
-				ray = destination-Position;			
+				ray = destination-Position;
 				RunSceneCollisions(ray, origin);
 				
 				if(hit.distance > EPSILON && hit.distance < lightDist)
 				{	
-					shadow += clamp(1-hit.distance, 0, 1)/(SHADOW_SAMPLES*SHADOW_SAMPLES);
+					shadow += clamp(1-hit.distance, 0, 1) * SHADOW_CONTRIB;
 				}
 			}
 		}
@@ -117,28 +157,50 @@ void main()
 	diffuse *= 1-shadow;
 	specular *= 1-shadow;
 	
-	diffuse += ambientColor;
-	vec3 final = diffuse + specular + rim;
+	//MIX IN AMBIENT COLOR AND SUM CONTRIBUTORS
+	diffuse += (1-_diffuseLevel)*envTex*ambientLevel*diffuseColor*diffuseTex;
+	vec3 final = diffuse + specular + reflection + selfIllum + rim;
+	
+	//FOGGY FUGUE
+	vec3 fogColor = vec3(0,0,0);	
+	float u = viewDist*0.05;
+	// final = final * (1-u) + fogColor * u;
 	
 	FragmentColor = vec4(final, 1.0);
 	
-	//FragmentColor = vec4(Color, 1);
-	//FragmentColor = vec4(Normal, 1);	
-    //FragmentColor = vec4(TexCoord.x, 0, 0, 1);
-	//FragmentColor = vec4(0, TexCoord.y, 0, 1);
-	//FragmentColor = vec4(TexCoord.x, TexCoord.y, 0, 1);
+	//DEBUG DANCING - COMMENT OUT FOR FINAL COLOR
+	// FragmentColor = vec4(Color, 1);
+	// FragmentColor = vec4(Normal, 1);
+	// FragmentColor = vec4(normalDir, 1);
+    // FragmentColor = vec4(TexCoord.x, 0, 0, 1);
+	// FragmentColor = vec4(0, TexCoord.y, 0, 1);
+	// FragmentColor = vec4(TexCoord.x, TexCoord.y, 0, 1);
+	// FragmentColor = vec4(_reflectivity);
+	// FragmentColor = vec4(roughness);
+	// FragmentColor = vec4(viewDist*0.01);
+	// FragmentColor = vec4(hit.distance);
 	
-	//FragmentColor = vec4(diffuseTex, 1.0);
-	//FragmentColor = vec4(roughnessTex, 1.0);
-	//FragmentColor = vec4(normalTex, 1.0);
-	//FragmentColor = vec4(mirrorTex, 1.0);
+	// FragmentColor = vec4(_diffuseLevel);
+	// FragmentColor = vec4(_reflectivity);
+	// FragmentColor = vec4(diffuse, 1.0);
+	// FragmentColor = vec4(specular, 1.0);
+	// FragmentColor = vec4(reflection, 1.0);
+	// FragmentColor = vec4(selfIllum, 1.0);
+	// FragmentColor = vec4(rim, 1.0);
+	// FragmentColor = vec4(1-shadow);
+	
+	// FragmentColor = vec4(diffuseTex, 1.0);
+	// FragmentColor = vec4(roughnessTex, 1.0);
+	// FragmentColor = vec4(normalTex, 1.0);
+	// FragmentColor = vec4(mirrorTex, 1.0);
+	// FragmentColor = vec4(envTex, 1.0);
 }
 
 void RunSceneCollisions(vec3 ray, vec3 origin)
 {
 	hit.distance = 1000;
 	
-	TestSphere(vec3(0,1,0), 1.0, ray, origin);
+	// TestSphere(vec3(0,1,0), 1, ray, origin);
 	TestCylinder(vec3(3, 2, 0), 1, 2, ray, origin);
 }
 
@@ -174,8 +236,8 @@ void TestSphere(vec3 center, float radius, vec3 ray, vec3 origin)
 		if(d < hit.distance && d > EPSILON)
 		{
 			hit.distance = d;
-			//hit.position = origin + hit.distance*ray;
-			//hit.normal = normalize(hit.position-center);
+			// hit.position = origin + hit.distance*ray;
+			// hit.normal = normalize(hit.position-center);
 		}
 	}
 }

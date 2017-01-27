@@ -7,7 +7,7 @@ Camera::Camera()
 	transform = Transform::identity();
 	verticalFOV = Mathf::PI / 180 * 60;
 	nearClipPlane = 0.1;
-	farClipPlane = 2000.0;
+	farClipPlane = 6000.0;
 	mode = Modes::MODE_FREE;
 	up = Transform::Up();
 	right = Transform::Right();
@@ -18,7 +18,7 @@ Camera::Camera(Transform transformIn)
 	transform = transformIn;
 	verticalFOV = Mathf::PI / 180 * 60;
 	nearClipPlane = 0.1;
-	farClipPlane = 2000.0;
+	farClipPlane = 6000.0;
 	mode = Modes::MODE_FREE;
 	up = Transform::Up();
 	right = Transform::Right();
@@ -44,27 +44,27 @@ void Camera::Update()
 	case Modes::MODE_FREE:
 		if (Input::GetButton(ButtonCode::A))
 		{
-			transform.Translate(-(float)0.1 * right);
+			transform.Translate(-(float)0.5 * right);
 		}
 		if (Input::GetButton(ButtonCode::D))
 		{
-			transform.Translate((float)0.1 * right);
+			transform.Translate((float)0.5 * right);
 		}
 		if (Input::GetButton(ButtonCode::W))
 		{
-			transform.Translate(-(float)0.1 * forward);
+			transform.Translate(-(float)0.5 * forward);
 		}
 		if (Input::GetButton(ButtonCode::S))
 		{
-			transform.Translate((float)0.1 * forward);
+			transform.Translate((float)0.3 * forward);
 		}
 		if (Input::GetButton(ButtonCode::E))
 		{
-			transform.Translate((float)0.1 * up);
+			transform.Translate((float)0.5 * up);
 		}
 		if (Input::GetButton(ButtonCode::Q))
 		{
-			transform.Translate(-(float)0.1 * up);
+			transform.Translate(-(float)0.5 * up);
 		}
 		if (Input::GetButton(ButtonCode::RightMouse))
 		{
@@ -136,7 +136,7 @@ mat4 Camera::GetViewToProjectionMatrix()
 	return mat4(
 		1/((float)WIDTH/(float)HEIGHT*tan(verticalFOV*0.5)), 0, 0, 0,
 		0, 1/tan(verticalFOV*0.5), 0, 0,
-		0, 0, (-nearClipPlane - farClipPlane) / (nearClipPlane - farClipPlane), (2 * farClipPlane*nearClipPlane) / (nearClipPlane - farClipPlane),
+		0, 0, (-nearClipPlane - farClipPlane*2) / (nearClipPlane - farClipPlane*2), (4 * farClipPlane*nearClipPlane) / (nearClipPlane - farClipPlane*2),
 		0, 0, 1, 0);
 }
 
@@ -152,5 +152,5 @@ void Camera::SetNearClipPlane(float nearClip)
 
 void Camera::SetFarClipPlane(float farClip)
 {
-	nearClipPlane = Mathf::Clamp(farClip, 100, 4000);
+	nearClipPlane = Mathf::Clamp(farClip, 1000, 12000);
 }

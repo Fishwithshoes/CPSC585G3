@@ -34,6 +34,7 @@ public:
 	GLint diffuseMap_uniform;
 	GLint normalMap_uniform;
 	GLint mirrorMap_uniform;
+	GLint envMap_uniform;
 	GLint roughnessMap_uniform;
 
 	//Particle Shader
@@ -83,4 +84,5 @@ protected:
 private:
 	static vector<Camera> cameraList;
 	static vector<string> textureFilePaths;
+	static vector<string> cubemapTextureFilePaths;
 };

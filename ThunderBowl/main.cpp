@@ -99,7 +99,7 @@ int main(int argc, char *argv[])
 	RendererUtility::QueryGLVersion();
 
 	glEnable(GL_DEPTH_TEST);
-	glDisable(GL_CULL_FACE);
+	glEnable(GL_CULL_FACE);
 
 	Renderer renderer;
 	Renderer::Init(&renderer);
@@ -137,7 +137,6 @@ int main(int argc, char *argv[])
 		Input::UpdateInput();
 		Input::SetOldMousePosition();
 	}
-	//PlaySoundW(TEXT("Sounds/jerry_MUS.wav"), NULL, SND_FILENAME);
 
 	// clean up allocated resources before exit
 	glfwDestroyWindow(window);

@@ -13,8 +13,21 @@ vector<string> Renderer::textureFilePaths =
 	"Textures/white_DIFF.jpg",
 	"Textures/normal_NORM.jpg",
 	"Textures/reflection_MIRR.jpg",
+	"GL_TEXTURE_CUBEMAP",
 	"Textures/checker_DIFF.jpg",
-	"Textures/jerry_DIFF.jpg"
+	"Textures/jerry_DIFF.jpg",
+	"Textures/floor_DIFF.jpg",
+	"Textures/floor_DIFF.jpg",
+	"Textures/floor_NORM.jpg"
+};
+vector<string> Renderer::cubemapTextureFilePaths =
+{
+	"Textures/cube_RIGHT.jpg",
+	"Textures/cube_LEFT.jpg",
+	"Textures/cube_UP.jpg",
+	"Textures/cube_DOWN.jpg",
+	"Textures/cube_BACK.jpg",
+	"Textures/cube_FRONT.jpg",
 };
 
 void Renderer::Init(Renderer *renderer)
@@ -61,6 +74,7 @@ void Renderer::GetShaderUniforms(Renderer *renderer)
 	renderer->diffuseMap_uniform = glGetUniformLocation(renderer->standardShader.program, "diffuseMap");
 	renderer->normalMap_uniform = glGetUniformLocation(renderer->standardShader.program, "normalMap");
 	renderer->mirrorMap_uniform = glGetUniformLocation(renderer->standardShader.program, "mirrorMap");
+	renderer->envMap_uniform = glGetUniformLocation(renderer->standardShader.program, "envMap");
 	renderer->roughnessMap_uniform = glGetUniformLocation(renderer->standardShader.program, "roughnessMap");
 	
 	//Particle Shader - Primary
@@ -95,8 +109,6 @@ void Renderer::GetShaderUniforms(Renderer *renderer)
 
 void Renderer::LoadTextures(Renderer *renderer)
 {
-	stbi_set_flip_vertically_on_load(true);
-
 	int numComponents;
 	unsigned char *data;
 	GLuint format;
@@ -107,20 +119,53 @@ void Renderer::LoadTextures(Renderer *renderer)
 
 	for (int i = 0; i < textureFilePaths.size(); i++)
 	{
-		//Load image with stb and bind into GPU texture table, freeing stb memory afterwards
-		data = stbi_load(textureFilePaths[i].c_str(), &width, &height, &numComponents, 0);
-		if (data != nullptr)
+		if (i != 3)//Bind images to GL_TEXTURE_2D
 		{
-			format = numComponents == 3 ? GL_RGB : GL_RGBA;
+			stbi_set_flip_vertically_on_load(true);
+			//Load image with stb and bind into GPU texture table, freeing stb memory afterwards
+			data = stbi_load(textureFilePaths[i].c_str(), &width, &height, &numComponents, 0);
+			if (data != nullptr)
+			{
+				format = numComponents == 3 ? GL_RGB : GL_RGBA;
+				glGenTextures(1, &texID);
+				glActiveTexture(GL_TEXTURE0 + i);
+				glBindTexture(GL_TEXTURE_2D, texID);
+				glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+				glGenerateMipmap(GL_TEXTURE_2D);
+			}
+			else
+				cout << "Flumpty failed to load texture at: " + textureFilePaths[i] << endl;
+			stbi_image_free(data);
+		}
+		else//Bind images to GL_TEXTURE_CUBEMAP_xx
+		{
+			stbi_set_flip_vertically_on_load(false);
 			glGenTextures(1, &texID);
 			glActiveTexture(GL_TEXTURE0 + i);
-			glBindTexture(GL_TEXTURE_2D, texID);
-			glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-			glGenerateMipmap(GL_TEXTURE_2D);
+			glBindTexture(GL_TEXTURE_CUBE_MAP, texID);
+			cout << texID << endl;
+
+			for (int j = 0; j < 6; j++)
+			{
+				data = stbi_load(cubemapTextureFilePaths[j].c_str(), &width, &height, &numComponents, 0);
+				if (data != nullptr)
+				{
+					format = numComponents == 3 ? GL_RGB : GL_RGBA;
+					glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + j, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+				}
+				else
+					cout << "Flumpty failed to load cubemap texture at: " + cubemapTextureFilePaths[j] << endl;
+				stbi_image_free(data);
+			}
+
+			//glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
+			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+			//glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 		}
-		else
-			cout << "Flumpty failed to load texture at: " + textureFilePaths[i] << endl;
-		stbi_image_free(data);
 	}
 }
 
@@ -146,7 +191,7 @@ void Renderer::RenderScene(Renderer *renderer)
 		GameObject gameObject = Game::worldObjectList[i];
 		Mesh mesh = gameObject.mesh;
 		StandardMaterial standardMat = gameObject.standardMat;
-		renderer->geometry.elementCount = mesh.indicies.size();
+		renderer->geometry.elementCount = mesh.indices.size();
 
 		//PROGRAM UNIFORMS - PRIMARY
 		glUniform1f(renderer->diffuseLevel_uniform, standardMat.diffuseLevel);
@@ -168,6 +213,7 @@ void Renderer::RenderScene(Renderer *renderer)
 		glUniform1i(renderer->diffuseMap_uniform, standardMat.diffuseMap);
 		glUniform1i(renderer->normalMap_uniform, standardMat.normalMap);
 		glUniform1i(renderer->mirrorMap_uniform, standardMat.mirrorMap);
+		glUniform1i(renderer->envMap_uniform, standardMat.envMap);
 		glUniform1i(renderer->roughnessMap_uniform, standardMat.roughnessMap);
 
 		glUniform2fv(renderer->tileUV_uniform, 1, value_ptr(standardMat.tileUV));
@@ -209,7 +255,7 @@ void Renderer::RenderScene(Renderer *renderer)
 		glEnableVertexAttribArray(Renderer::TEXCOORD_INDEX);
 
 		//Buffer Indicies
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * mesh.indicies.size(), mesh.indicies.data(), GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * mesh.indices.size(), mesh.indices.data(), GL_STATIC_DRAW);
 
 		//Draw Those Elements
 		glDrawElements(GL_TRIANGLES, renderer->geometry.elementCount, GL_UNSIGNED_INT, nullptr);
@@ -259,7 +305,7 @@ void Renderer::RenderScene(Renderer *renderer)
 		GameObject gameObject = Game::overlayObjectList[i];
 		Mesh mesh = gameObject.mesh;
 		ParticleOverlayMaterial particleOverlayMat = gameObject.particleOverlayMat;
-		renderer->geometry.elementCount = mesh.indicies.size();
+		renderer->geometry.elementCount = mesh.indices.size();
 
 		//PROGRAM UNIFORMS - PRIMARY
 		glUniform4fv(renderer->colorOverlay_uniform, 1, value_ptr(particleOverlayMat.color));
@@ -295,7 +341,7 @@ void Renderer::RenderScene(Renderer *renderer)
 		glEnableVertexAttribArray(Renderer::TEXCOORD_INDEX);
 
 		//Buffer Indicies
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * mesh.indicies.size(), mesh.indicies.data(), GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * mesh.indices.size(), mesh.indices.data(), GL_STATIC_DRAW);
 
 		//Draw Those Elements
 		glDrawElements(GL_TRIANGLES, renderer->geometry.elementCount, GL_UNSIGNED_INT, nullptr);

@@ -12,7 +12,7 @@ struct Mesh
 	vector<vec3> normals;
 	vector<vec2> texcoords;
 	GLsizei elementCount;
-	vector<GLuint> indicies;
+	vector<GLuint> indices;
 };
 
 struct Geometry
@@ -61,9 +61,10 @@ struct StandardMaterial
 
 	//Texture handles
 	GLuint diffuseMap;
+	GLuint normalMap;
+	GLuint envMap;
 	GLuint mirrorMap;
 	GLuint roughnessMap;
-	GLuint normalMap;
 };
 
 //Two separate shaders, but have the same props
@@ -80,6 +81,7 @@ enum Maps
 	MAP_WHITE,//Default texture color
 	MAP_NORMAL,//Default normal color
 	MAP_MIRROR,//Default reflection
+	MAP_ENV,//Env cubemap
 	MAP_CHECKER,//Testing
 	//Overlay
 	MAP_JERRY,
