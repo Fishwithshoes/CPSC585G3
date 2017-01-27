@@ -1,13 +1,2 @@
-﻿  GeoGenerator.cpp
-c:\cpsc 585 games\thunderbowl\geogenerator.cpp(8): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-c:\cpsc 585 games\thunderbowl\geogenerator.cpp(86): warning C4267: 'argument': conversion from 'size_t' to 'unsigned int', possible loss of data
-c:\cpsc 585 games\thunderbowl\geogenerator.cpp(119): warning C4267: 'argument': conversion from 'size_t' to 'unsigned int', possible loss of data
-c:\cpsc 585 games\thunderbowl\geogenerator.cpp(126): warning C4267: '=': conversion from 'size_t' to 'GLsizei', possible loss of data
-c:\cpsc 585 games\thunderbowl\geogenerator.cpp(136): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-c:\cpsc 585 games\thunderbowl\geogenerator.cpp(137): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-c:\cpsc 585 games\thunderbowl\geogenerator.cpp(172): warning C4267: '=': conversion from 'size_t' to 'GLsizei', possible loss of data
-c:\cpsc 585 games\thunderbowl\geogenerator.cpp(261): warning C4267: '=': conversion from 'size_t' to 'GLsizei', possible loss of data
-c:\cpsc 585 games\thunderbowl\geogenerator.cpp(355): warning C4267: '=': conversion from 'size_t' to 'GLsizei', possible loss of data
-c:\cpsc 585 games\thunderbowl\geogenerator.cpp(394): warning C4267: '=': conversion from 'size_t' to 'GLsizei', possible loss of data
-  ThunderBowl.vcxproj -> C:\CPSC 585 Games\ThunderBowl\x64\Debug\ThunderBowl.exe
-  ThunderBowl.vcxproj -> C:\CPSC 585 Games\ThunderBowl\x64\Debug\ThunderBowl.pdb (Full PDB)
+﻿  ThunderBowl.vcxproj -> U:\CPSC585\CPSC585G3\ThunderBowl\x64\Debug\ThunderBowl.exe
+  ThunderBowl.vcxproj -> U:\CPSC585\CPSC585G3\ThunderBowl\x64\Debug\ThunderBowl.pdb (Full PDB)
