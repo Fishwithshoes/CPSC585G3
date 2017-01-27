@@ -1,2 +1,1 @@
-﻿  ThunderBowl.vcxproj -> U:\CPSC585\CPSC585G3\ThunderBowl\x64\Debug\ThunderBowl.exe
-  ThunderBowl.vcxproj -> U:\CPSC585\CPSC585G3\ThunderBowl\x64\Debug\ThunderBowl.pdb (Full PDB)
+﻿LINK : fatal error LNK1104: cannot open file 'sdl2.lib'
