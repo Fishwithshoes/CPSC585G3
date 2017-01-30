@@ -1,69 +1,27 @@
-﻿Build started 1/26/2017 11:15:54 AM.
-     1>Project "C:\CPSC 585 Games\ThunderBowl\ThunderBowl.vcxproj" on node 2 (Rebuild target(s)).
-     1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V140\Microsoft.CppBuild.targets(367,5): warning MSB8004: Intermediate Directory does not end with a trailing slash.  This build instance will add the slash as it is required to allow proper evaluation of the Intermediate Directory.
-     1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\CL.exe /c /IC:\middleware\SDL\2.0.5\include /IC:\middleware /I"C:\middleware\glfw-3.2.1\include" /I"C:\middleware\glew-2.0.0\include" /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"Debug\Tmp\\" /Fd"Debug\Tmp\vc140.pdb" /Gd /TP /analyze- /errorReport:prompt ButtonCode.cpp Camera.cpp Component.cpp Game.cpp GameObject.cpp GeoGenerator.cpp Input.cpp main.cpp Mathf.cpp Random.cpp Renderer.cpp RendererUtility.cpp Transform.cpp
-         Transform.cpp
-         RendererUtility.cpp
-         Renderer.cpp
-     1>c:\middleware\stb\stb_image.h(219): warning C4068: unknown pragma
-     1>c:\middleware\stb\stb_image_write.h(222): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-         c:\program files (x86)\windows kits\10\include\10.0.10150.0\ucrt\stdio.h(205): note: see declaration of 'fopen'
-     1>c:\middleware\stb\stb_image_write.h(616): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-         c:\program files (x86)\windows kits\10\include\10.0.10150.0\ucrt\stdio.h(1769): note: see declaration of 'sprintf'
-     1>c:\middleware\stb\stb_image_write.h(998): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-         c:\program files (x86)\windows kits\10\include\10.0.10150.0\ucrt\stdio.h(205): note: see declaration of 'fopen'
-     1>c:\cpsc 585 games\thunderbowl\renderer.cpp(108): warning C4018: '<': signed/unsigned mismatch
-     1>c:\cpsc 585 games\thunderbowl\renderer.cpp(103): warning C4101: 'loc': unreferenced local variable
-     1>c:\cpsc 585 games\thunderbowl\renderer.cpp(143): warning C4018: '<': signed/unsigned mismatch
-     1>c:\cpsc 585 games\thunderbowl\renderer.cpp(226): warning C4018: '<': signed/unsigned mismatch
-     1>c:\cpsc 585 games\thunderbowl\renderer.cpp(239): warning C4244: 'argument': conversion from 'GLuint' to 'GLfloat', possible loss of data
-     1>c:\cpsc 585 games\thunderbowl\renderer.cpp(256): warning C4018: '<': signed/unsigned mismatch
-         Random.cpp
-     1>c:\cpsc 585 games\thunderbowl\random.cpp(11): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
-     1>c:\cpsc 585 games\thunderbowl\random.cpp(16): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
-         Mathf.cpp
-     1>c:\cpsc 585 games\thunderbowl\mathf.cpp(3): warning C4305: 'initializing': truncation from 'double' to 'float'
-         main.cpp
-         Input.cpp
-     1>c:\cpsc 585 games\thunderbowl\input.cpp(22): warning C4018: '<': signed/unsigned mismatch
-     1>c:\cpsc 585 games\thunderbowl\input.cpp(29): warning C4804: '>': unsafe use of type 'bool' in operation
-     1>c:\cpsc 585 games\thunderbowl\input.cpp(39): warning C4804: '>': unsafe use of type 'bool' in operation
-         GeoGenerator.cpp
-     1>c:\cpsc 585 games\thunderbowl\geogenerator.cpp(98): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-     1>c:\cpsc 585 games\thunderbowl\geogenerator.cpp(99): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-         GameObject.cpp
-     1>c:\cpsc 585 games\thunderbowl\gameobject.cpp(16): warning C4305: '=': truncation from 'double' to 'float'
-         Game.cpp
-     1>c:\cpsc 585 games\thunderbowl\game.cpp(19): warning C4018: '>': signed/unsigned mismatch
-     1>c:\cpsc 585 games\thunderbowl\game.cpp(116): warning C4018: '<': signed/unsigned mismatch
-     1>c:\cpsc 585 games\thunderbowl\game.cpp(125): warning C4018: '<': signed/unsigned mismatch
-     1>c:\cpsc 585 games\thunderbowl\game.cpp(134): warning C4018: '<': signed/unsigned mismatch
-         Component.cpp
-         Camera.cpp
-     1>c:\cpsc 585 games\thunderbowl\camera.cpp(9): warning C4305: '=': truncation from 'double' to 'float'
-     1>c:\cpsc 585 games\thunderbowl\camera.cpp(20): warning C4305: '=': truncation from 'double' to 'float'
-     1>c:\cpsc 585 games\thunderbowl\camera.cpp(150): warning C4305: 'argument': truncation from 'double' to 'float'
-         ButtonCode.cpp
-         Generating Code...
-       Link:
-         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\CPSC 585 Games\ThunderBowl\Debug\ThunderBowl.exe" /INCREMENTAL /NOLOGO /LIBPATH:C:\middleware\SDL\2.0.5\lib\x86 /LIBPATH:"C:\middleware\glfw-3.2.1\lib-vc2015" /LIBPATH:"C:\middleware\glew-2.0.0\lib\Release\Win32" winmm.lib sdl2.lib opengl32.lib glfw3.lib glew32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /Debug /PDB:"C:\CPSC 585 Games\ThunderBowl\Debug\ThunderBowl.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\CPSC 585 Games\ThunderBowl\Debug\ThunderBowl.lib" /MACHINE:X86 Debug\Tmp\ButtonCode.obj
-         Debug\Tmp\Camera.obj
-         Debug\Tmp\Component.obj
-         Debug\Tmp\Game.obj
-         Debug\Tmp\GameObject.obj
-         Debug\Tmp\GeoGenerator.obj
-         Debug\Tmp\Input.obj
-         Debug\Tmp\main.obj
-         Debug\Tmp\Mathf.obj
-         Debug\Tmp\Random.obj
-         Debug\Tmp\Renderer.obj
-         Debug\Tmp\RendererUtility.obj
-         Debug\Tmp\Transform.obj
-     1>LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library
-         ThunderBowl.vcxproj -> C:\CPSC 585 Games\ThunderBowl\Debug\ThunderBowl.exe
-     1>Done Building Project "C:\CPSC 585 Games\ThunderBowl\ThunderBowl.vcxproj" (Rebuild target(s)).
-
-Build succeeded.
-
-Time Elapsed 00:00:11.92
+﻿C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V140\Microsoft.CppBuild.targets(367,5): warning MSB8004: Intermediate Directory does not end with a trailing slash.  This build instance will add the slash as it is required to allow proper evaluation of the Intermediate Directory.
+  Transform.cpp
+u:\cpsc585\cpsc585g3\thunderbowl\commonincludes.h(15): fatal error C1083: Cannot open include file: 'GL/glew.h': No such file or directory
+  RendererUtility.cpp
+u:\cpsc585\cpsc585g3\thunderbowl\commonincludes.h(15): fatal error C1083: Cannot open include file: 'GL/glew.h': No such file or directory
+  Renderer.cpp
+u:\cpsc585\cpsc585g3\thunderbowl\commonincludes.h(15): fatal error C1083: Cannot open include file: 'GL/glew.h': No such file or directory
+  Random.cpp
+u:\cpsc585\cpsc585g3\thunderbowl\commonincludes.h(15): fatal error C1083: Cannot open include file: 'GL/glew.h': No such file or directory
+  Mathf.cpp
+u:\cpsc585\cpsc585g3\thunderbowl\mathf.cpp(3): warning C4305: 'initializing': truncation from 'double' to 'float'
+  main.cpp
+u:\cpsc585\cpsc585g3\thunderbowl\commonincludes.h(15): fatal error C1083: Cannot open include file: 'GL/glew.h': No such file or directory
+  Input.cpp
+u:\cpsc585\cpsc585g3\thunderbowl\commonincludes.h(15): fatal error C1083: Cannot open include file: 'GL/glew.h': No such file or directory
+  GeoGenerator.cpp
+u:\cpsc585\cpsc585g3\thunderbowl\commonincludes.h(15): fatal error C1083: Cannot open include file: 'GL/glew.h': No such file or directory
+  GameObject.cpp
+u:\cpsc585\cpsc585g3\thunderbowl\commonincludes.h(15): fatal error C1083: Cannot open include file: 'GL/glew.h': No such file or directory
+  Game.cpp
+u:\cpsc585\cpsc585g3\thunderbowl\commonincludes.h(15): fatal error C1083: Cannot open include file: 'GL/glew.h': No such file or directory
+  Component.cpp
+u:\cpsc585\cpsc585g3\thunderbowl\commonincludes.h(15): fatal error C1083: Cannot open include file: 'GL/glew.h': No such file or directory
+  Camera.cpp
+u:\cpsc585\cpsc585g3\thunderbowl\commonincludes.h(15): fatal error C1083: Cannot open include file: 'GL/glew.h': No such file or directory
+  ButtonCode.cpp
+  Generating Code...

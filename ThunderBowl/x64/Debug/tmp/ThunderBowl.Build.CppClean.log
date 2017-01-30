@@ -1,24 +1,24 @@
-c:\cpsc 585 games\thunderbowl\x64\debug\tmp\vc140.pdb
-c:\cpsc 585 games\thunderbowl\x64\debug\tmp\vc140.idb
-c:\cpsc 585 games\thunderbowl\x64\debug\tmp\buttoncode.obj
-c:\cpsc 585 games\thunderbowl\x64\debug\tmp\camera.obj
-c:\cpsc 585 games\thunderbowl\x64\debug\tmp\game.obj
-c:\cpsc 585 games\thunderbowl\x64\debug\tmp\gameobject.obj
-c:\cpsc 585 games\thunderbowl\x64\debug\tmp\geogenerator.obj
-c:\cpsc 585 games\thunderbowl\x64\debug\tmp\input.obj
-c:\cpsc 585 games\thunderbowl\x64\debug\tmp\main.obj
-c:\cpsc 585 games\thunderbowl\x64\debug\tmp\mathf.obj
-c:\cpsc 585 games\thunderbowl\x64\debug\tmp\random.obj
-c:\cpsc 585 games\thunderbowl\x64\debug\tmp\renderer.obj
-c:\cpsc 585 games\thunderbowl\x64\debug\tmp\rendererutility.obj
-c:\cpsc 585 games\thunderbowl\x64\debug\tmp\transform.obj
-c:\cpsc 585 games\thunderbowl\x64\debug\tmp\component.obj
-c:\cpsc 585 games\thunderbowl\x64\debug\thunderbowl.ilk
-c:\cpsc 585 games\thunderbowl\x64\debug\thunderbowl.exe
-c:\cpsc 585 games\thunderbowl\x64\debug\thunderbowl.pdb
-c:\cpsc 585 games\thunderbowl\x64\debug\tmp\thunderbowl.tlog\cl.command.1.tlog
-c:\cpsc 585 games\thunderbowl\x64\debug\tmp\thunderbowl.tlog\cl.read.1.tlog
-c:\cpsc 585 games\thunderbowl\x64\debug\tmp\thunderbowl.tlog\cl.write.1.tlog
-c:\cpsc 585 games\thunderbowl\x64\debug\tmp\thunderbowl.tlog\link.command.1.tlog
-c:\cpsc 585 games\thunderbowl\x64\debug\tmp\thunderbowl.tlog\link.read.1.tlog
-c:\cpsc 585 games\thunderbowl\x64\debug\tmp\thunderbowl.tlog\link.write.1.tlog
+u:\cpsc585\cpsc585g3\thunderbowl\x64\debug\thunderbowl.ilk
+u:\cpsc585\cpsc585g3\thunderbowl\x64\debug\thunderbowl.exe
+u:\cpsc585\cpsc585g3\thunderbowl\x64\debug\thunderbowl.pdb
+u:\cpsc585\cpsc585g3\thunderbowl\x64\debug\tmp\vc140.pdb
+u:\cpsc585\cpsc585g3\thunderbowl\x64\debug\tmp\vc140.idb
+u:\cpsc585\cpsc585g3\thunderbowl\x64\debug\tmp\buttoncode.obj
+u:\cpsc585\cpsc585g3\thunderbowl\x64\debug\tmp\camera.obj
+u:\cpsc585\cpsc585g3\thunderbowl\x64\debug\tmp\component.obj
+u:\cpsc585\cpsc585g3\thunderbowl\x64\debug\tmp\game.obj
+u:\cpsc585\cpsc585g3\thunderbowl\x64\debug\tmp\gameobject.obj
+u:\cpsc585\cpsc585g3\thunderbowl\x64\debug\tmp\geogenerator.obj
+u:\cpsc585\cpsc585g3\thunderbowl\x64\debug\tmp\input.obj
+u:\cpsc585\cpsc585g3\thunderbowl\x64\debug\tmp\main.obj
+u:\cpsc585\cpsc585g3\thunderbowl\x64\debug\tmp\mathf.obj
+u:\cpsc585\cpsc585g3\thunderbowl\x64\debug\tmp\random.obj
+u:\cpsc585\cpsc585g3\thunderbowl\x64\debug\tmp\renderer.obj
+u:\cpsc585\cpsc585g3\thunderbowl\x64\debug\tmp\rendererutility.obj
+u:\cpsc585\cpsc585g3\thunderbowl\x64\debug\tmp\transform.obj
+u:\cpsc585\cpsc585g3\thunderbowl\x64\debug\tmp\thunderbowl.tlog\cl.command.1.tlog
+u:\cpsc585\cpsc585g3\thunderbowl\x64\debug\tmp\thunderbowl.tlog\link.read.1.tlog
+u:\cpsc585\cpsc585g3\thunderbowl\x64\debug\tmp\thunderbowl.tlog\cl.read.1.tlog
+u:\cpsc585\cpsc585g3\thunderbowl\x64\debug\tmp\thunderbowl.tlog\link.write.1.tlog
+u:\cpsc585\cpsc585g3\thunderbowl\x64\debug\tmp\thunderbowl.tlog\cl.write.1.tlog
+u:\cpsc585\cpsc585g3\thunderbowl\x64\debug\tmp\thunderbowl.tlog\link.command.1.tlog
