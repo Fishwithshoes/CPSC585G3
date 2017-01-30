@@ -1,1 +1,53 @@
-﻿LINK : fatal error LNK1104: cannot open file 'sdl2.lib'
+﻿  main.cpp
+u:\cpsc585\cpsc585g3\thunderbowl\main.cpp(118): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+u:\cpsc585\cpsc585g3\thunderbowl\main.cpp(122): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+u:\cpsc585\cpsc585g3\thunderbowl\main.cpp(126): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+  Renderer.cpp
+u:\cpsc585\cpsc585g3\middleware\stb\stb_image.h(219): warning C4068: unknown pragma
+u:\cpsc585\cpsc585g3\middleware\stb\stb_image_write.h(222): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdio.h(205): note: see declaration of 'fopen'
+u:\cpsc585\cpsc585g3\middleware\stb\stb_image_write.h(616): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdio.h(1769): note: see declaration of 'sprintf'
+u:\cpsc585\cpsc585g3\middleware\stb\stb_image_write.h(998): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdio.h(205): note: see declaration of 'fopen'
+u:\cpsc585\cpsc585g3\thunderbowl\renderer.cpp(115): warning C4101: 'loc': unreferenced local variable
+u:\cpsc585\cpsc585g3\thunderbowl\renderer.cpp(194): warning C4267: '=': conversion from 'size_t' to 'GLsizei', possible loss of data
+u:\cpsc585\cpsc585g3\thunderbowl\renderer.cpp(285): warning C4244: 'argument': conversion from 'GLuint' to 'GLfloat', possible loss of data
+u:\cpsc585\cpsc585g3\thunderbowl\renderer.cpp(308): warning C4267: '=': conversion from 'size_t' to 'GLsizei', possible loss of data
+  GeoGenerator.cpp
+u:\cpsc585\cpsc585g3\thunderbowl\geogenerator.cpp(8): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+u:\cpsc585\cpsc585g3\thunderbowl\geogenerator.cpp(86): warning C4267: 'argument': conversion from 'size_t' to 'unsigned int', possible loss of data
+u:\cpsc585\cpsc585g3\thunderbowl\geogenerator.cpp(119): warning C4267: 'argument': conversion from 'size_t' to 'unsigned int', possible loss of data
+u:\cpsc585\cpsc585g3\thunderbowl\geogenerator.cpp(126): warning C4267: '=': conversion from 'size_t' to 'GLsizei', possible loss of data
+u:\cpsc585\cpsc585g3\thunderbowl\geogenerator.cpp(136): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+u:\cpsc585\cpsc585g3\thunderbowl\geogenerator.cpp(137): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+u:\cpsc585\cpsc585g3\thunderbowl\geogenerator.cpp(172): warning C4267: '=': conversion from 'size_t' to 'GLsizei', possible loss of data
+u:\cpsc585\cpsc585g3\thunderbowl\geogenerator.cpp(261): warning C4267: '=': conversion from 'size_t' to 'GLsizei', possible loss of data
+u:\cpsc585\cpsc585g3\thunderbowl\geogenerator.cpp(355): warning C4267: '=': conversion from 'size_t' to 'GLsizei', possible loss of data
+u:\cpsc585\cpsc585g3\thunderbowl\geogenerator.cpp(394): warning C4267: '=': conversion from 'size_t' to 'GLsizei', possible loss of data
+  GameObject.cpp
+u:\cpsc585\cpsc585g3\thunderbowl\gameobject.cpp(16): warning C4305: '=': truncation from 'double' to 'float'
+  Game.cpp
+u:\cpsc585\cpsc585g3\thunderbowl\game.cpp(19): warning C4018: '>': signed/unsigned mismatch
+u:\cpsc585\cpsc585g3\thunderbowl\game.cpp(113): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+u:\cpsc585\cpsc585g3\thunderbowl\game.cpp(119): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+u:\cpsc585\cpsc585g3\thunderbowl\game.cpp(125): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+  Camera.cpp
+u:\cpsc585\cpsc585g3\thunderbowl\camera.cpp(9): warning C4305: '=': truncation from 'double' to 'float'
+u:\cpsc585\cpsc585g3\thunderbowl\camera.cpp(20): warning C4305: '=': truncation from 'double' to 'float'
+u:\cpsc585\cpsc585g3\thunderbowl\camera.cpp(150): warning C4305: 'argument': truncation from 'double' to 'float'
+  Generating Code...
+  Compiling...
+  Transform.cpp
+  RendererUtility.cpp
+u:\cpsc585\cpsc585g3\thunderbowl\rendererutility.cpp(139): warning C4267: 'argument': conversion from 'size_t' to 'GLsizei', possible loss of data
+u:\cpsc585\cpsc585g3\thunderbowl\rendererutility.cpp(169): warning C4267: 'argument': conversion from 'size_t' to 'GLsizei', possible loss of data
+  Random.cpp
+u:\cpsc585\cpsc585g3\thunderbowl\random.cpp(11): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
+u:\cpsc585\cpsc585g3\thunderbowl\random.cpp(16): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
+  Input.cpp
+u:\cpsc585\cpsc585g3\thunderbowl\input.cpp(29): warning C4804: '>': unsafe use of type 'bool' in operation
+u:\cpsc585\cpsc585g3\thunderbowl\input.cpp(39): warning C4804: '>': unsafe use of type 'bool' in operation
+  Component.cpp
+  Generating Code...
+LINK : fatal error LNK1104: cannot open file 'sdl2.lib'
