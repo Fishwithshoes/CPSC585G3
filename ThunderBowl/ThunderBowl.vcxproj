@@ -27,6 +27,7 @@
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GeoGenerator.h" />
     <ClInclude Include="Input.h" />
+    <ClInclude Include="Loader.h" />
     <ClInclude Include="Mathf.h" />
     <ClInclude Include="Random.h" />
     <ClInclude Include="Renderer.h" />
@@ -45,6 +46,7 @@
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GeoGenerator.cpp" />
     <ClCompile Include="Input.cpp" />
+    <ClCompile Include="Loader.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mathf.cpp" />
     <ClCompile Include="Random.cpp" />
@@ -140,13 +142,13 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\middleware\SDL\2.0.5\include;$(ProjectDir)..\middleware;$(ProjectDir)..\middleware\glfw-3.2.1x64\include;$(ProjectDir)..\middleware\glew-2.0.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\middleware\SDL\2.0.5\include;$(ProjectDir)..\middleware;$(ProjectDir)..\middleware\glfw-3.2.1x64\include;$(ProjectDir)..\middleware\assimp-3.1.1-win-binaries\assimp-3.1.1-win-binaries\include;$(ProjectDir)..\middleware\glew-2.0.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>sdl2.lib;opengl32.lib;glfw3.lib;glew32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)..\middleware\SDL\2.0.5\lib\x64;$(ProjectDir)..\middleware\glfw-3.2.1x64\lib-vc2015;$(ProjectDir)..\middleware\glew-2.0.0\lib\Release\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>assimp.lib;sdl2.lib;opengl32.lib;glfw3.lib;glew32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\middleware\SDL\2.0.5\lib\x64;$(ProjectDir)..\middleware\glfw-3.2.1x64\lib-vc2015;$(ProjectDir)..\middleware\glew-2.0.0\lib\Release\x64;$(ProjectDir)..\middleware\assimp-3.1.1-win-binaries\assimp-3.1.1-win-binaries\lib64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -175,14 +177,15 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\middleware\SDL\2.0.5\include;$(ProjectDir)..\middleware;$(ProjectDir)..\middleware\glfw-3.2.1x64\include;$(ProjectDir)..\middleware\glew-2.0.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\middleware\SDL\2.0.5\include;$(ProjectDir)..\middleware;$(ProjectDir)..\middleware\glfw-3.2.1x64\include;$(ProjectDir)..\middleware\assimp-3.1.1-win-binaries\assimp-3.1.1-win-binaries\include;$(ProjectDir)..\middleware\glew-2.0.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(ProjectDir)..\middleware\SDL\2.0.5\lib\x64;$(ProjectDir)..\middleware\glfw-3.2.1x64\lib-vc2015;$(ProjectDir)..\middleware\glew-2.0.0\lib\Release\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\middleware\SDL\2.0.5\lib\x64;$(ProjectDir)..\middleware\glfw-3.2.1x64\lib-vc2015;$(ProjectDir)..\middleware\glew-2.0.0\lib\Release\x64;$(ProjectDir)..\middleware\assimp-3.1.1-win-binaries\assimp-3.1.1-win-binaries\lib64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>assimp.lib;sdl2.lib;opengl32.lib;glfw3.lib;glew32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

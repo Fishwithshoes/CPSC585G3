@@ -1,5 +1,6 @@
 #include "Game.h"
 #include "GeoGenerator.h"
+#include "Loader.h"
 
 #include <SDL.h>
 
@@ -29,6 +30,19 @@ void Game::BuildWorld()
 	particleObjectList.reserve(100);
 	overlayObjectList.reserve(50);
 
+	//Attempt to load .obj file
+	Loader gameLoader = Loader();	//check constructor
+	gameLoader.loadModel("U:\CPSC585\CPSC585G3\middleware\assimp - 3.1.1 - win - binaries\assimp - 3.1.1 - win - binaries\test\models\OBJ\spider.obj");
+	for (int i = 0; i < gameLoader.meshes.size(); i++) {
+		GameObject load = GameObject();
+		load.mesh = gameLoader.meshes[i];
+		load.standardMat.diffuseMap = MAP_ENV;
+		load.standardMat.reflectivity = 0;
+		load.standardMat.diffuseLevel = 0;
+		load.standardMat.selfIllumLevel = 1;
+		Game::CreateWorldObject(load);
+	}
+
 	//Add initial World GameObjects
 	GameObject temp = GameObject();
 	temp.mesh = GeoGenerator::MakeSphere(5000, 32, 64, true);
@@ -38,7 +52,7 @@ void Game::BuildWorld()
 	temp.standardMat.selfIllumLevel = 1;
 	Game::CreateWorldObject(temp);
 
-	temp = GameObject();
+	/*temp = GameObject();
 	temp.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
 	temp.transform.Translate(vec3(-3, 3, 0));
 	temp.standardMat.reflectivity = 0;
@@ -50,7 +64,7 @@ void Game::BuildWorld()
 	temp.standardMat.tileUV = vec2(4,4);
 	temp.standardMat.diffuseMap = MAP_CHECKER;
 	temp.standardMat.normalMap = MAP_CHASSIS_NORMAL;
-	Game::CreateWorldObject(temp);
+	Game::CreateWorldObject(temp);*/
 	
 	temp = GameObject();
 	temp.mesh = GeoGenerator::MakePlane(100, 100, 4, 4);
@@ -60,7 +74,7 @@ void Game::BuildWorld()
 	temp.standardMat.tileUV = vec2(12,12);
 	Game::CreateWorldObject(temp);
 	
-	temp = GameObject();
+	/*temp = GameObject();
 	temp.mesh = GeoGenerator::MakeCylinder(1, 2, 32);
 	temp.transform.Translate(vec3(3, 2, 0));
 	Game::CreateWorldObject(temp);
@@ -70,7 +84,7 @@ void Game::BuildWorld()
 	temp.mesh = GeoGenerator::MakeCircle(1, 64, 0.25);
 	temp.transform.Translate(vec3(0, 0.75, 0));
 	temp.particleOverlayMat.mainTexture = MAP_JERRY;
-	Game::CreateOverlayObject(temp);
+	Game::CreateOverlayObject(temp);*/
 
 	//SDL EAMPLE FOR AUDIO CLASS
 	//Initialization
