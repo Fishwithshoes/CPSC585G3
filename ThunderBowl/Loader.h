@@ -9,14 +9,19 @@ class Loader
 {
 public:
 
-	vector<Mesh> meshes;
-	string directory;
+
+	//string directory;
 
 	void loadModel(string path);
 	void processNode(aiNode* node, const aiScene* scene);
 	Mesh processMesh(aiMesh* mesh, const aiScene* scene);
 
+	vector<Mesh>& getMeshes();
+
 private:
+	vector<Mesh> meshes;
+
+
 
 };
 

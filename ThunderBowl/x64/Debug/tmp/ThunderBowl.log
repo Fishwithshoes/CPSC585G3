@@ -1,9 +1,5 @@
 ﻿  Game.cpp
 u:\cpsc585\cpsc585g3\thunderbowl\game.cpp(20): warning C4018: '>': signed/unsigned mismatch
-u:\cpsc585\cpsc585g3\thunderbowl\game.cpp(35): warning C4129: 'C': unrecognized character escape sequence
-u:\cpsc585\cpsc585g3\thunderbowl\game.cpp(35): warning C4129: 'm': unrecognized character escape sequence
-u:\cpsc585\cpsc585g3\thunderbowl\game.cpp(35): warning C4129: 'O': unrecognized character escape sequence
-u:\cpsc585\cpsc585g3\thunderbowl\game.cpp(35): warning C4129: 's': unrecognized character escape sequence
 u:\cpsc585\cpsc585g3\thunderbowl\game.cpp(127): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
 u:\cpsc585\cpsc585g3\thunderbowl\game.cpp(133): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
 u:\cpsc585\cpsc585g3\thunderbowl\game.cpp(139): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data

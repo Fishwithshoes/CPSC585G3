@@ -32,11 +32,11 @@ void Game::BuildWorld()
 
 	//Attempt to load .obj file
 	Loader gameLoader = Loader();	//check constructor
-	gameLoader.loadModel("U:\CPSC585\CPSC585G3\middleware\assimp - 3.1.1 - win - binaries\assimp - 3.1.1 - win - binaries\test\models\OBJ\spider.obj");
-	for (int i = 0; i < gameLoader.meshes.size(); i++) {
+	gameLoader.loadModel("U:/CPSC585/CPSC585G3/middleware/assimp-3.1.1-win-binaries/assimp-3.1.1-win-binaries/test/models/OBJ/spider.obj");
+	for (int i = 0; i < gameLoader.getMeshes().size(); i++) {
 		GameObject load = GameObject();
-		load.mesh = gameLoader.meshes[i];
-		load.standardMat.diffuseMap = MAP_ENV;
+		load.mesh = gameLoader.getMeshes()[i];
+		load.standardMat.diffuseMap = MAP_CHASSIS_DIFFUSE;
 		load.standardMat.reflectivity = 0;
 		load.standardMat.diffuseLevel = 0;
 		load.standardMat.selfIllumLevel = 1;

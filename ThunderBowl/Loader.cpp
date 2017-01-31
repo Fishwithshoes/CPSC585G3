@@ -1,5 +1,9 @@
 #include "Loader.h"
 
+vector<Mesh>& Loader::getMeshes() {
+	return meshes;
+}
+
 
 void Loader::loadModel(string path)
 {
@@ -22,7 +26,8 @@ void Loader::processNode(aiNode* node, const aiScene* scene)
 	for (GLuint i = 0; i < node->mNumMeshes; i++)
 	{
 		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-		meshes.push_back(processMesh(mesh, scene));
+		getMeshes().push_back(processMesh(mesh, scene));
+
 	}
 	// Then do the same for each of its children
 	for (GLuint i = 0; i < node->mNumChildren; i++)
@@ -37,21 +42,30 @@ Mesh Loader::processMesh(aiMesh* mesh, const aiScene* scene)
 
 	for (GLuint i = 0; i < mesh->mNumVertices; i++)
 	{
-		loadedMesh.positions[i].x = mesh->mVertices[i].x;
-		loadedMesh.positions[i].y = mesh->mVertices[i].y;
-		loadedMesh.positions[i].z = mesh->mVertices[i].z;
+		glm::vec3 posVec;
+		posVec.x = mesh->mVertices[i].x;
+		posVec.y = mesh->mVertices[i].y;
+		posVec.z = mesh->mVertices[i].z;
+		loadedMesh.positions.push_back(posVec);
 
-		loadedMesh.normals[i].x = mesh->mNormals[i].x;
-		loadedMesh.normals[i].y = mesh->mNormals[i].y;
-		loadedMesh.normals[i].z = mesh->mNormals[i].z;
+		glm::vec3 norVec;
+		norVec.x = mesh->mNormals[i].x;
+		norVec.y = mesh->mNormals[i].y;
+		norVec.z = mesh->mNormals[i].z;
+		loadedMesh.normals.push_back(norVec);
 
+		glm::vec2 texVec;
 		if (mesh->mTextureCoords[0]) // Does the mesh contain texture coordinates?
 		{
-			loadedMesh.texcoords[i].x = mesh->mTextureCoords[0][i].x;
-			loadedMesh.texcoords[i].y = mesh->mTextureCoords[0][i].y;
+			texVec.x = mesh->mTextureCoords[0][i].x;
+			texVec.y = mesh->mTextureCoords[0][i].y;
+			loadedMesh.texcoords.push_back(texVec);
 		}
-		else
-			loadedMesh.texcoords[i] = glm::vec2(0.0f, 0.0f);
+		else {
+			texVec = glm::vec2(0.0f, 0.0f);
+			loadedMesh.texcoords.push_back(texVec);
+		}
+			
 	}
 	for (GLuint i = 0; i < mesh->mNumFaces; i++)
 	{
@@ -59,6 +73,8 @@ Mesh Loader::processMesh(aiMesh* mesh, const aiScene* scene)
 		for (GLuint j = 0; j < face.mNumIndices; j++)
 			loadedMesh.indices.push_back(face.mIndices[j]);
 	}
+
+	loadedMesh.elementCount = mesh->mNumVertices;
 
 	return  loadedMesh;
 }
