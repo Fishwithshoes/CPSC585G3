@@ -65,7 +65,7 @@ Mesh Loader::processMesh(aiMesh* mesh, const aiScene* scene)
 			texVec = glm::vec2(0.0f, 0.0f);
 			loadedMesh.texcoords.push_back(texVec);
 		}
-			
+
 	}
 	for (GLuint i = 0; i < mesh->mNumFaces; i++)
 	{
@@ -78,6 +78,5 @@ Mesh Loader::processMesh(aiMesh* mesh, const aiScene* scene)
 
 	return  loadedMesh;
 }
-
 
 
