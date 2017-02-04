@@ -25,3 +25,12 @@ ipch/
 *.exe
 *.out
 *.app
+
+.tlog
+.log
+.pdb
+.ilk
+.db
+.suo
+.idb
+.lastbuildstate
