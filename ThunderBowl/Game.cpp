@@ -1,5 +1,6 @@
 #include "Game.h"
 #include "GeoGenerator.h"
+#include "Loader.h"
 
 #include <SDL.h>
 
@@ -28,6 +29,20 @@ void Game::BuildWorld()
 	worldObjectList.reserve(1000);
 	particleObjectList.reserve(100);
 	overlayObjectList.reserve(50);
+
+	//Attempt to load .obj file
+	Loader gameLoader = Loader();	//check constructor
+	gameLoader.loadModel("U:/CPSC585/CPSC585G3/middleware/assimp-3.1.1-win-binaries/assimp-3.1.1-win-binaries/test/models/OBJ/spider.obj");
+	for (int i = 0; i < gameLoader.getMeshes().size(); i++) {
+		GameObject load = GameObject();
+		load.mesh = gameLoader.getMeshes()[i];
+		load.transform.Scale(vec3(-0.9,-0.9,-0.9));
+		load.standardMat.diffuseMap = MAP_SPIDER;
+		//load.standardMat.reflectivity = 0;
+		//load.standardMat.diffuseLevel = 0;
+		//load.standardMat.selfIllumLevel = 1;
+		Game::CreateWorldObject(load);
+	}
 
 	//Add initial World GameObjects
 	GameObject temp = GameObject();
@@ -60,7 +75,7 @@ void Game::BuildWorld()
 	temp.standardMat.tileUV = vec2(12,12);
 	Game::CreateWorldObject(temp);
 	
-	temp = GameObject();
+	/*temp = GameObject();
 	temp.mesh = GeoGenerator::MakeCylinder(1, 2, 32);
 	temp.transform.Translate(vec3(3, 2, 0));
 	Game::CreateWorldObject(temp);
@@ -70,7 +85,7 @@ void Game::BuildWorld()
 	temp.mesh = GeoGenerator::MakeCircle(1, 64, 0.25);
 	temp.transform.Translate(vec3(0, 0.75, 0));
 	temp.particleOverlayMat.mainTexture = MAP_JERRY;
-	Game::CreateOverlayObject(temp);
+	Game::CreateOverlayObject(temp);*/
 
 	//SDL EAMPLE FOR AUDIO CLASS
 	//Initialization

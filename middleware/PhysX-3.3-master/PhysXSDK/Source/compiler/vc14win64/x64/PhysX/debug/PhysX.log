@@ -1,0 +1,3 @@
+﻿  NpWindowsDelayLoadHook.cpp
+..\..\PhysX\src\windows\NpWindowsDelayLoadHook.cpp(62): error C2373: '__pfnDliNotifyHook2': redefinition; different type modifiers
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\delayimp.h(134): note: see declaration of '__pfnDliNotifyHook2'

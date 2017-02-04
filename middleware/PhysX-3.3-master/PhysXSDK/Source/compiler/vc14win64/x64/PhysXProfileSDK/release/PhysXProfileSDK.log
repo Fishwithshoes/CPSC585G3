@@ -1,0 +1,3 @@
+﻿  PxProfileEventImpl.cpp
+LINK : warning LNK4044: unrecognized option '/INCREMENTAL:NO'; ignored
+  PhysXProfileSDK.vcxproj -> C:\PhysX-3.3-master\PhysX-3.3-master\PhysXSDK\Source\compiler\vc14win64\./../../../Lib/vc14win64\PhysXProfileSDK.lib
