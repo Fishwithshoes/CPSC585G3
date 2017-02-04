@@ -36,10 +36,10 @@ void Game::BuildWorld()
 	for (int i = 0; i < gameLoader.getMeshes().size(); i++) {
 		GameObject load = GameObject();
 		load.mesh = gameLoader.getMeshes()[i];
-		load.standardMat.diffuseMap = MAP_CHASSIS_DIFFUSE;
-		load.standardMat.reflectivity = 0;
-		load.standardMat.diffuseLevel = 0;
-		load.standardMat.selfIllumLevel = 1;
+		//load.standardMat.diffuseMap = MAP_CHASSIS_DIFFUSE;
+		//load.standardMat.reflectivity = 0;
+		//load.standardMat.diffuseLevel = 0;
+		//load.standardMat.selfIllumLevel = 1;
 		Game::CreateWorldObject(load);
 	}
 
