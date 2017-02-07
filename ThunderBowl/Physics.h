@@ -8,8 +8,8 @@ class Physics
 public:
 	//Physics();
 	//~Physics();
-	void initializePhysX();
-	void createTestBox(physx::PxTransform& t, physx::PxReal sideLength);
+	static void initializePhysX();
+	static void createTestBox(physx::PxReal sideLength);
 private:
 
 };

@@ -2,6 +2,7 @@
 #include "GeoGenerator.h"
 #include "Loader.h"
 #include "Renderer.h"
+#include "Physics.h"
 
 #include <SDL.h>
 
@@ -27,16 +28,17 @@ vector<GameObject> Game::overlayObjectList = {};
 
 void Game::BuildWorld()
 {
+	Physics::initializePhysX();
 	//Pre-allocate space in vectors
 	worldObjectList.reserve(1000);
 	particleObjectList.reserve(100);
 	overlayObjectList.reserve(50);
 
 	//Attempt to load .obj file
-	Loader gameLoader = Loader();	//check constructor
+	/*Loader gameLoader = Loader();	//check constructor
 	gameLoader.loadModel("U:/CPSC585/CPSC585G3/middleware/assimp-3.1.1-win-binaries/assimp-3.1.1-win-binaries/test/models/OBJ/spider.obj");
+	GameObject load = GameObject();
 	for (int i = 0; i < gameLoader.getMeshes().size(); i++) {
-		GameObject load = GameObject();
 		load.mesh = gameLoader.getMeshes()[i];
 		load.transform.Scale(vec3(-0.9, -0.9, -0.9));
 		load.standardMat.diffuseMap = MAP_CHECKER;
@@ -44,7 +46,7 @@ void Game::BuildWorld()
 		//load.standardMat.diffuseLevel = 0;
 		//load.standardMat.selfIllumLevel = 1;
 		Game::CreateWorldObject(load);
-	}
+	}*/
 
 	//Skybox
 	skybox.mesh = GeoGenerator::MakeSphere(1000, 4, 8, true);
@@ -62,7 +64,7 @@ void Game::BuildWorld()
 
 	//ifndef Car Cacophony
 	temp = GameObject();
-	temp.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
+	temp.mesh = GeoGenerator::MakeBox(2, 2, 10, false);
 	temp.transform.Translate(vec3(-3, 2, 0));
 	ptr = Game::CreateWorldObject(temp);
 	ptr->AddComponent(new VehicleComponent());

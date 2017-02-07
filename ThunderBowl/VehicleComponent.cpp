@@ -1,5 +1,7 @@
 #include "VehicleComponent.h"
 #include "Game.h"
+#include "Physics.h"
+#include "Renderer.h"
 
 void VehicleComponent::Start()
 {
@@ -11,6 +13,13 @@ void VehicleComponent::Start()
 void VehicleComponent::Update()
 {
 	Initialize();
+
+	Camera* followCam = Renderer::GetCamera(0);
+	followCam->transform.position = transform.position;
+	followCam->transform.position.y += 3.0;
+	followCam->transform.position.z -= 5.0;
+	followCam->transform.rotation = transform.rotation;
+	followCam->transform.position.z += 5.0;
 	
 	if (Input::GetButton(ButtonCode::KEY_UP))
 	{
