@@ -4,9 +4,9 @@ class ButtonCode
 {
 public:
 	//Mouse Button codes
-	static const int LeftMouse = 1;
-	static const int RightMouse = 2;
-	static const int MiddleMouse = 4;
+	static const int LEFT_MOUSE = 1;
+	static const int RIGHT_MOUSE = 2;
+	static const int MIDDLE_MOUSE = 4;
 	static const int Xtra1 = 5;
 	static const int Xtra2 = 6;
 
@@ -62,11 +62,17 @@ public:
 	static const int NUM_PAD_8 = 104;
 	static const int NUM_PAD_9 = 105;
 
-	//Arrow Keys
+	//Arrow Keys - Standard
 	static const int ARROW_LEFT = 37;
 	static const int ARROW_UP = 38;
 	static const int ARROW_RIGHT = 39;
 	static const int ARROW_DOWN = 40;
+
+	//Arrow Keys - Because GLFW's a Playah!
+	static const int KEY_LEFT = 263;
+	static const int KEY_UP = 265;
+	static const int KEY_RIGHT = 262;
+	static const int KEY_DOWN = 264;
 
 	//Misc
 	static const int SPACE = 32;
@@ -76,6 +82,30 @@ public:
 	static const int LEFT_SHIFT = 160;
 	static const int RIGHT_CTRL = 163;
 	static const int RIGHT_SHIFT = 161;
+
+	//Xbox Buttons
+	static const int XBOX_A = 300;
+	static const int XBOX_B = 301;
+	static const int XBOX_X = 302;
+	static const int XBOX_Y = 303;
+	static const int XBOX_LEFT_BUMPER = 304;
+	static const int XBOX_RIGHT_BUMPER = 305;
+	static const int XBOX_BACK = 306;
+	static const int XBOX_START = 307;
+	static const int XBOX_LEFT_STICK = 308;
+	static const int XBOX_RIGHT_STICK = 309;
+	static const int XBOX_DPAD_UP = 310;
+	static const int XBOX_DPAD_RIGHT = 311;
+	static const int XBOX_DPAD_DOWN = 312;
+	static const int XBOX_DPAD_LEFT = 313;
+
+	//Xbox Axes
+	static const int XBOX_JOY_LEFT_HORIZONTAL = 320;
+	static const int XBOX_JOY_LEFT_VERTICAL = 321;
+	static const int XBOX_JOY_RIGHT_HORIZONTAL = 322;
+	static const int XBOX_JOY_RIGHT_VERTICAL = 323;
+	static const int XBOX_LEFT_TRIGGER = 324;
+	static const int XBOX_RIGHT_TRIGGER = 325;
 
 protected:
 

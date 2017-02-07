@@ -26,6 +26,20 @@ struct Geometry
 	GLuint	indexBuffer;
 };
 
+enum Tags
+{
+	TAGS_DEFAULT,
+	TAGS_HUMAN_PLAYER,
+	TAGS_AI_PLAYER,
+	TAGS_PROJECTILE,
+	TAGS_DECORATION,
+	TAGS_MENU,
+	TAGS_HUD,
+	TAGS_PARTICLE_SYSTEM,
+	//Add more as needed...
+	max
+};
+
 //Rendering and Materials
 struct Shader
 {
@@ -80,12 +94,11 @@ enum Maps
 	//Defaults, debugs
 	MAP_WHITE,//Default texture color
 	MAP_NORMAL,//Default normal color
-	MAP_MIRROR,//Default reflection
+	MAP_MIRROR,//Testing
 	MAP_ENV,//Env cubemap
 	MAP_CHECKER,//Testing
 	//Overlay
 	MAP_JERRY,
-	MAP_SPIDER,
 	//Particles
 	//World
 	MAP_CHASSIS_DIFFUSE,
@@ -96,7 +109,7 @@ enum Maps
 	MAP_WHEEL_NORMAL,
 	MAP_TRACK_DIFFUSE,
 	MAP_TRACK_ROUGHNESS,
-	MAP_TRACK_NORMAL
+	MAP_TRACK_NORMAL,
 };
 
 //Audio WAV info

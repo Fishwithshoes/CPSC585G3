@@ -52,11 +52,11 @@ void Camera::Update()
 		}
 		if (Input::GetButton(ButtonCode::W))
 		{
-			transform.Translate(-(float)0.5 * forward);
+			transform.Translate((float)0.5 * forward);
 		}
 		if (Input::GetButton(ButtonCode::S))
 		{
-			transform.Translate((float)0.3 * forward);
+			transform.Translate(-(float)0.3 * forward);
 		}
 		if (Input::GetButton(ButtonCode::E))
 		{
@@ -66,7 +66,7 @@ void Camera::Update()
 		{
 			transform.Translate(-(float)0.5 * up);
 		}
-		if (Input::GetButton(ButtonCode::RightMouse))
+		if (Input::GetButton(ButtonCode::RIGHT_MOUSE))
 		{
 			//Orient camera (pitch and yaw)
 			transform.Rotate((float)(Input::GetMouseDelta().y * 0.001) * Transform::Right());
@@ -152,5 +152,5 @@ void Camera::SetNearClipPlane(float nearClip)
 
 void Camera::SetFarClipPlane(float farClip)
 {
-	nearClipPlane = Mathf::Clamp(farClip, 1000, 12000);
+	farClipPlane = Mathf::Clamp(farClip, 100, 12000);
 }

@@ -37,10 +37,10 @@ void Physics::initializePhysX() {
 
 	/*if (gPhysics->getPvdConnectionManager())
 	{
-		gPhysics->getVisualDebugger()->setVisualizeConstraints(true);
-		gPhysics->getVisualDebugger()->setVisualDebuggerFlag(PxVisualDebuggerFlag::eTRANSMIT_CONTACTS, true);
-		gPhysics->getVisualDebugger()->setVisualDebuggerFlag(PxVisualDebuggerFlag::eTRANSMIT_SCENEQUERIES, true);
-		gVDebugConnection = PxVisualDebuggerExt::createConnection(gPhysics->getPvdConnectionManager(), PVD_HOST, 5425, 10);
+	gPhysics->getVisualDebugger()->setVisualizeConstraints(true);
+	gPhysics->getVisualDebugger()->setVisualDebuggerFlag(PxVisualDebuggerFlag::eTRANSMIT_CONTACTS, true);
+	gPhysics->getVisualDebugger()->setVisualDebuggerFlag(PxVisualDebuggerFlag::eTRANSMIT_SCENEQUERIES, true);
+	gVDebugConnection = PxVisualDebuggerExt::createConnection(gPhysics->getPvdConnectionManager(), PVD_HOST, 5425, 10);
 	}*/
 
 	PxSceneDesc sceneDesc(gPhysics->getTolerancesScale());

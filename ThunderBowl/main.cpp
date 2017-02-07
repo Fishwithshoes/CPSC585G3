@@ -18,7 +18,7 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 		{
 			if (action == GLFW_PRESS)
 				Input::SetInputValue(key, 1);
-			else
+			if (action == GLFW_RELEASE)
 				Input::SetInputValue(key, 0);
 		}
 	}
@@ -69,15 +69,17 @@ int main(int argc, char *argv[])
 	// attempt to create a window with an OpenGL 4.5 core profile context
 	GLFWwindow *window = 0;
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	GLFWmonitor *monitor = glfwGetPrimaryMonitor();
 	window = glfwCreateWindow(Camera::WIDTH, Camera::HEIGHT, "ThunderBowl", 0, 0);
 	if (!window) {
 		cout << "Program failed to create GLFW window, TERMINATING" << endl;
 		glfwTerminate();
 		return -1;
 	}
+	glfwSwapInterval(1);
 	Input::SetWindowSize(Camera::WIDTH, Camera::HEIGHT);
 
 	//Set input callbacks and make the window active
@@ -98,6 +100,8 @@ int main(int argc, char *argv[])
 
 	RendererUtility::QueryGLVersion();
 
+	Time::Init();
+
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 
@@ -111,8 +115,12 @@ int main(int argc, char *argv[])
 	//MAIN LOOP
 	while (!glfwWindowShouldClose(window))
 	{
+		//Start the frame
+		Time::StartFrame();
+
 		//Collect Input
 		glfwPollEvents();
+		cout << Input::GetXBoxAxis(2, ButtonCode::XBOX_RIGHT_TRIGGER) << endl;
 
 		//Game Logic
 		for (int i = Game::worldObjectList.size()-1; i >= 0; i--)
@@ -136,6 +144,9 @@ int main(int argc, char *argv[])
 		//Update input for next frame's old
 		Input::UpdateInput();
 		Input::SetOldMousePosition();
+
+		//End the frame
+		Time::EndFrame();
 	}
 
 	// clean up allocated resources before exit
