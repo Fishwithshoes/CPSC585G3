@@ -2,13 +2,6 @@
 
 using namespace physx;
 
-<<<<<<< HEAD
-static PxDefaultErrorCallback gDefaultErrorCallback;
-static PxDefaultAllocator gDefaultAllocatorCallback;
-
-//mFoundation = PxCreateFoundation(PX_PHYSICS_VERSION, gDefaultAllocatorCallback, gDefaultErrorCallback);
-Physics::Physics()
-=======
 PxDefaultErrorCallback gDefaultErrorCallback;
 PxDefaultAllocator gDefaultAllocator;
 PxFoundation* gFoundation = NULL;
@@ -19,21 +12,12 @@ PxMaterial* gMaterial = NULL;
 //PxVisualDebuggerConnection* gVDebugConnection = NULL;
 
 /*Physics::Physics()
->>>>>>> conlan
 {
 }
 
 
 Physics::~Physics()
 {
-<<<<<<< HEAD
-}
-
-void Physics::initializePhysX() {
-
-
-}
-=======
 }*/
 void Physics::createTestBox(PxTransform& t, PxReal sideLength)
 {
@@ -74,6 +58,3 @@ void Physics::initializePhysX() {
 	createTestBox(PxTransform(PxVec3(0, 0, 0)), 2.0f);
 
 }
-
-
->>>>>>> conlan

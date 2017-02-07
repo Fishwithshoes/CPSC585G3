@@ -1,8 +1,4 @@
 ﻿  NpWindowsDelayLoadHook.cpp
-<<<<<<< HEAD
-..\..\PhysX\src\windows\NpWindowsDelayLoadHook.cpp(62): error C2373: '__pfnDliNotifyHook2': redefinition; different type modifiers
-  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\delayimp.h(134): note: see declaration of '__pfnDliNotifyHook2'
-=======
   NpParticleFluid.cpp
   NpParticleSystem.cpp
   ScbActor.cpp
@@ -46,4 +42,3 @@
 MSVCRTD.lib(initializers.obj) : warning LNK4098: defaultlib 'libcmt.lib' conflicts with use of other libs; use /NODEFAULTLIB:library
   PhysX.vcxproj -> C:\PhysX-3.3-master\PhysXSDK\Source\compiler\vc14win64\./../../../bin/vc14win64\PhysX3DEBUG_x64.dll
   PhysX.vcxproj -> C:\PhysX-3.3-master\PhysXSDK\bin\vc14win64\\PhysX3DEBUG_x64.pdb (Full PDB)
->>>>>>> conlan

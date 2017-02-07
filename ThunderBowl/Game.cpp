@@ -1,10 +1,7 @@
 #include "Game.h"
 #include "GeoGenerator.h"
 #include "Loader.h"
-<<<<<<< HEAD
-=======
 #include "Renderer.h"
->>>>>>> conlan
 
 #include <SDL.h>
 
@@ -41,26 +38,18 @@ void Game::BuildWorld()
 	for (int i = 0; i < gameLoader.getMeshes().size(); i++) {
 		GameObject load = GameObject();
 		load.mesh = gameLoader.getMeshes()[i];
-<<<<<<< HEAD
-		load.transform.Scale(vec3(-0.9,-0.9,-0.9));
-		load.standardMat.diffuseMap = MAP_SPIDER;
-=======
 		load.transform.Scale(vec3(-0.9, -0.9, -0.9));
 		load.standardMat.diffuseMap = MAP_CHECKER;
->>>>>>> conlan
 		//load.standardMat.reflectivity = 0;
 		//load.standardMat.diffuseLevel = 0;
 		//load.standardMat.selfIllumLevel = 1;
 		Game::CreateWorldObject(load);
 	}
 
-<<<<<<< HEAD
-=======
 	//Skybox
 	skybox.mesh = GeoGenerator::MakeSphere(1000, 4, 8, true);
 	skybox.particleOverlayMat.mainTexture = MAP_ENV;
 
->>>>>>> conlan
 	//Add initial World GameObjects
 	GameObject temp = GameObject();//Change props then create with this
 	GameObject *ptr;//Assign the result of creation to this and then add components
@@ -127,14 +116,12 @@ void Game::BuildWorld()
 	temp.standardMat.normalMap = MAP_CHASSIS_NORMAL;
 	temp.standardMat.tileUV = vec2(12,12);
 	Game::CreateWorldObject(temp);
-<<<<<<< HEAD
+
 	
 	/*temp = GameObject();
 	temp.mesh = GeoGenerator::MakeCylinder(1, 2, 32);
 	temp.transform.Translate(vec3(3, 2, 0));
 	Game::CreateWorldObject(temp);
-=======
->>>>>>> conlan
 
 	//Add initial Overlay GameObjects
 	temp = GameObject();

@@ -5,8 +5,4 @@
   SqPruningPool.cpp
   SqSceneQueryManager.cpp
   SqUtilities.cpp
-<<<<<<< HEAD
-  SceneQuery.vcxproj -> C:\PhysX-3.3-master\PhysX-3.3-master\PhysXSDK\Source\compiler\vc14win64\./../../../Lib/vc14win64\SceneQueryDEBUG.lib
-=======
   SceneQuery.vcxproj -> C:\PhysX-3.3-master\PhysXSDK\Source\compiler\vc14win64\./../../../Lib/vc14win64\SceneQueryDEBUG.lib
->>>>>>> conlan

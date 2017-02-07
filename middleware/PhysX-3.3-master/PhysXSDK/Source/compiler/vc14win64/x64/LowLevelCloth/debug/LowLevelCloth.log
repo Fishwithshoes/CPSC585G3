@@ -16,8 +16,4 @@
   SwSolver.cpp
   SwSolverKernel.cpp
   TripletScheduler.cpp
-<<<<<<< HEAD
-  LowLevelCloth.vcxproj -> C:\PhysX-3.3-master\PhysX-3.3-master\PhysXSDK\Source\compiler\vc14win64\./../../../Lib/vc14win64\LowLevelClothDEBUG.lib
-=======
   LowLevelCloth.vcxproj -> C:\PhysX-3.3-master\PhysXSDK\Source\compiler\vc14win64\./../../../Lib/vc14win64\LowLevelClothDEBUG.lib
->>>>>>> conlan

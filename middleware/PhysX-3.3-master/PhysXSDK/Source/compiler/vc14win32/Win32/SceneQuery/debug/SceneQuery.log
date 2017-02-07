@@ -1,8 +1,0 @@
-﻿  SqAABBPruner.cpp
-  SqAABBTree.cpp
-  SqAABBTreeUpdateMap.cpp
-  SqBucketPruner.cpp
-  SqPruningPool.cpp
-  SqSceneQueryManager.cpp
-  SqUtilities.cpp
-  SceneQuery.vcxproj -> C:\PhysX-3.3-master\PhysX-3.3-master\PhysXSDK\Source\compiler\vc14win32\./../../../Lib/vc14win32\SceneQueryDEBUG.lib
