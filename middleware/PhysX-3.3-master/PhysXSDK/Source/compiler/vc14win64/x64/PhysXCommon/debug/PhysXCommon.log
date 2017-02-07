@@ -133,5 +133,10 @@
   GuSweepSharedTests.cpp
   GuSweepTests.cpp
      Creating library ./../../../Lib/vc14win64/PhysX3CommonDEBUG_x64.lib and object ./../../../Lib/vc14win64/PhysX3CommonDEBUG_x64.exp
+<<<<<<< HEAD
   PhysXCommon.vcxproj -> C:\PhysX-3.3-master\PhysX-3.3-master\PhysXSDK\Source\compiler\vc14win64\./../../../bin/vc14win64\PhysX3CommonDEBUG_x64.dll
   PhysXCommon.vcxproj -> C:\PhysX-3.3-master\PhysX-3.3-master\PhysXSDK\bin\vc14win64\\PhysX3CommonDEBUG_x64.pdb (Full PDB)
+=======
+  PhysXCommon.vcxproj -> C:\PhysX-3.3-master\PhysXSDK\Source\compiler\vc14win64\./../../../bin/vc14win64\PhysX3CommonDEBUG_x64.dll
+  PhysXCommon.vcxproj -> C:\PhysX-3.3-master\PhysXSDK\bin\vc14win64\\PhysX3CommonDEBUG_x64.pdb (Full PDB)
+>>>>>>> conlan

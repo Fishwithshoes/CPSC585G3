@@ -1,4 +1,8 @@
 ﻿  CudaWrapperWindows.cpp
   CudaWrapper.cpp
   TaskManager.cpp
+<<<<<<< HEAD
   PxTask.vcxproj -> C:\PhysX-3.3-master\PhysX-3.3-master\PhysXSDK\Source\compiler\vc14win64\./../../../Lib/vc14win64\PxTaskDEBUG.lib
+=======
+  PxTask.vcxproj -> C:\PhysX-3.3-master\PhysXSDK\Source\compiler\vc14win64\./../../../Lib/vc14win64\PxTaskDEBUG.lib
+>>>>>>> conlan

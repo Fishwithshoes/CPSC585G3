@@ -1,4 +1,4 @@
-#include <Time.h>
+#include "Time.h"
 
 LARGE_INTEGER Time::clockFrequency;
 LARGE_INTEGER Time::startTime;
@@ -9,6 +9,7 @@ int Time::elapsedFrames = 0;
 double Time::deltaTime = 0.0;
 double Time::timeSinceLoad = 0.0;
 double Time::timeSinceGameStart = 0.0;
+double Time::timeScale = 1.0;
 
 void Time::Init()
 {
@@ -47,9 +48,9 @@ int Time::getElapsedFrames()
 	return elapsedFrames;
 }
 
-double Time::getDeltaTime()
+float Time::getDeltaTime()
 {
-	return deltaTime;
+	return (float)deltaTime;
 }
 
 double Time::getTimeSinceLoad()

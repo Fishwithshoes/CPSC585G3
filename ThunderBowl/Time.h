@@ -1,6 +1,5 @@
 #pragma once
-#include <stdafx.h>
-#include <Windows.h>
+#include "Windows.h"
 
 class Time
 {
@@ -13,12 +12,13 @@ public:
 	static LARGE_INTEGER getDeltaTicks();
 
 	static int getElapsedFrames();
-	static double getDeltaTime();
+	static float getDeltaTime();
 	static double getTimeSinceLoad();
 	static double getTimeSinceGameStart();
 	static double getFrameRate();
 
 	static void resetGameTime();
+	static double timeScale;
 
 private:
 	static LARGE_INTEGER clockFrequency;

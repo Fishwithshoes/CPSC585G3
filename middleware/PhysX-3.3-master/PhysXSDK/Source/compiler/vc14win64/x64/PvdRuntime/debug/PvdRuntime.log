@@ -1,4 +1,8 @@
 ﻿  PvdSceneVisualDebugger.cpp
   PvdVisualDebugger.cpp
   PxMetaDataPvdBinding.cpp
+<<<<<<< HEAD
   PvdRuntime.vcxproj -> C:\PhysX-3.3-master\PhysX-3.3-master\PhysXSDK\Source\compiler\vc14win64\./../../../Lib/vc14win64\PvdRuntimeDEBUG.lib
+=======
+  PvdRuntime.vcxproj -> C:\PhysX-3.3-master\PhysXSDK\Source\compiler\vc14win64\./../../../Lib/vc14win64\PvdRuntimeDEBUG.lib
+>>>>>>> conlan

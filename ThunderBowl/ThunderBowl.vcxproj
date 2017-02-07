@@ -23,6 +23,7 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CommonIncludes.h" />
     <ClInclude Include="Component.h" />
+    <ClInclude Include="FloatComponent.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GeoGenerator.h" />
@@ -33,8 +34,12 @@
     <ClInclude Include="Random.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="RendererUtility.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="RotateComponent.h" />
     <ClInclude Include="Structs.h" />
+    <ClInclude Include="Time.h" />
     <ClInclude Include="Transform.h" />
+    <ClInclude Include="VehicleComponent.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="main" />
@@ -43,6 +48,7 @@
     <ClCompile Include="ButtonCode.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Component.cpp" />
+    <ClCompile Include="FloatComponent.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GeoGenerator.cpp" />
@@ -54,7 +60,13 @@
     <ClCompile Include="Random.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="RendererUtility.cpp" />
+    <ClCompile Include="RotateComponent.cpp" />
+    <ClCompile Include="Time.cpp" />
     <ClCompile Include="Transform.cpp" />
+    <ClCompile Include="VehicleComponent.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="ThunderBowl.rc" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{3858FE05-309A-4899-96A3-08B47065A913}</ProjectGuid>
@@ -120,6 +132,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <IntDir>$(Platform)\$(Configuration)\tmp\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -144,13 +157,22 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+<<<<<<< HEAD
       <AdditionalIncludeDirectories>$(ProjectDir)..\middleware\PhysX-3.3-master\PhysXSDK\Include;$(ProjectDir)..\middleware\SDL\2.0.5\include;$(ProjectDir)..\middleware;$(ProjectDir)..\middleware\glfw-3.2.1x64\include;$(ProjectDir)..\middleware\assimp-3.1.1-win-binaries\assimp-3.1.1-win-binaries\include;$(ProjectDir)..\middleware\glew-2.0.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+=======
+      <AdditionalIncludeDirectories>$(ProjectDir)..\middleware\PhysX-3.3-master\PhysXSDK\Include\pxtask;$(ProjectDir)..\middleware\PhysX-3.3-master\PhysXSDK\Include\extensions;$(ProjectDir)..\middleware\PhysX-3.3-master\PhysXSDK\Include\foundation;$(ProjectDir)..\middleware\PhysX-3.3-master\PhysXSDK\Include\common;$(ProjectDir)..\middleware\PhysX-3.3-master\PhysXSDK\Include;$(ProjectDir)..\middleware\assimp-3.1.1-win-binaries\assimp-3.1.1-win-binaries\include;$(ProjectDir)..\middleware\SDL\2.0.5\include;$(ProjectDir)..\middleware;$(ProjectDir)..\middleware\glfw-3.2.1x64\include;$(ProjectDir)..\middleware\glew-2.0.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+>>>>>>> conlan
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+<<<<<<< HEAD
       <AdditionalDependencies>PhysX3_x64.lib;assimp.lib;sdl2.lib;opengl32.lib;glfw3.lib;glew32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(ProjectDir)..\middleware\SDL\2.0.5\lib\x64;$(ProjectDir)..\middleware\glfw-3.2.1x64\lib-vc2015;$(ProjectDir)..\middleware\glew-2.0.0\lib\Release\x64;$(ProjectDir)..\middleware\assimp-3.1.1-win-binaries\assimp-3.1.1-win-binaries\lib64;$(ProjectDir)\middleware\PhysX-3.3-master\PhysXSDK\Lib\vc14win64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+=======
+      <AdditionalDependencies>PhysX3ExtensionsDEBUG.lib;PhysX3DEBUG_x64.lib;PhysX3VehicleDEBUG.lib;PhysX3CommonDEBUG_x64.lib;PhysXProfileSDKDEBUG.lib;PhysX3CookingDEBUG_x64.lib;assimp.lib;sdl2.lib;opengl32.lib;glfw3.lib;glew32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\middleware\PhysX-3.3-master\PhysXSDK\Lib\vc14win64;$(ProjectDir)..\middleware\assimp-3.1.1-win-binaries\assimp-3.1.1-win-binaries\lib64;$(ProjectDir)..\middleware\SDL\2.0.5\lib\x64;$(ProjectDir)..\middleware\glfw-3.2.1x64\lib-vc2015;$(ProjectDir)..\middleware\glew-2.0.0\lib\Release\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+>>>>>>> conlan
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -186,8 +208,13 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+<<<<<<< HEAD
       <AdditionalLibraryDirectories>$(ProjectDir)..\middleware\SDL\2.0.5\lib\x64;$(ProjectDir)..\middleware\glfw-3.2.1x64\lib-vc2015;$(ProjectDir)..\middleware\glew-2.0.0\lib\Release\x64;$(ProjectDir)..\middleware\assimp-3.1.1-win-binaries\assimp-3.1.1-win-binaries\lib64;$(ProjectDir)\middleware\PhysX-3.3-master\PhysXSDK\Lib\vc14win64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>PhysX3_x64.lib;assimp.lib;sdl2.lib;opengl32.lib;glfw3.lib;glew32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+=======
+      <AdditionalLibraryDirectories>$(ProjectDir)..\middleware\SDL\2.0.5\lib\x64;$(ProjectDir)..\middleware\glfw-3.2.1x64\lib-vc2015;$(ProjectDir)..\middleware\glew-2.0.0\lib\Release\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>sdl2.lib;opengl32.lib;glfw3.lib;glew32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+>>>>>>> conlan
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

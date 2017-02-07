@@ -2,6 +2,7 @@
 #include "CommonIncludes.h"
 #include "GameObject.h"
 
+//3D - For World and Particle GameObjects
 Mesh GeoGenerator::MakeSphere(float radius, int lattitudes, int longitudes, bool insideOut)
 {
 	Mesh result;
@@ -11,7 +12,7 @@ Mesh GeoGenerator::MakeSphere(float radius, int lattitudes, int longitudes, bool
 	vec3 pole = vec3(0, 1, 0);
 	result.positions.push_back(pole*radius);
 	result.normals.push_back(pole*flip);
-	result.texcoords.push_back(vec2(0.5, 1.0));
+	result.texcoords.push_back(vec2(0.5, 1.0)*flip);
 
 	//Prep
 	float pitchTheta = Mathf::PI / (lattitudes+1);
@@ -36,7 +37,7 @@ Mesh GeoGenerator::MakeSphere(float radius, int lattitudes, int longitudes, bool
 		{
 			result.positions.push_back(pole*radius);
 			result.normals.push_back(pole*flip);
-			result.texcoords.push_back(vec2(0 + (float)j / longitudes, 1.0 - (float)i / lattitudes));
+			result.texcoords.push_back(vec2(0 + (float)j / longitudes, 1.0 - (float)i / lattitudes)*flip);
 
 			pole = yaw * pole;
 
@@ -44,7 +45,7 @@ Mesh GeoGenerator::MakeSphere(float radius, int lattitudes, int longitudes, bool
 			{
 				result.positions.push_back(pole*radius);
 				result.normals.push_back(pole*flip);
-				result.texcoords.push_back(vec2(1.0, 1.0 - (float)i / lattitudes));
+				result.texcoords.push_back(vec2(1.0, 1.0 - (float)i / lattitudes)*flip);
 			}
 		}
 	}
@@ -52,7 +53,7 @@ Mesh GeoGenerator::MakeSphere(float radius, int lattitudes, int longitudes, bool
 	//Bottom point
 	result.positions.push_back(vec3(0,-radius,0));
 	result.normals.push_back(vec3(0,-1,0)*flip);
-	result.texcoords.push_back(vec2(0.5, 0.0));
+	result.texcoords.push_back(vec2(0.5, 0.0)*flip);
 
 	//GENERATE INDICIES
 	if (insideOut)
@@ -173,7 +174,7 @@ Mesh GeoGenerator::MakePlane(float width, float height, int widthSegs, int heigh
 	return result;
 }
 
-Mesh GeoGenerator::MakeCylinder(float radius, float height, int segments)
+Mesh GeoGenerator::MakeCylinder(float startRadius, float endRadius, float height, int segments)
 {
 	Mesh result;
 
@@ -201,7 +202,7 @@ Mesh GeoGenerator::MakeCylinder(float radius, float height, int segments)
 	//Top
 	for (int i = 0; i < segments * 2 + 2; i++)
 	{
-		result.positions.push_back(pole);
+		result.positions.push_back(vec3(pole.x*endRadius, pole.y, pole.z*endRadius));
 		result.colors.push_back(pole);
 		if (i < segments + 1)
 		{
@@ -220,7 +221,7 @@ Mesh GeoGenerator::MakeCylinder(float radius, float height, int segments)
 	//Bottom
 	for (int i = 0; i < segments*2+2; i++)
 	{
-		result.positions.push_back(pole);
+		result.positions.push_back(vec3(pole.x*startRadius, pole.y, pole.z*startRadius));
 		result.colors.push_back(pole);
 		if (i < segments + 1)
 		{
@@ -267,6 +268,7 @@ Mesh GeoGenerator::MakeBox(float width, float height, float depth, bool insideOu
 	Mesh result;
 
 	//Prep
+	float flip = insideOut ? -1 : 1;
 	vec3 _0 = vec3(-width*0.5, height*0.5, depth*0.5);
 	vec3 _1 = vec3(-width*0.5, height*0.5, -depth*0.5);
 	vec3 _2 = vec3(width*0.5, height*0.5, -depth*0.5);
@@ -320,42 +322,58 @@ Mesh GeoGenerator::MakeBox(float width, float height, float depth, bool insideOu
 	
 	//Normals
 	for (int i = 0; i < 4; i++)
-		result.normals.push_back(vec3(0, 1, 0));
+		result.normals.push_back(vec3(0, 1, 0)*flip);
 	for (int i = 0; i < 4; i++)
-		result.normals.push_back(vec3(0, 0, -1));
+		result.normals.push_back(vec3(0, 0, -1)*flip);
 	for (int i = 0; i < 4; i++)
-		result.normals.push_back(vec3(1, 0, 0));
+		result.normals.push_back(vec3(1, 0, 0)*flip);
 	for (int i = 0; i < 4; i++)
-		result.normals.push_back(vec3(0, 0, 1));
+		result.normals.push_back(vec3(0, 0, 1)*flip);
 	for (int i = 0; i < 4; i++)
-		result.normals.push_back(vec3(-1, 0, 0));
+		result.normals.push_back(vec3(-1, 0, 0)*flip);
 	for (int i = 0; i < 4; i++)
-		result.normals.push_back(vec3(0, -1, 0));
+		result.normals.push_back(vec3(0, -1, 0)*flip);
 	
 	//Texcoords
 	for (int i = 0; i < 6; i++)
 	{
-		result.texcoords.push_back(vec2(0, 1));
-		result.texcoords.push_back(vec2(0, 0));
-		result.texcoords.push_back(vec2(1, 0));
-		result.texcoords.push_back(vec2(1, 1));
+		result.texcoords.push_back(vec2(0, 1)*flip);
+		result.texcoords.push_back(vec2(0, 0)*flip);
+		result.texcoords.push_back(vec2(1, 0)*flip);
+		result.texcoords.push_back(vec2(1, 1)*flip);
 	}
 	
 	//Indices
-	for (int i = 0; i < 6; i++)
+	if (insideOut)
 	{
-		result.indices.push_back((GLuint)(0+i*4));
-		result.indices.push_back((GLuint)(1+i*4));
-		result.indices.push_back((GLuint)(2+i*4));
-		result.indices.push_back((GLuint)(0+i*4));
-		result.indices.push_back((GLuint)(2+i*4));
-		result.indices.push_back((GLuint)(3+i*4));
+		for (int i = 0; i < 6; i++)
+		{
+			result.indices.push_back((GLuint)(0 + i * 4));
+			result.indices.push_back((GLuint)(2 + i * 4));
+			result.indices.push_back((GLuint)(1 + i * 4));			
+			result.indices.push_back((GLuint)(0 + i * 4));
+			result.indices.push_back((GLuint)(3 + i * 4));
+			result.indices.push_back((GLuint)(2 + i * 4));			
+		}
+	}
+	else
+	{
+		for (int i = 0; i < 6; i++)
+		{
+			result.indices.push_back((GLuint)(0 + i * 4));
+			result.indices.push_back((GLuint)(1 + i * 4));
+			result.indices.push_back((GLuint)(2 + i * 4));
+			result.indices.push_back((GLuint)(0 + i * 4));
+			result.indices.push_back((GLuint)(2 + i * 4));
+			result.indices.push_back((GLuint)(3 + i * 4));
+		}
 	}
 	
 	result.elementCount = result.positions.size();
 	return result;
 }
 
+//2D - For Overlay GameObjects
 Mesh GeoGenerator::MakeCircle(float sweep, int segments, float radius)
 {
 	Mesh result;

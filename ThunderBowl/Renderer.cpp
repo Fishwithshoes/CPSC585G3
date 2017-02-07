@@ -7,7 +7,7 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb/stb_image_write.h"
 
-vector<Camera> Renderer::cameraList = {};
+vector<Camera*> Renderer::cameraList = {};
 vector<string> Renderer::textureFilePaths = 
 {
 	"Textures/white_DIFF.jpg",
@@ -34,16 +34,19 @@ vector<string> Renderer::cubemapTextureFilePaths =
 void Renderer::Init(Renderer *renderer)
 {
 	renderer->camera = Camera(Transform(vec3(0, 5, -10), vec3(0), vec3(1)));
-	cameraList.push_back(renderer->camera);
+	cameraList.push_back(&renderer->camera);
 
 	// call functions to load and compile shader programs
-	if (!RendererUtility::InitializeShader(&renderer->standardShader, "standardVert.glsl", "standardFrag.glsl"))
+	if (!RendererUtility::InitializeShader(&renderer->standardShader, "Shaders/standardVert.glsl", "Shaders/standardFrag.glsl"))
 		cout << "Program could not initialize Standard Shader!" << endl;
 
-	if (!RendererUtility::InitializeShader(&renderer->particleShader, "particleVert.glsl", "particleFrag.glsl"))
+	if (!RendererUtility::InitializeShader(&renderer->particleShader, "Shaders/particleVert.glsl", "Shaders/particleFrag.glsl"))
 		cout << "Program could not initialize Particle Shader!" << endl;
 
-	if (!RendererUtility::InitializeShader(&renderer->overlayShader, "overlayVert.glsl", "overlayFrag.glsl"))
+	if (!RendererUtility::InitializeShader(&renderer->overlayShader, "Shaders/overlayVert.glsl", "Shaders/overlayFrag.glsl"))
+		cout << "Program could not initialize Overlay (Front End / HUD) Shader!" << endl;
+
+	if (!RendererUtility::InitializeShader(&renderer->skyboxShader, "Shaders/skyboxVert.glsl", "Shaders/skyboxFrag.glsl"))
 		cout << "Program could not initialize Overlay (Front End / HUD) Shader!" << endl;
 
 	// call function to create geometry buffers
@@ -86,6 +89,10 @@ void Renderer::GetShaderUniforms(Renderer *renderer)
 	renderer->colorOverlay_uniform = glGetUniformLocation(renderer->overlayShader.program, "color");
 	renderer->mainTextureOverlay_uniform = glGetUniformLocation(renderer->overlayShader.program, "mainTexture");
 
+	//Skybox Shader - Primary	
+	renderer->colorSkybox_uniform = glGetUniformLocation(renderer->skyboxShader.program, "color");
+	renderer->envMapSkybox_uniform = glGetUniformLocation(renderer->skyboxShader.program, "envMap");
+	
 	//WORLD SHADER INFO
 	//Standard Shader - World
 	renderer->modelToWorldStandard_uniform = glGetUniformLocation(renderer->standardShader.program, "ModelToWorld");
@@ -106,6 +113,12 @@ void Renderer::GetShaderUniforms(Renderer *renderer)
 	//Overlay Shader - World Info
 	renderer->aspectRatio_uniform = glGetUniformLocation(renderer->overlayShader.program, "AspectRatio");
 	renderer->modelToWorldOverlay_uniform = glGetUniformLocation(renderer->overlayShader.program, "ModelToWorld");
+
+	//Skybox Shader - World Info
+	renderer->modelToWorldSkybox_uniform = glGetUniformLocation(renderer->skyboxShader.program, "ModelToWorld");
+	renderer->worldToViewSkybox_uniform = glGetUniformLocation(renderer->skyboxShader.program, "WorldToView");
+	renderer->viewToProjectionSkybox_uniform = glGetUniformLocation(renderer->skyboxShader.program, "ViewToProjection");
+	renderer->normalToWorldSkybox_uniform = glGetUniformLocation(renderer->skyboxShader.program, "NormalToWorld");
 }
 
 void Renderer::LoadTextures(Renderer *renderer)
@@ -120,7 +133,7 @@ void Renderer::LoadTextures(Renderer *renderer)
 
 	for (int i = 0; i < textureFilePaths.size(); i++)
 	{
-		if (i != 3)//Bind images to GL_TEXTURE_2D
+		if (i != MAP_ENV)//Bind images to GL_TEXTURE_2D
 		{
 			stbi_set_flip_vertically_on_load(true);
 			//Load image with stb and bind into GPU texture table, freeing stb memory afterwards
@@ -144,7 +157,7 @@ void Renderer::LoadTextures(Renderer *renderer)
 			glGenTextures(1, &texID);
 			glActiveTexture(GL_TEXTURE0 + i);
 			glBindTexture(GL_TEXTURE_CUBE_MAP, texID);
-			cout << texID << endl;
+
 
 			for (int j = 0; j < 6; j++)
 			{
@@ -178,7 +191,57 @@ void Renderer::RenderScene(Renderer *renderer)
 	glClear(GL_DEPTH_BUFFER_BIT);
 	glBindVertexArray(renderer->geometry.vertexArray);
 
-	//DRAW WORLD OBJECTS FIRST
+	//DRAW SKYBOX FIRST AS BACKGROUND
+	glUseProgram(renderer->skyboxShader.program);
+	{
+		//Get skybox
+		Mesh mesh = Game::skybox.mesh;
+		ParticleOverlayMaterial skyBoxMat = Game::skybox.particleOverlayMat;
+		renderer->geometry.elementCount = mesh.indices.size();
+
+		//Program uniforms
+		glUniform4fv(renderer->colorSkybox_uniform, 1, value_ptr(skyBoxMat.color));
+		glUniform1i(renderer->envMapSkybox_uniform, skyBoxMat.mainTexture);
+
+		glUniformMatrix4fv(renderer->modelToWorldSkybox_uniform, 1, GL_TRUE, value_ptr(Game::skybox.GetModelToWorld()));
+		glUniformMatrix4fv(renderer->normalToWorldSkybox_uniform, 1, GL_TRUE, value_ptr(Game::skybox.GetNormalToWorld()));
+		//Here the camera position for world to view can be stripped out so the skybox appears at an 'infinite distance'
+		glUniformMatrix4fv(renderer->worldToViewSkybox_uniform, 1, GL_TRUE, value_ptr(renderer->camera.GetWorldToViewMatrix()));
+		glUniformMatrix4fv(renderer->viewToProjectionSkybox_uniform, 1, GL_TRUE, value_ptr(renderer->camera.GetViewToProjectionMatrix()));
+		
+		//BUFFER GEOMETRY AND INDICIES
+		//Buffer Positions
+		glBindBuffer(GL_ARRAY_BUFFER, renderer->geometry.positionBuffer);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 3 * mesh.positions.size(), mesh.positions.data(), GL_STATIC_DRAW);
+		glVertexAttribPointer(Renderer::POSITION_INDEX, 3, GL_FLOAT, GL_FALSE, 0, 0);
+		glEnableVertexAttribArray(Renderer::POSITION_INDEX);
+
+		//Buffer Colors
+		glBindBuffer(GL_ARRAY_BUFFER, renderer->geometry.colorBuffer);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 3 * mesh.colors.size(), mesh.colors.data(), GL_STATIC_DRAW);
+		glVertexAttribPointer(Renderer::COLOR_INDEX, 3, GL_FLOAT, GL_FALSE, 0, 0);
+		glEnableVertexAttribArray(Renderer::COLOR_INDEX);
+
+		//Buffer Normals
+		glBindBuffer(GL_ARRAY_BUFFER, renderer->geometry.normalBuffer);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 3 * mesh.normals.size(), mesh.normals.data(), GL_STATIC_DRAW);
+		glVertexAttribPointer(Renderer::NORMAL_INDEX, 3, GL_FLOAT, GL_FALSE, 0, 0);
+		glEnableVertexAttribArray(Renderer::NORMAL_INDEX);
+
+		//Buffer Texcoords
+		glBindBuffer(GL_ARRAY_BUFFER, renderer->geometry.texCoordBuffer);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 2 * mesh.texcoords.size(), mesh.texcoords.data(), GL_STATIC_DRAW);
+		glVertexAttribPointer(Renderer::TEXCOORD_INDEX, 2, GL_FLOAT, GL_FALSE, 0, 0);
+		glEnableVertexAttribArray(Renderer::TEXCOORD_INDEX);
+
+		//Buffer Indicies
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * mesh.indices.size(), mesh.indices.data(), GL_STATIC_DRAW);
+
+		//Draw Those Elements
+		glDrawElements(GL_TRIANGLES, renderer->geometry.elementCount, GL_UNSIGNED_INT, nullptr);
+	}
+
+	//DRAW WORLD OBJECTS NEXT
 	glUseProgram(renderer->standardShader.program);
 
 	//Program Uniforms for WorldToView and ViewToProjection
@@ -360,7 +423,7 @@ void Renderer::RenderScene(Renderer *renderer)
 	RendererUtility::CheckGLErrors();
 }
 
-Camera Renderer::GetCamera(int index)
+Camera* Renderer::GetCamera(int index)
 {
 	return cameraList[index];
 }

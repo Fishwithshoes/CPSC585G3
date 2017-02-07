@@ -10,6 +10,7 @@ public:
 	Shader		standardShader;
 	Shader		particleShader;
 	Shader		overlayShader;
+	Shader		skyboxShader;
 	Camera		camera;
 
 	//SHADER UNIFORMS - PRIMARY
@@ -45,6 +46,10 @@ public:
 	GLint colorOverlay_uniform;
 	GLint mainTextureOverlay_uniform;
 
+	//Skybox Shader
+	GLint colorSkybox_uniform;
+	GLint envMapSkybox_uniform;
+
 	//SHADER UNIFORMS - WORLD INFO
 	//Standard Shader
 	GLint modelToWorldStandard_uniform;
@@ -66,12 +71,18 @@ public:
 	GLint modelToWorldOverlay_uniform;
 	GLint aspectRatio_uniform;
 
+	//Skybox Shader
+	GLint modelToWorldSkybox_uniform;
+	GLint worldToViewSkybox_uniform;
+	GLint viewToProjectionSkybox_uniform;
+	GLint normalToWorldSkybox_uniform;
+
 	//RENDERER PRIMARY OPS
 	static void Init(Renderer *renderer);//Setup geometry, shaders and camera(s)
 	static void GetShaderUniforms(Renderer *renderer);//For programming shader props
 	static void LoadTextures(Renderer *renderer);//Read textures from disk, bind into GPU
 	static void RenderScene(Renderer *renderer);//Draw those tris
-	static Camera GetCamera(int index);//Grabs the specified camera for editing props
+	static Camera* GetCamera(int index);//Grabs the specified camera for editing props
 
 	//RENDERER INPUT LAYOUTS
 	static const GLuint POSITION_INDEX = 0;
@@ -82,7 +93,7 @@ public:
 protected:
 
 private:
-	static vector<Camera> cameraList;
+	static vector<Camera*> cameraList;
 	static vector<string> textureFilePaths;
 	static vector<string> cubemapTextureFilePaths;
 };

@@ -75,7 +75,11 @@
       <PreprocessorDefinitions>PX_BUILD_NUMBER=20127726;WIN32;WIN64;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_WINSOCK_DEPRECATED_NO_WARNINGS;PX_PHYSX_STATIC_LIB;_DEBUG;PX_DEBUG;PX_CHECKED;PX_SUPPORT_VISUAL_DEBUGGER;PX_NVTX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling>false</ExceptionHandling>
       <WarningLevel>Level4</WarningLevel>
+<<<<<<< HEAD
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+=======
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+>>>>>>> conlan
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>

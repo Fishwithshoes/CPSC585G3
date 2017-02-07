@@ -28,9 +28,15 @@ public:
 	void Scale(vec3 scalar);
 	void LookAt(vec3 point);
 
+	//THESE GET LOCAL ONLY!! Use the ones in GameObject to apply parent transforms too.
+	mat4 GetModelToWorld();
+	mat4 GetNormalToWorld();
+
 	vec3 GetUp();
 	vec3 GetRight();
 	vec3 GetForward();
+
+	Transform *parent = nullptr;
 
 protected:
 	

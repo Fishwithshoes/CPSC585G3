@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ﻿  Transform.cpp
   RendererUtility.cpp
 c:\cpsc585g3\thunderbowl\rendererutility.cpp(139): warning C4267: 'argument': conversion from 'size_t' to 'GLsizei', possible loss of data
@@ -68,3 +69,20 @@ c:\cpsc585g3\thunderbowl\camera.cpp(20): warning C4305: '=': truncation from 'do
 c:\cpsc585g3\thunderbowl\camera.cpp(150): warning C4305: 'argument': truncation from 'double' to 'float'
   ButtonCode.cpp
   Generating Code...
+=======
+﻿  Game.cpp
+c:\jameslatest\thunderbowl\floatcomponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\jameslatest\thunderbowl\vehiclecomponent.h(13): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\jameslatest\thunderbowl\game.cpp(71): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\jameslatest\thunderbowl\game.cpp(78): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\jameslatest\thunderbowl\game.cpp(85): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\jameslatest\thunderbowl\game.cpp(92): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\jameslatest\thunderbowl\game.cpp(103): warning C4305: '=': truncation from 'double' to 'float'
+c:\jameslatest\thunderbowl\game.cpp(104): warning C4305: '=': truncation from 'double' to 'float'
+c:\jameslatest\thunderbowl\game.cpp(122): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\jameslatest\thunderbowl\game.cpp(165): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+c:\jameslatest\thunderbowl\game.cpp(172): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+c:\jameslatest\thunderbowl\game.cpp(179): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+  ThunderBowl.vcxproj -> C:\JamesLatest\ThunderBowl\x64\Debug\ThunderBowl.exe
+  ThunderBowl.vcxproj -> C:\JamesLatest\ThunderBowl\x64\Debug\ThunderBowl.pdb (Full PDB)
+>>>>>>> conlan

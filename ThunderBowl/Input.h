@@ -1,5 +1,6 @@
 #pragma once
 #include "CommonIncludes.h"
+#include "ButtonCode.h"
 
 class Input
 {
@@ -11,7 +12,12 @@ public:
 	static bool GetButton(int buttonCode);
 	static bool GetButtonUp(int buttonCode);
 
-	static const int NumInputsToSet = 164;
+	static bool GetXBoxButton(int player, int buttonCode);
+	static bool GetXBoxButtonUp(int player, int buttonCode);
+	static float GetXBoxAxis(int player, int axisCode);
+	static const float deadZone;
+
+	static const int NumInputsToSet = 300;
 	static void SetInputValue(int index, int value);
 	static void UpdateInput();
 
