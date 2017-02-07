@@ -16,6 +16,7 @@ vector<string> Renderer::textureFilePaths =
 	"GL_TEXTURE_CUBEMAP",
 	"Textures/checker_DIFF.jpg",
 	"Textures/jerry_DIFF.jpg",
+	"Textures/SpiderTex.jpg",
 	"Textures/floor_DIFF.jpg",
 	"Textures/floor_DIFF.jpg",
 	"Textures/floor_NORM.jpg"

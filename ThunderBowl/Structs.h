@@ -85,6 +85,7 @@ enum Maps
 	MAP_CHECKER,//Testing
 	//Overlay
 	MAP_JERRY,
+	MAP_SPIDER,
 	//Particles
 	//World
 	MAP_CHASSIS_DIFFUSE,
@@ -95,7 +96,7 @@ enum Maps
 	MAP_WHEEL_NORMAL,
 	MAP_TRACK_DIFFUSE,
 	MAP_TRACK_ROUGHNESS,
-	MAP_TRACK_NORMAL,
+	MAP_TRACK_NORMAL
 };
 
 //Audio WAV info

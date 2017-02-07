@@ -1,0 +1,7 @@
+﻿  Physics.cpp
+LINK : warning LNK4075: ignoring '/INCREMENTAL' due to '/LTCG' specification
+PhysX3Extensions.lib(ExtDefaultErrorCallback.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MD_DynamicRelease' in Camera.obj
+LINK : warning LNK4098: defaultlib 'LIBCMT' conflicts with use of other libs; use /NODEFAULTLIB:library
+PhysX3Extensions.lib(ExtDefaultErrorCallback.obj) : error LNK2001: unresolved external symbol "__declspec(dllimport) void __cdecl physx::shdfnd::printString(char const *)" (__imp_?printString@shdfnd@physx@@YAXPEBD@Z)
+PhysX3Extensions.lib(ExtDefaultErrorCallback.obj) : error LNK2001: unresolved external symbol "__declspec(dllimport) public: static void __cdecl physx::shdfnd::ThreadImpl::sleep(unsigned int)" (__imp_?sleep@ThreadImpl@shdfnd@physx@@SAXI@Z)
+C:\CPSC585G3\ThunderBowl\x64\Release\ThunderBowl.exe : fatal error LNK1120: 2 unresolved externals

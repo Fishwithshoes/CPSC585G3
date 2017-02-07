@@ -172,7 +172,7 @@ void main()
 	// FragmentColor = vec4(Color, 1);
 	// FragmentColor = vec4(Normal, 1);
 	// FragmentColor = vec4(normalDir, 1);
-    // FragmentColor = vec4(TexCoord.x, 0, 0, 1);
+    	// FragmentColor = vec4(TexCoord.x, 0, 0, 1);
 	// FragmentColor = vec4(0, TexCoord.y, 0, 1);
 	// FragmentColor = vec4(TexCoord.x, TexCoord.y, 0, 1);
 	// FragmentColor = vec4(_reflectivity);

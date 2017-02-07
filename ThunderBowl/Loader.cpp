@@ -43,28 +43,24 @@ Mesh Loader::processMesh(aiMesh* mesh, const aiScene* scene)
 	for (GLuint i = 0; i < mesh->mNumVertices; i++)
 	{
 		glm::vec3 posVec;
-		posVec.x = mesh->mVertices[i].x;
+		posVec.x = mesh->mVertices[i].z;
 		posVec.y = mesh->mVertices[i].y;
-		posVec.z = mesh->mVertices[i].z;
+		posVec.z = mesh->mVertices[i].x;
 		loadedMesh.positions.push_back(posVec);
 
 		glm::vec3 norVec;
-		norVec.x = mesh->mNormals[i].x;
+		norVec.x = mesh->mNormals[i].z;
 		norVec.y = mesh->mNormals[i].y;
-		norVec.z = mesh->mNormals[i].z;
+		norVec.z = mesh->mNormals[i].x;
 		loadedMesh.normals.push_back(norVec);
 
-		glm::vec2 texVec;
+		glm::vec2 texVec = glm::vec2(0.0f, 0.0f);
 		if (mesh->mTextureCoords[0]) // Does the mesh contain texture coordinates?
 		{
 			texVec.x = mesh->mTextureCoords[0][i].x;
 			texVec.y = mesh->mTextureCoords[0][i].y;
-			loadedMesh.texcoords.push_back(texVec);
 		}
-		else {
-			texVec = glm::vec2(0.0f, 0.0f);
-			loadedMesh.texcoords.push_back(texVec);
-		}
+		loadedMesh.texcoords.push_back(texVec);
 
 	}
 	for (GLuint i = 0; i < mesh->mNumFaces; i++)

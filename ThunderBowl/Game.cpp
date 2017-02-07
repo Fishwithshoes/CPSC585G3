@@ -36,10 +36,11 @@ void Game::BuildWorld()
 	for (int i = 0; i < gameLoader.getMeshes().size(); i++) {
 		GameObject load = GameObject();
 		load.mesh = gameLoader.getMeshes()[i];
-		load.standardMat.diffuseMap = MAP_CHASSIS_DIFFUSE;
-		load.standardMat.reflectivity = 0;
-		load.standardMat.diffuseLevel = 0;
-		load.standardMat.selfIllumLevel = 1;
+		load.transform.Scale(vec3(-0.9,-0.9,-0.9));
+		load.standardMat.diffuseMap = MAP_SPIDER;
+		//load.standardMat.reflectivity = 0;
+		//load.standardMat.diffuseLevel = 0;
+		//load.standardMat.selfIllumLevel = 1;
 		Game::CreateWorldObject(load);
 	}
 
@@ -52,7 +53,7 @@ void Game::BuildWorld()
 	temp.standardMat.selfIllumLevel = 1;
 	Game::CreateWorldObject(temp);
 
-	/*temp = GameObject();
+	temp = GameObject();
 	temp.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
 	temp.transform.Translate(vec3(-3, 3, 0));
 	temp.standardMat.reflectivity = 0;
@@ -64,7 +65,7 @@ void Game::BuildWorld()
 	temp.standardMat.tileUV = vec2(4,4);
 	temp.standardMat.diffuseMap = MAP_CHECKER;
 	temp.standardMat.normalMap = MAP_CHASSIS_NORMAL;
-	Game::CreateWorldObject(temp);*/
+	Game::CreateWorldObject(temp);
 	
 	temp = GameObject();
 	temp.mesh = GeoGenerator::MakePlane(100, 100, 4, 4);
