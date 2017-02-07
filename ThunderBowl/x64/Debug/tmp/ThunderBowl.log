@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ﻿  main.cpp
 c:\cpsc585g3\thunderbowl\main.cpp(118): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
 c:\cpsc585g3\thunderbowl\main.cpp(122): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
@@ -26,3 +27,12 @@ c:\cpsc585g3\thunderbowl\game.cpp(140): warning C4267: '=': conversion from 'siz
 LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library
   ThunderBowl.vcxproj -> C:\CPSC585G3\ThunderBowl\x64\Debug\ThunderBowl.exe
   ThunderBowl.vcxproj -> C:\CPSC585G3\ThunderBowl\x64\Debug\ThunderBowl.pdb (Full PDB)
+=======
+﻿  Game.cpp
+u:\cpsc585\cpsc585g3\thunderbowl\game.cpp(20): warning C4018: '>': signed/unsigned mismatch
+u:\cpsc585\cpsc585g3\thunderbowl\game.cpp(127): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+u:\cpsc585\cpsc585g3\thunderbowl\game.cpp(133): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+u:\cpsc585\cpsc585g3\thunderbowl\game.cpp(139): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+  ThunderBowl.vcxproj -> U:\CPSC585\CPSC585G3\ThunderBowl\x64\Debug\ThunderBowl.exe
+  ThunderBowl.vcxproj -> U:\CPSC585\CPSC585G3\ThunderBowl\x64\Debug\ThunderBowl.pdb (Full PDB)
+>>>>>>> 08cab63aedaad8ca7e7838dbab141789f4414c54
