@@ -47,6 +47,8 @@ void Physics::initializePhysX() {
 	gScene->addActor(*groundPlane);
 }
 
+void Physics::computeRotation(PxQuat angle) {}
+
 PxRigidDynamic* Physics::createTestBox(PxReal sideLength)
 {
 	PxShape* shape = gPhysics->createShape(PxBoxGeometry(sideLength, sideLength, sideLength), *gMaterial);

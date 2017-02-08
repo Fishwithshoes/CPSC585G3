@@ -121,7 +121,7 @@ int main(int argc, char *argv[])
 
 		//Collect Input
 		glfwPollEvents();
-		cout << Input::GetXBoxAxis(2, ButtonCode::XBOX_RIGHT_TRIGGER) << endl;
+		//cout << Input::GetXBoxAxis(2, ButtonCode::XBOX_RIGHT_TRIGGER) << endl;
 
 		//Game Logic
 		for (int i = Game::worldObjectList.size()-1; i >= 0; i--)

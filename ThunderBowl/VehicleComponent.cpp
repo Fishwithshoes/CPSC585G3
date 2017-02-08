@@ -39,11 +39,11 @@ void VehicleComponent::Update()
 
 	if (Input::GetButton(ButtonCode::KEY_LEFT))
 	{
-		physx::PxRigidBodyExt::addLocalForceAtLocalPos(*physVehicle, physx::PxVec3(-50.0, 0.0, 0.0), physx::PxVec3(0.0, 0.0, 0.0));
+		//physx::PxRigidBodyExt::addLocalForceAtLocalPos(*physVehicle, physx::PxVec3(-50.0, 0.0, 0.0), physx::PxVec3(0.0, 0.0, 0.0));
 	}
 	else if(Input::GetButton(ButtonCode::KEY_RIGHT))
 	{
-		physx::PxRigidBodyExt::addLocalForceAtLocalPos(*physVehicle, physx::PxVec3(50.0, 0.0, 0.0), physx::PxVec3(0.0, 0.0, 0.0));
+		//physx::PxRigidBodyExt::addLocalForceAtLocalPos(*physVehicle, physx::PxVec3(50.0, 0.0, 0.0), physx::PxVec3(0.0, 0.0, 0.0));
 	}
 
 	if (Input::GetButton(ButtonCode::MIDDLE_MOUSE))
@@ -52,8 +52,26 @@ void VehicleComponent::Update()
 	transform.position.x = physVehicle->getGlobalPose().p.x;
 	transform.position.y = physVehicle->getGlobalPose().p.y;
 	transform.position.z = physVehicle->getGlobalPose().p.z;
+
+	physx::PxReal qW = physVehicle->getGlobalPose().q.w;
+	physx::PxReal qX = physVehicle->getGlobalPose().q.x;
+	physx::PxReal qY = physVehicle->getGlobalPose().q.y;
+	physx::PxReal qZ = physVehicle->getGlobalPose().q.z;
+
+	/*double qTotal = qX + qY + qZ;
+	double pX = qX / qTotal;
+	double pY = qY / qTotal;
+	double pZ = qZ / qTotal;
+	double fX = pX*qW;
+	double fY = pY*qW;
+	double fZ = pY*qW;
+
+	glm::vec3 eulerRotation = glm::vec3(fX, fY, fZ);
+	if (Time::getElapsedFrames() % 100 == 0) {
+		cout << "calculated sum: " << fX + fY + fZ << " w: " << qW << endl;
+	}
 	//transform.Translate((float)currentSpeed * Time::getDeltaTime() * transform.GetForward());
-	//transform.Rotate((float)currentTurn * Time::getDeltaTime() * 0.1f*currentSpeed * transform.GetUp());
+	//transform.Rotate((float)currentTurn * Time::getDeltaTime() * 0.1f*currentSpeed * transform.GetUp());*/
 	
 	Finalize();
 }
