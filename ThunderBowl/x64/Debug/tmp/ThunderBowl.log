@@ -1,20 +1,5 @@
 ﻿  VehicleComponent.cpp
-c:\cpsc585g3\thunderbowl\vehiclecomponent.h(13): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\cpsc585g3\thunderbowl\vehiclecomponent.h(15): warning C4305: 'initializing': truncation from 'double' to 'float'
 c:\cpsc585g3\thunderbowl\floatcomponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
-  Physics.cpp
-  Game.cpp
-c:\cpsc585g3\thunderbowl\floatcomponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\vehiclecomponent.h(13): warning C4305: 'initializing': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\game.cpp(73): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\game.cpp(80): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\game.cpp(87): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\game.cpp(94): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\game.cpp(105): warning C4305: '=': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\game.cpp(106): warning C4305: '=': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\game.cpp(173): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-c:\cpsc585g3\thunderbowl\game.cpp(180): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-c:\cpsc585g3\thunderbowl\game.cpp(187): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-  Generating Code...
-LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library
   ThunderBowl.vcxproj -> C:\CPSC585G3\ThunderBowl\x64\Debug\ThunderBowl.exe
   ThunderBowl.vcxproj -> C:\CPSC585G3\ThunderBowl\x64\Debug\ThunderBowl.pdb (Full PDB)

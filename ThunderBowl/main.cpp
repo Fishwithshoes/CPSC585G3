@@ -5,6 +5,7 @@
 #include "RendererUtility.h"
 #include "Camera.h"
 #include "Input.h"
+#include "Physics.h"
 
 // HANDLES KEYBOARD, MOUSE EVENTS AS PART OF glfwPolEvents() IN MAIN LOOP
 void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -135,6 +136,9 @@ int main(int argc, char *argv[])
 		{
 			Game::overlayObjectList[i].Update();
 		}
+
+		Physics::stepPhysics();	//SUBJECT TO CHANGE
+
 		renderer.camera.Update();
 
 		//Render Scene
@@ -150,6 +154,7 @@ int main(int argc, char *argv[])
 	}
 
 	// clean up allocated resources before exit
+	Physics::cleanupPhysics();
 	glfwDestroyWindow(window);
 	glfwTerminate();
 

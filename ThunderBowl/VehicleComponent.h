@@ -1,5 +1,7 @@
 #pragma once
 #include "Component.h"
+#include <PxPhysicsAPI.h>
+
 class VehicleComponent :public Component
 {
 public:
@@ -11,6 +13,8 @@ public:
 
 	float topTurn = 1.0;
 	float turnAccel = 0.01;
+
+	physx::PxRigidDynamic* physVehicle;
 
 protected:
 

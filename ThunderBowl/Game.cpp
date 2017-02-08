@@ -56,20 +56,20 @@ void Game::BuildWorld()
 	GameObject temp = GameObject();//Change props then create with this
 	GameObject *ptr;//Assign the result of creation to this and then add components
 
-	temp = GameObject();
+	/*temp = GameObject();
 	temp.mesh = GeoGenerator::MakeCylinder(1, 1, 2, 32);
 	temp.transform.Translate(vec3(3, 2, 0));
 	temp.name = "Flumpty";
-	ptr = Game::CreateWorldObject(temp);
+	ptr = Game::CreateWorldObject(temp);*/
 
 	//ifndef Car Cacophony
 	temp = GameObject();
-	temp.mesh = GeoGenerator::MakeBox(2, 2, 10, false);
+	temp.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
 	temp.transform.Translate(vec3(-3, 2, 0));
 	ptr = Game::CreateWorldObject(temp);
 	ptr->AddComponent(new VehicleComponent());
 	
-	temp = GameObject();
+	/*temp = GameObject();
 	temp.mesh = GeoGenerator::MakeCylinder(1.0, 1.0, 0.4, 16);
 	temp.transform.position += vec3(-1, -0.8, 1);
 	temp.transform.Rotate(vec3(0,0,Mathf::PI/2));
@@ -109,7 +109,7 @@ void Game::BuildWorld()
 	//temp.standardMat.normalMap = MAP_CHASSIS_NORMAL;
 	//temp.standardMat.roughnessMap = MAP_CHECKER;
 	ptr = Game::CreateWorldObject(temp);
-	ptr->AddComponent(new FloatComponent());
+	ptr->AddComponent(new FloatComponent());*/
 	
 	temp = GameObject();
 	temp.mesh = GeoGenerator::MakePlane(100, 100, 4, 4);
