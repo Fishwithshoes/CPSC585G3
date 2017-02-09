@@ -16,6 +16,8 @@ public:
 	vec3 position = vec3(0, 0, 0);
 	vec3 rotation = vec3(0, 0, 0);
 	vec3 scale = vec3(1, 1, 1);
+	mat4 rotationMatrix = mat4(1.0);
+	RenderTypes rendertype = RenderTypes::RT_EULER;
 
 	Transform();
 	Transform(vec3 positionIn, vec3 rotationIn, vec3 scaleIn);
@@ -31,6 +33,8 @@ public:
 	//THESE GET LOCAL ONLY!! Use the ones in GameObject to apply parent transforms too.
 	mat4 GetModelToWorld();
 	mat4 GetNormalToWorld();
+	mat4 GetQuatModelToWorld();
+	mat4 GetQuatNormalToWorld();
 
 	vec3 GetUp();
 	vec3 GetRight();

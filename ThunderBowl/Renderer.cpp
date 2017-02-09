@@ -283,11 +283,28 @@ void Renderer::RenderScene(Renderer *renderer)
 		glUniform2fv(renderer->tileUV_uniform, 1, value_ptr(standardMat.tileUV));
 		glUniform2fv(renderer->offsetUV_uniform, 1, value_ptr(standardMat.offsetUV));
 
+		mat4 modelToWorld;
+		mat4 normalToWorld;
+
 		//PROGRAM UNIFORMS - WORLD INFO
-		mat4 modelToWorld = gameObject.GetModelToWorld();
-		mat4 normalToWorld = gameObject.GetNormalToWorld();
+		switch (gameObject.transform.rendertype)
+		{
+		case RenderTypes::RT_EULER:
+			modelToWorld = gameObject.GetModelToWorld();
+			normalToWorld = gameObject.GetNormalToWorld();	
+			break;
+		case RenderTypes::RT_QUAT:
+			modelToWorld = gameObject.transform.GetQuatModelToWorld();
+			normalToWorld = gameObject.transform.GetQuatNormalToWorld();
+			break;
+		default:
+			cout << "RenderTypes error" << endl;
+			break;
+		}
+
 		glUniformMatrix4fv(renderer->modelToWorldStandard_uniform, 1, GL_TRUE, value_ptr(modelToWorld));
 		glUniformMatrix4fv(renderer->normalToWorldStandard_uniform, 1, GL_TRUE, value_ptr(normalToWorld));
+		
 
 		glUniform3fv(renderer->cameraPosStandard_uniform, 1, value_ptr(renderer->camera.transform.position));
 		glUniform4fv(renderer->lightPosStandard_uniform, 1, value_ptr(vec4(7, 10, -7, 1)));

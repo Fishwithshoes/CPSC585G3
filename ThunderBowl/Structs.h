@@ -26,6 +26,12 @@ struct Geometry
 	GLuint	indexBuffer;
 };
 
+enum RenderTypes
+{
+	RT_EULER,
+	RT_QUAT
+};
+
 enum Tags
 {
 	TAGS_DEFAULT,

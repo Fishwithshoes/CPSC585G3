@@ -1,5 +1,30 @@
-﻿  VehicleComponent.cpp
-c:\cpsc585g3\thunderbowl\vehiclecomponent.h(15): warning C4305: 'initializing': truncation from 'double' to 'float'
+﻿  Transform.cpp
+  Renderer.cpp
 c:\cpsc585g3\thunderbowl\floatcomponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\cpsc585g3\thunderbowl\vehiclecomponent.h(15): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\cpsc585g3\middleware\stb\stb_image.h(219): warning C4068: unknown pragma
+c:\cpsc585g3\middleware\stb\stb_image_write.h(222): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdio.h(205): note: see declaration of 'fopen'
+c:\cpsc585g3\middleware\stb\stb_image_write.h(616): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdio.h(1769): note: see declaration of 'sprintf'
+c:\cpsc585g3\middleware\stb\stb_image_write.h(998): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdio.h(205): note: see declaration of 'fopen'
+c:\cpsc585g3\thunderbowl\renderer.cpp(129): warning C4101: 'loc': unreferenced local variable
+c:\cpsc585g3\thunderbowl\renderer.cpp(200): warning C4267: '=': conversion from 'size_t' to 'GLsizei', possible loss of data
+c:\cpsc585g3\thunderbowl\renderer.cpp(258): warning C4267: '=': conversion from 'size_t' to 'GLsizei', possible loss of data
+c:\cpsc585g3\thunderbowl\renderer.cpp(366): warning C4244: 'argument': conversion from 'GLuint' to 'GLfloat', possible loss of data
+c:\cpsc585g3\thunderbowl\renderer.cpp(389): warning C4267: '=': conversion from 'size_t' to 'GLsizei', possible loss of data
+  Physics.cpp
+  Generating Code...
+  Skipping... (no relevant changes detected)
+  main.cpp
+  VehicleComponent.cpp
+  RotateComponent.cpp
+  GeoGenerator.cpp
+  GameObject.cpp
+  Game.cpp
+  FloatComponent.cpp
+  Component.cpp
+  Camera.cpp
   ThunderBowl.vcxproj -> C:\CPSC585G3\ThunderBowl\x64\Debug\ThunderBowl.exe
   ThunderBowl.vcxproj -> C:\CPSC585G3\ThunderBowl\x64\Debug\ThunderBowl.pdb (Full PDB)

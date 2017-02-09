@@ -146,6 +146,29 @@ mat4 Transform::GetNormalToWorld()
 	return rotationX * rotationY * rotationZ * start;
 }
 
+mat4 Transform::GetQuatModelToWorld()
+{
+
+	mat4 scale(
+		scale.x, 0, 0, 0,
+		0, scale.y, 0, 0,
+		0, 0, scale.z, 0,
+		0, 0, 0, 1);
+
+	mat4 translation(
+		1, 0, 0, position.x,
+		0, 1, 0, position.y,
+		0, 0, 1, position.z,
+		0, 0, 0, 1);
+
+	return scale * rotationMatrix * translation;
+}
+
+mat4 Transform::GetQuatNormalToWorld()
+{
+	return rotationMatrix;
+}
+
 void Transform::LookAt(vec3 point)
 {
 
