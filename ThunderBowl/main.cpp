@@ -6,6 +6,7 @@
 #include "Camera.h"
 #include "Input.h"
 #include "Physics.h"
+#include "Audio.h"
 
 // HANDLES KEYBOARD, MOUSE EVENTS AS PART OF glfwPolEvents() IN MAIN LOOP
 void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -102,6 +103,7 @@ int main(int argc, char *argv[])
 	RendererUtility::QueryGLVersion();
 
 	Time::Init();
+	Audio::Init();
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
@@ -122,6 +124,8 @@ int main(int argc, char *argv[])
 		//Collect Input
 		glfwPollEvents();
 		//cout << Input::GetXBoxAxis(2, ButtonCode::XBOX_RIGHT_TRIGGER) << endl;
+		if (Input::GetButtonDown(ButtonCode::Q))
+			Audio::Play2DSound(Sounds::SFX_Hit, 1.0f, 0.0f);
 
 		//Game Logic
 		for (int i = Game::worldObjectList.size()-1; i >= 0; i--)

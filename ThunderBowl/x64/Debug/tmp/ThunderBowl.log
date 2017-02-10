@@ -1,12 +1,8 @@
-﻿  VehicleComponent.cpp
-c:\cpsc585g3\thunderbowl\vehiclecomponent.h(15): warning C4305: 'initializing': truncation from 'double' to 'float'
+﻿  main.cpp
 c:\cpsc585g3\thunderbowl\floatcomponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\vehiclecomponent.cpp(36): warning C4244: 'argument': conversion from 'double' to 'physx::PxReal', possible loss of data
-  Input.cpp
-c:\cpsc585g3\thunderbowl\input.cpp(6): warning C4305: 'initializing': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\input.cpp(30): warning C4804: '>': unsafe use of type 'bool' in operation
-c:\cpsc585g3\thunderbowl\input.cpp(40): warning C4804: '>': unsafe use of type 'bool' in operation
-c:\cpsc585g3\thunderbowl\input.cpp(157): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-  Generating Code...
+c:\cpsc585g3\thunderbowl\vehiclecomponent.h(15): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\cpsc585g3\thunderbowl\main.cpp(131): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+c:\cpsc585g3\thunderbowl\main.cpp(135): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+c:\cpsc585g3\thunderbowl\main.cpp(139): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
   ThunderBowl.vcxproj -> C:\CPSC585G3\ThunderBowl\x64\Debug\ThunderBowl.exe
   ThunderBowl.vcxproj -> C:\CPSC585G3\ThunderBowl\x64\Debug\ThunderBowl.pdb (Full PDB)

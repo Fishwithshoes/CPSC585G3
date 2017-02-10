@@ -120,6 +120,18 @@ enum Maps
 };
 
 //Audio WAV info
+enum Sounds 
+{
+	SFX_Hit
+
+};
+
+enum Musics
+{
+	MUS_Jerry
+
+};
+
 struct RIFF_Header 
 {
 	char chunkID[4];
