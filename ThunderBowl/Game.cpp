@@ -2,7 +2,6 @@
 #include "GeoGenerator.h"
 #include "Loader.h"
 #include "Renderer.h"
-#include "Physics.h"
 
 #include <SDL.h>
 
@@ -28,7 +27,6 @@ vector<GameObject> Game::overlayObjectList = {};
 
 void Game::BuildWorld()
 {
-	Physics::initializePhysX();
 	//Pre-allocate space in vectors
 	worldObjectList.reserve(1000);
 	particleObjectList.reserve(100);

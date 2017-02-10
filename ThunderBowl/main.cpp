@@ -104,6 +104,7 @@ int main(int argc, char *argv[])
 
 	Time::Init();
 	Audio::Init();
+	Physics::initializePhysX();
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);

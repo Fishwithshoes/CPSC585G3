@@ -41,6 +41,7 @@
     <ClInclude Include="Time.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="VehicleComponent.h" />
+    <ClInclude Include="VehicleRaycast.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="main" />
@@ -66,6 +67,7 @@
     <ClCompile Include="Time.cpp" />
     <ClCompile Include="Transform.cpp" />
     <ClCompile Include="VehicleComponent.cpp" />
+    <ClCompile Include="VehicleRaycast.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ThunderBowl.rc" />
