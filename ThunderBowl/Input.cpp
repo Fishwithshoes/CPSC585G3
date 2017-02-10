@@ -3,7 +3,7 @@
 //Static member initialization
 vector<int> Input::buttonPrevList = vector<int>(300);
 vector<int> Input::buttonCurrentList = vector<int>(300);
-const float Input::deadZone = 0.25;
+const float Input::deadZone = 0.10;
 vec2 Input::newMousePos = vec2(0, 0);
 vec2 Input::oldMousePos = vec2(0,0);
 vec2 Input::windowSize = vec2(0,0);
@@ -100,65 +100,6 @@ bool Input::GetXBoxButton(int player, int buttonCode)
 	return false;
 }
 
-bool Input::GetXBoxButtonUp(int player, int buttonCode)
-{
-	int joy1 = -1;
-	int joy2 = -1;
-	int joy3 = -1;
-	int joy4 = -1;
-
-	//Collect and assign present joysticks
-	for (int i = 0; i < 16; i++)
-	{
-		//Check if present
-		if (glfwJoystickPresent(i))
-		{
-			//Assign if unassigned
-			if (joy1 < 0)
-				joy1 = i;
-			else if (joy2 < 0)
-				joy2 = i;
-			else if (joy3 < 0)
-				joy3 = i;
-			else if (joy4 < 0)
-				joy4 = i;
-		}
-	}
-	int count;
-	const unsigned char* states;
-
-	switch (player)
-	{
-	case 1:
-		states = glfwGetJoystickButtons(joy1, &count);
-		break;
-	case 2:
-		states = glfwGetJoystickButtons(joy2, &count);
-		break;
-	case 3:
-		states = glfwGetJoystickButtons(joy3, &count);
-		break;
-	case 4:
-		states = glfwGetJoystickButtons(joy4, &count);
-		break;
-	default:
-		cout << "Bad Player Number: only 1-4 supported!" << endl;
-		return false;
-		break;
-	}
-
-	//Not connected?
-	if (states == NULL)
-		return false;
-
-	for (int i = 0; i < count; i++)
-	{
-		if (i + 300 == buttonCode && states[i] == GLFW_RELEASE)
-			return true;
-	}
-	return false;
-}
-
 float Input::GetXBoxAxis(int player, int axisCode)
 {
 	int joy1 = -1;
@@ -222,7 +163,7 @@ float Input::GetXBoxAxis(int player, int axisCode)
 	else//Sticks
 	{
 		float result = states[(axisCode - 320)];
-		if (result > deadZone || result < deadZone)
+		if (result > deadZone || result < -deadZone)
 			return result;
 		else
 			return 0;

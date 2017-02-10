@@ -54,7 +54,7 @@ PxRigidDynamic* Physics::createTestBox(PxReal sideLength)
 	PxShape* shape = gPhysics->createShape(PxBoxGeometry(sideLength, sideLength, sideLength), *gMaterial);
 	PxRigidDynamic* body = gPhysics->createRigidDynamic(PxTransform(PxVec3(0, 0, 0)));
 	body->attachShape(*shape);
-	PxRigidBodyExt::updateMassAndInertia(*body, 10.0f);
+	PxRigidBodyExt::updateMassAndInertia(*body, 1.0f);
 	gScene->addActor(*body);
 	return body;
 }

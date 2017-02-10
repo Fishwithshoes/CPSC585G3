@@ -13,7 +13,6 @@ public:
 	static bool GetButtonUp(int buttonCode);
 
 	static bool GetXBoxButton(int player, int buttonCode);
-	static bool GetXBoxButtonUp(int player, int buttonCode);
 	static float GetXBoxAxis(int player, int axisCode);
 	static const float deadZone;
 

@@ -31,6 +31,8 @@ public:
 
 	mat4 GetWorldToViewMatrix();
 	mat4 GetViewToProjectionMatrix();
+	mat4 GetQuatWorldToViewMatrix();
+	RenderTypes rendertype = RenderTypes::RT_EULER;
 
 	void SetVerticalFOV(float degrees);
 	void SetNearClipPlane(float nearClip);

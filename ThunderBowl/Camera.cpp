@@ -131,6 +131,24 @@ mat4 Camera::GetWorldToViewMatrix()
 	return translation * rotationZ * rotationY * rotationX * scale;
 }
 
+mat4 Camera::GetQuatWorldToViewMatrix()
+{
+
+	mat4 scale(
+		transform.scale.x, 0, 0, 0,
+		0, transform.scale.y, 0, 0,
+		0, 0, transform.scale.z, 0,
+		0, 0, 0, 1);
+
+	mat4 translation(
+		1, 0, 0, -transform.position.x,
+		0, 1, 0, -transform.position.y,
+		0, 0, 1, -transform.position.z,
+		0, 0, 0, 1);
+
+	return translation * transform.rotationMatrix * scale;
+}
+
 mat4 Camera::GetViewToProjectionMatrix()
 {
 	return mat4(
@@ -138,6 +156,12 @@ mat4 Camera::GetViewToProjectionMatrix()
 		0, 1/tan(verticalFOV*0.5), 0, 0,
 		0, 0, (-nearClipPlane - farClipPlane*2) / (nearClipPlane - farClipPlane*2), (4 * farClipPlane*nearClipPlane) / (nearClipPlane - farClipPlane*2),
 		0, 0, 1, 0);
+
+	/*return mat4(
+		1/((float)WIDTH/(float)HEIGHT*tan(verticalFOV*0.5)), 0, 0, 0,
+		0, 1/tan(verticalFOV*0.5), 0, 0,
+		0, 0, -((nearClipPlane + farClipPlane) / (farClipPlane - nearClipPlane)), -((2 * farClipPlane*nearClipPlane) / (farClipPlane - nearClipPlane)),
+		0, 0, -1, 0);*/
 }
 
 void Camera::SetVerticalFOV(float degrees)

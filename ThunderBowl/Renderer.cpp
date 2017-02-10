@@ -206,7 +206,20 @@ void Renderer::RenderScene(Renderer *renderer)
 		glUniformMatrix4fv(renderer->modelToWorldSkybox_uniform, 1, GL_TRUE, value_ptr(Game::skybox.GetModelToWorld()));
 		glUniformMatrix4fv(renderer->normalToWorldSkybox_uniform, 1, GL_TRUE, value_ptr(Game::skybox.GetNormalToWorld()));
 		//Here the camera position for world to view can be stripped out so the skybox appears at an 'infinite distance'
-		glUniformMatrix4fv(renderer->worldToViewSkybox_uniform, 1, GL_TRUE, value_ptr(renderer->camera.GetWorldToViewMatrix()));
+		mat4 worldToView;
+		switch (renderer->camera.transform.rendertype) {
+		case RenderTypes::RT_EULER:
+			worldToView = renderer->camera.GetWorldToViewMatrix();
+			break;
+		case RenderTypes::RT_QUAT:
+			worldToView = renderer->camera.GetQuatWorldToViewMatrix();
+			break;
+		default:
+			cout << "RenderTypes error" << endl;
+			break;
+		}
+
+		glUniformMatrix4fv(renderer->worldToViewSkybox_uniform, 1, GL_TRUE, value_ptr(worldToView));
 		glUniformMatrix4fv(renderer->viewToProjectionSkybox_uniform, 1, GL_TRUE, value_ptr(renderer->camera.GetViewToProjectionMatrix()));
 		
 		//BUFFER GEOMETRY AND INDICIES
@@ -245,7 +258,19 @@ void Renderer::RenderScene(Renderer *renderer)
 	glUseProgram(renderer->standardShader.program);
 
 	//Program Uniforms for WorldToView and ViewToProjection
-	glUniformMatrix4fv(renderer->worldToViewStandard_uniform, 1, GL_TRUE, value_ptr(renderer->camera.GetWorldToViewMatrix()));
+	mat4 worldToView;
+	switch (renderer->camera.transform.rendertype) {
+	case RenderTypes::RT_EULER:
+		worldToView = renderer->camera.GetWorldToViewMatrix();
+		break;
+	case RenderTypes::RT_QUAT:
+		worldToView = renderer->camera.GetQuatWorldToViewMatrix();
+		break;
+	default:
+		cout << "RenderTypes error" << endl;
+		break;
+	}
+	glUniformMatrix4fv(renderer->worldToViewStandard_uniform, 1, GL_TRUE, value_ptr(worldToView));
 	glUniformMatrix4fv(renderer->viewToProjectionStandard_uniform, 1, GL_TRUE, value_ptr(renderer->camera.GetViewToProjectionMatrix()));
 
 	//For each World GameObject Load geometry into GPU, bind and draw it
@@ -298,7 +323,7 @@ void Renderer::RenderScene(Renderer *renderer)
 			normalToWorld = gameObject.transform.GetQuatNormalToWorld();
 			break;
 		default:
-			cout << "RenderTypes error" << endl;
+			cout << "GameObject RenderTypes error" << endl;
 			break;
 		}
 
