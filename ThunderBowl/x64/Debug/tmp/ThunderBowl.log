@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ﻿Build started 2/10/2017 3:43:16 PM.
      1>Project "C:\Users\james.hollowaycurrie\CPSC585G3\ThunderBowl\ThunderBowl.vcxproj" on node 2 (Rebuild target(s)).
      1>ClCompile:
@@ -128,3 +129,10 @@
 Build succeeded.
 
 Time Elapsed 00:00:22.78
+=======
+﻿  VehicleComponent.cpp
+c:\cpsc585g3\thunderbowl\vehiclecomponent.h(15): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\cpsc585g3\thunderbowl\floatcomponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
+  ThunderBowl.vcxproj -> C:\CPSC585G3\ThunderBowl\x64\Debug\ThunderBowl.exe
+  ThunderBowl.vcxproj -> C:\CPSC585G3\ThunderBowl\x64\Debug\ThunderBowl.pdb (Full PDB)
+>>>>>>> f7c3fcf60205b1702903096229d522c9222bbad4

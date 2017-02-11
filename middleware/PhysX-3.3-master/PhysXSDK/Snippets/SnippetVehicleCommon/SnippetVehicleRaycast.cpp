@@ -11,7 +11,7 @@
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
 #include <new>
-#include "VehicleRaycast.h"
+#include "SnippetVehicleRaycast.h"
 #include "PxPhysicsAPI.h"
 
 using namespace physx;
