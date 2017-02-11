@@ -9,6 +9,16 @@ PxPhysics* gPhysics = NULL;
 PxDefaultCpuDispatcher* gDispatcher = NULL;
 PxScene* gScene = NULL;
 PxMaterial* gMaterial = NULL;
+PxCooking*				gCooking = NULL;
+
+VehicleSceneQueryData*	gVehicleSceneQueryData = NULL;
+PxBatchQuery*			gBatchQuery = NULL;
+
+PxVehicleDrivableSurfaceToTireFrictionPairs* gFrictionPairs = NULL;
+
+PxRigidStatic*			gGroundPlane = NULL;
+PxVehicleNoDrive*		gVehicleNoDrive = NULL;
+
 //PxTransform* gBaseTrans = NULL;
 //PxVisualDebuggerConnection* gVDebugConnection = NULL;
 
@@ -20,6 +30,24 @@ PxMaterial* gMaterial = NULL;
 Physics::~Physics()
 {
 }*/
+
+PxFilterFlags VehicleFilterShader
+(PxFilterObjectAttributes attributes0, PxFilterData filterData0,
+	PxFilterObjectAttributes attributes1, PxFilterData filterData1,
+	PxPairFlags& pairFlags, const void* constantBlock, PxU32 constantBlockSize)
+{
+	PX_UNUSED(attributes0);
+	PX_UNUSED(attributes1);
+	PX_UNUSED(constantBlock);
+	PX_UNUSED(constantBlockSize);
+
+	if ((0 == (filterData0.word0 & filterData1.word1)) && (0 == (filterData1.word0 & filterData0.word1)))
+		return PxFilterFlag::eSUPPRESS;
+
+	pairFlags = PxPairFlag::eCONTACT_DEFAULT;
+
+	return PxFilterFlags();
+}
 
 void Physics::initializePhysX() {
 	gFoundation = PxCreateFoundation(PX_PHYSICS_VERSION, gDefaultAllocator, gDefaultErrorCallback);
@@ -38,13 +66,30 @@ void Physics::initializePhysX() {
 	sceneDesc.gravity = PxVec3(0.0f, -9.81f, 0.0f);
 	gDispatcher = PxDefaultCpuDispatcherCreate(2);
 	sceneDesc.cpuDispatcher = gDispatcher;
-	sceneDesc.filterShader = PxDefaultSimulationFilterShader;
+	sceneDesc.filterShader = VehicleFilterShader;//PxFilterFlag::eSUPPRESS;
 	gScene = gPhysics->createScene(sceneDesc);
 
 	gMaterial = gPhysics->createMaterial(0.5f, 0.5f, 0.6f);
 
-	PxRigidStatic* groundPlane = PxCreatePlane(*gPhysics, PxPlane(0, 1, 0, 0), *gMaterial);
-	gScene->addActor(*groundPlane);
+	gCooking = PxCreateCooking(PX_PHYSICS_VERSION, *gFoundation, PxCookingParams(PxTolerancesScale()));
+
+	//PxRigidStatic* groundPlane = PxCreatePlane(*gPhysics, PxPlane(0, 1, 0, 0), *gMaterial);
+	//gScene->addActor(*groundPlane);
+
+	PxInitVehicleSDK(*gPhysics);
+	PxVehicleSetBasisVectors(PxVec3(0, 1, 0), PxVec3(0, 0, 1));
+	PxVehicleSetUpdateMode(PxVehicleUpdateMode::eVELOCITY_CHANGE);
+
+	//Create the batched scene queries for the suspension raycasts.
+	gVehicleSceneQueryData = VehicleSceneQueryData::allocate(1, PX_MAX_NB_WHEELS, 1, gDefaultAllocator);
+	gBatchQuery = VehicleSceneQueryData::setUpBatchedSceneQuery(0, *gVehicleSceneQueryData, gScene);
+
+	//Create the friction table for each combination of tire and surface type.
+	gFrictionPairs = Physics::createFrictionPairs(gMaterial);
+
+	//Create a plane to drive on.
+	gGroundPlane = createDrivablePlane(gMaterial, gPhysics);
+	gScene->addActor(*gGroundPlane);
 }
 
 void Physics::computeRotation(PxQuat angle) {}
@@ -61,18 +106,68 @@ PxRigidDynamic* Physics::createTestBox(PxReal sideLength)
 
 void Physics::stepPhysics()
 {
+	const PxF32 timestep = 1.0f / 60.0f;
+
+	//Raycasts.
+	PxVehicleWheels* vehicles[1] = { gVehicleNoDrive };
+	PxRaycastQueryResult* raycastResults = gVehicleSceneQueryData->getRaycastQueryResultBuffer(0);
+	const PxU32 raycastResultsSize = gVehicleSceneQueryData->getRaycastQueryResultBufferSize();
+	PxVehicleSuspensionRaycasts(gBatchQuery, 1, vehicles, raycastResultsSize, raycastResults);
+
+	//Vehicle update.
+	const PxVec3 grav = gScene->getGravity();
+	PxWheelQueryResult wheelQueryResults[PX_MAX_NB_WHEELS];
+	PxVehicleWheelQueryResult vehicleQueryResults[1] = { { wheelQueryResults, gVehicleNoDrive->mWheelsSimData.getNbWheels() } };
+	PxVehicleUpdates(timestep, grav, *gFrictionPairs, 1, vehicles, vehicleQueryResults);
+
+	//Scene update.
 	gScene->simulate(1.0f / 60.0f);
 	gScene->fetchResults(true);
 }
 
 void Physics::cleanupPhysics()
 {
+
+	gVehicleNoDrive->getRigidDynamicActor()->release();
+	gVehicleNoDrive->free();
+	gGroundPlane->release();
+	gBatchQuery->release();
+	gVehicleSceneQueryData->free(gDefaultAllocator);
+	gFrictionPairs->release();
+	PxCloseVehicleSDK();
+
+	gMaterial->release();
+	gCooking->release();
 	gScene->release();
 	gDispatcher->release();
 	PxProfileZoneManager* profileZoneManager = gPhysics->getProfileZoneManager();
 	gPhysics->release();
 	profileZoneManager->release();
 	gFoundation->release();
+
+	printf("ThnderBowl done.\n");
+}
+
+//getters
+physx::PxPhysics* Physics::getGPhysics()
+{
+	return gPhysics;
+}
+
+physx::PxCooking* Physics::getGCooking()
+{
+	return gCooking;
+}
+
+physx::PxScene* Physics::getGScene()
+{
+	return gScene;
+}
+
+//setters
+void Physics::setGVehicleNoDrive(physx::PxVehicleNoDrive* in)
+{
+	gVehicleNoDrive = in;
 }
 
 
@@ -272,7 +367,7 @@ PxVehicleNoDrive* Physics::createVehicleNoDrive(const Physics::VehicleDesc& vehi
 	return vehDriveNoDrive;
 }
 
-PxRigidStatic* createDrivablePlane(physx::PxMaterial* material, PxPhysics* physics)
+PxRigidStatic* Physics::createDrivablePlane(PxMaterial* material, PxPhysics* physics)
 {
 	//Add a plane to the scene.
 	PxRigidStatic* groundPlane = PxCreatePlane(*physics, PxPlane(0, 1, 0, 0), *material);
@@ -558,4 +653,72 @@ void Physics::customizeVehicleToLengthScale(const PxReal lengthScale, PxRigidDyn
 		driveSimData->setAckermannGeometryData(ackermannData);
 	}
 }
+//Vehicle tire code
+//Tire model friction for each combination of drivable surface type and tire type.
+static PxF32 gTireFrictionMultipliers[Physics::SurfaceTypes::MAX_NUM_SURFACE_TYPES][Physics::TireTypes::MAX_NUM_TIRE_TYPES] =
+{
+	//NORMAL,	WORN
+	{ 1.00f,		0.1f }//TARMAC
+};
 
+PxVehicleDrivableSurfaceToTireFrictionPairs* Physics::createFrictionPairs(const PxMaterial* defaultMaterial)
+{
+	PxVehicleDrivableSurfaceType surfaceTypes[1];
+	surfaceTypes[0].mType = Physics::SurfaceTypes::SURFACE_TYPE_TARMAC;
+
+	const PxMaterial* surfaceMaterials[1];
+	surfaceMaterials[0] = defaultMaterial;
+
+	PxVehicleDrivableSurfaceToTireFrictionPairs* surfaceTirePairs =
+		PxVehicleDrivableSurfaceToTireFrictionPairs::allocate(Physics::TireTypes::MAX_NUM_TIRE_TYPES, Physics::SurfaceTypes::MAX_NUM_SURFACE_TYPES);
+
+	surfaceTirePairs->setup(Physics::TireTypes::MAX_NUM_TIRE_TYPES, Physics::SurfaceTypes::MAX_NUM_SURFACE_TYPES, surfaceMaterials, surfaceTypes);
+
+	for (PxU32 i = 0; i < Physics::SurfaceTypes::MAX_NUM_SURFACE_TYPES; i++)
+	{
+		for (PxU32 j = 0; j < Physics::TireTypes::MAX_NUM_TIRE_TYPES; j++)
+		{
+			surfaceTirePairs->setTypePairFriction(i, j, gTireFrictionMultipliers[i][j]);
+		}
+	}
+	return surfaceTirePairs;
+}
+
+
+
+//Vehicle initialization code
+Physics::VehicleDesc Physics::initVehicleDesc()
+{
+	//Set up the chassis mass, dimensions, moment of inertia, and center of mass offset.
+	//The moment of inertia is just the moment of inertia of a cuboid but modified for easier steering.
+	//Center of mass offset is 0.65m above the base of the chassis and 0.25m towards the front.
+	const PxF32 chassisMass = 500.0f;
+	const PxVec3 chassisDims(2.0f, 2.0f, 2.0f);
+	const PxVec3 chassisMOI
+	((chassisDims.y*chassisDims.y + chassisDims.z*chassisDims.z)*chassisMass / 12.0f,
+		(chassisDims.x*chassisDims.x + chassisDims.z*chassisDims.z)*0.8f*chassisMass / 12.0f,
+		(chassisDims.x*chassisDims.x + chassisDims.y*chassisDims.y)*chassisMass / 12.0f);
+	const PxVec3 chassisCMOffset(0.0f, -chassisDims.y*0.5f + 0.65f, 0.25f);
+
+	//Set up the wheel mass, radius, width, moment of inertia, and number of wheels.
+	//Moment of inertia is just the moment of inertia of a cylinder.
+	const PxF32 wheelMass = 20.0f;
+	const PxF32 wheelRadius = 0.5f;
+	const PxF32 wheelWidth = 0.4f;
+	const PxF32 wheelMOI = 0.5f*wheelMass*wheelRadius*wheelRadius;
+	const PxU32 nbWheels = 4;
+
+	Physics::VehicleDesc vehicleDesc;
+	vehicleDesc.chassisMass = chassisMass;
+	vehicleDesc.chassisDims = chassisDims;
+	vehicleDesc.chassisMOI = chassisMOI;
+	vehicleDesc.chassisCMOffset = chassisCMOffset;
+	vehicleDesc.chassisMaterial = gMaterial;
+	vehicleDesc.wheelMass = wheelMass;
+	vehicleDesc.wheelRadius = wheelRadius;
+	vehicleDesc.wheelWidth = wheelWidth;
+	vehicleDesc.wheelMOI = wheelMOI;
+	vehicleDesc.numWheels = nbWheels;
+	vehicleDesc.wheelMaterial = gMaterial;
+	return vehicleDesc;
+}

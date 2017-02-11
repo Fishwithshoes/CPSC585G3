@@ -10,8 +10,21 @@ void VehicleComponent::Start()
 	Initialize();
 	cout << "I am a Vehicle Component!" << endl;
 	transform.rendertype = RenderTypes::RT_QUAT;
-	physVehicle = Physics::createTestBox(2.0);
-	physVehicle->setMass(3.0);
+	physx::PxPhysics* worldPhys = Physics::getGPhysics();
+	physx::PxCooking* worldCook = Physics::getGCooking();
+	physx::PxScene* worldScene = Physics::getGScene();
+
+	
+
+	Physics::VehicleDesc vehicleDesc = Physics::initVehicleDesc();
+	gVehicleNoDrive = Physics::createVehicleNoDrive(vehicleDesc, worldPhys, worldCook);
+	physx::PxTransform startTransform(physx::PxVec3(0, (vehicleDesc.chassisDims.y*0.5f + vehicleDesc.wheelRadius + 1.0f), 0), physx::PxQuat(physx::PxIdentity));
+	Physics::setGVehicleNoDrive(gVehicleNoDrive);
+	gVehicleNoDrive->getRigidDynamicActor()->setGlobalPose(startTransform);
+	worldScene->addActor(*gVehicleNoDrive->getRigidDynamicActor());
+
+	physVehicle = gVehicleNoDrive->getRigidDynamicActor();
+
 	followCam = Renderer::GetCamera(0);
 	followCam->transform.rendertype = RenderTypes::RT_QUAT;
 	transform.position.x = physVehicle->getGlobalPose().p.x;
@@ -26,14 +39,15 @@ void VehicleComponent::Update()
 
 	if (Input::GetXBoxAxis(1,ButtonCode::XBOX_RIGHT_TRIGGER))
 	{
-		physx::PxRigidBodyExt::addLocalForceAtLocalPos(*physVehicle, physx::PxVec3(0.0,0.0,50.0), physx::PxVec3(0.0,0.0,0.0));
+		//physx::PxRigidBodyExt::addLocalForceAtLocalPos(*physVehicle, physx::PxVec3(0.0,0.0,50.0), physx::PxVec3(0.0,0.0,0.0));
+		gVehicleNoDrive->setDriveTorque(0, 1000.0f);
 	}
 	else if(Input::GetXBoxAxis(1, ButtonCode::XBOX_LEFT_TRIGGER))
 	{
-		physx::PxRigidBodyExt::addLocalForceAtLocalPos(*physVehicle, physx::PxVec3(0.0, 0.0, -50.0), physx::PxVec3(0.0, 0.0, 0.0));
+		//physx::PxRigidBodyExt::addLocalForceAtLocalPos(*physVehicle, physx::PxVec3(0.0, 0.0, -50.0), physx::PxVec3(0.0, 0.0, 0.0));
 	}
 
-		physx::PxRigidBodyExt::addLocalForceAtLocalPos(*physVehicle, physx::PxVec3(5.0*(Input::GetXBoxAxis(1, ButtonCode::XBOX_JOY_LEFT_HORIZONTAL)), 0.0, 0.0), physx::PxVec3(0.0, 0.0, 100.0));
+		//physx::PxRigidBodyExt::addLocalForceAtLocalPos(*physVehicle, physx::PxVec3(5.0*(Input::GetXBoxAxis(1, ButtonCode::XBOX_JOY_LEFT_HORIZONTAL)), 0.0, 0.0), physx::PxVec3(0.0, 0.0, 100.0));
 
 
 	if (Input::GetButton(ButtonCode::MIDDLE_MOUSE))
@@ -51,11 +65,10 @@ void VehicleComponent::Update()
 
 	followCam->transform.rotationMatrix = glm::inverse(newRot);
 
-	glm::vec4 cameraOffset = glm::vec4(0.0, 5.0, -10.0, 0.0);
+	glm::vec4 cameraOffset = glm::vec4(0.0, 5.0, -15.0, 0.0);
 	cameraOffset = glm::inverse(newRot) * cameraOffset;
 	cameraOffset = glm::vec4(transform.position, 0.0) + cameraOffset;
 	followCam->transform.position = cameraOffset;
-
 
 	transform.rotationMatrix = newRot;
 	

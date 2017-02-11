@@ -8,10 +8,15 @@
 #include "VehicleRaycast.h"
 
 
+physx::PxFilterFlags VehicleFilterShader
+(physx::PxFilterObjectAttributes attributes0, physx::PxFilterData filterData0,
+	physx::PxFilterObjectAttributes attributes1, physx::PxFilterData filterData1,
+	physx::PxPairFlags& pairFlags, const void* constantBlock, physx::PxU32 constantBlockSize);
+
 class Physics
 {
-
 public:
+
 	enum SurfaceTypes
 	{
 		SURFACE_TYPE_TARMAC,
@@ -41,6 +46,20 @@ public:
 		COLLISION_FLAG_DRIVABLE_OBSTACLE_AGAINST = COLLISION_FLAG_GROUND | COLLISION_FLAG_CHASSIS | COLLISION_FLAG_OBSTACLE | COLLISION_FLAG_DRIVABLE_OBSTACLE,
 	};
 
+
+	enum DriveMode
+	{
+		eDRIVE_MODE_ACCEL_FORWARDS = 0,
+		eDRIVE_MODE_ACCEL_REVERSE,
+		eDRIVE_MODE_HARD_TURN_LEFT,
+		eDRIVE_MODE_HANDBRAKE_TURN_LEFT,
+		eDRIVE_MODE_HARD_TURN_RIGHT,
+		eDRIVE_MODE_HANDBRAKE_TURN_RIGHT,
+		eDRIVE_MODE_BRAKE,
+		eDRIVE_MODE_NONE
+	};
+
+
 	//Physics();
 	//~Physics();
 	static void initializePhysX();
@@ -48,6 +67,14 @@ public:
 	static void computeRotation(physx::PxQuat angle);
 	static void stepPhysics();
 	static void cleanupPhysics();
+
+	//getters
+	static physx::PxPhysics* getGPhysics();
+	static physx::PxCooking* getGCooking();
+	static physx::PxScene* getGScene();
+
+	//setter
+	static void setGVehicleNoDrive(physx::PxVehicleNoDrive* in);
 
 	//PxVehicleSetup
 	static void computeWheelCenterActorOffsets(const physx::PxF32 wheelFrontZ, const physx::PxF32 wheelRearZ, const physx::PxVec3& chassisDims, const physx::PxF32 wheelWidth, const physx::PxF32 wheelRadius, const physx::PxU32 numWheels, physx::PxVec3* wheelCentreOffsets);
@@ -90,12 +117,17 @@ public:
 		physx::PxU32 numWheels;
 	};
 
+	static VehicleDesc initVehicleDesc();
 
 	static physx::PxVehicleNoDrive* createVehicleNoDrive(const VehicleDesc& vehDesc, physx::PxPhysics* physics, physx::PxCooking* cooking);
 
 	static void customizeVehicleToLengthScale(const physx::PxReal lengthScale, physx::PxRigidDynamic* rigidDynamic, physx::PxVehicleWheelsSimData* wheelsSimData, physx::PxVehicleDriveSimData* driveSimData);
 
 	static void customizeVehicleToLengthScale(const physx::PxReal lengthScale, physx::PxRigidDynamic* rigidDynamic, physx::PxVehicleWheelsSimData* wheelsSimData, physx::PxVehicleDriveSimData4W* driveSimData);
+
+	static physx::PxVehicleDrivableSurfaceToTireFrictionPairs* createFrictionPairs(const physx::PxMaterial* defaultMaterial);
+
+
 private:
 
 };

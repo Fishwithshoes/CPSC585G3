@@ -15,6 +15,7 @@ public:
 	float turnAccel = 0.01;
 
 	physx::PxRigidDynamic* physVehicle;
+	physx::PxVehicleNoDrive* gVehicleNoDrive;
 
 protected:
 
