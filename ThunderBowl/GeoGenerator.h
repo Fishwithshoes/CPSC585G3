@@ -1,6 +1,15 @@
 #pragma once
 #include "Structs.h"
 
+enum GeoAnchors
+{
+	GA_CENTER,
+	GA_LEFT,
+	GA_RIGHT,
+	GA_TOP,
+	GA_BOTTOM
+};
+
 class GeoGenerator
 {
 public:
@@ -12,6 +21,7 @@ public:
 
 	//2D - For Overlay GameObjects
 	static Mesh MakeCircle(float sweep, int segments, float radius);//sweep from 0-1
+	static Mesh MakeRect(float width, float height, GeoAnchors anchor);
 protected:
 
 private:

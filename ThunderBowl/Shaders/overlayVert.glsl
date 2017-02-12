@@ -1,4 +1,4 @@
-#version 410
+#version 450
 
 layout(location = 0) in vec3 VertexPosition;
 layout(location = 1) in vec3 VertexColor;
@@ -13,7 +13,7 @@ uniform mat4 ModelToWorld;
 
 void main()
 {
-	gl_Position = ModelToWorld * vec4(VertexPosition.x/AspectRatio, VertexPosition.y, VertexPosition.z, 1.0);
+	gl_Position = ModelToWorld * vec4(VertexPosition.x/AspectRatio, VertexPosition.yz, 1.0);
 	
 	Color = VertexColor;
 	TexCoord = VertexTexCoord;

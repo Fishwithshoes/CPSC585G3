@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
 	// attempt to create a window with an OpenGL 4.5 core profile context
 	GLFWwindow *window = 0;
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	GLFWmonitor *monitor = glfwGetPrimaryMonitor();
@@ -126,7 +126,7 @@ int main(int argc, char *argv[])
 		glfwPollEvents();
 		//cout << Input::GetXBoxAxis(2, ButtonCode::XBOX_RIGHT_TRIGGER) << endl;
 		if (Input::GetButtonDown(ButtonCode::Q))
-			Audio::Play2DSound(Sounds::SFX_Hit, 1.0f, 0.0f);
+			Audio::Play2DSound(Sounds::SFX_Hit, Random::rangef(0,1), Random::rangef(-1,1));
 
 		//Game Logic
 		for (int i = Game::worldObjectList.size()-1; i >= 0; i--)

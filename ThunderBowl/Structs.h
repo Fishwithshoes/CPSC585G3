@@ -103,6 +103,8 @@ enum Maps
 	MAP_MIRROR,//Testing
 	MAP_ENV,//Env cubemap
 	MAP_CHECKER,//Testing
+	MAP_COLOR_BUFFER,//Store color & alpha for post-process
+	MAP_POSITION_BUFFER,//Store world position & distance for post-process
 	//Overlay
 	MAP_JERRY,
 	MAP_SPIDER,

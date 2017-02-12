@@ -412,3 +412,66 @@ Mesh GeoGenerator::MakeCircle(float sweep, int segments, float radius)
 	result.elementCount = result.positions.size();
 	return result;
 }
+
+Mesh GeoGenerator::MakeRect(float width, float height, GeoAnchors anchor)
+{
+	Mesh result;
+
+	//Main construction
+	result.positions.push_back(vec3(-width*0.5, height*0.5, 0));
+	result.positions.push_back(vec3(width*0.5, height*0.5, 0));
+	result.positions.push_back(vec3(width*0.5, -height*0.5, 0));
+	result.positions.push_back(vec3(-width*0.5, -height*0.5, 0));
+	
+	for (int i = 0; i < result.positions.size(); i++)
+	{
+		switch (anchor)
+		{
+		case GA_CENTER:
+			//No effect
+			break;
+		case GA_LEFT:
+			result.positions[i] += vec3(width*0.5, 0, 0);
+			break;
+		case GA_RIGHT:
+			result.positions[i] -= vec3(width*0.5, 0, 0);
+			break;
+		case GA_TOP:
+			result.positions[i] -= vec3(0, height*0.5, 0);
+			break;
+		case GA_BOTTOM:
+			result.positions[i] += vec3(0, height*0.5, 0);
+			break;
+		default:
+			cout << "Illegal GeoAnchor used in GeoGenerator::MakeRect!" << endl;
+			break;
+		}
+	}
+	
+	result.colors.push_back(vec3(0, 1, 0));
+	result.colors.push_back(vec3(1, 1, 0));
+	result.colors.push_back(vec3(1, 0, 0));
+	result.colors.push_back(vec3(0, 0, 0));
+
+	result.normals.push_back(vec3(0, 0, -1));
+	result.normals.push_back(vec3(0, 0, -1));
+	result.normals.push_back(vec3(0, 0, -1));
+	result.normals.push_back(vec3(0, 0, -1));
+
+	result.texcoords.push_back(vec2(0, 1));
+	result.texcoords.push_back(vec2(1, 1));
+	result.texcoords.push_back(vec2(1, 0));
+	result.texcoords.push_back(vec2(0, 0));
+
+	//Indices
+	result.indices.push_back(0);
+	result.indices.push_back(3);
+	result.indices.push_back(1);
+
+	result.indices.push_back(1);
+	result.indices.push_back(3);
+	result.indices.push_back(2);
+
+	result.elementCount = result.positions.size();
+	return result;
+}
