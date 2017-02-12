@@ -11,6 +11,7 @@ public:
 	Shader		particleShader;
 	Shader		overlayShader;
 	Shader		skyboxShader;
+	Shader		fsppShader;
 	Camera		camera;
 
 	//SHADER UNIFORMS - PRIMARY
@@ -20,6 +21,8 @@ public:
 	GLint reflectivity_uniform;
 	GLint reflectColor_uniform;
 	GLint roughness_uniform;
+	GLint metalness_uniform;
+	GLint metallic_uniform;
 	GLint curveShape_uniform;
 	GLint _0degRef_uniform;
 	GLint _90degRef_uniform;
@@ -67,6 +70,8 @@ public:
 	GLint viewToProjectionParticle_uniform;
 	GLint normalToWorldParticle_uniform;
 
+	GLint cameraPosParticle_uniform;
+
 	//Overlay Shader
 	GLint modelToWorldOverlay_uniform;
 	GLint aspectRatio_uniform;
@@ -96,4 +101,6 @@ private:
 	static vector<Camera*> cameraList;
 	static vector<string> textureFilePaths;
 	static vector<string> cubemapTextureFilePaths;
+
+	static void BufferGeoData(Renderer *renderer, Mesh mesh);
 };

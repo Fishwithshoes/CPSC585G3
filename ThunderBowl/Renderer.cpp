@@ -2,6 +2,7 @@
 #include "RendererUtility.h"
 #include "Game.h"
 #include "GameObject.h"
+#include "GeoGenerator.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb/stb_image.h"
 #define STB_IMAGE_WRITE_IMPLEMENTATION
@@ -15,6 +16,8 @@ vector<string> Renderer::textureFilePaths =
 	"Textures/reflection_MIRR.jpg",
 	"GL_TEXTURE_CUBEMAP",
 	"Textures/checker_DIFF.jpg",
+	"GL_TEXTURE_COLOR_BUFFER",
+	"GL_TEXTURE_POSITION_BUFFER",
 	"Textures/jerry_DIFF.jpg",
 	"Textures/SpiderTex.jpg",
 	"Textures/floor_DIFF.jpg",
@@ -47,7 +50,10 @@ void Renderer::Init(Renderer *renderer)
 		cout << "Program could not initialize Overlay (Front End / HUD) Shader!" << endl;
 
 	if (!RendererUtility::InitializeShader(&renderer->skyboxShader, "Shaders/skyboxVert.glsl", "Shaders/skyboxFrag.glsl"))
-		cout << "Program could not initialize Overlay (Front End / HUD) Shader!" << endl;
+		cout << "Program could not initialize Skybox Shader!" << endl;
+
+	if (!RendererUtility::InitializeShader(&renderer->fsppShader, "Shaders/fsppVert.glsl", "Shaders/fsppFrag.glsl"))
+		cout << "Program could not initialize FSPP (Full-Screen Post-Process) Shader!" << endl;
 
 	// call function to create geometry buffers
 	if (!RendererUtility::InitializeGeometry(&renderer->geometry))
@@ -110,6 +116,8 @@ void Renderer::GetShaderUniforms(Renderer *renderer)
 	renderer->viewToProjectionParticle_uniform = glGetUniformLocation(renderer->particleShader.program, "ViewToProjection");
 	renderer->normalToWorldParticle_uniform = glGetUniformLocation(renderer->particleShader.program, "NormalToWorld");
 
+	renderer->cameraPosParticle_uniform = glGetUniformLocation(renderer->particleShader.program, "cameraPos");
+
 	//Overlay Shader - World Info
 	renderer->aspectRatio_uniform = glGetUniformLocation(renderer->overlayShader.program, "AspectRatio");
 	renderer->modelToWorldOverlay_uniform = glGetUniformLocation(renderer->overlayShader.program, "ModelToWorld");
@@ -133,7 +141,7 @@ void Renderer::LoadTextures(Renderer *renderer)
 
 	for (int i = 0; i < textureFilePaths.size(); i++)
 	{
-		if (i != MAP_ENV)//Bind images to GL_TEXTURE_2D
+		if (i != MAP_ENV && i != MAP_COLOR_BUFFER && i != MAP_POSITION_BUFFER)//Bind images to GL_TEXTURE_2D
 		{
 			stbi_set_flip_vertically_on_load(true);
 			//Load image with stb and bind into GPU texture table, freeing stb memory afterwards
@@ -151,7 +159,17 @@ void Renderer::LoadTextures(Renderer *renderer)
 				cout << "Flumpty failed to load texture at: " + textureFilePaths[i] << endl;
 			stbi_image_free(data);
 		}
-		else//Bind images to GL_TEXTURE_CUBEMAP_xx
+		else if(i == MAP_COLOR_BUFFER || i == MAP_POSITION_BUFFER)//These are for the Post Process Effects
+		{
+			glGenTextures(1, &texID);
+			glActiveTexture(GL_TEXTURE0 + i);
+			glBindTexture(GL_TEXTURE_2D, texID);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, Camera::WIDTH, Camera::HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
+			glBindImageTexture(i, texID, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
+		}
+		else//Bind images to GL_TEXTURE_CUBEMAP_xx for statndard texturing
 		{
 			stbi_set_flip_vertically_on_load(false);
 			glGenTextures(1, &texID);
@@ -193,6 +211,19 @@ void Renderer::RenderScene(Renderer *renderer)
 
 	//DRAW SKYBOX FIRST AS BACKGROUND
 	glUseProgram(renderer->skyboxShader.program);
+
+	//Program Post-Process Uniforms
+	GLint screenDims_uniform = glGetUniformLocation(renderer->skyboxShader.program, "screenDims");
+	GLint colorBufferMap_uniform = glGetUniformLocation(renderer->skyboxShader.program, "colorBufferMap");
+	GLint positionBufferMap_uniform = glGetUniformLocation(renderer->skyboxShader.program, "positionBufferMap");
+	GLint colorBuffer_uniform = glGetUniformLocation(renderer->skyboxShader.program, "colorBuffer");
+	GLint positionBuffer_uniform = glGetUniformLocation(renderer->skyboxShader.program, "positionBuffer");
+
+	glUniform2f(screenDims_uniform, (float)Camera::WIDTH, (float)Camera::HEIGHT);
+	glUniform1i(colorBufferMap_uniform, MAP_COLOR_BUFFER);
+	glUniform1i(positionBufferMap_uniform, MAP_POSITION_BUFFER);
+	glUniform1i(colorBuffer_uniform, MAP_COLOR_BUFFER);
+	glUniform1i(positionBuffer_uniform, MAP_POSITION_BUFFER);
 	{
 		//Get skybox
 		Mesh mesh = Game::skybox.mesh;
@@ -205,9 +236,10 @@ void Renderer::RenderScene(Renderer *renderer)
 
 		glUniformMatrix4fv(renderer->modelToWorldSkybox_uniform, 1, GL_TRUE, value_ptr(Game::skybox.GetModelToWorld()));
 		glUniformMatrix4fv(renderer->normalToWorldSkybox_uniform, 1, GL_TRUE, value_ptr(Game::skybox.GetNormalToWorld()));
-		//Here the camera position for world to view can be stripped out so the skybox appears at an 'infinite distance'
+		//TODO strip out position from camera's WorldToView so the skybox appears at an 'infinite distance'
 		mat4 worldToView;
-		switch (renderer->camera.transform.rendertype) {
+		switch (renderer->camera.transform.rendertype) 
+		{
 		case RenderTypes::RT_EULER:
 			worldToView = renderer->camera.GetWorldToViewMatrix();
 			break;
@@ -222,44 +254,30 @@ void Renderer::RenderScene(Renderer *renderer)
 		glUniformMatrix4fv(renderer->worldToViewSkybox_uniform, 1, GL_TRUE, value_ptr(worldToView));
 		glUniformMatrix4fv(renderer->viewToProjectionSkybox_uniform, 1, GL_TRUE, value_ptr(renderer->camera.GetViewToProjectionMatrix()));
 		
-		//BUFFER GEOMETRY AND INDICIES
-		//Buffer Positions
-		glBindBuffer(GL_ARRAY_BUFFER, renderer->geometry.positionBuffer);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 3 * mesh.positions.size(), mesh.positions.data(), GL_STATIC_DRAW);
-		glVertexAttribPointer(Renderer::POSITION_INDEX, 3, GL_FLOAT, GL_FALSE, 0, 0);
-		glEnableVertexAttribArray(Renderer::POSITION_INDEX);
-
-		//Buffer Colors
-		glBindBuffer(GL_ARRAY_BUFFER, renderer->geometry.colorBuffer);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 3 * mesh.colors.size(), mesh.colors.data(), GL_STATIC_DRAW);
-		glVertexAttribPointer(Renderer::COLOR_INDEX, 3, GL_FLOAT, GL_FALSE, 0, 0);
-		glEnableVertexAttribArray(Renderer::COLOR_INDEX);
-
-		//Buffer Normals
-		glBindBuffer(GL_ARRAY_BUFFER, renderer->geometry.normalBuffer);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 3 * mesh.normals.size(), mesh.normals.data(), GL_STATIC_DRAW);
-		glVertexAttribPointer(Renderer::NORMAL_INDEX, 3, GL_FLOAT, GL_FALSE, 0, 0);
-		glEnableVertexAttribArray(Renderer::NORMAL_INDEX);
-
-		//Buffer Texcoords
-		glBindBuffer(GL_ARRAY_BUFFER, renderer->geometry.texCoordBuffer);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 2 * mesh.texcoords.size(), mesh.texcoords.data(), GL_STATIC_DRAW);
-		glVertexAttribPointer(Renderer::TEXCOORD_INDEX, 2, GL_FLOAT, GL_FALSE, 0, 0);
-		glEnableVertexAttribArray(Renderer::TEXCOORD_INDEX);
-
-		//Buffer Indicies
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * mesh.indices.size(), mesh.indices.data(), GL_STATIC_DRAW);
-
-		//Draw Those Elements
+		BufferGeoData(renderer, mesh);
 		glDrawElements(GL_TRIANGLES, renderer->geometry.elementCount, GL_UNSIGNED_INT, nullptr);
 	}
 
 	//DRAW WORLD OBJECTS NEXT
 	glUseProgram(renderer->standardShader.program);
 
+	//Program Post-Process Uniforms
+	screenDims_uniform = glGetUniformLocation(renderer->standardShader.program, "screenDims");
+	colorBufferMap_uniform = glGetUniformLocation(renderer->standardShader.program, "colorBufferMap");
+	positionBufferMap_uniform = glGetUniformLocation(renderer->standardShader.program, "positionBufferMap");
+	colorBuffer_uniform = glGetUniformLocation(renderer->standardShader.program, "colorBuffer");
+	positionBuffer_uniform = glGetUniformLocation(renderer->standardShader.program, "positionBuffer");
+
+	glUniform2f(screenDims_uniform, (float)Camera::WIDTH, (float)Camera::HEIGHT);
+	glUniform1i(colorBufferMap_uniform, MAP_COLOR_BUFFER);
+	glUniform1i(positionBufferMap_uniform, MAP_POSITION_BUFFER);
+	glUniform1i(colorBuffer_uniform, MAP_COLOR_BUFFER);
+	glUniform1i(positionBuffer_uniform, MAP_POSITION_BUFFER);
+
 	//Program Uniforms for WorldToView and ViewToProjection
 	mat4 worldToView;
-	switch (renderer->camera.transform.rendertype) {
+	switch (renderer->camera.transform.rendertype) 
+	{
 	case RenderTypes::RT_EULER:
 		worldToView = renderer->camera.GetWorldToViewMatrix();
 		break;
@@ -335,40 +353,25 @@ void Renderer::RenderScene(Renderer *renderer)
 		glUniform4fv(renderer->lightPosStandard_uniform, 1, value_ptr(vec4(7, 10, -7, 1)));
 		glUniform4fv(renderer->lightColorStandard_uniform, 1, value_ptr(vec4(1, 1, 1, 1)));
 
-		//BUFFER GEOMETRY AND INDICIES		
-		//Buffer Positions
-		glBindBuffer(GL_ARRAY_BUFFER, renderer->geometry.positionBuffer);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 3 * mesh.positions.size(), mesh.positions.data(), GL_STATIC_DRAW);
-		glVertexAttribPointer(Renderer::POSITION_INDEX, 3, GL_FLOAT, GL_FALSE, 0, 0);
-		glEnableVertexAttribArray(Renderer::POSITION_INDEX);
-
-		//Buffer Colors
-		glBindBuffer(GL_ARRAY_BUFFER, renderer->geometry.colorBuffer);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 3 * mesh.colors.size(), mesh.colors.data(), GL_STATIC_DRAW);
-		glVertexAttribPointer(Renderer::COLOR_INDEX, 3, GL_FLOAT, GL_FALSE, 0, 0);
-		glEnableVertexAttribArray(Renderer::COLOR_INDEX);
-
-		//Buffer Normals
-		glBindBuffer(GL_ARRAY_BUFFER, renderer->geometry.normalBuffer);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 3 * mesh.normals.size(), mesh.normals.data(), GL_STATIC_DRAW);
-		glVertexAttribPointer(Renderer::NORMAL_INDEX, 3, GL_FLOAT, GL_FALSE, 0, 0);
-		glEnableVertexAttribArray(Renderer::NORMAL_INDEX);
-
-		//Buffer Texcoords
-		glBindBuffer(GL_ARRAY_BUFFER, renderer->geometry.texCoordBuffer);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 2 * mesh.texcoords.size(), mesh.texcoords.data(), GL_STATIC_DRAW);
-		glVertexAttribPointer(Renderer::TEXCOORD_INDEX, 2, GL_FLOAT, GL_FALSE, 0, 0);
-		glEnableVertexAttribArray(Renderer::TEXCOORD_INDEX);
-
-		//Buffer Indicies
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * mesh.indices.size(), mesh.indices.data(), GL_STATIC_DRAW);
-
-		//Draw Those Elements
+		BufferGeoData(renderer, mesh);
 		glDrawElements(GL_TRIANGLES, renderer->geometry.elementCount, GL_UNSIGNED_INT, nullptr);
 	}
 
 	//RETAIN DEPTH BUFFER AND DRAW PARTICLE SYSTEM OBJECTS
 	glUseProgram(renderer->particleShader.program);
+
+	//Program Post-Process Uniforms
+	screenDims_uniform = glGetUniformLocation(renderer->particleShader.program, "screenDims");
+	colorBufferMap_uniform = glGetUniformLocation(renderer->particleShader.program, "colorBufferMap");
+	positionBufferMap_uniform = glGetUniformLocation(renderer->particleShader.program, "positionBufferMap");
+	colorBuffer_uniform = glGetUniformLocation(renderer->particleShader.program, "colorBuffer");
+	positionBuffer_uniform = glGetUniformLocation(renderer->particleShader.program, "positionBuffer");
+
+	glUniform2f(screenDims_uniform, (float)Camera::WIDTH, (float)Camera::HEIGHT);
+	glUniform1i(colorBufferMap_uniform, MAP_COLOR_BUFFER);
+	glUniform1i(positionBufferMap_uniform, MAP_POSITION_BUFFER);
+	glUniform1i(colorBuffer_uniform, MAP_COLOR_BUFFER);
+	glUniform1i(positionBuffer_uniform, MAP_POSITION_BUFFER);
 
 	//Program Uniforms for WorldToView and ViewToProjection
 	glUniformMatrix4fv(renderer->worldToViewParticle_uniform, 1, GL_TRUE, value_ptr(renderer->camera.GetWorldToViewMatrix()));
@@ -396,7 +399,28 @@ void Renderer::RenderScene(Renderer *renderer)
 		glUniformMatrix4fv(renderer->modelToWorldParticle_uniform, 1, GL_TRUE, value_ptr(modelToWorld));
 		glUniformMatrix4fv(renderer->normalToWorldParticle_uniform, 1, GL_TRUE, value_ptr(normalToWorld));
 
+		glUniform3fv(renderer->cameraPosParticle_uniform, 1, value_ptr(renderer->camera.transform.position));
+
 		//TODO fashion loop to draw all particles within this ParticleSystem
+	}
+
+	//CLEAR DEPTH BUFFER AND DRAW POST-PROCESS RECT
+	glClear(GL_DEPTH_BUFFER_BIT);
+	glUseProgram(renderer->fsppShader.program);
+	//Program Post-Process Uniforms
+	screenDims_uniform = glGetUniformLocation(renderer->fsppShader.program, "screenDims");
+	colorBuffer_uniform = glGetUniformLocation(renderer->fsppShader.program, "colorBufferMap");
+	positionBuffer_uniform = glGetUniformLocation(renderer->fsppShader.program, "positionBufferMap");
+
+	glUniform2f(screenDims_uniform, (float)Camera::WIDTH, (float)Camera::HEIGHT);
+	glUniform1i(colorBuffer_uniform, MAP_COLOR_BUFFER);
+	glUniform1i(positionBuffer_uniform, MAP_POSITION_BUFFER);
+	{
+		Mesh mesh = GeoGenerator::MakeRect(2.0, 2.0, GA_CENTER);
+		renderer->geometry.elementCount = mesh.indices.size();
+
+		BufferGeoData(renderer, mesh);
+		glDrawElements(GL_TRIANGLES, renderer->geometry.elementCount, GL_UNSIGNED_INT, nullptr);
 	}
 
 	//CLEAR DEPTH BUFFER AND DRAW OVERLAY OBJECTS
@@ -421,40 +445,8 @@ void Renderer::RenderScene(Renderer *renderer)
 		mat4 modelToWorld = gameObject.GetModelToWorld();
 		glUniformMatrix4fv(renderer->modelToWorldOverlay_uniform, 1, GL_TRUE, value_ptr(modelToWorld));
 
-		//BUFFER GEOMETRY AND INDICIES		
-		//Buffer Positions
-		glBindBuffer(GL_ARRAY_BUFFER, renderer->geometry.positionBuffer);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 3 * mesh.positions.size(), mesh.positions.data(), GL_STATIC_DRAW);
-		glVertexAttribPointer(Renderer::POSITION_INDEX, 3, GL_FLOAT, GL_FALSE, 0, 0);
-		glEnableVertexAttribArray(Renderer::POSITION_INDEX);
-
-		//Buffer Colors
-		glBindBuffer(GL_ARRAY_BUFFER, renderer->geometry.colorBuffer);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 3 * mesh.colors.size(), mesh.colors.data(), GL_STATIC_DRAW);
-		glVertexAttribPointer(Renderer::COLOR_INDEX, 3, GL_FLOAT, GL_FALSE, 0, 0);
-		glEnableVertexAttribArray(Renderer::COLOR_INDEX);
-
-		//Buffer Normals
-		glBindBuffer(GL_ARRAY_BUFFER, renderer->geometry.normalBuffer);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 3 * mesh.normals.size(), mesh.normals.data(), GL_STATIC_DRAW);
-		glVertexAttribPointer(Renderer::NORMAL_INDEX, 3, GL_FLOAT, GL_FALSE, 0, 0);
-		glEnableVertexAttribArray(Renderer::NORMAL_INDEX);
-
-		//Buffer Texcoords
-		glBindBuffer(GL_ARRAY_BUFFER, renderer->geometry.texCoordBuffer);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 2 * mesh.texcoords.size(), mesh.texcoords.data(), GL_STATIC_DRAW);
-		glVertexAttribPointer(Renderer::TEXCOORD_INDEX, 2, GL_FLOAT, GL_FALSE, 0, 0);
-		glEnableVertexAttribArray(Renderer::TEXCOORD_INDEX);
-
-		//Buffer Indicies
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * mesh.indices.size(), mesh.indices.data(), GL_STATIC_DRAW);
-
-		//Draw Those Elements
+		BufferGeoData(renderer, mesh);
 		glDrawElements(GL_TRIANGLES, renderer->geometry.elementCount, GL_UNSIGNED_INT, nullptr);
-
-		//for (int i = 0; i < mesh.positions.size(); i++)
-		//	cout << mesh.positions[i].x << " " << mesh.positions[i].y << " " << mesh.positions[i].z << endl;
-
 	}
 
 	//Unbind geometry and shader
@@ -468,4 +460,35 @@ void Renderer::RenderScene(Renderer *renderer)
 Camera* Renderer::GetCamera(int index)
 {
 	return cameraList[index];
+}
+
+void Renderer::BufferGeoData(Renderer *renderer, Mesh mesh)
+{
+	//BUFFER GEOMETRY AND INDICIES
+	//Buffer Positions
+	glBindBuffer(GL_ARRAY_BUFFER, renderer->geometry.positionBuffer);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 3 * mesh.positions.size(), mesh.positions.data(), GL_STATIC_DRAW);
+	glVertexAttribPointer(Renderer::POSITION_INDEX, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(Renderer::POSITION_INDEX);
+
+	//Buffer Colors
+	glBindBuffer(GL_ARRAY_BUFFER, renderer->geometry.colorBuffer);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 3 * mesh.colors.size(), mesh.colors.data(), GL_STATIC_DRAW);
+	glVertexAttribPointer(Renderer::COLOR_INDEX, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(Renderer::COLOR_INDEX);
+
+	//Buffer Normals
+	glBindBuffer(GL_ARRAY_BUFFER, renderer->geometry.normalBuffer);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 3 * mesh.normals.size(), mesh.normals.data(), GL_STATIC_DRAW);
+	glVertexAttribPointer(Renderer::NORMAL_INDEX, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(Renderer::NORMAL_INDEX);
+
+	//Buffer Texcoords
+	glBindBuffer(GL_ARRAY_BUFFER, renderer->geometry.texCoordBuffer);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 2 * mesh.texcoords.size(), mesh.texcoords.data(), GL_STATIC_DRAW);
+	glVertexAttribPointer(Renderer::TEXCOORD_INDEX, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(Renderer::TEXCOORD_INDEX);
+
+	//Buffer Indicies
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * mesh.indices.size(), mesh.indices.data(), GL_STATIC_DRAW);
 }

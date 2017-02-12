@@ -37,6 +37,7 @@ void VehicleComponent::Update()
 {
 	Initialize();	
 
+<<<<<<< HEAD
 	if (Input::GetXBoxAxis(1,ButtonCode::XBOX_RIGHT_TRIGGER))
 	{
 		//physx::PxRigidBodyExt::addLocalForceAtLocalPos(*physVehicle, physx::PxVec3(0.0,0.0,50.0), physx::PxVec3(0.0,0.0,0.0));
@@ -46,6 +47,17 @@ void VehicleComponent::Update()
 	{
 		//physx::PxRigidBodyExt::addLocalForceAtLocalPos(*physVehicle, physx::PxVec3(0.0, 0.0, -50.0), physx::PxVec3(0.0, 0.0, 0.0));
 	}
+=======
+	//if (Input::GetXBoxAxis(1, ButtonCode::XBOX_RIGHT_TRIGGER))
+	//{
+	//	//physx::PxRigidBodyExt::addLocalForceAtLocalPos(*physVehicle, physx::PxVec3(0.0,0.0,50.0), physx::PxVec3(0.0,0.0,0.0));
+	//	gVehicleNoDrive->setDriveTorque(0, 1000.0f);
+	//}
+	//else if(Input::GetXBoxAxis(1, ButtonCode::XBOX_LEFT_TRIGGER))
+	//{
+	//	//physx::PxRigidBodyExt::addLocalForceAtLocalPos(*physVehicle, physx::PxVec3(0.0, 0.0, -50.0), physx::PxVec3(0.0, 0.0, 0.0));
+	//}
+>>>>>>> refs/remotes/origin/master
 
 		//physx::PxRigidBodyExt::addLocalForceAtLocalPos(*physVehicle, physx::PxVec3(5.0*(Input::GetXBoxAxis(1, ButtonCode::XBOX_JOY_LEFT_HORIZONTAL)), 0.0, 0.0), physx::PxVec3(0.0, 0.0, 100.0));
 

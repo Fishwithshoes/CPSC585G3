@@ -1,4 +1,4 @@
-#version 410
+#version 450
 
 #extension GL_NV_shadow_samplers_cube : enable
 
@@ -39,6 +39,15 @@ uniform vec2 offsetUV;
 uniform vec3 cameraPos;
 uniform vec4 lightPos;
 uniform vec4 lightColor;
+
+//Post Process
+uniform vec2 screenDims;
+
+uniform sampler2D colorBufferMap;
+uniform sampler2D positionBufferMap;
+
+uniform writeonly image2D colorBuffer;
+uniform writeonly image2D positionBuffer;
 
 out vec4 FragmentColor;
 
@@ -169,15 +178,27 @@ void main()
 	float u = clamp(viewDist*0.01, 0, 1);
 	final = final * (1-u) + fogColor * u;
 	
+	//OUTPUT
+	vec2 screenSampleCoords = vec2(gl_FragCoord.x/screenDims.x, gl_FragCoord.y/screenDims.y);
+	vec4 colorBufferTex = texture2D(colorBufferMap, screenSampleCoords);
+	vec4 positionBufferTex = texture2D(positionBufferMap, screenSampleCoords);
+	
+	if(viewDist < positionBufferTex.w)
+	{
+		imageStore(colorBuffer, ivec2(gl_FragCoord.xy), vec4(final, 1.0));
+		imageStore(positionBuffer, ivec2(gl_FragCoord.xy), vec4(Position, viewDist));
+	}
+	
 	FragmentColor = vec4(final, 1.0);
 	
 	//DEBUG DANCING - COMMENT OUT FOR FINAL COLOR
 	// FragmentColor = vec4(Color, 1);
 	// FragmentColor = vec4(Normal, 1);
 	// FragmentColor = vec4(normalDir, 1);
-    	// FragmentColor = vec4(TexCoord.x, 0, 0, 1);
+    // FragmentColor = vec4(TexCoord.x, 0, 0, 1);
 	// FragmentColor = vec4(0, TexCoord.y, 0, 1);
-	// FragmentColor = vec4(TexCoord.x, TexCoord.y, 0, 1);
+	// FragmentColor = vec4(TexCoord.xy, 0, 1);
+	// FragmentColor = vec4(gl_FragCoord.x/screenDims.x, gl_FragCoord.y/screenDims.y, 0, 1);
 	// FragmentColor = vec4(_reflectivity);
 	// FragmentColor = vec4(roughness;
 	// FragmentColor = vec4(viewDist*0.01);
@@ -200,6 +221,9 @@ void main()
 	// FragmentColor = vec4(normalTex, 1.0);
 	// FragmentColor = vec4(mirrorTex, 1.0);
 	// FragmentColor = vec4(envTex, 1.0);
+	
+	// FragmentColor = vec4(colorBufferTex);
+	// FragmentColor = vec4(positionBufferTex);
 }
 
 void RunSceneCollisions(vec3 ray, vec3 origin)
@@ -207,7 +231,7 @@ void RunSceneCollisions(vec3 ray, vec3 origin)
 	hit.distance = 1000;
 	
 	// TestSphere(vec3(0,1,0), 1, ray, origin);
-	TestCylinder(vec3(3, 2, 0), 1, 2, ray, origin);
+	// TestCylinder(vec3(3, 2, 0), 1, 2, ray, origin);
 }
 
 void TestPlane(vec3 p0, vec3 normal, vec3 ray, vec3 origin)

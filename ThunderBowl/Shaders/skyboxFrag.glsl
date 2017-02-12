@@ -1,4 +1,4 @@
-#version 410
+#version 450
 #extension GL_NV_shadow_samplers_cube : enable
 
 in vec3 Position;
@@ -8,6 +8,15 @@ in vec2 TexCoord;
 
 uniform vec4 color;
 uniform samplerCube envMap;
+
+//Post Process
+uniform vec2 screenDims;
+
+uniform sampler2D colorBufferMap;
+uniform sampler2D positionBufferMap;
+
+uniform writeonly image2D colorBuffer;
+uniform writeonly image2D positionBuffer;
 
 out vec4 FragmentColor;
 
@@ -22,9 +31,11 @@ void main()
 	float u = 0.8;
 	final = final * (1-u) + fogColor * u;
 	
-	FragmentColor = vec4(final, 1.0);
+	//OUTPUT
+	imageStore(colorBuffer, ivec2(gl_FragCoord.xy), vec4(final, 1.0));
+	imageStore(positionBuffer, ivec2(gl_FragCoord.xy), vec4(Position, 10000));
 	
-	//TODO fog n stuff
+	FragmentColor = vec4(final, 1.0);
 	
 	// FragmentColor = vec4(Color.xyz, 1);
 	// FragmentColor = vec4(Normal, 1);	
