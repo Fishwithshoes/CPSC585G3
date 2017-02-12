@@ -40,7 +40,7 @@ void VehicleComponent::Update()
 	if (Input::GetXBoxAxis(1,ButtonCode::XBOX_RIGHT_TRIGGER))
 	{
 		//physx::PxRigidBodyExt::addLocalForceAtLocalPos(*physVehicle, physx::PxVec3(0.0,0.0,50.0), physx::PxVec3(0.0,0.0,0.0));
-		gVehicleNoDrive->setDriveTorque(0, 1000.0f);
+		gVehicleNoDrive->setDriveTorque(0, 100.0f);
 	}
 	else if(Input::GetXBoxAxis(1, ButtonCode::XBOX_LEFT_TRIGGER))
 	{
