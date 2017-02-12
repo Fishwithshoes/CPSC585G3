@@ -5,6 +5,11 @@
 #include "FloatComponent.h"
 #include "RotateComponent.h"
 #include "VehicleComponent.h"
+#include "EnemyComponent.h"
+#include "MachineGunComponent.h"
+#include "HealthComponent.h"
+
+
 
 class GameObject
 {

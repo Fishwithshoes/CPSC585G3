@@ -84,6 +84,18 @@
     <ClInclude Include="VehicleRaycast.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="EnemyComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MachineGunComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BulletComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HealthComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="main" />
@@ -150,6 +162,18 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="VehicleRaycast.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MachineGunComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BulletComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="HealthComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

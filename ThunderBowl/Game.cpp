@@ -15,20 +15,6 @@ void Game::BuildWorld()
 	particleObjectList.reserve(100);
 	overlayObjectList.reserve(50);
 
-	//Attempt to load .obj file
-	/*Loader gameLoader = Loader();	//check constructor
-	gameLoader.loadModel("U:/CPSC585/CPSC585G3/middleware/assimp-3.1.1-win-binaries/assimp-3.1.1-win-binaries/test/models/OBJ/spider.obj");
-	GameObject load = GameObject();
-	for (int i = 0; i < gameLoader.getMeshes().size(); i++) {
-		load.mesh = gameLoader.getMeshes()[i];
-		load.transform.Scale(vec3(-0.9, -0.9, -0.9));
-		load.standardMat.diffuseMap = MAP_CHECKER;
-		//load.standardMat.reflectivity = 0;
-		//load.standardMat.diffuseLevel = 0;
-		//load.standardMat.selfIllumLevel = 1;
-		Game::CreateWorldObject(load);
-	}*/
-
 	//Skybox
 	skybox.mesh = GeoGenerator::MakeSphere(1000, 4, 8, true);
 	skybox.particleOverlayMat.mainTexture = MAP_ENV;
@@ -46,9 +32,16 @@ void Game::BuildWorld()
 	//ifndef Car Cacophony
 	temp = GameObject();
 	temp.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
-	temp.transform.Translate(vec3(-3, 2, 0));
+	temp.name = "Player1";
 	ptr = Game::CreateWorldObject(temp);
 	ptr->AddComponent(new VehicleComponent());
+	ptr->AddComponent(new MachineGunComponent());
+
+	GameObject temp2 = GameObject();
+	temp2.mesh = GeoGenerator::MakeBox(3.0, 3.0, 3.0, false);
+	ptr = Game::CreateWorldObject(temp2);
+	ptr->AddComponent(new EnemyComponent());
+	ptr->AddComponent(new HealthComponent());
 	
 	/*temp = GameObject();
 	temp.mesh = GeoGenerator::MakeCylinder(1.0, 1.0, 0.4, 16);
@@ -150,6 +143,23 @@ void Game::DestroyWorldObject(GameObject object)
 			worldObjectList[i].objectID--;
 	}
 	object.RemoveComponents();
+}
+void Game::DestroyWorldObjectAt(int objectID)
+{
+	if (objectID >= 0 && objectID < worldObjectList.size())
+	{
+		GameObject object = worldObjectList[objectID];
+		worldObjectList.erase(worldObjectList.begin() + object.objectID);
+		for (int i = 0; i < worldObjectList.size(); i++)
+		{
+			if (worldObjectList[i].objectID > object.objectID)
+				worldObjectList[i].objectID--;
+		}
+		object.RemoveComponents();
+	}
+	else
+		cout << "World Object index out of range: " << objectID << " - " <<
+		worldObjectList.size()-1 << endl;
 }
 void Game::DestroyParticleObject(GameObject object)
 {

@@ -10,6 +10,7 @@ public:
 	virtual void Start();
 	virtual void Update();
 
+	void SetSelfID(int gameObjectID);
 	void SetMesh(Mesh *mesh);
 	void SetTransform(Transform *transform);
 	void SetStandardMaterial(StandardMaterial *standardMat);
@@ -19,6 +20,7 @@ public:
 	void Finalize();//Call this at the end of Start() and Update() to pass changes to GameObject
 
 protected:
+	int selfGameObjectID;
 	Mesh mesh;
 	Transform transform;
 	StandardMaterial standardMat;

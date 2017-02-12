@@ -40,12 +40,13 @@ public:
 	vec3 GetRight();
 	vec3 GetForward();
 
+	vec3 up;
+	vec3 right;
+	vec3 forward;
+
 	Transform *parent = nullptr;
 
 protected:
 	
 private:
-	vec3 up;
-	vec3 right;
-	vec3 forward;
 };

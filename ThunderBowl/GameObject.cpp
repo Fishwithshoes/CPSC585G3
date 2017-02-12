@@ -150,6 +150,7 @@ Component* GameObject::GetComponentAt(int index)
 void GameObject::AddComponent(Component *source)
 {
 	componentList.push_back(source);
+	source->SetSelfID(this->objectID);
 	source->SetMesh(&mesh);
 	source->SetTransform(&transform);
 	source->SetStandardMaterial(&standardMat);

@@ -75,6 +75,7 @@ public:
 
 	//setter
 	static void setGVehicleNoDrive(physx::PxVehicleNoDrive* in);
+	static void setEnVehicleNoDrive(physx::PxVehicleNoDrive* in);
 
 	//PxVehicleSetup
 	static void computeWheelCenterActorOffsets(const physx::PxF32 wheelFrontZ, const physx::PxF32 wheelRearZ, const physx::PxVec3& chassisDims, const physx::PxF32 wheelWidth, const physx::PxF32 wheelRadius, const physx::PxU32 numWheels, physx::PxVec3* wheelCentreOffsets);

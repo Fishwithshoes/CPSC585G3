@@ -11,6 +11,11 @@ void Component::Update()
 	cout << "Tum de dum da doo! You should not be seeing me!!" << endl;
 }
 
+void Component::SetSelfID(int gameObjectID)
+{
+	selfGameObjectID = gameObjectID;
+}
+
 void Component::SetMesh(Mesh *mesh)
 {
 	meshPtr = mesh;

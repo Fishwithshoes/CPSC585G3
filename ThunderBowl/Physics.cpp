@@ -18,6 +18,9 @@ PxVehicleDrivableSurfaceToTireFrictionPairs* gFrictionPairs = NULL;
 
 PxRigidStatic*			gGroundPlane = NULL;
 PxVehicleNoDrive*		gVehicleNoDrive = NULL;
+PxVehicleNoDrive*		enVehicleNoDrive = NULL;
+
+
 
 //PxTransform* gBaseTrans = NULL;
 //PxVisualDebuggerConnection* gVDebugConnection = NULL;
@@ -30,24 +33,6 @@ PxVehicleNoDrive*		gVehicleNoDrive = NULL;
 Physics::~Physics()
 {
 }*/
-
-PxFilterFlags VehicleFilterShader
-(PxFilterObjectAttributes attributes0, PxFilterData filterData0,
-	PxFilterObjectAttributes attributes1, PxFilterData filterData1,
-	PxPairFlags& pairFlags, const void* constantBlock, PxU32 constantBlockSize)
-{
-	PX_UNUSED(attributes0);
-	PX_UNUSED(attributes1);
-	PX_UNUSED(constantBlock);
-	PX_UNUSED(constantBlockSize);
-
-	if ((0 == (filterData0.word0 & filterData1.word1)) && (0 == (filterData1.word0 & filterData0.word1)))
-		return PxFilterFlag::eSUPPRESS;
-
-	pairFlags = PxPairFlag::eCONTACT_DEFAULT;
-
-	return PxFilterFlags();
-}
 
 void Physics::initializePhysX() {
 	gFoundation = PxCreateFoundation(PX_PHYSICS_VERSION, gDefaultAllocator, gDefaultErrorCallback);
@@ -69,7 +54,7 @@ void Physics::initializePhysX() {
 	sceneDesc.filterShader = VehicleFilterShader;//PxFilterFlag::eSUPPRESS;
 	gScene = gPhysics->createScene(sceneDesc);
 
-	gMaterial = gPhysics->createMaterial(0.5f, 0.5f, 0.6f);
+	gMaterial = gPhysics->createMaterial(1.0f, 1.0f, 0.1f);
 
 	gCooking = PxCreateCooking(PX_PHYSICS_VERSION, *gFoundation, PxCookingParams(PxTolerancesScale()));
 
@@ -97,10 +82,23 @@ void Physics::computeRotation(PxQuat angle) {}
 PxRigidDynamic* Physics::createTestBox(PxReal sideLength)
 {
 	PxShape* shape = gPhysics->createShape(PxBoxGeometry(sideLength, sideLength, sideLength), *gMaterial);
-	PxRigidDynamic* body = gPhysics->createRigidDynamic(PxTransform(PxVec3(0, 0, 0)));
+	PxRigidDynamic* body = gPhysics->createRigidDynamic(PxTransform(PxVec3(5, 5, 0)));
 	body->attachShape(*shape);
 	PxRigidBodyExt::updateMassAndInertia(*body, 1.0f);
 	gScene->addActor(*body);
+
+	PxFilterData boxSimFilterData;
+	boxSimFilterData.word0 = Physics::CollisionTypes::COLLISION_FLAG_OBSTACLE;
+	boxSimFilterData.word1 = Physics::CollisionTypes::COLLISION_FLAG_OBSTACLE_AGAINST;
+
+
+	//Wheel and chassis query filter data.
+	//Optional: cars don't drive on other cars.
+	PxFilterData boxQryFilterData;
+
+	shape->setSimulationFilterData(boxSimFilterData);
+	shape->setQueryFilterData(boxQryFilterData);
+
 	return body;
 }
 
@@ -168,6 +166,11 @@ physx::PxScene* Physics::getGScene()
 void Physics::setGVehicleNoDrive(physx::PxVehicleNoDrive* in)
 {
 	gVehicleNoDrive = in;
+}
+
+void Physics::setEnVehicleNoDrive(physx::PxVehicleNoDrive* in)
+{
+	enVehicleNoDrive = in;
 }
 
 
@@ -367,6 +370,26 @@ PxVehicleNoDrive* Physics::createVehicleNoDrive(const Physics::VehicleDesc& vehi
 	return vehDriveNoDrive;
 }
 
+PxFilterFlags VehicleFilterShader
+(PxFilterObjectAttributes attributes0, PxFilterData filterData0,
+	PxFilterObjectAttributes attributes1, PxFilterData filterData1,
+	PxPairFlags& pairFlags, const void* constantBlock, PxU32 constantBlockSize)
+{
+	PX_UNUSED(attributes0);
+	PX_UNUSED(attributes1);
+	PX_UNUSED(constantBlock);
+	PX_UNUSED(constantBlockSize);
+
+	if ((0 == (filterData0.word0 & filterData1.word1)) &&
+		(0 == (filterData1.word0 & filterData0.word1))
+		)
+		return PxFilterFlag::eSUPPRESS;
+
+	pairFlags = PxPairFlag::eCONTACT_DEFAULT;
+
+	return PxFilterFlags();
+}
+
 PxRigidStatic* Physics::createDrivablePlane(PxMaterial* material, PxPhysics* physics)
 {
 	//Add a plane to the scene.
@@ -518,7 +541,7 @@ void Physics::customizeVehicleToLengthScale(const PxReal lengthScale, PxRigidDyn
 			PxVehicleWheelData wheelData = wheelsSimData->getWheelData(i);
 			wheelData.mRadius *= lengthScale;
 			wheelData.mWidth *= lengthScale;
-			wheelData.mDampingRate *= lengthScale*lengthScale;
+			wheelData.mDampingRate *= lengthScale*lengthScale;//WHEEL_DAMPING_RATE
 			wheelData.mMaxBrakeTorque *= lengthScale*lengthScale;
 			wheelData.mMaxHandBrakeTorque *= lengthScale*lengthScale;
 			wheelData.mMOI *= lengthScale*lengthScale;
@@ -658,7 +681,7 @@ void Physics::customizeVehicleToLengthScale(const PxReal lengthScale, PxRigidDyn
 static PxF32 gTireFrictionMultipliers[Physics::SurfaceTypes::MAX_NUM_SURFACE_TYPES][Physics::TireTypes::MAX_NUM_TIRE_TYPES] =
 {
 	//NORMAL,	WORN
-	{ 1.00f,		0.1f }//TARMAC
+	{ 15.00f,		0.1f }//TARMAC FRICTION VALUE FOR TIRE
 };
 
 PxVehicleDrivableSurfaceToTireFrictionPairs* Physics::createFrictionPairs(const PxMaterial* defaultMaterial)
@@ -692,7 +715,7 @@ Physics::VehicleDesc Physics::initVehicleDesc()
 	//Set up the chassis mass, dimensions, moment of inertia, and center of mass offset.
 	//The moment of inertia is just the moment of inertia of a cuboid but modified for easier steering.
 	//Center of mass offset is 0.65m above the base of the chassis and 0.25m towards the front.
-	const PxF32 chassisMass = 500.0f;
+	const PxF32 chassisMass = 250.0f;
 	const PxVec3 chassisDims(2.0f, 2.0f, 2.0f);
 	const PxVec3 chassisMOI
 	((chassisDims.y*chassisDims.y + chassisDims.z*chassisDims.z)*chassisMass / 12.0f,
@@ -702,7 +725,7 @@ Physics::VehicleDesc Physics::initVehicleDesc()
 
 	//Set up the wheel mass, radius, width, moment of inertia, and number of wheels.
 	//Moment of inertia is just the moment of inertia of a cylinder.
-	const PxF32 wheelMass = 20.0f;
+	const PxF32 wheelMass = 10.0f;
 	const PxF32 wheelRadius = 0.5f;
 	const PxF32 wheelWidth = 0.4f;
 	const PxF32 wheelMOI = 0.5f*wheelMass*wheelRadius*wheelRadius;

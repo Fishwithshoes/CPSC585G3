@@ -18,6 +18,7 @@ public:
 	static GameObject* CreateOverlayObject(GameObject object);
 
 	static void DestroyWorldObject(GameObject object);
+	static void DestroyWorldObjectAt(int objectID);
 	static void DestroyParticleObject(GameObject object);
 	static void DestroyOverlayObject(GameObject object);
 

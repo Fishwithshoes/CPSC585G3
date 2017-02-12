@@ -420,7 +420,7 @@ void Renderer::RenderScene(Renderer *renderer)
 		renderer->geometry.elementCount = mesh.indices.size();
 
 		BufferGeoData(renderer, mesh);
-		glDrawElements(GL_TRIANGLES, renderer->geometry.elementCount, GL_UNSIGNED_INT, nullptr);
+		//glDrawElements(GL_TRIANGLES, renderer->geometry.elementCount, GL_UNSIGNED_INT, nullptr);
 	}
 
 	//CLEAR DEPTH BUFFER AND DRAW OVERLAY OBJECTS

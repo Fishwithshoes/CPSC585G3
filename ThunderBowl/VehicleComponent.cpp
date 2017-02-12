@@ -35,17 +35,42 @@ void VehicleComponent::Start()
 
 void VehicleComponent::Update()
 {
-	Initialize();	
+	Initialize();
 
-	if (Input::GetXBoxAxis(1,ButtonCode::XBOX_RIGHT_TRIGGER))
+	physx::PxReal maxTorque = 1500.0;
+	physx::PxReal brakeTorque = 400.0;
+	physx::PxReal turnTemper = 0.1;
+
+	//Gas
+	gVehicleNoDrive->setDriveTorque(0, Input::GetXBoxAxis(1, ButtonCode::XBOX_RIGHT_TRIGGER)*maxTorque);
+	gVehicleNoDrive->setDriveTorque(1, Input::GetXBoxAxis(1, ButtonCode::XBOX_RIGHT_TRIGGER)*maxTorque);
+	
+	//Steering
+	gVehicleNoDrive->setSteerAngle(2, Input::GetXBoxAxis(1, ButtonCode::XBOX_JOY_LEFT_HORIZONTAL)*turnTemper);
+	gVehicleNoDrive->setSteerAngle(3, Input::GetXBoxAxis(1, ButtonCode::XBOX_JOY_LEFT_HORIZONTAL)*turnTemper);
+
+	//Brake
+	//gVehicleNoDrive->setBrakeTorque(0, Input::GetXBoxAxis(1, ButtonCode::XBOX_LEFT_TRIGGER)*brakeTorque);
+	//gVehicleNoDrive->setBrakeTorque(1, Input::GetXBoxAxis(1, ButtonCode::XBOX_LEFT_TRIGGER)*brakeTorque);
+
+	//Alt-Brake
+	if (Input::GetXBoxAxis(1, ButtonCode::XBOX_LEFT_TRIGGER) > 0.0f)
+	{
+		
+		gVehicleNoDrive->setDriveTorque(0, -Input::GetXBoxAxis(1, ButtonCode::XBOX_LEFT_TRIGGER)*brakeTorque);
+		gVehicleNoDrive->setDriveTorque(1, -Input::GetXBoxAxis(1, ButtonCode::XBOX_LEFT_TRIGGER)*brakeTorque);
+	}
+
+	/*if (Input::GetXBoxAxis(1,ButtonCode::XBOX_RIGHT_TRIGGER))
 	{
 		//physx::PxRigidBodyExt::addLocalForceAtLocalPos(*physVehicle, physx::PxVec3(0.0,0.0,50.0), physx::PxVec3(0.0,0.0,0.0));
 		gVehicleNoDrive->setDriveTorque(0, 100.0f);
+		gVehicleNoDrive->setDriveTorque(1, 100.0f);
 	}
 	else if(Input::GetXBoxAxis(1, ButtonCode::XBOX_LEFT_TRIGGER))
 	{
 		//physx::PxRigidBodyExt::addLocalForceAtLocalPos(*physVehicle, physx::PxVec3(0.0, 0.0, -50.0), physx::PxVec3(0.0, 0.0, 0.0));
-	}
+	}*/
 
 		//physx::PxRigidBodyExt::addLocalForceAtLocalPos(*physVehicle, physx::PxVec3(5.0*(Input::GetXBoxAxis(1, ButtonCode::XBOX_JOY_LEFT_HORIZONTAL)), 0.0, 0.0), physx::PxVec3(0.0, 0.0, 100.0));
 
@@ -71,6 +96,12 @@ void VehicleComponent::Update()
 	followCam->transform.position = cameraOffset;
 
 	transform.rotationMatrix = newRot;
-	
+	glm::vec4 forward = glm::vec4(0.0, 0.0, 1.0, 0.0);
+	forward = glm::inverse(newRot) * forward;
+
+	transform.forward.x = forward.x;
+	transform.forward.y = forward.y;
+	transform.forward.z = forward.z;
+
 	Finalize();
 }
