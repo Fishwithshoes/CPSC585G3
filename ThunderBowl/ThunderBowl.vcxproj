@@ -41,6 +41,7 @@
     <ClInclude Include="RendererUtility.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="RotateComponent.h" />
+    <ClInclude Include="StaticComponent.h" />
     <ClInclude Include="Structs.h" />
     <ClInclude Include="Time.h" />
     <ClInclude Include="Transform.h" />
@@ -72,6 +73,7 @@
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="RendererUtility.cpp" />
     <ClCompile Include="RotateComponent.cpp" />
+    <ClCompile Include="StaticComponent.cpp" />
     <ClCompile Include="Time.cpp" />
     <ClCompile Include="Transform.cpp" />
     <ClCompile Include="VehicleComponent.cpp" />

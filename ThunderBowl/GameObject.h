@@ -8,7 +8,7 @@
 #include "EnemyComponent.h"
 #include "MachineGunComponent.h"
 #include "HealthComponent.h"
-
+#include "StaticComponent.h"
 
 
 class GameObject

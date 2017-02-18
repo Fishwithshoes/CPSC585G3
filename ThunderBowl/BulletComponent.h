@@ -1,8 +1,12 @@
 #pragma once
 #include "Component.h"
+#include <PxPhysicsAPI.h>
+
 class BulletComponent : public Component
 {
 public:
+	physx::PxRigidDynamic* bullet;
+
 	void Start();
 	void Update();
 

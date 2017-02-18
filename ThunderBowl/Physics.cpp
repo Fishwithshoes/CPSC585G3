@@ -54,7 +54,7 @@ void Physics::initializePhysX() {
 	sceneDesc.filterShader = VehicleFilterShader;//PxFilterFlag::eSUPPRESS;
 	gScene = gPhysics->createScene(sceneDesc);
 
-	gMaterial = gPhysics->createMaterial(1.0f, 1.0f, 0.1f);
+	gMaterial = gPhysics->createMaterial(0.5f, 0.5f, 0.3f);
 
 	gCooking = PxCreateCooking(PX_PHYSICS_VERSION, *gFoundation, PxCookingParams(PxTolerancesScale()));
 
@@ -78,29 +78,6 @@ void Physics::initializePhysX() {
 }
 
 void Physics::computeRotation(PxQuat angle) {}
-
-PxRigidDynamic* Physics::createTestBox(PxReal sideLength)
-{
-	PxShape* shape = gPhysics->createShape(PxBoxGeometry(sideLength, sideLength, sideLength), *gMaterial);
-	PxRigidDynamic* body = gPhysics->createRigidDynamic(PxTransform(PxVec3(5, 5, 0)));
-	body->attachShape(*shape);
-	PxRigidBodyExt::updateMassAndInertia(*body, 1.0f);
-	gScene->addActor(*body);
-
-	PxFilterData boxSimFilterData;
-	boxSimFilterData.word0 = Physics::CollisionTypes::COLLISION_FLAG_OBSTACLE;
-	boxSimFilterData.word1 = Physics::CollisionTypes::COLLISION_FLAG_OBSTACLE_AGAINST;
-
-
-	//Wheel and chassis query filter data.
-	//Optional: cars don't drive on other cars.
-	PxFilterData boxQryFilterData;
-
-	shape->setSimulationFilterData(boxSimFilterData);
-	shape->setQueryFilterData(boxQryFilterData);
-
-	return body;
-}
 
 void Physics::stepPhysics()
 {
@@ -390,6 +367,58 @@ PxFilterFlags VehicleFilterShader
 	return PxFilterFlags();
 }
 
+PxRigidDynamic* Physics::createVehicleActor
+(const PxVehicleChassisData& chassisData,
+	PxMaterial** wheelMaterials, PxConvexMesh** wheelConvexMeshes, const PxU32 numWheels,
+	PxMaterial** chassisMaterials, PxConvexMesh** chassisConvexMeshes, const PxU32 numChassisMeshes,
+	PxPhysics& physics)
+{
+	//We need a rigid body actor for the vehicle.
+	//Don't forget to add the actor to the scene after setting up the associated vehicle.
+	PxRigidDynamic* vehActor = physics.createRigidDynamic(PxTransform(PxIdentity));
+
+	//Wheel and chassis simulation filter data.
+	PxFilterData wheelSimFilterData;
+	wheelSimFilterData.word0 = Physics::CollisionTypes::COLLISION_FLAG_WHEEL;
+	wheelSimFilterData.word1 = Physics::CollisionTypes::COLLISION_FLAG_WHEEL_AGAINST;
+	PxFilterData chassisSimFilterData;
+	chassisSimFilterData.word0 = Physics::CollisionTypes::COLLISION_FLAG_CHASSIS;
+	chassisSimFilterData.word1 = Physics::CollisionTypes::COLLISION_FLAG_CHASSIS_AGAINST;
+
+	//Wheel and chassis query filter data.
+	//Optional: cars don't drive on other cars.
+	PxFilterData wheelQryFilterData;
+	setupNonDrivableSurface(wheelQryFilterData);
+	PxFilterData chassisQryFilterData;
+	setupNonDrivableSurface(chassisQryFilterData);
+
+	//Add all the wheel shapes to the actor.
+	for (PxU32 i = 0; i < numWheels; i++)
+	{
+		PxConvexMeshGeometry geom(wheelConvexMeshes[i]);
+		PxShape* wheelShape = vehActor->createShape(geom, *wheelMaterials[i]);
+		wheelShape->setQueryFilterData(wheelQryFilterData);
+		wheelShape->setSimulationFilterData(wheelSimFilterData);
+		wheelShape->setLocalPose(PxTransform(PxIdentity));
+	}
+
+	//Add the chassis shapes to the actor.
+	for (PxU32 i = 0; i < numChassisMeshes; i++)
+	{
+		PxShape* chassisShape = vehActor->createShape
+		(PxConvexMeshGeometry(chassisConvexMeshes[i]), *chassisMaterials[i]);
+		chassisShape->setQueryFilterData(chassisQryFilterData);
+		chassisShape->setSimulationFilterData(chassisSimFilterData);
+		chassisShape->setLocalPose(PxTransform(PxIdentity));
+	}
+
+	vehActor->setMass(chassisData.mMass);
+	vehActor->setMassSpaceInertiaTensor(chassisData.mMOI);
+	vehActor->setCMassLocalPose(PxTransform(chassisData.mCMOffset, PxQuat(PxIdentity)));
+
+	return vehActor;
+}
+
 PxRigidStatic* Physics::createDrivablePlane(PxMaterial* material, PxPhysics* physics)
 {
 	//Add a plane to the scene.
@@ -411,6 +440,36 @@ PxRigidStatic* Physics::createDrivablePlane(PxMaterial* material, PxPhysics* phy
 	shapes[0]->setSimulationFilterData(simFilterData);
 
 	return groundPlane;
+}
+
+PxRigidDynamic* Physics::createTestBox(PxReal sideLength)
+{
+	PxShape* shape = gPhysics->createShape(PxBoxGeometry(sideLength, sideLength, sideLength), *gMaterial);
+	PxRigidDynamic* body = gPhysics->createRigidDynamic(PxTransform(PxIdentity));
+
+	PxFilterData boxSimFilterData;
+	boxSimFilterData.word0 = Physics::CollisionTypes::COLLISION_FLAG_OBSTACLE;
+	boxSimFilterData.word1 = Physics::CollisionTypes::COLLISION_FLAG_OBSTACLE_AGAINST;
+	shape->setSimulationFilterData(boxSimFilterData);
+	body->attachShape(*shape);
+	//PxRigidBodyExt::updateMassAndInertia(*body, 1.0f);
+	gScene->addActor(*body);
+	return body;
+}
+
+PxRigidDynamic* Physics::createTestProjectile()
+{
+	PxShape* shape = gPhysics->createShape(PxSphereGeometry(0.1), *gMaterial);
+	PxRigidDynamic* body = gPhysics->createRigidDynamic(PxTransform(PxIdentity));
+
+	PxFilterData projSimFilterData;
+	projSimFilterData.word0 = Physics::CollisionTypes::COLLISION_FLAG_PROJECTILE;
+	projSimFilterData.word1 = Physics::CollisionTypes::COLLISION_FLAG_PROJECTILE_AGAINST;
+	shape->setSimulationFilterData(projSimFilterData);
+	body->attachShape(*shape);
+	//PxRigidBodyExt::updateMassAndInertia(*body, 1.0f);
+	gScene->addActor(*body);
+	return body;
 }
 
 static PxConvexMesh* createConvexMesh(const PxVec3* verts, const PxU32 numVerts, PxPhysics& physics, PxCooking& cooking)
@@ -467,58 +526,6 @@ PxConvexMesh* Physics::createWheelMesh(const PxF32 width, const PxF32 radius, Px
 	}
 
 	return createConvexMesh(points, 32, physics, cooking);
-}
-
-PxRigidDynamic* Physics::createVehicleActor
-(const PxVehicleChassisData& chassisData,
-	PxMaterial** wheelMaterials, PxConvexMesh** wheelConvexMeshes, const PxU32 numWheels,
-	PxMaterial** chassisMaterials, PxConvexMesh** chassisConvexMeshes, const PxU32 numChassisMeshes,
-	PxPhysics& physics)
-{
-	//We need a rigid body actor for the vehicle.
-	//Don't forget to add the actor to the scene after setting up the associated vehicle.
-	PxRigidDynamic* vehActor = physics.createRigidDynamic(PxTransform(PxIdentity));
-
-	//Wheel and chassis simulation filter data.
-	PxFilterData wheelSimFilterData;
-	wheelSimFilterData.word0 = Physics::CollisionTypes::COLLISION_FLAG_WHEEL;
-	wheelSimFilterData.word1 = Physics::CollisionTypes::COLLISION_FLAG_WHEEL_AGAINST;
-	PxFilterData chassisSimFilterData;
-	chassisSimFilterData.word0 = Physics::CollisionTypes::COLLISION_FLAG_CHASSIS;
-	chassisSimFilterData.word1 = Physics::CollisionTypes::COLLISION_FLAG_CHASSIS_AGAINST;
-
-	//Wheel and chassis query filter data.
-	//Optional: cars don't drive on other cars.
-	PxFilterData wheelQryFilterData;
-	setupNonDrivableSurface(wheelQryFilterData);
-	PxFilterData chassisQryFilterData;
-	setupNonDrivableSurface(chassisQryFilterData);
-
-	//Add all the wheel shapes to the actor.
-	for (PxU32 i = 0; i < numWheels; i++)
-	{
-		PxConvexMeshGeometry geom(wheelConvexMeshes[i]);
-		PxShape* wheelShape = vehActor->createShape(geom, *wheelMaterials[i]);
-		wheelShape->setQueryFilterData(wheelQryFilterData);
-		wheelShape->setSimulationFilterData(wheelSimFilterData);
-		wheelShape->setLocalPose(PxTransform(PxIdentity));
-	}
-
-	//Add the chassis shapes to the actor.
-	for (PxU32 i = 0; i < numChassisMeshes; i++)
-	{
-		PxShape* chassisShape = vehActor->createShape
-		(PxConvexMeshGeometry(chassisConvexMeshes[i]), *chassisMaterials[i]);
-		chassisShape->setQueryFilterData(chassisQryFilterData);
-		chassisShape->setSimulationFilterData(chassisSimFilterData);
-		chassisShape->setLocalPose(PxTransform(PxIdentity));
-	}
-
-	vehActor->setMass(chassisData.mMass);
-	vehActor->setMassSpaceInertiaTensor(chassisData.mMOI);
-	vehActor->setCMassLocalPose(PxTransform(chassisData.mCMOffset, PxQuat(PxIdentity)));
-
-	return vehActor;
 }
 
 void Physics::customizeVehicleToLengthScale(const PxReal lengthScale, PxRigidDynamic* rigidDynamic, PxVehicleWheelsSimData* wheelsSimData, PxVehicleDriveSimData* driveSimData)

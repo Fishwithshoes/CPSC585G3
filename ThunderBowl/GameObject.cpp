@@ -128,7 +128,7 @@ Component* GameObject::GetComponent(Component* type)
 	//Search for component of supplied type and return the first found instance
 	for (int i = 0; i < componentList.size(); i++)
 	{
-		if (typeid(componentList[i]) == typeid(type))
+		if (typeid(*componentList[i]) == typeid(*type))
 			return componentList[i];
 	}
 	//Simply return a new component of supplied type and throw an error

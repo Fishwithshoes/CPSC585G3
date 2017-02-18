@@ -1,5 +1,5 @@
 #include "VehicleComponent.h"
-#include "Game.h"
+//#include "Game.h"
 #include "Renderer.h"
 #include "Physics.h"
 
@@ -61,22 +61,9 @@ void VehicleComponent::Update()
 		gVehicleNoDrive->setDriveTorque(1, -Input::GetXBoxAxis(1, ButtonCode::XBOX_LEFT_TRIGGER)*brakeTorque);
 	}
 
-	/*if (Input::GetXBoxAxis(1,ButtonCode::XBOX_RIGHT_TRIGGER))
-	{
-		//physx::PxRigidBodyExt::addLocalForceAtLocalPos(*physVehicle, physx::PxVec3(0.0,0.0,50.0), physx::PxVec3(0.0,0.0,0.0));
-		gVehicleNoDrive->setDriveTorque(0, 100.0f);
-		gVehicleNoDrive->setDriveTorque(1, 100.0f);
-	}
-	else if(Input::GetXBoxAxis(1, ButtonCode::XBOX_LEFT_TRIGGER))
-	{
-		//physx::PxRigidBodyExt::addLocalForceAtLocalPos(*physVehicle, physx::PxVec3(0.0, 0.0, -50.0), physx::PxVec3(0.0, 0.0, 0.0));
-	}*/
 
-		//physx::PxRigidBodyExt::addLocalForceAtLocalPos(*physVehicle, physx::PxVec3(5.0*(Input::GetXBoxAxis(1, ButtonCode::XBOX_JOY_LEFT_HORIZONTAL)), 0.0, 0.0), physx::PxVec3(0.0, 0.0, 100.0));
-
-
-	if (Input::GetButton(ButtonCode::MIDDLE_MOUSE))
-		Time::timeScale += Input::GetMouseDelta().x * Time::getDeltaTime();	
+	//if (Input::GetButton(ButtonCode::MIDDLE_MOUSE))
+		//Time::timeScale += Input::GetMouseDelta().x * Time::getDeltaTime();	
 
 	transform.position.x = physVehicle->getGlobalPose().p.x;
 	transform.position.y = physVehicle->getGlobalPose().p.y;
