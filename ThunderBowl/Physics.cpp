@@ -34,6 +34,48 @@ Physics::~Physics()
 {
 }*/
 
+class ContactReportCallback : public PxSimulationEventCallback
+{
+	void onConstraintBreak(PxConstraintInfo* constraints, PxU32 count) { PX_UNUSED(constraints); PX_UNUSED(count); }
+	void onWake(PxActor** actors, PxU32 count) { PX_UNUSED(actors); PX_UNUSED(count); }
+	void onSleep(PxActor** actors, PxU32 count) { PX_UNUSED(actors); PX_UNUSED(count); }
+	void onTrigger(PxTriggerPair* pairs, PxU32 count) { PX_UNUSED(pairs); PX_UNUSED(count); }
+	void onContact(const PxContactPairHeader& pairHeader, const PxContactPair* pairs, PxU32 nbPairs)
+	{
+		PxU32 shapeBufferSize = pairHeader.actors[0]->getNbShapes() * sizeof(PxShape*);
+		PxShape** shapeBuffer = new PxShape*[shapeBufferSize];
+		pairHeader.actors[0]->getShapes(shapeBuffer, shapeBufferSize);
+		if (shapeBuffer[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_PROJECTILE) {
+			cout << "projectile collision" << endl;
+			pairHeader.actors[0]->setGlobalPose(PxTransform(-250.0, -250.0, -250.0));
+			//pairHeader.actors[0] = nullptr;
+		}
+		/*shape->getSimulationFilterData();
+		
+		PX_UNUSED((pairHeader));
+		std::vector<PxContactPairPoint> contactPoints;
+
+		for (PxU32 i = 0; i<nbPairs; i++)
+		{
+			PxU32 contactCount = pairs[i].contactCount;
+			if (contactCount)
+			{
+				contactPoints.resize(contactCount);
+				pairs[i].extractContacts(&contactPoints[0], contactCount);
+
+				for (PxU32 j = 0; j<contactCount; j++)
+				{
+					gContactPositions.push_back(contactPoints[j].position);
+					gContactImpulses.push_back(contactPoints[j].impulse);
+				}
+			}
+		}*/
+		delete[] shapeBuffer;
+	}
+};
+
+ContactReportCallback gContactReportCallback;
+
 void Physics::initializePhysX() {
 	gFoundation = PxCreateFoundation(PX_PHYSICS_VERSION, gDefaultAllocator, gDefaultErrorCallback);
 	PxProfileZoneManager* profileZoneManager = &PxProfileZoneManager::createProfileZoneManager(gFoundation);
@@ -52,6 +94,7 @@ void Physics::initializePhysX() {
 	gDispatcher = PxDefaultCpuDispatcherCreate(2);
 	sceneDesc.cpuDispatcher = gDispatcher;
 	sceneDesc.filterShader = VehicleFilterShader;//PxFilterFlag::eSUPPRESS;
+	sceneDesc.simulationEventCallback = &gContactReportCallback;
 	gScene = gPhysics->createScene(sceneDesc);
 
 	gMaterial = gPhysics->createMaterial(0.5f, 0.5f, 0.3f);
@@ -120,7 +163,7 @@ void Physics::cleanupPhysics()
 	profileZoneManager->release();
 	gFoundation->release();
 
-	printf("ThnderBowl done.\n");
+	printf("ThunderBowl done.\n");
 }
 
 //getters
@@ -364,8 +407,36 @@ PxFilterFlags VehicleFilterShader
 
 	pairFlags = PxPairFlag::eCONTACT_DEFAULT;
 
+	if ((filterData0.word0 & filterData1.word1) && (filterData1.word0 & filterData0.word1))
+		pairFlags |= PxPairFlag::eNOTIFY_TOUCH_FOUND;
+
 	return PxFilterFlags();
 }
+
+/*void setupFiltering(PxRigidActor* actor, PxU32 filterGroup, PxU32 filterMask)
+{
+	PxFilterData filterData;
+	filterData.word0 = filterGroup; // word0 = own ID
+	filterData.word1 = filterMask;  // word1 = ID mask to filter pairs that trigger a
+									// contact callback;
+	const PxU32 numShapes = actor->getNbShapes();
+	PxShape** shapes = (PxShape**)SAMPLE_ALLOC(sizeof(PxShape*)*numShapes);
+	actor->getShapes(shapes, numShapes);
+	for (PxU32 i = 0; i < numShapes; i++)
+	{
+		PxShape* shape = shapes[i];
+		shape->setSimulationFilterData(filterData);
+	}
+	SAMPLE_FREE(shapes);
+}
+
+void setFilters()
+{
+	setupFiltering(gVehicleNoDrive->getRigidDynamicActor, Physics::CollisionTypes::COLLISION_FLAG_CHASSIS, Physics::CollisionTypes::CH);
+	setupFiltering(link, FilterGroup::eMINE_LINK, FilterGroup::eSUBMARINE);
+	setupFiltering(mineHead, FilterGroup::eMINE_HEAD, FilterGroup::eSUBMARINE);
+}*/
+
 
 PxRigidDynamic* Physics::createVehicleActor
 (const PxVehicleChassisData& chassisData,

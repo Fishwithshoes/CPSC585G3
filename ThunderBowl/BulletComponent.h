@@ -10,7 +10,7 @@ public:
 	void Start();
 	void Update();
 
-	float speed = 100.0f;
+	float speed = 300.0f;
 	float lifeSpan = 3.0f;
 
 private:

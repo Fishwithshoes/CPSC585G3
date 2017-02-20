@@ -12,7 +12,6 @@ void StaticComponent::Start()
 	physx::PxScene* worldScene = Physics::getGScene();
 
 	statComp = Physics::createTestBox(2.0);
-	worldScene->addActor(*statComp);
 
 	physx::PxTransform offset = physx::PxTransform(1.0, 5.0, 5.0);
 	statComp->setGlobalPose(offset);
@@ -32,9 +31,6 @@ void StaticComponent::Update()
 	transform.position.z = statComp->getGlobalPose().p.z;
 
 	physx::PxQuat pq = statComp->getGlobalPose().q;
-	std::cout << pq.x << std::endl;
-	std::cout << pq.y << std::endl;
-	std::cout << pq.z << std::endl;
 
 	mat4 newRot = glm::mat4_cast(glm::quat(pq.w, pq.x, pq.y, pq.z));
 	newRot = glm::inverse(newRot);

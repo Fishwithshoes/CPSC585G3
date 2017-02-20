@@ -4,6 +4,7 @@
 
 void BulletComponent::Start()
 {
+
 	Initialize();
 	VehicleComponent* temp = &VehicleComponent();
 	VehicleComponent* thisVeh = (VehicleComponent*) Game::Find("Player1")->GetComponent(temp);
@@ -14,12 +15,11 @@ void BulletComponent::Start()
 	physx::PxScene* worldScene = Physics::getGScene();
 
 	bullet = Physics::createTestProjectile();
-	worldScene->addActor(*bullet);
 
 	physx::PxVec3 position;
 	position.x = transform.position.x;
 	position.y = transform.position.y;
-	position.z = transform.position.z;
+	position.z = transform.position.z + 2.0;
 	bullet->setGlobalPose(physx::PxTransform(position));
 
 	physx::PxVec3 forward;
@@ -39,5 +39,12 @@ void BulletComponent::Update()
 	transform.position.y = bullet->getGlobalPose().p.y;
 	transform.position.z = bullet->getGlobalPose().p.z;
 
+	lifeRemaining -= Time::getDeltaTime();
+
 	Finalize();
+	
+	if (lifeRemaining <= 0.0) {
+		//destroy this
+		//bullet->release();
+	}
 }
