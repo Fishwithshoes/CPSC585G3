@@ -1,4 +1,5 @@
 #include "Physics.h"
+#include "Component.h"
 
 using namespace physx;
 
@@ -46,9 +47,8 @@ class ContactReportCallback : public PxSimulationEventCallback
 		PxShape** shapeBuffer = new PxShape*[shapeBufferSize];
 		pairHeader.actors[0]->getShapes(shapeBuffer, shapeBufferSize);
 		if (shapeBuffer[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_PROJECTILE) {
-			cout << "projectile collision" << endl;
-			pairHeader.actors[0]->setGlobalPose(PxTransform(-250.0, -250.0, -250.0));
-			//pairHeader.actors[0] = nullptr;
+			Component* owner = reinterpret_cast<Component*>(pairHeader.actors[0]->userData);
+			owner->OnCollision();
 		}
 		/*shape->getSimulationFilterData();
 		
@@ -70,7 +70,7 @@ class ContactReportCallback : public PxSimulationEventCallback
 				}
 			}
 		}*/
-		delete[] shapeBuffer;
+		//delete[] shapeBuffer;
 	}
 };
 

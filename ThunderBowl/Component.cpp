@@ -11,6 +11,8 @@ void Component::Update()
 	cout << "Tum de dum da doo! You should not be seeing me!!" << endl;
 }
 
+void Component::OnCollision() {}
+
 void Component::SetSelfID(int gameObjectID)
 {
 	selfGameObjectID = gameObjectID;

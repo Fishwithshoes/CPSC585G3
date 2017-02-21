@@ -15,6 +15,7 @@ void BulletComponent::Start()
 	physx::PxScene* worldScene = Physics::getGScene();
 
 	bullet = Physics::createTestProjectile();
+	bullet->userData = this;
 
 	physx::PxVec3 position;
 	position.x = transform.position.x;
@@ -47,4 +48,10 @@ void BulletComponent::Update()
 		//destroy this
 		//bullet->release();
 	}
+}
+
+void BulletComponent::OnCollision() {
+	cout << "Comp Collision" << endl;
+	//bullet->release();
+	//Game::DestroyWorldObjectAt(selfGameObjectID);
 }

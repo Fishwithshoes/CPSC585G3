@@ -9,6 +9,7 @@ class Component
 public:
 	virtual void Start();
 	virtual void Update();
+	virtual void OnCollision();
 
 	void SetSelfID(int gameObjectID);
 	void SetMesh(Mesh *mesh);

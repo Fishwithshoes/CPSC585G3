@@ -2,9 +2,6 @@
 #include <PxPhysicsAPI.h>
 #include <PxTransform.h>
 #include <PxRigidBodyExt.h>
-
-//#include <PhysX-3.3-master\PhysXSDK\Snippets\SnippetVehicleCommon\SnippetVehicleRaycast.h>
-//#include <PhysX-3.3-master\PhysXSDK\Snippets\SnippetVehicleCommon\SnippetVehicleRaycast.cpp>
 #include "VehicleRaycast.h"
 
 
@@ -67,6 +64,7 @@ public:
 	static void initializePhysX();
 	static physx::PxRigidDynamic* createTestBox(physx::PxReal sideLength);
 	static physx::PxRigidDynamic* createTestProjectile();
+
 	static void computeRotation(physx::PxQuat angle);
 	static void stepPhysics();
 	static void cleanupPhysics();
