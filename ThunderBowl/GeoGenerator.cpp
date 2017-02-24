@@ -373,6 +373,44 @@ Mesh GeoGenerator::MakeBox(float width, float height, float depth, bool insideOu
 	return result;
 }
 
+Mesh GeoGenerator::MakeParticle()
+{
+	Mesh result;
+
+	//Main construction
+	result.positions.push_back(vec3(-1.0, 1.0, 0.0));
+	result.colors.push_back(vec3(1.0, 0.0, 0.0));
+	result.normals.push_back(vec3(0.0, 0.0, 1.0));
+	result.texcoords.push_back(vec2(1.0, 1.0));
+
+	result.positions.push_back(vec3(1.0, 1.0, 0.0));
+	result.colors.push_back(vec3(0.0, 1.0, 0.0));
+	result.normals.push_back(vec3(0.0, 0.0, 1.0));
+	result.texcoords.push_back(vec2(0.0, 1.0));
+
+	result.positions.push_back(vec3(1.0, -1.0, 0.0));
+	result.colors.push_back(vec3(0.0, 0.0, 1.0));
+	result.normals.push_back(vec3(0.0, 0.0, 1.0));
+	result.texcoords.push_back(vec2(0.0, 0.0));
+
+	result.positions.push_back(vec3(-1.0, -1.0, 0.0));
+	result.colors.push_back(vec3(1.0, 1.0, 0.0));
+	result.normals.push_back(vec3(0.0, 0.0, 1.0));
+	result.texcoords.push_back(vec2(1.0, 0.0));
+
+	//Indicies
+	result.indices.push_back(0);
+	result.indices.push_back(1);
+	result.indices.push_back(3);
+
+	result.indices.push_back(1);
+	result.indices.push_back(2);
+	result.indices.push_back(3);
+
+	result.elementCount = result.positions.size();
+	return result;
+}
+
 //2D - For Overlay GameObjects
 Mesh GeoGenerator::MakeCircle(float sweep, int segments, float radius)
 {

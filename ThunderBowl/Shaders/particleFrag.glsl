@@ -7,22 +7,24 @@ in vec2 TexCoord;
 
 uniform vec4 color;
 uniform sampler2D mainTexture;
+uniform float fogLevel;
 
 uniform vec3 cameraPos;
+uniform vec3 cameraForward;
 
 //Post Process
-uniform vec2 screenDims;
-
-uniform sampler2D colorBufferMap;
-uniform sampler2D positionBufferMap;
-
-uniform writeonly image2D colorBuffer;
-uniform writeonly image2D positionBuffer;
-
-out vec4 FragmentColor;
+layout(location = 0) out vec4 OutputColor;
+layout(location = 1) out vec4 OutputPosition;
 
 void main()
 {
+	//ENV COLOR
+	vec3 dayPos = vec3(1,0,1);
+	float t = 1.0;
+	t = (dot(normalize(dayPos), cameraForward)+1)*0.5;	
+	// vec3 envColor = vec3(0.7, 0.9, 1.0)*(1-t) + vec3(0.7, 0.9, 1.0)*t;
+	vec3 envColor = vec3(0.4, 0.4, 1.0)*(1-t) + vec3(1.0,0.5,0.2)*t;
+	
 	//WORLD CALCULATIONS
 	vec3 viewDir = normalize(cameraPos-Position);
 	float viewDist = length(cameraPos-Position);
@@ -31,25 +33,22 @@ void main()
 	
 	vec4 final = color * mainTex;
 	
+	//FOGGY FUGUE
+	float u = clamp(viewDist*0.01*fogLevel, 0, 1);
+	final.xyz = final.xyz * (1-u) + envColor * u;
+	
 	//OUTPUT
-	vec2 screenSampleCoords = vec2(gl_FragCoord.x/screenDims.x, gl_FragCoord.y/screenDims.y);
-	vec4 colorBufferTex = texture2D(colorBufferMap, screenSampleCoords);
-	vec4 positionBufferTex = texture2D(positionBufferMap, screenSampleCoords);
+	OutputColor = vec4(final);
+	OutputPosition = vec4(Normal, viewDist*0.001);
 	
-	if(viewDist < positionBufferTex.w)
-	{
-		//TODO This storage may need to be updated to incorporate alpha blending
-		imageStore(colorBuffer, ivec2(gl_FragCoord.xy), vec4(final));
-		imageStore(positionBuffer, ivec2(gl_FragCoord.xy), vec4(Position, viewDist));
-	}
-	
-	FragmentColor = vec4(final);
-	
-	// FragmentColor = vec4(Color.xyz, 1);
-	// FragmentColor = vec4(Normal, 1);	
-    // FragmentColor = vec4(TexCoord.x, 0, 0, 1);
-	// FragmentColor = vec4(0, TexCoord.y, 0, 1);
-	// FragmentColor = vec4(TexCoord.x, TexCoord.y, 0, 1);
-	// FragmentColor = vec4(cameraPos, 1);
-	// FragmentColor = vec4(viewDist);
+	// OutputColor = vec4(Color.xyz, 1);
+	// OutputColor = vec4(Normal, 1);	
+    // OutputColor = vec4(TexCoord.x, 0, 0, 1);
+	// OutputColor = vec4(0, TexCoord.y, 0, 1);
+	// OutputColor = vec4(TexCoord.x, TexCoord.y, 0, 1);
+	// OutputColor = vec4(1,1,1, color.w);
+	// OutputColor = vec4(mainTex.w, 0, 0, 1);
+	// OutputColor = vec4(cameraPos, 1);
+	// OutputColor = vec4(fogLevel, 0, 0, 1);
+	// OutputColor = vec4(viewDist);
 }

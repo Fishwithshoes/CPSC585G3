@@ -6,19 +6,18 @@ in vec3 Position;
 in vec3 Color;
 in vec3 Normal;
 in vec2 TexCoord;
+in vec4 ShadowCoord;
 
 //Lightweight PBR Props
 uniform float diffuseLevel;
 uniform vec3 diffuseColor;
-uniform float reflectivity;
-uniform vec3 reflectColor;
 uniform float roughness;
-uniform float curveShape;
-uniform float _0degRef;
-uniform float _90degRef;
+uniform float metalness;
+uniform int isMetallic;//When OFF=0 metalness simply represents base angle reflectivity
 uniform float bumpLevel;
 uniform float selfIllumLevel;
 uniform vec3 selfIllumColor;
+uniform float fogLevel;
 
 //Non-physical. Just for giggles
 uniform float rimLevel;
@@ -31,25 +30,21 @@ uniform sampler2D normalMap;
 uniform sampler2D mirrorMap;
 uniform samplerCube envMap;
 uniform sampler2D roughnessMap;
+uniform sampler2D metalnessMap;
 
 //Texture Coords
 uniform vec2 tileUV;
 uniform vec2 offsetUV;
 
 uniform vec3 cameraPos;
+uniform vec3 cameraForward;
 uniform vec4 lightPos;
 uniform vec4 lightColor;
+uniform sampler2D shadowMap;
 
 //Post Process
-uniform vec2 screenDims;
-
-uniform sampler2D colorBufferMap;
-uniform sampler2D positionBufferMap;
-
-uniform writeonly image2D colorBuffer;
-uniform writeonly image2D positionBuffer;
-
-out vec4 FragmentColor;
+layout(location = 0) out vec4 OutputColor;
+layout(location = 1) out vec4 OutputPosition;
 
 struct Hit
 {
@@ -65,14 +60,11 @@ const float LIGHT_RADIUS = 1;//Set to 0 if SHADOW_SAMPLES = 1
 const int SHADOW_SAMPLES = 2;//4 is quite high enough, methinks!
 const float GLOSSY_STRETCH = 0.5;//Set to 0 i GLOSSY_SAMPLES = 1;
 const int GLOSSY_SAMPLES = 4;//Again, 4 should satisfy thee!
-//Eat memory, gain perfomance!
+//Eat memory, gain performance!
 const float SHADOW_CONTRIB = 1.0/(SHADOW_SAMPLES*SHADOW_SAMPLES);
 const float GLOSSY_CONTRIB = 1.0/(GLOSSY_SAMPLES*GLOSSY_SAMPLES*GLOSSY_SAMPLES);
 const float SHADOW_STRIDE = LIGHT_RADIUS/SHADOW_SAMPLES * 2.0;
 const float GLOSSY_STRIDE = GLOSSY_STRETCH/GLOSSY_SAMPLES * 2.0;
-
-const float ambientLevel = 0.2;
-const vec3 ambientColor = vec3(0.6, 0.8, 1);
 
 void RunSceneCollisions(vec3 ray, vec3 origin);
 
@@ -82,10 +74,26 @@ void TestCylinder(vec3 center, float radius, float height, vec3 ray, vec3 origin
 void TestTriangle(vec3 p1, vec3 p2, vec3 p3, vec3 ray, vec3 origin);
 
 void main()
-{	
+{
+	//ENV COLOR
+	float ambientLevel = 0.2;
+	vec3 dayPos = vec3(1,0,1);
+	float t = 1.0;
+	t = (dot(normalize(dayPos), cameraForward)+1)*0.5;	
+	// vec3 envColor = vec3(0.7, 0.9, 1.0)*(1-t) + vec3(0.7, 0.9, 1.0)*t;
+	vec3 envColor = vec3(0.4, 0.4, 1.0)*(1-t) + vec3(1.0,0.5,0.2)*t;
+
 	//WORLD CALCULATIONS
-	vec3 lightDir = normalize(lightPos.xyz-Position);
-	float lightDist = length(lightPos.xyz-Position);
+	vec3 lightPos0 = vec3(5,2,5)*600;
+	vec3 lightColor0 = vec3(1.0,0.5,0.0)*2.2;	
+	vec3 lightDir0 = normalize(lightPos0.xyz-Position);
+	float lightDist0 = length(lightPos0.xyz-Position);
+	
+	vec3 lightPos1 = vec3(-4,1,-4)*650;
+	vec3 lightColor1 = vec3(0.8,0.8,1.0)*0.7;	
+	vec3 lightDir1 = normalize(lightPos1.xyz-Position);
+	float lightDist1 = length(lightPos1.xyz-Position);
+	
 	vec3 viewDir = normalize(cameraPos-Position);
 	float viewDist = length(cameraPos-Position);
 	
@@ -96,6 +104,11 @@ void main()
 	vec3 diffuseTex = texture2D(diffuseMap, _texCoord).xyz;
 	vec3 normalTex = texture2D(normalMap, _texCoord).xyz;
 	vec3 roughnessTex = texture2D(roughnessMap, _texCoord).xyz;
+	vec3 metalnessTex = texture2D(metalnessMap, _texCoord).xyz;
+	vec3 shadowTex = texture2D(shadowMap, _texCoord).xyz;
+	
+	float _roughness = roughness*roughnessTex.x;
+	float _metalness = metalness*metalnessTex.x;
 	
 	//SEE THE NORMALS. BE THE NORMALS. QUICK AND DIRTY VARIANT.
 	normalTex -= vec3(0.5, 0.5, 1.0);
@@ -103,8 +116,8 @@ void main()
 	
 	//ENVIRONMENT MAPPING - CUBEMAP REFLECTION WITH BOX BLUR. WATCH THAT SAMPLE RATE!
 	vec3 red = reflect(-viewDir, normalDir);
-	float totalStride = GLOSSY_STRETCH*roughness*roughnessTex.x;
-	float strideIncrement = GLOSSY_STRIDE*roughness*roughnessTex.x;
+	float totalStride = GLOSSY_STRETCH*_roughness;
+	float strideIncrement = GLOSSY_STRIDE*_roughness;
 	float fade = 1;
 	vec3 envTex = vec3(0);
 	
@@ -122,24 +135,38 @@ void main()
 			}
 		}
 	}
+	envTex *= envColor;
 	
 	//FRESNEL AND PHYSICAL CONSIDERATIONS
 	float focus = clamp(dot(viewDir, normalDir), 0, 1);
 	float edge = 1 - focus;
-	float _reflectivity = (reflectivity-focus) * _90degRef * pow(edge, 5 - curveShape) + (_0degRef * reflectivity);
-	_reflectivity = clamp(_reflectivity*(1-roughness*roughnessTex.x), 0, 1);	
-	float _diffuseLevel = clamp(diffuseLevel - _reflectivity, 0, 1);
+	float _reflectivity = clamp(((1-focus) * pow(edge, 2.5) + _metalness) * (1-_roughness), 0, 1);
+	float _diffuseLevel = clamp(1 - _reflectivity, 0, 1);
+	vec3 _diffuseColor = diffuseColor;
+	vec3 _reflectColor = vec3(1,1,1);
+	if(isMetallic == 1)//Metallic materials should have reflections colored more by diffuse color
+	{
+		_reflectColor = _reflectColor*(1-_metalness) + diffuseLevel*diffuseColor*diffuseTex*_metalness;
+		_diffuseColor = _diffuseColor*(1-_metalness);
+	}
 	
 	//FINAL PSUEDO-PHONG LIGHTING CONTRIBUTIONS
-	_diffuseLevel *= clamp(dot(lightDir, normalDir), 0, 1);
-	vec3 diffuse = _diffuseLevel * diffuseColor * diffuseTex;
-	vec3 specular = _reflectivity * lightColor.xyz * reflectColor * pow(clamp(dot(viewDir, reflect(-lightDir, normalDir)), 0, 1), (1.04-roughness*roughnessTex.x)*25) * (1-roughness*roughnessTex.x*0.6);
-	vec3 reflection = _reflectivity * reflectColor * envTex;
-	vec3 selfIllum = selfIllumLevel * selfIllumColor * envTex;
-	vec3 rim = rimLevel * rimColor * clamp(dot(normalDir, lightDir), 0, 1) * pow(1 - clamp(dot(viewDir, normalDir), 0, 1), rimPower);
+	float glossiness = (1-_roughness);
+	float specExp = pow(glossiness+1, 2 + glossiness*10);//4096;//(1.04-_roughness)*25;
+	float specFade = (1-_roughness) * 5;
+	
+	vec3 diffuse = _diffuseLevel * lightColor0 * diffuseLevel * _diffuseColor * diffuseTex * clamp(dot(lightDir0, normalDir), 0, 1);
+	vec3 specular = _reflectivity * lightColor0 * _reflectColor * pow(clamp(dot(viewDir, reflect(-lightDir0, normalDir)), 0, 1), specExp) * specFade;
+	
+	diffuse += _diffuseLevel * lightColor1 * diffuseLevel * _diffuseColor * diffuseTex * clamp(dot(lightDir1, normalDir), 0, 1);
+	specular += _reflectivity * lightColor1 * _reflectColor * pow(clamp(dot(viewDir, reflect(-lightDir1, normalDir)), 0, 1), specExp) * specFade;
+	
+	vec3 reflection = _reflectivity * _reflectColor * envTex;
+	vec3 selfIllum = selfIllumLevel * selfIllumColor * diffuseTex;
+	vec3 rim = rimLevel * rimColor * clamp(dot(normalDir, lightDir0), 0, 1) * pow(1 - clamp(dot(viewDir, normalDir), 0, 1), rimPower);
 	
 	//SHADOWS!! BUT WATCH THAT SAMPLE RATE!
-	vec3 ray = lightDir;
+	vec3 ray = lightDir0;
 	vec3 origin = Position;
 	
 	float shadow = 0;
@@ -152,78 +179,90 @@ void main()
 		{
 			for(int j = 0; j < SHADOW_SAMPLES; j++)
 			{
-				vec3 destination = lightPos.xyz;
+				vec3 destination = lightPos0;
 				destination += -LIGHT_RADIUS*east + i*SHADOW_STRIDE*east;
 				destination += -LIGHT_RADIUS*north + j*SHADOW_STRIDE*north;
 				
 				ray = destination-Position;
 				RunSceneCollisions(ray, origin);
 				
-				if(hit.distance > EPSILON && hit.distance < lightDist)
+				if(hit.distance > EPSILON && hit.distance < lightDist0)
 				{	
 					shadow += clamp(1-hit.distance, 0, 1) * SHADOW_CONTRIB;
 				}
 			}
 		}
 	}
-	diffuse *= 1-shadow;
-	specular *= 1-shadow;
+	
+	// if(texture2D(shadowMap, ShadowCoord.xy*0.001).x < ShadowCoord.z*0.001)
+		// shadow = 1.0;
+		
+	vec2 revisedShadowCoords = vec2(ShadowCoord.x, ShadowCoord.y)*0.0015 + vec2(0.2, 0.0);
+		
+	if(texture2D(shadowMap, revisedShadowCoords).x < ShadowCoord.z*0.001)
+		shadow = 1.0;
+	
+	// diffuse *= 1-shadow;
+	// specular *= 1-shadow;
 	
 	//MIX IN AMBIENT COLOR AND SUM CONTRIBUTORS
-	diffuse += (1-_diffuseLevel)*(ambientColor*ambientLevel)*diffuseColor*diffuseTex;
+	diffuse += (1-_diffuseLevel)*(envColor*ambientLevel)*diffuseLevel*diffuseColor*diffuseTex*(1-_reflectivity);
 	vec3 final = diffuse + specular + reflection + selfIllum + rim;
 	
 	//FOGGY FUGUE
-	vec3 fogColor = vec3(0.7,0.9,1);	
-	float u = clamp(viewDist*0.01, 0, 1);
-	final = final * (1-u) + fogColor * u;
+	float u = clamp(viewDist*0.01*fogLevel, 0, 1);
+	final = final * (1-u) + envColor * u;
+	
+	// final = vec3(ShadowCoord.x, 0, 0) * 0.001;
+	// final = vec3(0, ShadowCoord.y, 0) * 0.001;
+	// final = vec3(ShadowCoord.xy, 0) * 0.002;
+	// final = vec3(ShadowCoord.z) * 0.001;
+	
+	// final = vec3(texture2D(shadowMap, revisedShadowCoords).x);
 	
 	//OUTPUT
-	vec2 screenSampleCoords = vec2(gl_FragCoord.x/screenDims.x, gl_FragCoord.y/screenDims.y);
-	vec4 colorBufferTex = texture2D(colorBufferMap, screenSampleCoords);
-	vec4 positionBufferTex = texture2D(positionBufferMap, screenSampleCoords);
-	
-	if(viewDist < positionBufferTex.w)
-	{
-		imageStore(colorBuffer, ivec2(gl_FragCoord.xy), vec4(final, 1.0));
-		imageStore(positionBuffer, ivec2(gl_FragCoord.xy), vec4(Position, viewDist));
-	}
-	
-	FragmentColor = vec4(final, 1.0);
+	OutputColor = vec4(final, 1.0);
+	OutputPosition = vec4(Normal, viewDist*0.001);
 	
 	//DEBUG DANCING - COMMENT OUT FOR FINAL COLOR
-	// FragmentColor = vec4(Color, 1);
-	// FragmentColor = vec4(Normal, 1);
-	// FragmentColor = vec4(normalDir, 1);
-    // FragmentColor = vec4(TexCoord.x, 0, 0, 1);
-	// FragmentColor = vec4(0, TexCoord.y, 0, 1);
-	// FragmentColor = vec4(TexCoord.xy, 0, 1);
-	// FragmentColor = vec4(gl_FragCoord.x/screenDims.x, gl_FragCoord.y/screenDims.y, 0, 1);
-	// FragmentColor = vec4(_reflectivity);
-	// FragmentColor = vec4(roughness;
-	// FragmentColor = vec4(viewDist*0.01);
-	// FragmentColor = vec4(hit.distance);
+	// OutputColor = vec4(Color, 1);
+	// OutputColor = vec4(Normal, 1);
+	// OutputColor = vec4(normalDir, 1);
+    // OutputColor = vec4(TexCoord.x, 0, 0, 1);
+	// OutputColor = vec4(0, TexCoord.y, 0, 1);
+	// OutputColor = vec4(TexCoord.xy, 0, 1);
+	// OutputColor = vec4(gl_FragCoord.x/screenDims.x, gl_FragCoord.y/screenDims.y, 0, 1);
+	// OutputColor = vec4(_reflectivity);
+	// OutputColor = vec4(roughness);
+	// OutputColor = vec4(metalness);
+	// OutputColor = vec4(isMetallic);
+	// OutputColor = vec4(bumpLevel);
+	// OutputColor = vec4(fogLevel);
+	// OutputColor = vec4(viewDist*0.01);
+	// OutputColor = vec4(hit.distance);
 	
-	// FragmentColor = vec4(-viewDir, 1);
-	// FragmentColor = vec4(red, 1);
+	// OutputColor = vec4(-viewDir, 1);
+	// OutputColor = vec4(red, 1);
 	
-	// FragmentColor = vec4(_diffuseLevel);
-	// FragmentColor = vec4(_reflectivity);
-	// FragmentColor = vec4(diffuse, 1.0);
-	// FragmentColor = vec4(specular, 1.0);
-	// FragmentColor = vec4(reflection, 1.0);
-	// FragmentColor = vec4(selfIllum, 1.0);
-	// FragmentColor = vec4(rim, 1.0);
-	// FragmentColor = vec4(1-shadow);
+	// OutputColor = vec4(_diffuseLevel);
+	// OutputColor = vec4(_reflectivity);
+	// OutputColor = vec4(diffuse, 1.0);
+	// OutputColor = vec4(specular, 1.0);
+	// OutputColor = vec4(reflection, 1.0);
+	// OutputColor = vec4(selfIllum, 1.0);
+	// OutputColor = vec4(rim, 1.0);
+	// OutputColor = vec4(1-shadow);
 	
-	// FragmentColor = vec4(diffuseTex, 1.0);
-	// FragmentColor = vec4(roughnessTex, 1.0);
-	// FragmentColor = vec4(normalTex, 1.0);
-	// FragmentColor = vec4(mirrorTex, 1.0);
-	// FragmentColor = vec4(envTex, 1.0);
+	// OutputColor = vec4(diffuseTex, 1.0);
+	// OutputColor = vec4(roughnessTex, 1.0);
+	// OutputColor = vec4(metalnessTex, 1.0);
+	// OutputColor = vec4(normalTex, 1.0);
+	// OutputColor = vec4(mirrorTex, 1.0);
+	// OutputColor = vec4(envTex, 1.0);
+	// OutputColor = vec4(shadowTex, 1.0);
 	
-	// FragmentColor = vec4(colorBufferTex);
-	// FragmentColor = vec4(positionBufferTex);
+	// OutputColor = vec4(colorBufferTex);
+	// OutputColor = vec4(positionBufferTex);
 }
 
 void RunSceneCollisions(vec3 ray, vec3 origin)

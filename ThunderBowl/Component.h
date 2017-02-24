@@ -10,6 +10,8 @@ public:
 	virtual void Start();
 	virtual void Update();
 
+	void SetSelfID(int *selfID);
+	void SetSelfName(string *selfName);
 	void SetMesh(Mesh *mesh);
 	void SetTransform(Transform *transform);
 	void SetStandardMaterial(StandardMaterial *standardMat);
@@ -19,12 +21,16 @@ public:
 	void Finalize();//Call this at the end of Start() and Update() to pass changes to GameObject
 
 protected:
+	int selfID;
+	string selfName;
 	Mesh mesh;
 	Transform transform;
 	StandardMaterial standardMat;
 	ParticleOverlayMaterial particleOverlayMat;
 
 private:
+	int *selfIDPtr;
+	string *selfNamePtr;
 	Mesh *meshPtr;
 	Transform *transformPtr;
 	StandardMaterial *standardMatPtr;

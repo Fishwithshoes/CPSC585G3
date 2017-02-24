@@ -12,7 +12,7 @@ void RotateComponent::Update()
 {
 	Initialize();
 
-	transform.Rotate(vec3(speed) * Time::getDeltaTime() * transform.Up());
+	transform.Rotate(speed * 0.1f * Time::getDeltaTime() * Transform::Right());
 
 	Finalize();
 }

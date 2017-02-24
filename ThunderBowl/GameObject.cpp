@@ -6,52 +6,28 @@
 GameObject::GameObject()
 {
 	transform = Transform::identity();
-
-	//Initialize Standard Shader Props (Used to draw World Objects)
-	standardMat.diffuseLevel = 1.0;
-	standardMat.diffuseColor = vec3(1);
-	standardMat.reflectivity = 1.0;
-	standardMat.reflectColor = vec3(1);
-	standardMat.roughness = 0.5;
-	standardMat.curveShape = 3.0;
-	standardMat._0degRef = 0.2;
-	standardMat._90degRef = 1.0;
-	standardMat.bumpLevel = 1.0;
-	standardMat.selfIllumLevel = 0.0;
-	standardMat.selfIllumColor = vec3(1);
-	standardMat.rimLevel = 0.0;
-	standardMat.rimColor = vec3(1);
-	standardMat.rimPower = 2.0;
-	standardMat.tileUV = vec2(1, 1);
-	standardMat.offsetUV = vec2(0, 0);
-
-	standardMat.diffuseMap = MAP_WHITE;
-	standardMat.normalMap = MAP_NORMAL;
-	standardMat.envMap = MAP_ENV;
-	standardMat.roughnessMap = MAP_WHITE;
-
-	//Initialize ParticleOverlay Shader Props (Used to draw Particles, Overlay and skybox)
-	particleOverlayMat.color = vec4(1, 1, 1, 1);
-	particleOverlayMat.mainTexture = MAP_WHITE;
-
+	SetupDefaultMaterials();
 	name = "Default";
 	tag = Tags::TAGS_DEFAULT;
 }
 
 //Use this Constructor for more "Important" objects that you may want access to later (most)
-GameObject::GameObject(Mesh meshIn, string nameIn, Tags tagIn)
+GameObject::GameObject(string nameIn, Tags tagIn)
 {
 	transform = Transform::identity();
+	SetupDefaultMaterials();
+	name = nameIn;
+	tag = tagIn;
+}
 
+void GameObject::SetupDefaultMaterials()
+{
 	//Initialize Standard Shader Props (Used to draw World Objects)
 	standardMat.diffuseLevel = 1.0;
 	standardMat.diffuseColor = vec3(1);
-	standardMat.reflectivity = 1.0;
-	standardMat.reflectColor = vec3(1);
 	standardMat.roughness = 0.5;
-	standardMat.curveShape = 3.0;
-	standardMat._0degRef = 0.2;
-	standardMat._90degRef = 1.0;
+	standardMat.metalness = 0.04;
+	standardMat.isMetallic = false;
 	standardMat.bumpLevel = 1.0;
 	standardMat.selfIllumLevel = 0.0;
 	standardMat.selfIllumColor = vec3(1);
@@ -60,19 +36,25 @@ GameObject::GameObject(Mesh meshIn, string nameIn, Tags tagIn)
 	standardMat.rimPower = 2.0;
 	standardMat.tileUV = vec2(1, 1);
 	standardMat.offsetUV = vec2(0, 0);
+	standardMat.fogLevel = 1.0;
+	standardMat.vertexOffsetScale = 0.0;
+	standardMat.vertexOffsetPhase = 0.0;
+	standardMat.vertexRippleScale = 0.0;
+	standardMat.vertexRipplePhase = 0.0;
+	standardMat.vertexRippleOrigins = {};
+	for (int i = 0; i < 10; i++)
+		standardMat.vertexRippleOrigins.push_back(vec4());
 
 	standardMat.diffuseMap = MAP_WHITE;
 	standardMat.normalMap = MAP_NORMAL;
 	standardMat.envMap = MAP_ENV;
 	standardMat.roughnessMap = MAP_WHITE;
+	standardMat.metalnessMap = MAP_WHITE;
 
 	//Initialize ParticleOverlay Shader Props (Used to draw Particles, Overlay and skybox)
 	particleOverlayMat.color = vec4(1, 1, 1, 1);
 	particleOverlayMat.mainTexture = MAP_WHITE;
-
-	mesh = meshIn;
-	name = nameIn;
-	tag = tagIn;
+	particleOverlayMat.fogLevel = 1.0;
 }
 
 GameObject::~GameObject()
@@ -107,15 +89,9 @@ mat4 GameObject::GetModelToWorld()
 
 mat4 GameObject::GetNormalToWorld()
 {
-	mat4 start(
-		1, 0, 0, 0,
-		0, 1, 0, 0,
-		0, 0, 1, 0,
-		0, 0, 0, 1);
-
 	if (transform.parent == nullptr)
 	{
-		return transform.GetNormalToWorld() * start;
+		return transform.GetNormalToWorld();
 	}
 	else
 	{
@@ -128,7 +104,7 @@ Component* GameObject::GetComponent(Component* type)
 	//Search for component of supplied type and return the first found instance
 	for (int i = 0; i < componentList.size(); i++)
 	{
-		if (typeid(componentList[i]) == typeid(type))
+		if (typeid(*componentList[i]) == typeid(*type))
 			return componentList[i];
 	}
 	//Simply return a new component of supplied type and throw an error
@@ -150,6 +126,8 @@ Component* GameObject::GetComponentAt(int index)
 void GameObject::AddComponent(Component *source)
 {
 	componentList.push_back(source);
+	source->SetSelfID(&objectID);
+	source->SetSelfName(&name);
 	source->SetMesh(&mesh);
 	source->SetTransform(&transform);
 	source->SetStandardMaterial(&standardMat);

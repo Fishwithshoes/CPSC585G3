@@ -11,6 +11,16 @@ void Component::Update()
 	cout << "Tum de dum da doo! You should not be seeing me!!" << endl;
 }
 
+void Component::SetSelfID(int *selfID)
+{
+	selfIDPtr = selfID;
+}
+
+void Component::SetSelfName(string *selfName)
+{
+	selfNamePtr = selfName;
+}
+
 void Component::SetMesh(Mesh *mesh)
 {
 	meshPtr = mesh;
@@ -32,8 +42,11 @@ void Component::SetParticleOverlayMaterial(ParticleOverlayMaterial *particleOver
 }
 
 //Call this at start of Start() and Update() to get GameObject info
+//If selfID and selfName have changed this will update their values
 void Component::Initialize()
 {
+	selfID = *selfIDPtr;
+	selfName = *selfNamePtr;
 	mesh = *meshPtr;
 	transform = *transformPtr;
 	standardMat = *standardMatPtr;
@@ -41,6 +54,7 @@ void Component::Initialize()
 }
 
 //Call this at the end of Start() and Update() to pass changes to GameObject
+//DO NOT allow any changes to selfID or selfName
 void Component::Finalize()
 {
 	*meshPtr = mesh;

@@ -9,7 +9,7 @@ int Time::elapsedFrames = 0;
 double Time::deltaTime = 0.0;
 double Time::timeSinceLoad = 0.0;
 double Time::timeSinceGameStart = 0.0;
-double Time::timeScale = 1.0;
+float Time::timeScale = 1.0;
 
 void Time::Init()
 {

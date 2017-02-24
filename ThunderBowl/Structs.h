@@ -26,6 +26,13 @@ struct Geometry
 	GLuint	indexBuffer;
 };
 
+enum StaticGeos
+{
+	SG_OCEAN,
+	SG_PUDDLE,
+	SG_MAP
+};
+
 enum RenderTypes
 {
 	RT_EULER,
@@ -60,12 +67,9 @@ struct StandardMaterial
 	float diffuseLevel;
 	vec3 diffuseColor;
 
-	float reflectivity;
-	vec3 reflectColor;
 	float roughness;
-	float curveShape;
-	float _0degRef;
-	float _90degRef;
+	float metalness;
+	bool isMetallic;//When OFF metalness represents base reflectivity
 
 	float bumpLevel;
 
@@ -79,12 +83,22 @@ struct StandardMaterial
 	vec2 tileUV;
 	vec2 offsetUV;
 
+	float fogLevel;
+
+	float vertexOffsetScale;
+	float vertexOffsetPhase;
+
+	float vertexRippleScale;
+	float vertexRipplePhase;
+	vector<vec4> vertexRippleOrigins;
+
 	//Texture handles
 	GLuint diffuseMap;
 	GLuint normalMap;
 	GLuint envMap;
 	GLuint mirrorMap;
 	GLuint roughnessMap;
+	GLuint metalnessMap;
 };
 
 //Two separate shaders, but have the same props
@@ -92,6 +106,8 @@ struct ParticleOverlayMaterial
 {
 	vec4 color;
 	GLuint mainTexture;
+
+	float fogLevel;
 };
 
 //Be sure to bind maps in this order
@@ -103,13 +119,21 @@ enum Maps
 	MAP_MIRROR,//Testing
 	MAP_ENV,//Env cubemap
 	MAP_CHECKER,//Testing
+	MAP_DEPTH_BUFFER,//Store depth for shadow mapping
 	MAP_COLOR_BUFFER,//Store color & alpha for post-process
-	MAP_POSITION_BUFFER,//Store world position & distance for post-process
+	MAP_POSITION_BUFFER,//Store normals & distance for post-process
 	//Overlay
 	MAP_JERRY,
 	MAP_SPIDER,
 	//Particles
+	MAP_DEFAULT_PART,
+	MAP_BUBBLE_PART,
+	MAP_SMOKE_PART,
 	//World
+	MAP_SUN_DIFFUSE,
+	MAP_MOON_DIFFUSE,
+	MAP_MOON_NORMAL,
+	MAP_WATER_NORMAL,
 	MAP_CHASSIS_DIFFUSE,
 	MAP_CHASSIS_ROUGHNESS,
 	MAP_CHASSIS_NORMAL,
@@ -119,6 +143,66 @@ enum Maps
 	MAP_TRACK_DIFFUSE,
 	MAP_TRACK_ROUGHNESS,
 	MAP_TRACK_NORMAL
+};
+
+//Particles
+struct RandRangeFloat
+{
+	float min;
+	float max;
+};
+
+struct RandRangeColor
+{
+	vec4 alpha;
+	vec4 bravo;
+};
+
+struct Particle
+{
+	vec3 position;
+	vec3 scale;
+	vec3 velocity;
+	ParticleOverlayMaterial material;
+	float startingLife;
+	float lifeRemaining;
+};
+
+struct ParticleBurst
+{
+	int count;
+	float time;
+	bool fired = false;
+};
+
+struct ParticleTimeStop
+{
+	float timePoint;//Relative to particle life (Range = 0-1). Should be unique.
+	RandRangeFloat radius;
+	RandRangeColor color;
+	RandRangeFloat fogLevel;
+};
+
+struct ParticleSystemDesc
+{
+	int							maxParticles;
+	float						spawnRate;
+	float						coneAngle;
+	RandRangeFloat				initialSpeed;
+	RandRangeFloat				initialRadius;
+	RandRangeColor				initialColor;
+	bool						monochromatic;
+	GLuint						mainTexture;
+	RandRangeFloat				initialFogLevel;
+	RandRangeFloat				lifeSpan;
+	vec3						spawnPointVariance;
+	float						gravityScale;
+	float						accelerationScale;
+	vector<ParticleBurst>		burstList;
+	vector<ParticleTimeStop>	timeStopList;
+	bool						useSystemLifespan;
+	float						systemLifespan;
+	bool						destroySystemWhenEmpty;
 };
 
 //Audio WAV info

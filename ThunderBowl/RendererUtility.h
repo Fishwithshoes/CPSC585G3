@@ -10,6 +10,12 @@ public:
 	static bool InitializeShader(Shader *shader, const string &vertSource, const string &fragSource);
 	static bool InitializeGeometry(Geometry *geometry);
 
+	//RENDERER INPUT LAYOUTS
+	static const GLuint POSITION_INDEX = 0;
+	static const GLuint COLOR_INDEX = 1;
+	static const GLuint NORMAL_INDEX = 2;
+	static const GLuint TEXCOORD_INDEX = 3;
+
 protected:
 
 private:

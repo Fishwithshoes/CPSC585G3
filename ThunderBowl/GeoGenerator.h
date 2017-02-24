@@ -18,6 +18,7 @@ public:
 	static Mesh MakePlane(float width, float height, int widthSegs, int heightSegs);
 	static Mesh MakeCylinder(float startRadius, float endRadius, float height, int segments);
 	static Mesh MakeBox(float width, float height, float depth, bool insideOut);
+	static Mesh MakeParticle();
 
 	//2D - For Overlay GameObjects
 	static Mesh MakeCircle(float sweep, int segments, float radius);//sweep from 0-1

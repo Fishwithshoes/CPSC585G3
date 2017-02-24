@@ -31,7 +31,10 @@
     <ClInclude Include="Input.h" />
     <ClInclude Include="Loader.h" />
     <ClInclude Include="Mathf.h" />
+    <ClInclude Include="OceanComponent.h" />
+    <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="Physics.h" />
+    <ClInclude Include="PuddleComponent.h" />
     <ClInclude Include="Random.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="RendererUtility.h" />
@@ -59,7 +62,10 @@
     <ClCompile Include="Loader.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mathf.cpp" />
+    <ClCompile Include="OceanComponent.cpp" />
+    <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="Physics.cpp" />
+    <ClCompile Include="PuddleComponent.cpp" />
     <ClCompile Include="Random.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="RendererUtility.cpp" />

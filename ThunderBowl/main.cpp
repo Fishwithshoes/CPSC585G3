@@ -105,14 +105,8 @@ int main(int argc, char *argv[])
 	Time::Init();
 	Audio::Init();
 	Physics::initializePhysX();
-
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_CULL_FACE);
-
 	Renderer renderer;
 	Renderer::Init(&renderer);
-	Renderer::GetShaderUniforms(&renderer);
-	Renderer::LoadTextures(&renderer);
 
 	Game::BuildWorld();
 
@@ -124,11 +118,12 @@ int main(int argc, char *argv[])
 
 		//Collect Input
 		glfwPollEvents();
-		//cout << Input::GetXBoxAxis(2, ButtonCode::XBOX_RIGHT_TRIGGER) << endl;
-		if (Input::GetButtonDown(ButtonCode::Q))
-			Audio::Play2DSound(Sounds::SFX_Hit, Random::rangef(0,1), Random::rangef(-1,1));
 
 		//Game Logic
+		for (int i = Game::staticObjectList.size() - 1; i >= 0; i--)
+		{
+			Game::staticObjectList[i].Update();
+		}
 		for (int i = Game::worldObjectList.size()-1; i >= 0; i--)
 		{
 			Game::worldObjectList[i].Update();
@@ -144,7 +139,7 @@ int main(int argc, char *argv[])
 
 		Physics::stepPhysics();	//SUBJECT TO CHANGE
 
-		renderer.camera.Update();
+		Renderer::GetCamera(0)->Update();
 
 		//Render Scene
 		Renderer::RenderScene(&renderer);
@@ -160,9 +155,10 @@ int main(int argc, char *argv[])
 
 	// clean up allocated resources before exit
 	Physics::cleanupPhysics();
+	Game::DestroyWorld();
 	glfwDestroyWindow(window);
 	glfwTerminate();
 
-	cout << "Program Terminated by User!" << endl;
+	cout << "ThunderBowl out!" << endl;
 	return 0;
 }

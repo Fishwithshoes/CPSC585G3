@@ -7,22 +7,16 @@ Camera::Camera()
 	transform = Transform::identity();
 	verticalFOV = Mathf::PI / 180 * 60;
 	nearClipPlane = 0.1;
-	farClipPlane = 6000.0;
+	farClipPlane = 10000.0;
 	mode = Modes::MODE_FREE;
-	up = Transform::Up();
-	right = Transform::Right();
-	forward = Transform::Forward();
 }
 Camera::Camera(Transform transformIn)
 {
 	transform = transformIn;
 	verticalFOV = Mathf::PI / 180 * 60;
 	nearClipPlane = 0.1;
-	farClipPlane = 6000.0;
+	farClipPlane = 10000.0;
 	mode = Modes::MODE_FREE;
-	up = Transform::Up();
-	right = Transform::Right();
-	forward = Transform::Forward();
 }
 
 Camera::~Camera()
@@ -44,50 +38,57 @@ void Camera::Update()
 	case Modes::MODE_FREE:
 		if (Input::GetButton(ButtonCode::A))
 		{
-			transform.Translate(-(float)0.5 * right);
+			transform.Translate(-(float)0.5 * transform.GetRight() * panSpeedScale);
 		}
 		if (Input::GetButton(ButtonCode::D))
 		{
-			transform.Translate((float)0.5 * right);
+			transform.Translate((float)0.5 * transform.GetRight() * panSpeedScale);
 		}
 		if (Input::GetButton(ButtonCode::W))
 		{
-			transform.Translate((float)0.5 * forward);
+			transform.Translate((float)0.5 * transform.GetForward() * panSpeedScale);
 		}
 		if (Input::GetButton(ButtonCode::S))
 		{
-			transform.Translate(-(float)0.3 * forward);
+			transform.Translate(-(float)0.3 * transform.GetForward() * panSpeedScale);
 		}
 		if (Input::GetButton(ButtonCode::E))
 		{
-			transform.Translate((float)0.5 * up);
+			transform.Translate((float)0.5 * Transform::Up() * panSpeedScale);
 		}
 		if (Input::GetButton(ButtonCode::Q))
 		{
-			transform.Translate(-(float)0.5 * up);
+			transform.Translate(-(float)0.5 * Transform::Up() * panSpeedScale);
 		}
+
+		if (Input::GetButton(ButtonCode::A) ||
+			Input::GetButton(ButtonCode::D) ||
+			Input::GetButton(ButtonCode::W) ||
+			Input::GetButton(ButtonCode::S) ||
+			Input::GetButton(ButtonCode::E) ||
+			Input::GetButton(ButtonCode::Q))
+		{
+			panSpeedScale += Time::getDeltaTime()*2.0f;
+		}
+		else
+		{
+			panSpeedScale = 1.0f;
+		}
+
 		if (Input::GetButton(ButtonCode::RIGHT_MOUSE))
 		{
 			//Orient camera (pitch and yaw)
-			transform.Rotate((float)(Input::GetMouseDelta().y * 0.001) * Transform::Right());
+			transform.Rotate((float)(Input::GetMouseDelta().y * 0.001) * transform.GetRight());
 			transform.Rotate((float)(Input::GetMouseDelta().x * 0.001) * Transform::Up());
-
-			//Update right and forward vectors
-			mat3 pitch(
-				1, 0, 0,
-				0, cos(-transform.rotation.x), -sin(-transform.rotation.x),
-				0, sin(-transform.rotation.x), cos(-transform.rotation.x));
-
-			mat3 yaw(
-				cos(-transform.rotation.y), 0, sin(-transform.rotation.y),
-				0, 1, 0,
-				-sin(-transform.rotation.y), 0, cos(-transform.rotation.y));
-
-			forward = pitch * yaw * Transform::Forward();
-			right = yaw * Transform::Right();
+		}
+		if (Input::GetButton(ButtonCode::MIDDLE_MOUSE))
+		{
+			transform.Rotate((float)(Input::GetMouseDelta().x * 0.001) * transform.GetForward());
 		}
 		if (Input::GetButton(ButtonCode::SPACE))
-			transform = Transform::Transform(vec3(0, 5, -10), vec3(0), vec3(1));
+		{
+			transform = Transform::Transform(vec3(0, 5, -10), vec4(0, 0, 0, 1), vec3(1));
+		}
 		break;
 	case Modes::MODE_GAME:
 		break;
@@ -98,24 +99,6 @@ void Camera::Update()
 
 mat4 Camera::GetWorldToViewMatrix()
 {
-	mat4 rotationX(
-		1, 0, 0, 0,
-		0, cos(-transform.rotation.x), -sin(-transform.rotation.x), 0,
-		0, sin(-transform.rotation.x), cos(-transform.rotation.x), 0,
-		0, 0, 0, 1);
-
-	mat4 rotationY(
-		cos(-transform.rotation.y), 0, sin(-transform.rotation.y), 0,
-		0,1,0,0,
-		-sin(-transform.rotation.y), 0, cos(-transform.rotation.y), 0,
-		0, 0, 0, 1);
-
-	mat4 rotationZ(
-		cos(-transform.rotation.z), -sin(-transform.rotation.z), 0, 0,
-		sin(-transform.rotation.z), cos(-transform.rotation.z), 0, 0,
-		0, 0, 1, 0,
-		0, 0, 0, 1);
-
 	mat4 scale(
 		transform.scale.x, 0, 0, 0,
 		0, transform.scale.y, 0, 0,
@@ -128,25 +111,7 @@ mat4 Camera::GetWorldToViewMatrix()
 		0, 0, 1, -transform.position.z,
 		0, 0, 0, 1);
 	
-	return translation * rotationZ * rotationY * rotationX * scale;
-}
-
-mat4 Camera::GetQuatWorldToViewMatrix()
-{
-
-	mat4 scale(
-		transform.scale.x, 0, 0, 0,
-		0, transform.scale.y, 0, 0,
-		0, 0, transform.scale.z, 0,
-		0, 0, 0, 1);
-
-	mat4 translation(
-		1, 0, 0, -transform.position.x,
-		0, 1, 0, -transform.position.y,
-		0, 0, 1, -transform.position.z,
-		0, 0, 0, 1);
-
-	return translation * transform.rotationMatrix * scale;
+	return translation * transform.GetRotationMatrix() * scale;
 }
 
 mat4 Camera::GetViewToProjectionMatrix()
@@ -154,14 +119,8 @@ mat4 Camera::GetViewToProjectionMatrix()
 	return mat4(
 		1/((float)WIDTH/(float)HEIGHT*tan(verticalFOV*0.5)), 0, 0, 0,
 		0, 1/tan(verticalFOV*0.5), 0, 0,
-		0, 0, (-nearClipPlane - farClipPlane*2) / (nearClipPlane - farClipPlane*2), (4 * farClipPlane*nearClipPlane) / (nearClipPlane - farClipPlane*2),
+		0, 0, (-nearClipPlane - farClipPlane) / (nearClipPlane - farClipPlane), (2 * farClipPlane*nearClipPlane) / (nearClipPlane - farClipPlane),
 		0, 0, 1, 0);
-
-	/*return mat4(
-		1/((float)WIDTH/(float)HEIGHT*tan(verticalFOV*0.5)), 0, 0, 0,
-		0, 1/tan(verticalFOV*0.5), 0, 0,
-		0, 0, -((nearClipPlane + farClipPlane) / (farClipPlane - nearClipPlane)), -((2 * farClipPlane*nearClipPlane) / (farClipPlane - nearClipPlane)),
-		0, 0, -1, 0);*/
 }
 
 void Camera::SetVerticalFOV(float degrees)

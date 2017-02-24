@@ -2,9 +2,6 @@
 #include "CommonIncludes.h"
 #include "Transform.h"
 
-//NOTE: Cameras have their own up, right and forward vectors.
-//Don't use the ones supplied by Camera.transform.*
-//Simply use up right forward within Camera.cpp
 class Camera
 {
 public:
@@ -31,7 +28,6 @@ public:
 
 	mat4 GetWorldToViewMatrix();
 	mat4 GetViewToProjectionMatrix();
-	mat4 GetQuatWorldToViewMatrix();
 	RenderTypes rendertype = RenderTypes::RT_EULER;
 
 	void SetVerticalFOV(float degrees);
@@ -45,7 +41,5 @@ private:
 	float nearClipPlane;
 	float farClipPlane;
 
-	vec3 up;
-	vec3 right;
-	vec3 forward;
+	float panSpeedScale = 1.0;
 };
