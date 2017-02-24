@@ -20,16 +20,20 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Audio.h" />
+    <ClInclude Include="BulletComponent.h" />
     <ClInclude Include="ButtonCode.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CommonIncludes.h" />
     <ClInclude Include="Component.h" />
+    <ClInclude Include="EnemyComponent.h" />
     <ClInclude Include="FloatComponent.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GeoGenerator.h" />
+    <ClInclude Include="HealthComponent.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="Loader.h" />
+    <ClInclude Include="MachineGunComponent.h" />
     <ClInclude Include="Mathf.h" />
     <ClInclude Include="OceanComponent.h" />
     <ClInclude Include="ParticleSystem.h" />
@@ -40,6 +44,7 @@
     <ClInclude Include="RendererUtility.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="RotateComponent.h" />
+    <ClInclude Include="StaticComponent.h" />
     <ClInclude Include="Structs.h" />
     <ClInclude Include="Time.h" />
     <ClInclude Include="Transform.h" />
@@ -51,15 +56,19 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Audio.cpp" />
+    <ClCompile Include="BulletComponent.cpp" />
     <ClCompile Include="ButtonCode.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Component.cpp" />
+    <ClCompile Include="EnemyComponent.cpp" />
     <ClCompile Include="FloatComponent.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GeoGenerator.cpp" />
+    <ClCompile Include="HealthComponent.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="Loader.cpp" />
+    <ClCompile Include="MachineGunComponent.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mathf.cpp" />
     <ClCompile Include="OceanComponent.cpp" />
@@ -70,6 +79,7 @@
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="RendererUtility.cpp" />
     <ClCompile Include="RotateComponent.cpp" />
+    <ClCompile Include="StaticComponent.cpp" />
     <ClCompile Include="Time.cpp" />
     <ClCompile Include="Transform.cpp" />
     <ClCompile Include="VehicleComponent.cpp" />
@@ -136,6 +146,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <IntDir>$(Platform)\$(Configuration)\tmp\</IntDir>
+    <OutDir>$(SolutionDir)\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>

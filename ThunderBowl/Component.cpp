@@ -21,6 +21,10 @@ void Component::SetSelfName(string *selfName)
 	selfNamePtr = selfName;
 }
 
+void Component::OnCollision(Component::CollisionPair collisionPair) 
+{
+}
+
 void Component::SetMesh(Mesh *mesh)
 {
 	meshPtr = mesh;

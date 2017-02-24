@@ -504,7 +504,6 @@ void Renderer::RenderScene(Renderer *renderer)
 	{
 		Mesh mesh = GeoGenerator::MakeRect(2.0, 2.0, GA_CENTER);
 		renderer->geometry.elementCount = mesh.indices.size();
-
 		BufferGeoData(renderer, &mesh);
 		glDrawElements(GL_TRIANGLES, renderer->geometry.elementCount, GL_UNSIGNED_INT, nullptr);
 	}

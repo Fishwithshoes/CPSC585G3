@@ -38,6 +38,10 @@ public:
 
 	vec4 GetInverseRotation();//Returns the inverse of the current rotation
 
+	vec3 up;
+	vec3 right;
+	vec3 forward;
+
 	Transform *parent = nullptr;
 
 protected:

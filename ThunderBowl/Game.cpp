@@ -16,20 +16,6 @@ void Game::BuildWorld()
 	particleObjectList.reserve(100);
 	overlayObjectList.reserve(50);
 
-	//Attempt to load .obj file
-	/*Loader gameLoader = Loader();	//check constructor
-	gameLoader.loadModel("U:/CPSC585/CPSC585G3/middleware/assimp-3.1.1-win-binaries/assimp-3.1.1-win-binaries/test/models/OBJ/spider.obj");
-	GameObject load = GameObject();
-	for (int i = 0; i < gameLoader.getMeshes().size(); i++) {
-		load.mesh = gameLoader.getMeshes()[i];
-		load.transform.Scale(vec3(-0.9, -0.9, -0.9));
-		load.standardMat.diffuseMap = MAP_CHECKER;
-		//load.standardMat.reflectivity = 0;
-		//load.standardMat.diffuseLevel = 0;
-		//load.standardMat.selfIllumLevel = 1;
-		Game::CreateWorldObject(load);
-	}*/
-
 	//Skybox
 	skybox.mesh = GeoGenerator::MakeSphere(5000, 16, 32, true);
 	skybox.particleOverlayMat.mainTexture = MAP_ENV;
@@ -50,52 +36,26 @@ void Game::BuildWorld()
 	//ifndef Car Cacophony
 	temp = GameObject();
 	temp.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
-	temp.name = "SuperCar";
-	temp.transform.Translate(vec3(-3, 2, 0));
+	temp.name = "Player1";
 	ptr = Game::CreateWorldObject(temp);
 	ptr->AddComponent(new VehicleComponent());
-	
-	/*temp = GameObject();
-	temp.mesh = GeoGenerator::MakeCylinder(1.0, 1.0, 0.4, 16);
-	temp.transform.position += vec3(-1, -0.8, 1);
-	temp.transform.Rotate(vec3(0,0,Mathf::PI/2));
-	temp.transform.parent = &ptr->transform;
-	Game::CreateWorldObject(temp);
+	ptr->AddComponent(new MachineGunComponent());
 
-	temp = GameObject();
-	temp.mesh = GeoGenerator::MakeCylinder(1.0, 1.0, 0.4, 16);
-	temp.transform.position += vec3(1, -0.8, 1);
-	temp.transform.Rotate(vec3(0, 0, Mathf::PI / 2));
-	temp.transform.parent = &ptr->transform;
-	Game::CreateWorldObject(temp);
+	GameObject temp2 = GameObject();
+	temp2.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
+	ptr = Game::CreateWorldObject(temp2);
+	ptr->AddComponent(new StaticComponent());
 
-	temp = GameObject();
-	temp.mesh = GeoGenerator::MakeCylinder(1.0, 1.0, 0.4, 16);
-	temp.transform.position += vec3(1, -0.8, -1);
-	temp.transform.Rotate(vec3(0, 0, Mathf::PI / 2));
-	temp.transform.parent = &ptr->transform;
-	Game::CreateWorldObject(temp);
+	GameObject temp3 = GameObject();
+	temp3.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
+	ptr = Game::CreateWorldObject(temp3);
+	ptr->AddComponent(new EnemyComponent());
 
-	temp = GameObject();
-	temp.mesh = GeoGenerator::MakeCylinder(1.0, 1.0, 0.4, 16);
-	temp.transform.position += vec3(-1, -0.8, -1);
-	temp.transform.Rotate(vec3(0, 0, Mathf::PI / 2));
-	temp.transform.parent = &ptr->transform;
-	Game::CreateWorldObject(temp);
-	//endif Car Cacophony
-
-	temp = GameObject();
-	temp.mesh = GeoGenerator::MakeSphere(1, 16, 32, false);
-	temp.transform.Translate(vec3(0, 1, 0));
-	temp.standardMat.tileUV = vec2(4,4);
-	temp.standardMat._0degRef = 0.2;
-	temp.standardMat.roughness = 0.3;
-	temp.standardMat.diffuseColor = vec3(0.4, 0.2, 1);
-	//temp.standardMat.diffuseMap = MAP_CHECKER;
-	//temp.standardMat.normalMap = MAP_CHASSIS_NORMAL;
-	//temp.standardMat.roughnessMap = MAP_CHECKER;
-	ptr = Game::CreateWorldObject(temp);
-	ptr->AddComponent(new FloatComponent());*/
+	/*GameObject temp3 = GameObject();
+	temp3.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
+	ptr = Game::CreateWorldObject(temp2);
+	ptr->AddComponent(new EnemyComponent());*/
+	//ptr->AddComponent(new HealthComponent());
 	
 	temp = GameObject();
 	temp.mesh = GeoGenerator::MakePlane(100, 100, 4, 4);

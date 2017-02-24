@@ -6,8 +6,12 @@
 #include "FloatComponent.h"
 #include "RotateComponent.h"
 #include "VehicleComponent.h"
+#include "EnemyComponent.h"
+#include "MachineGunComponent.h"
+#include "HealthComponent.h"
+#include "StaticComponent.h"
+
 #include "OceanComponent.h"
-#include "PuddleComponent.h"
 
 class Game
 {

@@ -7,8 +7,16 @@
 class Component
 {
 public:
+	enum CollisionPair {
+		CP_VEHICLE_VEHICLE,
+		CP_VEHICLE_POWERUP,
+		CP_VEHICLE_PROJECTILE,
+	};
+
+
 	virtual void Start();
 	virtual void Update();
+	virtual void OnCollision(CollisionPair collisionPair);
 
 	void SetSelfID(int *selfID);
 	void SetSelfName(string *selfName);
