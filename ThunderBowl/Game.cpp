@@ -42,6 +42,11 @@ void Game::BuildWorld()
 	ptr = Game::CreateWorldObject(temp2);
 	ptr->AddComponent(new StaticComponent());
 
+	GameObject temp3 = GameObject();
+	temp3.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
+	ptr = Game::CreateWorldObject(temp3);
+	ptr->AddComponent(new EnemyComponent());
+
 	/*GameObject temp3 = GameObject();
 	temp3.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
 	ptr = Game::CreateWorldObject(temp2);

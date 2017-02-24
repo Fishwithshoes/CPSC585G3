@@ -9,5 +9,6 @@ public:
 	physx::PxRigidDynamic* statComp;
 	void Start();
 	void Update();
+	void OnCollision(Component::CollisionPair collisionPair);
 };
 

@@ -9,7 +9,7 @@ public:
 
 	void Start();
 	void Update();
-	void OnCollision();
+	void OnCollision(Component::CollisionPair collisionPair);
 
 	float speed = 100.0f;
 	float lifeSpan = 3.0f;

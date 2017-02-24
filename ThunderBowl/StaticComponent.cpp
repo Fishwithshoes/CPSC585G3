@@ -12,6 +12,7 @@ void StaticComponent::Start()
 	physx::PxScene* worldScene = Physics::getGScene();
 
 	statComp = Physics::createTestBox(2.0);
+	statComp->userData = this;
 
 	physx::PxTransform offset = physx::PxTransform(1.0, 5.0, 5.0);
 	statComp->setGlobalPose(offset);
@@ -38,4 +39,8 @@ void StaticComponent::Update()
 	transform.rotationMatrix = newRot;
 
 	Finalize();
+}
+
+void StaticComponent::OnCollision(Component::CollisionPair collisionPair) {
+	cout << "Stat Collision" << endl;
 }

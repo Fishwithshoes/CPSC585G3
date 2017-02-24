@@ -47,3 +47,7 @@ void EnemyComponent::Update()
 
 	Finalize();
 }
+
+void EnemyComponent::OnCollision(Component::CollisionPair collisionPair) {
+	cout << "Enemy Collision" << endl;
+}

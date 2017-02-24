@@ -24,6 +24,7 @@ void VehicleComponent::Start()
 	worldScene->addActor(*gVehicleNoDrive->getRigidDynamicActor());
 
 	physVehicle = gVehicleNoDrive->getRigidDynamicActor();
+	physVehicle->userData = this;
 
 	followCam = Renderer::GetCamera(0);
 	followCam->transform.rendertype = RenderTypes::RT_QUAT;
@@ -91,4 +92,7 @@ void VehicleComponent::Update()
 	transform.forward.z = forward.z;
 
 	Finalize();
+}
+void VehicleComponent::OnCollision(Component::CollisionPair collisionPair) {
+	cout << "Veh Collision" << endl;
 }

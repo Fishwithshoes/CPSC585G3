@@ -44,14 +44,14 @@ void BulletComponent::Update()
 
 	Finalize();
 	
-	if (lifeRemaining <= 0.0) {
-		//destroy this
-		//bullet->release();
+	if (lifeRemaining <= 0.0) {			//Works for one bullet
+		bullet->release();
+		Game::DestroyWorldObjectAt(selfGameObjectID);
 	}
 }
 
-void BulletComponent::OnCollision() {
-	cout << "Comp Collision" << endl;
+void BulletComponent::OnCollision(Component::CollisionPair collisionPair) {
+	cout << "Bullet Collision" << endl;
 	//bullet->release();
 	//Game::DestroyWorldObjectAt(selfGameObjectID);
 }

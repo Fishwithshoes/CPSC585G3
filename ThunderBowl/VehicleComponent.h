@@ -7,6 +7,7 @@ class VehicleComponent :public Component
 public:
 	void Start();
 	void Update();
+	void OnCollision(Component::CollisionPair collisionPair);
 
 	float topSpeed = 200;
 	float acceleration = 1.0;
