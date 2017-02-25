@@ -174,7 +174,7 @@ Mesh GeoGenerator::MakePlane(float width, float height, int widthSegs, int heigh
 	return result;
 }
 
-Mesh GeoGenerator::MakeCylinder(float startRadius, float endRadius, float height, int segments)
+Mesh GeoGenerator::MakeCylinder(float startRadius, float endRadius, float height, int segments, bool upright)
 {
 	Mesh result;
 
@@ -234,6 +234,22 @@ Mesh GeoGenerator::MakeCylinder(float startRadius, float endRadius, float height
 			result.texcoords.push_back(vec2((float)(i - segments - 1) / (segments), 0));
 		}
 		pole = yaw * pole;
+	}
+
+	if (!upright)
+	{
+		float theta = Mathf::PI * 0.5;
+
+		mat3 roll = mat3(
+			cos(theta), sin(theta), 0,
+			-sin(theta), cos(theta), 0,
+			0,0,1);
+
+		for (int i = 0; i < result.positions.size(); i++)
+		{
+			result.positions[i] = roll * result.positions[i];
+			result.normals[i] = roll * result.normals[i];
+		}
 	}
 
 	//Indices

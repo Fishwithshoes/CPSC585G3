@@ -1,11 +1,17 @@
 #include "BulletComponent.h"
 #include "Physics.h"
 #include "Game.h"
+#include "GameObject.h"
+
+GameObject* selfGameObject;
 
 void BulletComponent::Start()
 {
 
 	Initialize();
+
+	selfGameObject = Game::Find(selfName);
+
 	VehicleComponent* temp = &VehicleComponent();
 	VehicleComponent* thisVeh = (VehicleComponent*) Game::Find("Player1")->GetComponent(temp);
 	standardMat.diffuseColor = glm::vec3(1.0, 0.0, 0.0);
@@ -53,7 +59,7 @@ void BulletComponent::Update()
 	{	
 		//Works for one bullet
 		bullet->release();
-		Game::DestroyWorldObjectAt(selfID);
+		Game::DestroyWorldObjectAt(selfGameObject->objectID);
 	}
 }
 

@@ -16,7 +16,7 @@ public:
 	//3D - For World and Particle GameObjects
 	static Mesh MakeSphere(float radius, int lattitudes, int longitudes, bool insideOut);
 	static Mesh MakePlane(float width, float height, int widthSegs, int heightSegs);
-	static Mesh MakeCylinder(float startRadius, float endRadius, float height, int segments);
+	static Mesh MakeCylinder(float startRadius, float endRadius, float height, int segments, bool upright);
 	static Mesh MakeBox(float width, float height, float depth, bool insideOut);
 	static Mesh MakeParticle();
 

@@ -1,45 +1,4 @@
-﻿Build started 2/24/2017 1:39:44 PM.
-     1>Project "C:\Users\james.hollowaycurrie\CPSC585G3\ThunderBowl\ThunderBowl.vcxproj" on node 2 (Build target(s)).
-     1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\CL.exe /c /I"C:\Users\james.hollowaycurrie\CPSC585G3\ThunderBowl\..\middleware\PhysX-3.3-master\PhysXSDK\Include\pxtask" /I"C:\Users\james.hollowaycurrie\CPSC585G3\ThunderBowl\..\middleware\PhysX-3.3-master\PhysXSDK\Include\extensions" /I"C:\Users\james.hollowaycurrie\CPSC585G3\ThunderBowl\..\middleware\PhysX-3.3-master\PhysXSDK\Include\foundation" /I"C:\Users\james.hollowaycurrie\CPSC585G3\ThunderBowl\..\middleware\PhysX-3.3-master\PhysXSDK\Include\common" /I"C:\Users\james.hollowaycurrie\CPSC585G3\ThunderBowl\..\middleware\PhysX-3.3-master\PhysXSDK\Include" /I"C:\Users\james.hollowaycurrie\CPSC585G3\ThunderBowl\..\middleware\assimp-3.1.1-win-binaries\assimp-3.1.1-win-binaries\include" /IC:\Users\james.hollowaycurrie\CPSC585G3\ThunderBowl\..\middleware\SDL\2.0.5\include /IC:\Users\james.hollowaycurrie\CPSC585G3\ThunderBowl\..\middleware /I"C:\Users\james.hollowaycurrie\CPSC585G3\ThunderBowl\..\middleware\glfw-3.2.1x64\include" /I"C:\Users\james.hollowaycurrie\CPSC585G3\ThunderBowl\..\middleware\glew-2.0.0\include" /I"C:\Users\james.hollowaycurrie\CPSC585G3\ThunderBowl\..\middleware\SDL2_mixer-2.0.1\include" /ZI /nologo /W3 /WX- /Od /D _DEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"x64\Debug\tmp\\" /Fd"x64\Debug\tmp\vc140.pdb" /Gd /TP /errorReport:prompt BulletComponent.cpp
-         BulletComponent.cpp
-     1>c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\floatcomponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
-     1>c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\vehiclecomponent.h(16): warning C4305: 'initializing': truncation from 'double' to 'float'
-     1>c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\bulletcomponent.cpp(22): warning C4244: '=': conversion from 'double' to 'physx::PxReal', possible loss of data
-       Link:
-         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\james.hollowaycurrie\CPSC585G3\ThunderBowl\\x64\Debug\ThunderBowl.exe" /INCREMENTAL /NOLOGO /LIBPATH:"C:\Users\james.hollowaycurrie\CPSC585G3\ThunderBowl\..\middleware\PhysX-3.3-master\PhysXSDK\Lib\vc14win64" /LIBPATH:"C:\Users\james.hollowaycurrie\CPSC585G3\ThunderBowl\..\middleware\assimp-3.1.1-win-binaries\assimp-3.1.1-win-binaries\lib64" /LIBPATH:"C:\Users\james.hollowaycurrie\CPSC585G3\ThunderBowl\..\middleware\SDL2_mixer-2.0.1\lib\x64" /LIBPATH:C:\Users\james.hollowaycurrie\CPSC585G3\ThunderBowl\..\middleware\SDL\2.0.5\lib\x64 /LIBPATH:"C:\Users\james.hollowaycurrie\CPSC585G3\ThunderBowl\..\middleware\glfw-3.2.1x64\lib-vc2015" /LIBPATH:"C:\Users\james.hollowaycurrie\CPSC585G3\ThunderBowl\..\middleware\glew-2.0.0\lib\Release\x64" SDL2_mixer.lib PhysX3ExtensionsDEBUG.lib PhysX3DEBUG_x64.lib PhysX3VehicleDEBUG.lib PhysX3CommonDEBUG_x64.lib PhysXProfileSDKDEBUG.lib PhysX3CookingDEBUG_x64.lib assimp.lib sdl2.lib opengl32.lib glfw3.lib glew32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /Debug /PDB:"C:\Users\james.hollowaycurrie\CPSC585G3\ThunderBowl\\x64\Debug\ThunderBowl.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\james.hollowaycurrie\CPSC585G3\ThunderBowl\\x64\Debug\ThunderBowl.lib" /MACHINE:X64 x64\Debug\tmp\ThunderBowl.res
-         x64\Debug\tmp\Audio.obj
-         x64\Debug\tmp\BulletComponent.obj
-         x64\Debug\tmp\ButtonCode.obj
-         x64\Debug\tmp\Camera.obj
-         x64\Debug\tmp\Component.obj
-         x64\Debug\tmp\EnemyComponent.obj
-         x64\Debug\tmp\FloatComponent.obj
-         x64\Debug\tmp\Game.obj
-         x64\Debug\tmp\GameObject.obj
-         x64\Debug\tmp\GeoGenerator.obj
-         x64\Debug\tmp\HealthComponent.obj
-         x64\Debug\tmp\Input.obj
-         x64\Debug\tmp\Loader.obj
-         x64\Debug\tmp\MachineGunComponent.obj
-         x64\Debug\tmp\main.obj
-         x64\Debug\tmp\Mathf.obj
-         x64\Debug\tmp\OceanComponent.obj
-         x64\Debug\tmp\ParticleSystem.obj
-         x64\Debug\tmp\Physics.obj
-         x64\Debug\tmp\PuddleComponent.obj
-         x64\Debug\tmp\Random.obj
-         x64\Debug\tmp\Renderer.obj
-         x64\Debug\tmp\RendererUtility.obj
-         x64\Debug\tmp\RotateComponent.obj
-         x64\Debug\tmp\StaticComponent.obj
-         x64\Debug\tmp\Time.obj
-         x64\Debug\tmp\Transform.obj
-         x64\Debug\tmp\VehicleComponent.obj
-         x64\Debug\tmp\VehicleRaycast.obj
-         ThunderBowl.vcxproj -> C:\Users\james.hollowaycurrie\CPSC585G3\ThunderBowl\\x64\Debug\ThunderBowl.exe
-     1>Done Building Project "C:\Users\james.hollowaycurrie\CPSC585G3\ThunderBowl\ThunderBowl.vcxproj" (Build target(s)).
-
-Build succeeded.
-
-Time Elapsed 00:00:01.88
+﻿  Physics.cpp
+c:\cpsc585g3\thunderbowl\physics.cpp(551): warning C4305: 'argument': truncation from 'double' to 'physx::PxReal'
+  ThunderBowl.vcxproj -> C:\CPSC585G3\ThunderBowl\\x64\Debug\ThunderBowl.exe
+  ThunderBowl.vcxproj -> C:\CPSC585G3\ThunderBowl\\x64\Debug\ThunderBowl.pdb (Full PDB)
