@@ -125,7 +125,6 @@ Component* GameObject::GetComponentAt(int index)
 
 void GameObject::AddComponent(Component *source)
 {
-	componentList.push_back(source);
 	source->SetSelfID(&objectID);
 	source->SetSelfName(&name);
 	source->SetMesh(&mesh);
@@ -133,6 +132,7 @@ void GameObject::AddComponent(Component *source)
 	source->SetStandardMaterial(&standardMat);
 	source->SetParticleOverlayMaterial(&particleOverlayMat);
 	source->Start();
+	componentList.push_back(source);
 }
 
 void GameObject::RemoveComponents()

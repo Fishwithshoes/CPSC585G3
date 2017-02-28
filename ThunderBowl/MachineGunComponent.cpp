@@ -26,7 +26,6 @@ void MachineGunComponent::Update()
 			currentBullet++;
 			ammoCount -= 1;
 			GameObject temp = GameObject(selfName + "Bullet" + to_string(currentBullet), Tags::TAGS_PROJECTILE);
-			cout << temp.name << endl;
 			temp.mesh = bulletMesh;
 			temp.transform = transform;
 			GameObject* bullet = Game::CreateWorldObject(temp);

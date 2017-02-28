@@ -35,7 +35,7 @@ void Game::BuildWorld()
 
 	//ifndef Car Cacophony
 	temp = GameObject();
-	temp.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
+	temp.mesh = GeoGenerator::MakeBox(2, 1, 2, false);
 	temp.name = "Player1";
 	ptr = Game::CreateWorldObject(temp);
 	ptr->AddComponent(new VehicleComponent());
@@ -215,6 +215,7 @@ GameObject* Game::CreateStaticObject(GameObject object)
 GameObject* Game::CreateWorldObject(GameObject object)
 {
 	object.objectID = worldObjectList.size();
+	cout << object.objectID << endl;
 	object.Start();
 	worldObjectList.push_back(object);
 	return &worldObjectList[worldObjectList.size() - 1];
@@ -248,14 +249,14 @@ void Game::DestroyStaticObjectAt(int objectID)
 }
 void Game::DestroyWorldObjectAt(int objectID)
 {
-	GameObject object = worldObjectList[objectID];
-	worldObjectList.erase(worldObjectList.begin() + object.objectID);
+	//GameObject object = worldObjectList[objectID];
+	worldObjectList[objectID].RemoveComponents();
+	worldObjectList.erase(worldObjectList.begin() + objectID);
 	for (int i = 0; i < worldObjectList.size(); i++)
 	{
-		if (worldObjectList[i].objectID > object.objectID)
-			worldObjectList[i].objectID--;
+		//if (worldObjectList[i].objectID >= object.objectID)				//CHECK
+			worldObjectList[i].objectID = i;
 	}
-	object.RemoveComponents();
 }
 void Game::DestroyParticleObjectAt(int objectID)
 {

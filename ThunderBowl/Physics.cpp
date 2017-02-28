@@ -132,7 +132,7 @@ void Physics::initializePhysX() {
 	sceneDesc.simulationEventCallback = &gContactReportCallback;
 	gScene = gPhysics->createScene(sceneDesc);
 
-	gMaterial = gPhysics->createMaterial(0.5f, 0.5f, 0.3f);
+	gMaterial = gPhysics->createMaterial(0.2f, 0.2f, 0.3f);
 
 	gCooking = PxCreateCooking(PX_PHYSICS_VERSION, *gFoundation, PxCookingParams(PxTolerancesScale()));
 
@@ -244,9 +244,10 @@ void Physics::computeWheelCenterActorOffsets
 	for (PxU32 i = 0; i < numWheels; i += 2)
 	{
 		//Left wheel offset from origin.
-		wheelCentreOffsets[i + 0] = PxVec3((-chassisDims.x + wheelWidth)*0.5f, -(chassisDims.y / 2 + wheelRadius), wheelRearZ + i*deltaZ*0.5f);
+		wheelCentreOffsets[i + 0] = PxVec3((-chassisDims.x + wheelWidth)*0.5f, -(chassisDims.y / 6 + wheelRadius), wheelRearZ + i*deltaZ*0.5f);
+		//wheelCentreOffsets[i + 0] = PxVec3((-chassisDims.x + wheelWidth)*0.5f, -(chassisDims.y / 2 + wheelRadius), wheelRearZ + i*deltaZ*0.5f);
 		//Right wheel offsets from origin.
-		wheelCentreOffsets[i + 1] = PxVec3((+chassisDims.x - wheelWidth)*0.5f, -(chassisDims.y / 2 + wheelRadius), wheelRearZ + i*deltaZ*0.5f);
+		wheelCentreOffsets[i + 1] = PxVec3((+chassisDims.x - wheelWidth)*0.5f, -(chassisDims.y / 6 + wheelRadius), wheelRearZ + i*deltaZ*0.5f);
 	}
 }
 
@@ -596,7 +597,7 @@ PxRigidDynamic* Physics::createTestProjectile()
 	shape->setSimulationFilterData(projSimFilterData);
 	body->attachShape(*shape);
 	//PxRigidBodyExt::updateMassAndInertia(*body, 1.0f);
-	//gScene->addActor(*body);
+	gScene->addActor(*body);
 	return body;
 }
 
@@ -816,7 +817,7 @@ void Physics::customizeVehicleToLengthScale(const PxReal lengthScale, PxRigidDyn
 static PxF32 gTireFrictionMultipliers[Physics::SurfaceTypes::MAX_NUM_SURFACE_TYPES][Physics::TireTypes::MAX_NUM_TIRE_TYPES] =
 {
 	//NORMAL,	WORN
-	{ 15.00f,		0.1f }//TARMAC FRICTION VALUE FOR TIRE
+	{ 5.00f,		0.1f }//TARMAC FRICTION VALUE FOR TIRE
 };
 
 PxVehicleDrivableSurfaceToTireFrictionPairs* Physics::createFrictionPairs(const PxMaterial* defaultMaterial)
@@ -850,13 +851,13 @@ Physics::VehicleDesc Physics::initVehicleDesc()
 	//Set up the chassis mass, dimensions, moment of inertia, and center of mass offset.
 	//The moment of inertia is just the moment of inertia of a cuboid but modified for easier steering.
 	//Center of mass offset is 0.65m above the base of the chassis and 0.25m towards the front.
-	const PxF32 chassisMass = 500.0f;
+	const PxF32 chassisMass = 250.0f;
 	const PxVec3 chassisDims(2.0f, 1.0f, 2.0f);
 	const PxVec3 chassisMOI
 	((chassisDims.y*chassisDims.y + chassisDims.z*chassisDims.z)*chassisMass / 12.0f,
 		(chassisDims.x*chassisDims.x + chassisDims.z*chassisDims.z)*0.8f*chassisMass / 12.0f,
 		(chassisDims.x*chassisDims.x + chassisDims.y*chassisDims.y)*chassisMass / 12.0f);
-	const PxVec3 chassisCMOffset(0.0f, -chassisDims.y*0.5f + 0.0f, 0.25f);						//Center of mass
+	const PxVec3 chassisCMOffset(0.0f, -chassisDims.y*0.5f + 0.0f, 0.2f);						//Center of mass
 
 	//Set up the wheel mass, radius, width, moment of inertia, and number of wheels.
 	//Moment of inertia is just the moment of inertia of a cylinder.
