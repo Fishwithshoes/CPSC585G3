@@ -10,6 +10,7 @@
 #include "MachineGunComponent.h"
 #include "HealthComponent.h"
 #include "StaticComponent.h"
+#include "PowerUpComponent.h"
 
 #include "OceanComponent.h"
 

@@ -11,8 +11,8 @@ public:
 	void Update();
 	void OnCollision(Component::CollisionPair collisionPair);
 
-	float speed = 100.0f;
-	float lifeSpan = 3.0f;
+	float speed = 200.0f;
+	float lifeSpan = 5.0f;
 
 private:
 	//GameObject* self;

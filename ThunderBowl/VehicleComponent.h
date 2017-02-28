@@ -15,6 +15,9 @@ public:
 	float topTurn = 1.0;
 	float turnAccel = 0.01;
 
+	int MGAmmo = 0;
+	//other ammo counts here
+
 	physx::PxRigidDynamic* physVehicle;
 	physx::PxVehicleNoDrive* gVehicleNoDrive;
 

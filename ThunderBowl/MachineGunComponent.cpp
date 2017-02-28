@@ -15,15 +15,18 @@ void MachineGunComponent::Update()
 {
 	Initialize();
 
-	GameObject* owner = Game::Find("Player1");
+	GameObject* owner = Game::Find(selfName);
 
 	if (Input::GetXBoxButton(1, ButtonCode::XBOX_B))
 	{
-		if (nextBullet <= 0.0f)
+		if (nextBullet <= 0.0f && ammoCount > 0)
 		{
 			//Spawn bullet
 			cout << "Fire!" << endl;
-			GameObject temp = GameObject("Bullet", Tags::TAGS_PROJECTILE);
+			currentBullet++;
+			ammoCount -= 1;
+			GameObject temp = GameObject(selfName + "Bullet" + to_string(currentBullet), Tags::TAGS_PROJECTILE);
+			cout << temp.name << endl;
 			temp.mesh = bulletMesh;
 			temp.transform = transform;
 			GameObject* bullet = Game::CreateWorldObject(temp);

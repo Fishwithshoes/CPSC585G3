@@ -1,4 +1,4 @@
-#include "StaticComponent.h"
+/*#include "StaticComponent.h"
 #include "Game.h"
 #include "Physics.h"
 
@@ -6,15 +6,17 @@ void StaticComponent::Start()
 {
 	Initialize();
 
-	//transform.rendertype = RenderTypes::RT_QUAT;
+	validCollide = true;
+	deactivationTime = 0.0;
+
 	physx::PxPhysics* worldPhys = Physics::getGPhysics();
 	physx::PxCooking* worldCook = Physics::getGCooking();
 	physx::PxScene* worldScene = Physics::getGScene();
 
-	statComp = Physics::createTestBox(2.0);
+	statComp = Physics::createPowerUp(2.0);
 	statComp->userData = this;
 
-	physx::PxTransform offset = physx::PxTransform(1.0, 5.0, 5.0);
+	physx::PxTransform offset = physx::PxTransform(1.0, 1.0, 5.0);
 	statComp->setGlobalPose(offset);
 	transform.position.x = statComp->getGlobalPose().p.x;
 	transform.position.y = statComp->getGlobalPose().p.y;
@@ -26,6 +28,20 @@ void StaticComponent::Start()
 void StaticComponent::Update()
 {
 	Initialize();
+
+	if (!validCollide) {
+		standardMat.diffuseColor = vec3(1.0, 0.0, 0.0);
+		transform.scale = vec3(0.0);
+		deactivationTime += Time::getDeltaTime();
+		if (deactivationTime >= 1.0) {
+			validCollide = true;
+			deactivationTime = 0.0;
+		}
+	}
+	else {
+		standardMat.diffuseColor = vec3(0.0, 1.0, 0.0);
+		transform.scale = vec3(1.0);
+	}
 
 	transform.position.x = statComp->getGlobalPose().p.x;
 	transform.position.y = statComp->getGlobalPose().p.y;
@@ -43,4 +59,9 @@ void StaticComponent::Update()
 
 void StaticComponent::OnCollision(Component::CollisionPair collisionPair) {
 	cout << "Stat Collision" << endl;
+	validCollide = false;
 }
+
+bool StaticComponent::CheckCollide() {
+	return validCollide;
+}*/

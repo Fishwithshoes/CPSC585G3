@@ -10,8 +10,6 @@ void BulletComponent::Start()
 
 	Initialize();
 
-	selfGameObject = Game::Find(selfName);
-
 	VehicleComponent* temp = &VehicleComponent();
 	VehicleComponent* thisVeh = (VehicleComponent*) Game::Find("Player1")->GetComponent(temp);
 	standardMat.diffuseColor = glm::vec3(1.0, 0.0, 0.0);
@@ -27,7 +25,6 @@ void BulletComponent::Start()
 	position.y = transform.position.y;
 	position.z = transform.position.z + 2.0;
 	bullet->setGlobalPose(physx::PxTransform(position));
-
 
 	transform.rotation = transform.GetInverseRotation();
 
@@ -57,7 +54,8 @@ void BulletComponent::Update()
 	
 	if (lifeRemaining <= 0.0) 
 	{	
-		//Works for one bullet
+		cout << Time::getDeltaTime() << endl;
+		selfGameObject = Game::Find(selfName);
 		bullet->release();
 		Game::DestroyWorldObjectAt(selfGameObject->objectID);
 	}
@@ -66,5 +64,5 @@ void BulletComponent::Update()
 void BulletComponent::OnCollision(Component::CollisionPair collisionPair) {
 	cout << "Bullet Collision" << endl;
 	//bullet->release();
-	//Game::DestroyWorldObjectAt(selfGameObjectID);
+	//Game::DestroyWorldObjectAt(selfGameObject->objectID);
 }

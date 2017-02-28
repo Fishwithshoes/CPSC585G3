@@ -1,15 +1,16 @@
 #include "VehicleComponent.h"
-//#include "Game.h"
 #include "Renderer.h"
 #include "Physics.h"
 #include "GameObject.h"
 #include "GeoGenerator.h"
+#include "MachineGunComponent.h"
 #include "Game.h"
 
 
 Camera* followCam;
 physx::PxShape** wheelBuffer;
 vector<GameObject*> wheelVector;
+MachineGunComponent* vehicleMG;
 
 void VehicleComponent::Start()
 {
@@ -45,7 +46,6 @@ void VehicleComponent::Start()
 			temp.standardMat.diffuseColor = vec3(0, 1, 0);
 		wheelVector.push_back(Game::CreateWorldObject(temp));
 	}
-
 
 	followCam = Renderer::GetCamera(0);
 	//followCam->transform.rendertype = RenderTypes::RT_QUAT;
@@ -152,4 +152,12 @@ void VehicleComponent::Update()
 }
 void VehicleComponent::OnCollision(Component::CollisionPair collisionPair) {
 	cout << "Veh Collision" << endl;
+	MachineGunComponent* temp = &MachineGunComponent();
+	vehicleMG = (MachineGunComponent*)Game::Find(selfName)->GetComponent(temp);
+	switch (collisionPair) {
+	case(Component::CollisionPair::CP_VEHICLE_POWERUP):
+		cout << "pickup" << endl;
+		vehicleMG->ammoCount += 100;
+		break;
+	}
 }

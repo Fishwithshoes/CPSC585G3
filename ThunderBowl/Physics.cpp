@@ -40,56 +40,73 @@ class ContactReportCallback : public PxSimulationEventCallback
 	void onConstraintBreak(PxConstraintInfo* constraints, PxU32 count) { PX_UNUSED(constraints); PX_UNUSED(count); }
 	void onWake(PxActor** actors, PxU32 count) { PX_UNUSED(actors); PX_UNUSED(count); }
 	void onSleep(PxActor** actors, PxU32 count) { PX_UNUSED(actors); PX_UNUSED(count); }
-	void onTrigger(PxTriggerPair* pairs, PxU32 count) { PX_UNUSED(pairs); PX_UNUSED(count); }
-	void onContact(const PxContactPairHeader& pairHeader, const PxContactPair* pairs, PxU32 nbPairs)
+	void onTrigger(PxTriggerPair* pairs, PxU32 count)
 	{
-		PxU32 shapeBuffer1Size = pairHeader.actors[0]->getNbShapes() * sizeof(PxShape*);	//get first actor's shape
-		PxU32 shapeBuffer2Size = pairHeader.actors[1]->getNbShapes() * sizeof(PxShape*);	//get second actor's shape
-		PxShape** shapeBuffer1 = new PxShape*[shapeBuffer1Size];
-		PxShape** shapeBuffer2 = new PxShape*[shapeBuffer2Size];
-		pairHeader.actors[0]->getShapes(shapeBuffer1, shapeBuffer1Size);
-		pairHeader.actors[1]->getShapes(shapeBuffer2, shapeBuffer2Size);
-		Component* firstCollider = reinterpret_cast<Component*>(pairHeader.actors[0]->userData);	//get Component rep for each collider
-		Component* secondCollider = reinterpret_cast<Component*>(pairHeader.actors[1]->userData);
-
-		if ((shapeBuffer1[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_CHASSIS || 
-			shapeBuffer1[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_WHEEL) &&
-			shapeBuffer2[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_OBSTACLE) {
-			firstCollider->OnCollision(Component::CollisionPair::CP_VEHICLE_POWERUP);
-			secondCollider->OnCollision(Component::CollisionPair::CP_VEHICLE_POWERUP);
-		}
-		else if (shapeBuffer1[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_PROJECTILE &&
-			shapeBuffer2[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_OBSTACLE) {
-			firstCollider->OnCollision(Component::CollisionPair::CP_VEHICLE_POWERUP);
-			secondCollider->OnCollision(Component::CollisionPair::CP_VEHICLE_POWERUP);
-		}
-		/*
-		if (shapeBuffer[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_OBSTACLE) {
-			Component* owner = reinterpret_cast<Component*>(pairHeader.actors[0]->userData);
-			owner->OnCollision();
-		}*/
-		/*shape->getSimulationFilterData();
-		
-		PX_UNUSED((pairHeader));
-		std::vector<PxContactPairPoint> contactPoints;
-
-		for (PxU32 i = 0; i<nbPairs; i++)
+		for (PxU32 i = 0; i < count; i++)
 		{
-			PxU32 contactCount = pairs[i].contactCount;
-			if (contactCount)
-			{
-				contactPoints.resize(contactCount);
-				pairs[i].extractContacts(&contactPoints[0], contactCount);
-
-				for (PxU32 j = 0; j<contactCount; j++)
-				{
-					gContactPositions.push_back(contactPoints[j].position);
-					gContactImpulses.push_back(contactPoints[j].impulse);
+			if (pairs[i].triggerShape->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_POWERUP) {
+				if (pairs[i].otherShape->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_CHASSIS) {
+					Component* triggerComp = reinterpret_cast<Component*>(pairs[i].triggerActor->userData);
+					if (triggerComp->CheckCollide()) {
+						Component* colliderComp = reinterpret_cast<Component*>(pairs[i].otherActor->userData);
+						triggerComp->OnCollision(Component::CollisionPair::CP_VEHICLE_POWERUP);
+						colliderComp->OnCollision(Component::CollisionPair::CP_VEHICLE_POWERUP);
+					}
 				}
 			}
-		}*/
-		//delete[] shapeBuffer;
+		}
 	}
+			void onContact(const PxContactPairHeader& pairHeader, const PxContactPair* pairs, PxU32 nbPairs)
+			{
+
+				PxU32 shapeBuffer1Size = pairHeader.actors[0]->getNbShapes() * sizeof(PxShape*);	//get first actor's shape
+				PxU32 shapeBuffer2Size = pairHeader.actors[1]->getNbShapes() * sizeof(PxShape*);	//get second actor's shape
+				PxShape** shapeBuffer1 = new PxShape*[shapeBuffer1Size];
+				PxShape** shapeBuffer2 = new PxShape*[shapeBuffer2Size];
+				pairHeader.actors[0]->getShapes(shapeBuffer1, shapeBuffer1Size);
+				pairHeader.actors[1]->getShapes(shapeBuffer2, shapeBuffer2Size);
+				Component* firstCollider = reinterpret_cast<Component*>(pairHeader.actors[0]->userData);	//get Component rep for each collider
+				Component* secondCollider = reinterpret_cast<Component*>(pairHeader.actors[1]->userData);
+
+				/*if (shapeBuffer1[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_CHASSIS &&// ||
+					//shapeBuffer1[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_WHEEL) &&
+					shapeBuffer2[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_OBSTACLE) {
+					firstCollider->OnCollision(Component::CollisionPair::CP_VEHICLE_POWERUP);
+					secondCollider->OnCollision(Component::CollisionPair::CP_VEHICLE_POWERUP);
+				}*/
+				if (shapeBuffer1[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_PROJECTILE &&
+					shapeBuffer2[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_OBSTACLE) {
+					firstCollider->OnCollision(Component::CollisionPair::CP_VEHICLE_POWERUP);
+					secondCollider->OnCollision(Component::CollisionPair::CP_VEHICLE_POWERUP);
+				}
+				/*
+				if (shapeBuffer[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_OBSTACLE) {
+					Component* owner = reinterpret_cast<Component*>(pairHeader.actors[0]->userData);
+					owner->OnCollision();
+				}*/
+				/*shape->getSimulationFilterData();
+
+				PX_UNUSED((pairHeader));
+				std::vector<PxContactPairPoint> contactPoints;
+
+				for (PxU32 i = 0; i<nbPairs; i++)
+				{
+					PxU32 contactCount = pairs[i].contactCount;
+					if (contactCount)
+					{
+						contactPoints.resize(contactCount);
+						pairs[i].extractContacts(&contactPoints[0], contactCount);
+
+						for (PxU32 j = 0; j<contactCount; j++)
+						{
+							gContactPositions.push_back(contactPoints[j].position);
+							gContactImpulses.push_back(contactPoints[j].impulse);
+						}
+					}
+				}*/
+				//delete[] shapeBuffer;
+
+			}
 };
 
 ContactReportCallback gContactReportCallback;
@@ -417,6 +434,12 @@ PxFilterFlags VehicleFilterShader
 	PX_UNUSED(attributes1);
 	PX_UNUSED(constantBlock);
 	PX_UNUSED(constantBlockSize);
+	// let triggers through
+	if (PxFilterObjectIsTrigger(attributes0) || PxFilterObjectIsTrigger(attributes1))
+	{
+		pairFlags = PxPairFlag::eTRIGGER_DEFAULT;
+		return PxFilterFlag::eDEFAULT;
+	}
 
 	if ((0 == (filterData0.word0 & filterData1.word1)) &&
 		(0 == (filterData1.word0 & filterData0.word1))
@@ -546,6 +569,22 @@ PxRigidDynamic* Physics::createTestBox(PxReal sideLength)
 	return body;
 }
 
+PxRigidStatic* Physics::createPowerUp(PxReal sideLength)
+{
+	PxShape* powerUpShape = gPhysics->createShape(PxBoxGeometry(sideLength, sideLength, sideLength), *gMaterial);
+	PxRigidStatic* powerUpActor = gPhysics->createRigidStatic(PxTransform(PxIdentity));
+	powerUpShape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, false);
+	powerUpShape->setFlag(PxShapeFlag::eTRIGGER_SHAPE, true);
+
+	PxFilterData powerUpSimFilterData;
+	powerUpSimFilterData.word0 = Physics::CollisionTypes::COLLISION_FLAG_POWERUP;
+	powerUpSimFilterData.word1 = Physics::CollisionTypes::COLLISION_FLAG_POWERUP_AGAINST;
+	powerUpShape->setSimulationFilterData(powerUpSimFilterData);
+	powerUpActor->attachShape(*powerUpShape);
+	gScene->addActor(*powerUpActor);
+	return powerUpActor;
+}
+
 PxRigidDynamic* Physics::createTestProjectile()
 {
 	PxShape* shape = gPhysics->createShape(PxSphereGeometry(0.1), *gMaterial);
@@ -557,7 +596,7 @@ PxRigidDynamic* Physics::createTestProjectile()
 	shape->setSimulationFilterData(projSimFilterData);
 	body->attachShape(*shape);
 	//PxRigidBodyExt::updateMassAndInertia(*body, 1.0f);
-	gScene->addActor(*body);
+	//gScene->addActor(*body);
 	return body;
 }
 

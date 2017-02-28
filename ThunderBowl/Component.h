@@ -16,6 +16,7 @@ public:
 
 	virtual void Start();
 	virtual void Update();
+	virtual bool CheckCollide();
 	virtual void OnCollision(CollisionPair collisionPair);
 
 	void SetSelfID(int *selfID);

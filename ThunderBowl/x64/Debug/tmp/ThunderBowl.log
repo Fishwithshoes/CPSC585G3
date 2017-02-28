@@ -1,4 +1,10 @@
-﻿  Physics.cpp
-c:\cpsc585g3\thunderbowl\physics.cpp(551): warning C4305: 'argument': truncation from 'double' to 'physx::PxReal'
+﻿  Component.cpp
+c:\cpsc585g3\thunderbowl\floatcomponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\cpsc585g3\thunderbowl\vehiclecomponent.h(16): warning C4305: 'initializing': truncation from 'double' to 'float'
+  BulletComponent.cpp
+c:\cpsc585g3\thunderbowl\floatcomponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\cpsc585g3\thunderbowl\vehiclecomponent.h(16): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\cpsc585g3\thunderbowl\bulletcomponent.cpp(26): warning C4244: '=': conversion from 'double' to 'physx::PxReal', possible loss of data
+  Generating Code...
   ThunderBowl.vcxproj -> C:\CPSC585G3\ThunderBowl\\x64\Debug\ThunderBowl.exe
   ThunderBowl.vcxproj -> C:\CPSC585G3\ThunderBowl\\x64\Debug\ThunderBowl.pdb (Full PDB)
