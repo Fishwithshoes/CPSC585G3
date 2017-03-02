@@ -14,6 +14,8 @@ public:
 	float speed;
 	float lifeSpan;
 
+	string ownerName;
+
 private:
 };
 

@@ -7,6 +7,7 @@ vector<GameObject> Game::staticObjectList = {};
 vector<GameObject> Game::worldObjectList = {};
 vector<ParticleSystem> Game::particleObjectList = {};
 vector<GameObject> Game::overlayObjectList = {};
+vector<GameObject> Game::aiObjectList = {};
 
 void Game::BuildWorld()
 {
@@ -15,6 +16,7 @@ void Game::BuildWorld()
 	worldObjectList.reserve(1000);
 	particleObjectList.reserve(100);
 	overlayObjectList.reserve(50);
+	aiObjectList.reserve(100);
 
 	//Skybox
 	skybox.mesh = GeoGenerator::MakeSphere(5000, 16, 32, true);
@@ -48,11 +50,13 @@ void Game::BuildWorld()
 	GameObject opponent1 = GameObject();
 	opponent1.mesh = GeoGenerator::MakeBox(2, 1, 2, false);
 	opponent1.transform.position = vec3(0.0, 2.0, 45.0);
+	opponent1.transform.Rotate(Transform::Up(), Mathf::PI, false);
 	opponent1.name = "AI1";
 	ptr = Game::CreateWorldObject(opponent1);
+	ptr->AddComponent(new PlayerComponent());
 	ptr->AddComponent(new EnemyComponent());
 	ptr->AddComponent(new MachineGunComponent());
-	//ptr->AddComponent(new PlayerComponent());
+
 
 	GameObject powerUp1 = GameObject();
 	powerUp1.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
@@ -285,6 +289,13 @@ GameObject* Game::CreateOverlayObject(GameObject object)
 	overlayObjectList.push_back(object);
 	return &overlayObjectList[overlayObjectList.size() - 1];
 }
+GameObject* Game::CreateAIObject(GameObject object)
+{
+	object.objectID = aiObjectList.size();
+	object.Start();
+	aiObjectList.push_back(object);
+	return &aiObjectList[aiObjectList.size() - 1];
+}
 
 //DESTROYERS
 void Game::DestroyStaticObjectAt(int objectID)
@@ -328,6 +339,17 @@ void Game::DestroyOverlayObjectAt(int objectID)
 	{
 		if (overlayObjectList[i].objectID > object.objectID)
 			overlayObjectList[i].objectID--;
+	}
+	object.RemoveComponents();
+}
+void Game::DestroyAIObjectAt(int objectID)
+{
+	GameObject object = aiObjectList[objectID];
+	aiObjectList.erase(aiObjectList.begin() + object.objectID);
+	for (int i = 0; i < aiObjectList.size(); i++)
+	{
+		if (aiObjectList[i].objectID > object.objectID)
+			aiObjectList[i].objectID--;
 	}
 	object.RemoveComponents();
 }

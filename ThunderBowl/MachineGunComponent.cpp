@@ -17,26 +17,28 @@ void MachineGunComponent::Update()
 
 	GameObject* owner = Game::Find(selfName);
 
-	if (Input::GetXBoxButton(1, ButtonCode::XBOX_B))
-	{
-		if (nextBullet <= 0.0f && ammoCount > 0)
-		{
-			//Spawn bullet
-			cout << "Fire!" << endl;
-			currentBullet++;
-			ammoCount -= 1;
-			GameObject temp = GameObject(selfName + "Bullet" + to_string(currentBullet), Tags::TAGS_PROJECTILE);
-			temp.mesh = bulletMesh;
-			temp.transform = transform;
-			GameObject* bullet = Game::CreateWorldObject(temp);
-			bullet->AddComponent(new BulletComponent());
-
-			nextBullet = bulletDelay;
-		}
-	}
-
 	nextBullet -= Time::getDeltaTime();
 	nextBullet = Mathf::Clamp(nextBullet, 0.0f, bulletDelay);
 
 	Finalize();
+}
+
+void MachineGunComponent::FireMG() {
+	if (nextBullet <= 0.0f && ammoCount > 0)
+	{
+		//Spawn bullet
+		cout << "Fire!" << endl;
+		currentBullet++;
+		ammoCount -= 1;
+		GameObject temp = GameObject(selfName + "Bullet" + to_string(currentBullet), Tags::TAGS_PROJECTILE);
+		temp.mesh = bulletMesh;
+		temp.transform = transform;
+		GameObject* bullet = Game::CreateWorldObject(temp);
+		bullet->AddComponent(new BulletComponent());
+		BulletComponent* bulletTempRef = &BulletComponent();
+		bulletTempRef = (BulletComponent*)Game::Find(selfName + "Bullet" + to_string(currentBullet))->GetComponent(bulletTempRef);
+		bulletTempRef->ownerName = selfName;
+
+		nextBullet = bulletDelay;
+	}
 }

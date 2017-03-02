@@ -81,7 +81,7 @@ void BulletComponent::OnCollision(Component::CollisionPair collisionPair) {
 
 	switch (collisionPair) {
 	case(Component::CollisionPair::CP_VEHICLE_PROJECTILE):
-		shooter = (PlayerComponent*)Game::Find(selfName)->GetComponent(playerRef);
+		shooter = (PlayerComponent*)Game::Find(ownerName)->GetComponent(playerRef);
 		shooter->playerScore += 10.0;
 		break;
 	}

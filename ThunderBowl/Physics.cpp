@@ -171,6 +171,22 @@ void Physics::stepPhysics()
 	const PxF32 timestep = 1.0f / 60.0f;
 
 	//Raycasts.
+	PxVehicleWheels* vehicles[2] = { gVehicleNoDrive, enVehicleNoDrive };
+	PxRaycastQueryResult* raycastResults = gVehicleSceneQueryData->getRaycastQueryResultBuffer(0);
+	const PxU32 raycastResultsSize = gVehicleSceneQueryData->getRaycastQueryResultBufferSize();
+	PxVehicleSuspensionRaycasts(gBatchQuery, 2, vehicles, raycastResultsSize, raycastResults);
+
+	//Vehicle update.
+	const PxVec3 grav = gScene->getGravity();
+	PxWheelQueryResult wheelQueryResults[PX_MAX_NB_WHEELS];
+	PxVehicleWheelQueryResult vehicleQueryResults[2] = { { wheelQueryResults, gVehicleNoDrive->mWheelsSimData.getNbWheels() },{ wheelQueryResults, enVehicleNoDrive->mWheelsSimData.getNbWheels() } };
+	PxVehicleUpdates(timestep, grav, *gFrictionPairs, 2, vehicles, vehicleQueryResults);
+
+	//Scene update.
+	gScene->simulate(1.0f / 60.0f);
+	gScene->fetchResults(true);
+
+	/*//Raycasts.
 	PxVehicleWheels* vehicles[1] = { gVehicleNoDrive };
 	PxRaycastQueryResult* raycastResults = gVehicleSceneQueryData->getRaycastQueryResultBuffer(0);
 	const PxU32 raycastResultsSize = gVehicleSceneQueryData->getRaycastQueryResultBufferSize();
@@ -184,7 +200,7 @@ void Physics::stepPhysics()
 
 	//Scene update.
 	gScene->simulate(1.0f / 60.0f);
-	gScene->fetchResults(true);
+	gScene->fetchResults(true);*/
 }
 
 void Physics::cleanupPhysics()

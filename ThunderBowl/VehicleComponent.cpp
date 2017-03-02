@@ -109,9 +109,15 @@ void VehicleComponent::Update()
 	//Alt-Brake
 	if (Input::GetXBoxAxis(1, ButtonCode::XBOX_LEFT_TRIGGER) > 0.0f)
 	{
-		
 		gVehicleNoDrive->setDriveTorque(0, -Input::GetXBoxAxis(1, ButtonCode::XBOX_LEFT_TRIGGER)*brakeTorque);
 		gVehicleNoDrive->setDriveTorque(1, -Input::GetXBoxAxis(1, ButtonCode::XBOX_LEFT_TRIGGER)*brakeTorque);
+	}
+
+	if (Input::GetXBoxButton(1, ButtonCode::XBOX_B))
+	{
+		MachineGunComponent* mgRef = &MachineGunComponent();
+		vehicleMG = (MachineGunComponent*)Game::Find(selfName)->GetComponent(mgRef);
+		vehicleMG->FireMG();
 	}
 
 	//if (Input::GetButton(ButtonCode::MIDDLE_MOUSE))

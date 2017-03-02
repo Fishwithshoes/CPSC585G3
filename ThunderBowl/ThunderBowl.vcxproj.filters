@@ -32,6 +32,9 @@
     <ClCompile Include="PowerUpComponent.cpp" />
     <ClCompile Include="StaticComponent.cpp" />
     <ClCompile Include="PlayerComponent.cpp" />
+    <ClCompile Include="GameManager.cpp" />
+    <ClCompile Include="AINodeComponent.cpp" />
+    <ClCompile Include="AIControlComponent1.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Audio.h" />
@@ -67,6 +70,9 @@
     <ClInclude Include="PowerUpComponent.h" />
     <ClInclude Include="StaticComponent.h" />
     <ClInclude Include="PlayerComponent.h" />
+    <ClInclude Include="GameManager.h" />
+    <ClInclude Include="AINodeComponent.h" />
+    <ClInclude Include="AIControlComponent1.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ThunderBowl.rc" />

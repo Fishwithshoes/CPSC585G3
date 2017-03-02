@@ -4,7 +4,7 @@
 #include "Game.h"
 
 
-VehicleComponent* playerVeh;
+//VehicleComponent* playerVeh;
 void PlayerComponent::Start() {
 	Initialize();
 
