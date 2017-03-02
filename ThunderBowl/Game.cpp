@@ -27,29 +27,80 @@ void Game::BuildWorld()
 	ParticleSystem tempP;//Change props then create particle systemes with this
 	ParticleSystem *ptrP;//Add components just as with basic gameObjects with this
 
-	/*temp = GameObject();
-	temp.mesh = GeoGenerator::MakeCylinder(1, 1, 2, 32);
-	temp.transform.Translate(vec3(3, 2, 0));
-	temp.name = "Flumpty";
-	ptr = Game::CreateWorldObject(temp);*/
 
 	//ifndef Car Cacophony
-	temp = GameObject();
+	/*temp = GameObject();
 	temp.mesh = GeoGenerator::MakeBox(2, 1, 2, false);
 	temp.name = "Player1";
 	ptr = Game::CreateWorldObject(temp);
 	ptr->AddComponent(new VehicleComponent());
-	ptr->AddComponent(new MachineGunComponent());
+	ptr->AddComponent(new MachineGunComponent());*/
 
-	GameObject temp2 = GameObject();
-	temp2.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
-	ptr = Game::CreateWorldObject(temp2);
+	GameObject player1 = GameObject();
+	player1.mesh = GeoGenerator::MakeBox(2, 1, 2, false);
+	player1.transform.position = vec3(0.0, 2.0, -45.0);
+	player1.name = "Player1";
+	ptr = Game::CreateWorldObject(player1);
+	ptr->AddComponent(new VehicleComponent());
+	ptr->AddComponent(new MachineGunComponent());
+	ptr->AddComponent(new PlayerComponent());
+
+	GameObject opponent1 = GameObject();
+	opponent1.mesh = GeoGenerator::MakeBox(2, 1, 2, false);
+	opponent1.transform.position = vec3(0.0, 2.0, 45.0);
+	opponent1.name = "AI1";
+	ptr = Game::CreateWorldObject(opponent1);
+	ptr->AddComponent(new EnemyComponent());
+	ptr->AddComponent(new MachineGunComponent());
+	//ptr->AddComponent(new PlayerComponent());
+
+	GameObject powerUp1 = GameObject();
+	powerUp1.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
+	powerUp1.transform.position = vec3(0.0, 1.0, -30.0);
+	ptr = Game::CreateWorldObject(powerUp1);
 	ptr->AddComponent(new PowerUpComponent());
 
-	GameObject temp3 = GameObject();
-	temp3.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
-	ptr = Game::CreateWorldObject(temp3);
-	ptr->AddComponent(new EnemyComponent());
+	GameObject powerUp2 = GameObject();
+	powerUp2.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
+	powerUp2.transform.position = vec3(0.0, 1.0, 30.0);
+	ptr = Game::CreateWorldObject(powerUp2);
+	ptr->AddComponent(new PowerUpComponent());
+
+	GameObject powerUp3 = GameObject();
+	powerUp3.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
+	powerUp3.transform.position = vec3(-30.0, 1.0, 0.0);
+	ptr = Game::CreateWorldObject(powerUp3);
+	ptr->AddComponent(new PowerUpComponent());
+
+	GameObject powerUp4 = GameObject();
+	powerUp4.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
+	powerUp4.transform.position = vec3(30.0, 1.0, 0.0);
+	ptr = Game::CreateWorldObject(powerUp4);
+	ptr->AddComponent(new PowerUpComponent());
+
+	GameObject obstacle1 = GameObject();
+	obstacle1.mesh = GeoGenerator::MakeBox(16.0, 40.0, 16.0, false);
+	obstacle1.transform.position = vec3(-25.0, 5.0, -25.0);
+	ptr = Game::CreateWorldObject(obstacle1);
+	ptr->AddComponent(new StaticComponent());
+
+	GameObject obstacle2 = GameObject();
+	obstacle2.mesh = GeoGenerator::MakeBox(16.0, 40.0, 16.0, false);
+	obstacle2.transform.position = vec3(25.0, 5.0, -25.0);
+	ptr = Game::CreateWorldObject(obstacle2);
+	ptr->AddComponent(new StaticComponent());
+
+	GameObject obstacle3 = GameObject();
+	obstacle3.mesh = GeoGenerator::MakeBox(16.0, 40.0, 16.0, false);
+	obstacle3.transform.position = vec3(-25.0, 5.0, 25.0);
+	ptr = Game::CreateWorldObject(obstacle3);
+	ptr->AddComponent(new StaticComponent());
+
+	GameObject obstacle4 = GameObject();
+	obstacle4.mesh = GeoGenerator::MakeBox(16.0, 40.0, 16.0, false);
+	obstacle4.transform.position = vec3(25.0, 5.0, 25.0);
+	ptr = Game::CreateWorldObject(obstacle4);
+	ptr->AddComponent(new StaticComponent());
 
 	/*GameObject temp3 = GameObject();
 	temp3.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
@@ -65,7 +116,7 @@ void Game::BuildWorld()
 	temp.standardMat.tileUV = vec2(12,12);
 	ptr = Game::CreateWorldObject(temp);
 
-	temp = GameObject();
+	/*temp = GameObject();
 	temp.mesh = GeoGenerator::MakeSphere(1, 32, 64, false);
 	temp.name = "BigGoldAndShiny";
 	temp.transform.scale = vec3(5);
@@ -74,9 +125,9 @@ void Game::BuildWorld()
 	temp.standardMat.roughness = 0.5;
 	temp.standardMat.metalness = 1.00;
 	temp.standardMat.isMetallic = true;
-	ptr = Game::CreateWorldObject(temp);
+	ptr = Game::CreateWorldObject(temp);*/
 
-	tempP = ParticleSystem();
+	/*tempP = ParticleSystem();
 	tempP.name = "testParticleSystemDefault";
 	tempP.tag = TAGS_PARTICLE_SYSTEM;
 	tempP.transform.position.y = 6;
@@ -112,7 +163,7 @@ void Game::BuildWorld()
 	tempP.transform.position.x = -8;
 	tempP.mainTexture = MAP_BUBBLE_PART;
 	tempP.useSystemLifespan = false;
-	Game::CreateParticleObject(tempP);
+	Game::CreateParticleObject(tempP);*/
 	
 	//temp = GameObject();
 	//temp.mesh = GeoGenerator::MakeCylinder(1, 2, 32);
@@ -156,7 +207,7 @@ void Game::BuildWorld()
 	ptr = Game::CreateStaticObject(temp);
 	ptr->AddComponent(new OceanComponent());
 
-	temp = GameObject("Puddle", TAGS_DECORATION);
+	/*temp = GameObject("Puddle", TAGS_DECORATION);
 	temp.staticGeo = SG_PUDDLE;
 	temp.transform.position.y = 1;
 	temp.standardMat.diffuseColor = vec3(0.3, 0.3, 0.5)*0.5f;
@@ -164,7 +215,7 @@ void Game::BuildWorld()
 	temp.standardMat.metalness = 0.20;
 	temp.standardMat.normalMap = MAP_WATER_NORMAL;
 	temp.standardMat.bumpLevel = 0.2;
-	temp.standardMat.tileUV = vec2(2, 2);
+	temp.standardMat.tileUV = vec2(2, 2);*/
 	//ptr = Game::CreateStaticObject(temp);
 	//ptr->AddComponent(new PuddleComponent());
 

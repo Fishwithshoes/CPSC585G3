@@ -38,6 +38,7 @@
     <ClInclude Include="OceanComponent.h" />
     <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="Physics.h" />
+    <ClInclude Include="PlayerComponent.h" />
     <ClInclude Include="PowerUpComponent.h" />
     <ClInclude Include="PuddleComponent.h" />
     <ClInclude Include="Random.h" />
@@ -75,6 +76,7 @@
     <ClCompile Include="OceanComponent.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="Physics.cpp" />
+    <ClCompile Include="PlayerComponent.cpp" />
     <ClCompile Include="PowerUpComponent.cpp" />
     <ClCompile Include="PuddleComponent.cpp" />
     <ClCompile Include="Random.cpp" />

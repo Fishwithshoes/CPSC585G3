@@ -25,12 +25,13 @@
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="RendererUtility.cpp" />
     <ClCompile Include="RotateComponent.cpp" />
-    <ClCompile Include="StaticComponent.cpp" />
     <ClCompile Include="Time.cpp" />
     <ClCompile Include="Transform.cpp" />
     <ClCompile Include="VehicleComponent.cpp" />
     <ClCompile Include="VehicleRaycast.cpp" />
     <ClCompile Include="PowerUpComponent.cpp" />
+    <ClCompile Include="StaticComponent.cpp" />
+    <ClCompile Include="PlayerComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Audio.h" />
@@ -58,13 +59,14 @@
     <ClInclude Include="RendererUtility.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="RotateComponent.h" />
-    <ClInclude Include="StaticComponent.h" />
     <ClInclude Include="Structs.h" />
     <ClInclude Include="Time.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="VehicleComponent.h" />
     <ClInclude Include="VehicleRaycast.h" />
     <ClInclude Include="PowerUpComponent.h" />
+    <ClInclude Include="StaticComponent.h" />
+    <ClInclude Include="PlayerComponent.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ThunderBowl.rc" />

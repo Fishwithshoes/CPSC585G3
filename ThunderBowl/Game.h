@@ -8,9 +8,9 @@
 #include "VehicleComponent.h"
 #include "EnemyComponent.h"
 #include "MachineGunComponent.h"
-#include "HealthComponent.h"
 #include "StaticComponent.h"
 #include "PowerUpComponent.h"
+#include "PlayerComponent.h"
 
 #include "OceanComponent.h"
 

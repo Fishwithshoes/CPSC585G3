@@ -68,6 +68,8 @@ public:
 	static physx::PxRigidStatic* createPowerUp(physx::PxReal sideLength);
 	static physx::PxRigidDynamic* createTestProjectile();
 
+	static physx::PxRigidStatic* createStaticRecPrism(physx::PxReal length, physx::PxReal width, physx::PxReal height);
+
 	static void computeRotation(physx::PxQuat angle);
 	static void stepPhysics();
 	static void cleanupPhysics();

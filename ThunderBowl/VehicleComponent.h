@@ -9,14 +9,12 @@ public:
 	void Update();
 	void OnCollision(Component::CollisionPair collisionPair);
 
-	float topSpeed = 200;
+	float currentSpeed;
+	float topSpeed = 200.0;
 	float acceleration = 1.0;
 
 	float topTurn = 1.0;
 	float turnAccel = 0.01;
-
-	int MGAmmo = 0;
-	//other ammo counts here
 
 	physx::PxRigidDynamic* physVehicle;
 	physx::PxVehicleNoDrive* gVehicleNoDrive;
@@ -24,7 +22,6 @@ public:
 protected:
 
 private:
-	float currentSpeed = 0;
 	float currentTurn = 0;
 };
 

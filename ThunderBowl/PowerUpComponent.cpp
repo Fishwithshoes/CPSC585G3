@@ -14,12 +14,12 @@ void PowerUpComponent::Start()
 	physx::PxPhysics* worldPhys = Physics::getGPhysics();
 	physx::PxCooking* worldCook = Physics::getGCooking();
 	physx::PxScene* worldScene = Physics::getGScene();
+	physx::PxVec3 startPosition = physx::PxVec3(transform.position.x, transform.position.y, transform.position.z);
 
 	statComp = Physics::createPowerUp(2.0);
+	statComp->setGlobalPose(physx::PxTransform(startPosition, physx::PxQuat(physx::PxIdentity))); //set global position based on vec created in Game
 	statComp->userData = this;
 
-	physx::PxTransform offset = physx::PxTransform(1.0, 1.0, 5.0);
-	statComp->setGlobalPose(offset);
 	transform.position.x = statComp->getGlobalPose().p.x;
 	transform.position.y = statComp->getGlobalPose().p.y;
 	transform.position.z = statComp->getGlobalPose().p.z;

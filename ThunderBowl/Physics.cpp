@@ -68,16 +68,25 @@ class ContactReportCallback : public PxSimulationEventCallback
 				Component* firstCollider = reinterpret_cast<Component*>(pairHeader.actors[0]->userData);	//get Component rep for each collider
 				Component* secondCollider = reinterpret_cast<Component*>(pairHeader.actors[1]->userData);
 
-				/*if (shapeBuffer1[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_CHASSIS &&// ||
-					//shapeBuffer1[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_WHEEL) &&
-					shapeBuffer2[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_OBSTACLE) {
-					firstCollider->OnCollision(Component::CollisionPair::CP_VEHICLE_POWERUP);
-					secondCollider->OnCollision(Component::CollisionPair::CP_VEHICLE_POWERUP);
-				}*/
 				if (shapeBuffer1[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_PROJECTILE &&
 					shapeBuffer2[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_OBSTACLE) {
-					firstCollider->OnCollision(Component::CollisionPair::CP_VEHICLE_POWERUP);
-					secondCollider->OnCollision(Component::CollisionPair::CP_VEHICLE_POWERUP);
+					firstCollider->OnCollision(Component::CollisionPair::CP_STATIC_PROJECTILE);
+					secondCollider->OnCollision(Component::CollisionPair::CP_STATIC_PROJECTILE);
+				}
+				else if (shapeBuffer1[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_WHEEL &&
+					shapeBuffer2[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_WHEEL) {
+					firstCollider->OnCollision(Component::CollisionPair::CP_VEHICLE_VEHICLE);
+					secondCollider->OnCollision(Component::CollisionPair::CP_VEHICLE_VEHICLE);
+				}
+				else if (shapeBuffer1[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_PROJECTILE &&
+					shapeBuffer2[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_WHEEL) {
+					firstCollider->OnCollision(Component::CollisionPair::CP_VEHICLE_PROJECTILE);
+					secondCollider->OnCollision(Component::CollisionPair::CP_VEHICLE_PROJECTILE);
+				}
+				else {
+					//cout << "collision not caught" << endl;
+					//cout << shapeBuffer1[0]->getSimulationFilterData().word0 << endl;
+					//cout << shapeBuffer2[0]->getSimulationFilterData().word0 << endl;
 				}
 				/*
 				if (shapeBuffer[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_OBSTACLE) {
@@ -244,10 +253,9 @@ void Physics::computeWheelCenterActorOffsets
 	for (PxU32 i = 0; i < numWheels; i += 2)
 	{
 		//Left wheel offset from origin.
-		wheelCentreOffsets[i + 0] = PxVec3((-chassisDims.x + wheelWidth)*0.5f, -(chassisDims.y / 6 + wheelRadius), wheelRearZ + i*deltaZ*0.5f);
-		//wheelCentreOffsets[i + 0] = PxVec3((-chassisDims.x + wheelWidth)*0.5f, -(chassisDims.y / 2 + wheelRadius), wheelRearZ + i*deltaZ*0.5f);
+		wheelCentreOffsets[i + 0] = PxVec3((-chassisDims.x + wheelWidth)*0.5f, -(chassisDims.y / 2 + wheelRadius), wheelRearZ + i*deltaZ*0.5f);
 		//Right wheel offsets from origin.
-		wheelCentreOffsets[i + 1] = PxVec3((+chassisDims.x - wheelWidth)*0.5f, -(chassisDims.y / 6 + wheelRadius), wheelRearZ + i*deltaZ*0.5f);
+		wheelCentreOffsets[i + 1] = PxVec3((+chassisDims.x - wheelWidth)*0.5f, -(chassisDims.y / 2 + wheelRadius), wheelRearZ + i*deltaZ*0.5f);
 	}
 }
 
@@ -442,13 +450,16 @@ PxFilterFlags VehicleFilterShader
 		return PxFilterFlag::eDEFAULT;
 	}
 
-	if ((0 == (filterData0.word0 & filterData1.word1)) &&
-		(0 == (filterData1.word0 & filterData0.word1))
-		)
+	// generate contacts for all that were not filtered above
+	pairFlags = PxPairFlag::eCONTACT_DEFAULT;
+
+	if ((0 == (filterData0.word0 & filterData1.word1)) && (0 == (filterData1.word0 & filterData0.word1)))
 		return PxFilterFlag::eSUPPRESS;
 
 	pairFlags = PxPairFlag::eCONTACT_DEFAULT;
 
+	// trigger the contact callback for pairs (A,B) where
+	// the filtermask of A contains the ID of B and vice versa.
 	if ((filterData0.word0 & filterData1.word1) && (filterData1.word0 & filterData0.word1))
 		pairFlags |= PxPairFlag::eNOTIFY_TOUCH_FOUND;
 
@@ -525,6 +536,8 @@ PxRigidDynamic* Physics::createVehicleActor
 		chassisShape->setLocalPose(PxTransform(PxIdentity));
 	}
 
+
+
 	vehActor->setMass(chassisData.mMass);
 	vehActor->setMassSpaceInertiaTensor(chassisData.mMOI);
 	vehActor->setCMassLocalPose(PxTransform(chassisData.mCMOffset, PxQuat(PxIdentity)));
@@ -555,7 +568,7 @@ PxRigidStatic* Physics::createDrivablePlane(PxMaterial* material, PxPhysics* phy
 	return groundPlane;
 }
 
-PxRigidDynamic* Physics::createTestBox(PxReal sideLength)
+/*PxRigidDynamic* Physics::createTestBox(PxReal sideLength)
 {
 	PxShape* shape = gPhysics->createShape(PxBoxGeometry(sideLength, sideLength, sideLength), *gMaterial);
 	PxRigidDynamic* body = gPhysics->createRigidDynamic(PxTransform(PxIdentity));
@@ -566,6 +579,20 @@ PxRigidDynamic* Physics::createTestBox(PxReal sideLength)
 	shape->setSimulationFilterData(boxSimFilterData);
 	body->attachShape(*shape);
 	//PxRigidBodyExt::updateMassAndInertia(*body, 1.0f);
+	gScene->addActor(*body);
+	return body;
+}*/
+
+PxRigidStatic* Physics::createStaticRecPrism(PxReal length, PxReal height, PxReal width)
+{
+	PxShape* shape = gPhysics->createShape(PxBoxGeometry(length, height, width), *gMaterial);
+	PxRigidStatic* body = gPhysics->createRigidStatic(PxTransform(PxIdentity));
+
+	PxFilterData boxSimFilterData;
+	boxSimFilterData.word0 = Physics::CollisionTypes::COLLISION_FLAG_OBSTACLE;
+	boxSimFilterData.word1 = Physics::CollisionTypes::COLLISION_FLAG_OBSTACLE_AGAINST;
+	shape->setSimulationFilterData(boxSimFilterData);
+	body->attachShape(*shape);
 	gScene->addActor(*body);
 	return body;
 }

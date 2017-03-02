@@ -1,9 +1,11 @@
 #include "BulletComponent.h"
+#include "PlayerComponent.h"
 #include "Physics.h"
 #include "Game.h"
 #include "GameObject.h"
 
 GameObject* selfGameObject;
+PlayerComponent* shooter;
 physx::PxPhysics* worldPhys;
 physx::PxCooking* worldCook;
 physx::PxScene* worldScene;
@@ -44,7 +46,6 @@ void BulletComponent::Start()
 	forward.z = newForward.z;
 
 	bullet->setLinearVelocity(forward*(speed + thisVeh->physVehicle->getLinearVelocity().magnitude()));
-	cout << speed + thisVeh->physVehicle->getLinearVelocity().magnitude() << endl;
 
 	Finalize();
 }
@@ -74,8 +75,16 @@ void BulletComponent::Update()
 }
 
 void BulletComponent::OnCollision(Component::CollisionPair collisionPair) {
-	cout << "Bullet Collision" << endl;
-	/*bullet->release();
-	selfGameObject = Game::Find(selfName);
-	Game::DestroyWorldObjectAt(selfGameObject->objectID);*/
+	Initialize();
+
+	PlayerComponent* playerRef = &PlayerComponent();
+
+	switch (collisionPair) {
+	case(Component::CollisionPair::CP_VEHICLE_PROJECTILE):
+		shooter = (PlayerComponent*)Game::Find(selfName)->GetComponent(playerRef);
+		shooter->playerScore += 10.0;
+		break;
+	}
+
+	Finalize();
 }
