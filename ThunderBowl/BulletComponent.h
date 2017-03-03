@@ -11,11 +11,11 @@ public:
 	void Update();
 	void OnCollision(Component::CollisionPair collisionPair);
 
-	float speed = 100.0f;
-	float lifeSpan = 3.0f;
+	float speed;
+	float lifeSpan;
+
+	string ownerName;
 
 private:
-	//GameObject* self;
-	float lifeRemaining = lifeSpan;
 };
 

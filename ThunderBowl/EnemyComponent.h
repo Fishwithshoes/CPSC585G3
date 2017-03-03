@@ -11,5 +11,8 @@ public:
 	void Start();
 	void Update();
 	void OnCollision(Component::CollisionPair collisionPair);
+	void MoveOnHeading();
+	vec3 enCurrentPosition;
+	vec3 enActualHeading;
 };
 

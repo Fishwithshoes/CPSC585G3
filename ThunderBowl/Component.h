@@ -11,11 +11,13 @@ public:
 		CP_VEHICLE_VEHICLE,
 		CP_VEHICLE_POWERUP,
 		CP_VEHICLE_PROJECTILE,
+		CP_STATIC_PROJECTILE,
 	};
 
 
 	virtual void Start();
 	virtual void Update();
+	virtual bool CheckCollide();
 	virtual void OnCollision(CollisionPair collisionPair);
 
 	void SetSelfID(int *selfID);

@@ -19,6 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AIControlComponent1.h" />
+    <ClInclude Include="AINodeComponent.h" />
     <ClInclude Include="Audio.h" />
     <ClInclude Include="BulletComponent.h" />
     <ClInclude Include="ButtonCode.h" />
@@ -28,6 +30,7 @@
     <ClInclude Include="EnemyComponent.h" />
     <ClInclude Include="FloatComponent.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="GameManager.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GeoGenerator.h" />
     <ClInclude Include="HealthComponent.h" />
@@ -38,6 +41,8 @@
     <ClInclude Include="OceanComponent.h" />
     <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="Physics.h" />
+    <ClInclude Include="PlayerComponent.h" />
+    <ClInclude Include="PowerUpComponent.h" />
     <ClInclude Include="PuddleComponent.h" />
     <ClInclude Include="Random.h" />
     <ClInclude Include="Renderer.h" />
@@ -55,6 +60,8 @@
     <None Include="main" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AIControlComponent1.cpp" />
+    <ClCompile Include="AINodeComponent.cpp" />
     <ClCompile Include="Audio.cpp" />
     <ClCompile Include="BulletComponent.cpp" />
     <ClCompile Include="ButtonCode.cpp" />
@@ -63,6 +70,7 @@
     <ClCompile Include="EnemyComponent.cpp" />
     <ClCompile Include="FloatComponent.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GeoGenerator.cpp" />
     <ClCompile Include="HealthComponent.cpp" />
@@ -74,6 +82,8 @@
     <ClCompile Include="OceanComponent.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="Physics.cpp" />
+    <ClCompile Include="PlayerComponent.cpp" />
+    <ClCompile Include="PowerUpComponent.cpp" />
     <ClCompile Include="PuddleComponent.cpp" />
     <ClCompile Include="Random.cpp" />
     <ClCompile Include="Renderer.cpp" />

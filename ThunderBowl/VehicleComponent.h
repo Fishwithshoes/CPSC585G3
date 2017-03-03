@@ -9,7 +9,8 @@ public:
 	void Update();
 	void OnCollision(Component::CollisionPair collisionPair);
 
-	float topSpeed = 200;
+	float currentSpeed;
+	float topSpeed = 200.0;
 	float acceleration = 1.0;
 
 	float topTurn = 1.0;
@@ -21,7 +22,6 @@ public:
 protected:
 
 private:
-	float currentSpeed = 0;
 	float currentTurn = 0;
 };
 

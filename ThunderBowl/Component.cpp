@@ -11,18 +11,25 @@ void Component::Update()
 	cout << "Tum de dum da doo! You should not be seeing me!!" << endl;
 }
 
-void Component::SetSelfID(int *selfID)
+void Component::SetSelfID(int *selfIDIn)
 {
-	selfIDPtr = selfID;
+	selfIDPtr = selfIDIn;
+	selfID = *selfIDPtr;
 }
 
-void Component::SetSelfName(string *selfName)
+void Component::SetSelfName(string *selfNameIn)
 {
-	selfNamePtr = selfName;
+	selfNamePtr = selfNameIn;
+	selfName = *selfNamePtr;
 }
 
 void Component::OnCollision(Component::CollisionPair collisionPair) 
 {
+}
+
+bool Component::CheckCollide()
+{
+	return true;
 }
 
 void Component::SetMesh(Mesh *mesh)
@@ -49,8 +56,8 @@ void Component::SetParticleOverlayMaterial(ParticleOverlayMaterial *particleOver
 //If selfID and selfName have changed this will update their values
 void Component::Initialize()
 {
-	selfID = *selfIDPtr;
-	selfName = *selfNamePtr;
+	//selfID = *selfIDPtr;
+	//selfName = *selfNamePtr;
 	mesh = *meshPtr;
 	transform = *transformPtr;
 	standardMat = *standardMatPtr;

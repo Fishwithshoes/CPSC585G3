@@ -1,15 +1,18 @@
 #include "VehicleComponent.h"
-//#include "Game.h"
 #include "Renderer.h"
 #include "Physics.h"
 #include "GameObject.h"
 #include "GeoGenerator.h"
+#include "MachineGunComponent.h"
+#include "PlayerComponent.h"
 #include "Game.h"
 
 
 Camera* followCam;
 physx::PxShape** wheelBuffer;
 vector<GameObject*> wheelVector;
+MachineGunComponent* vehicleMG;
+PlayerComponent* vehPlayer;
 
 void VehicleComponent::Start()
 {
@@ -19,6 +22,7 @@ void VehicleComponent::Start()
 	physx::PxPhysics* worldPhys = Physics::getGPhysics();
 	physx::PxCooking* worldCook = Physics::getGCooking();
 	physx::PxScene* worldScene = Physics::getGScene();	
+	physx::PxVec3 startPosition = physx::PxVec3(transform.position.x, transform.position.y, transform.position.z);
 	
 	Physics::VehicleDesc vehicleDesc = Physics::initVehicleDesc();
 	gVehicleNoDrive = Physics::createVehicleNoDrive(vehicleDesc, worldPhys, worldCook);
@@ -29,6 +33,7 @@ void VehicleComponent::Start()
 	worldScene->addActor(*gVehicleNoDrive->getRigidDynamicActor());
 	
 	physVehicle = gVehicleNoDrive->getRigidDynamicActor();
+	physVehicle->setGlobalPose(physx::PxTransform(startPosition, physx::PxQuat(physx::PxIdentity))); //set global position based on vec created in Game
 	physVehicle->userData = this;
 
 	physx::PxU32 wheelBufferSize = gVehicleNoDrive->mWheelsSimData.getNbWheels() * sizeof(physx::PxShape*);
@@ -38,7 +43,7 @@ void VehicleComponent::Start()
 	for (int i = 0; i < 4; i++) {
 		GameObject temp = GameObject();
 		physx::PxTransform currWheel = wheelBuffer[i]->getLocalPose();
-		temp.mesh = GeoGenerator::MakeCylinder(0.5, 0.5, 0.4, 8, false);
+		temp.mesh = GeoGenerator::MakeCylinder(0.5, 0.5, 0.4, 8, false); //change to take in physx values
 		if(i==0)
 			temp.standardMat.diffuseColor = vec3(1, 0, 0);
 		if(i==1)
@@ -46,13 +51,15 @@ void VehicleComponent::Start()
 		wheelVector.push_back(Game::CreateWorldObject(temp));
 	}
 
-
 	followCam = Renderer::GetCamera(0);
 	//followCam->transform.rendertype = RenderTypes::RT_QUAT;
 	followCam->mode = Camera::Modes::MODE_GAME;
 	transform.position.x = physVehicle->getGlobalPose().p.x;
 	transform.position.y = physVehicle->getGlobalPose().p.y;
 	transform.position.z = physVehicle->getGlobalPose().p.z;
+
+	//cout << physVehicle->getLinearVelocity().magnitude() << endl;
+	//currentSpeed = physVehicle->getLinearVelocity().magnitude();
 	Finalize();
 }
 
@@ -102,9 +109,15 @@ void VehicleComponent::Update()
 	//Alt-Brake
 	if (Input::GetXBoxAxis(1, ButtonCode::XBOX_LEFT_TRIGGER) > 0.0f)
 	{
-		
 		gVehicleNoDrive->setDriveTorque(0, -Input::GetXBoxAxis(1, ButtonCode::XBOX_LEFT_TRIGGER)*brakeTorque);
 		gVehicleNoDrive->setDriveTorque(1, -Input::GetXBoxAxis(1, ButtonCode::XBOX_LEFT_TRIGGER)*brakeTorque);
+	}
+
+	if (Input::GetXBoxButton(1, ButtonCode::XBOX_B))
+	{
+		MachineGunComponent* mgRef = &MachineGunComponent();
+		vehicleMG = (MachineGunComponent*)Game::Find(selfName)->GetComponent(mgRef);
+		vehicleMG->FireMG();
 	}
 
 	//if (Input::GetButton(ButtonCode::MIDDLE_MOUSE))
@@ -121,7 +134,6 @@ void VehicleComponent::Update()
 	transform.rotation.y = rotQuat.y;
 	transform.rotation.z = rotQuat.z;
 	transform.rotation.w = rotQuat.w;
-
 
 	mat4 newRot = glm::mat4_cast(glm::quat(rotQuat.w, rotQuat.x, rotQuat.y, rotQuat.z));
 	newRot = glm::inverse(newRot);
@@ -142,7 +154,6 @@ void VehicleComponent::Update()
 		cameraOffset = glm::vec4(transform.position, 0.0) + cameraOffset;
 		followCam->transform.position = cameraOffset;
 	}
-
 	//transform.rotationMatrix = newRot;
 	//glm::vec4 forward = glm::vec4(0.0, 0.0, 1.0, 0.0);
 	//forward = glm::inverse(newRot) * forward;
@@ -159,9 +170,25 @@ void VehicleComponent::Update()
 	speedNeedle->transform.Rotate(Transform::Forward(), angle, false);
 
 	//ENDIF_SPEEDOMETER
-
 	Finalize();
 }
 void VehicleComponent::OnCollision(Component::CollisionPair collisionPair) {
-	cout << "Veh Collision" << endl;
+	Initialize();
+
+	MachineGunComponent* mgRef = &MachineGunComponent();
+	PlayerComponent* playerRef = &PlayerComponent();
+	switch (collisionPair) {
+	case(Component::CollisionPair::CP_VEHICLE_POWERUP):
+		vehicleMG = (MachineGunComponent*)Game::Find(selfName)->GetComponent(mgRef);
+		vehicleMG->ammoCount += 100;
+		vehPlayer = (PlayerComponent*)Game::Find(selfName)->GetComponent(playerRef);
+		vehPlayer->playerScore += 10.0;
+		break;
+	case(Component::CollisionPair::CP_VEHICLE_PROJECTILE):
+		vehPlayer = (PlayerComponent*)Game::Find(selfName)->GetComponent(playerRef);
+		vehPlayer->playerHealth -= 25.0;
+		break;
+}
+
+	Finalize();
 }

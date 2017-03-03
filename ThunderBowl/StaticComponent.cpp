@@ -6,16 +6,15 @@ void StaticComponent::Start()
 {
 	Initialize();
 
-	//transform.rendertype = RenderTypes::RT_QUAT;
 	physx::PxPhysics* worldPhys = Physics::getGPhysics();
 	physx::PxCooking* worldCook = Physics::getGCooking();
 	physx::PxScene* worldScene = Physics::getGScene();
+	physx::PxVec3 startPosition = physx::PxVec3(transform.position.x, transform.position.y, transform.position.z);
 
-	statComp = Physics::createTestBox(2.0);
+	statComp = Physics::createStaticRecPrism(8.0, 20.0, 8.0);
 	statComp->userData = this;
 
-	physx::PxTransform offset = physx::PxTransform(1.0, 5.0, 5.0);
-	statComp->setGlobalPose(offset);
+	statComp->setGlobalPose(physx::PxTransform(startPosition, physx::PxQuat(physx::PxIdentity)));
 	transform.position.x = statComp->getGlobalPose().p.x;
 	transform.position.y = statComp->getGlobalPose().p.y;
 	transform.position.z = statComp->getGlobalPose().p.z;
@@ -26,6 +25,7 @@ void StaticComponent::Start()
 void StaticComponent::Update()
 {
 	Initialize();
+
 
 	transform.position.x = statComp->getGlobalPose().p.x;
 	transform.position.y = statComp->getGlobalPose().p.y;
@@ -43,4 +43,5 @@ void StaticComponent::Update()
 
 void StaticComponent::OnCollision(Component::CollisionPair collisionPair) {
 	cout << "Stat Collision" << endl;
+	validCollide = false;
 }
