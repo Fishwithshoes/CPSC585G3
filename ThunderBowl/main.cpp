@@ -119,6 +119,11 @@ int main(int argc, char *argv[])
 		//Collect Input
 		glfwPollEvents();
 
+		if (Input::GetButtonDown(ButtonCode::SPACE))
+		{
+			Renderer::GetCamera(0)->mode = Camera::Modes::MODE_FREE;
+		}
+
 		//Game Logic
 		for (int i = Game::staticObjectList.size() - 1; i >= 0; i--)
 		{

@@ -19,6 +19,17 @@ vector<string> Renderer::textureFilePaths =
 	"GL_TEXTURE_DEPTH_BUFFER",
 	"GL_TEXTURE_COLOR_BUFFER",
 	"GL_TEXTURE_POSITION_BUFFER",
+	"Textures/zero_TEXT.png",
+	"Textures/one_TEXT.png",
+	"Textures/two_TEXT.png",
+	"Textures/three_TEXT.png",
+	"Textures/four_TEXT.png",
+	"Textures/five_TEXT.png",
+	"Textures/six_TEXT.png",
+	"Textures/seven_TEXT.png",
+	"Textures/eight_TEXT.png",
+	"Textures/nine_TEXT.png",
+	"Textures/score_TEXT.png",
 	"Textures/jerry_DIFF.jpg",
 	"Textures/SpiderTex.jpg",
 	"Textures/default_PART.png",
@@ -110,6 +121,8 @@ void Renderer::LoadTextures(Renderer *renderer)
 				glActiveTexture(GL_TEXTURE0 + i);
 				glBindTexture(GL_TEXTURE_2D, texID);
 				glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 				glGenerateMipmap(GL_TEXTURE_2D);
 			}
 			else
@@ -123,12 +136,12 @@ void Renderer::LoadTextures(Renderer *renderer)
 			glGenTextures(1, &texID);
 			glActiveTexture(GL_TEXTURE0 + i);
 			glBindTexture(GL_TEXTURE_2D, texID);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1024, 1024, 0, GL_RGBA, GL_FLOAT, 0);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 2048, 2048, 0, GL_RGBA, GL_FLOAT, 0);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-			glGenerateMipmap(GL_TEXTURE_2D);
+			//glGenerateMipmap(GL_TEXTURE_2D);
 
 			cout << "Created shadow mapping image at: " << texID << "!" << endl;
 		}
@@ -297,7 +310,7 @@ void Renderer::SetupShadowMapping(Renderer *renderer)
 	//Create and bind a depth buffer
 	glGenRenderbuffers(1, &renderer->shadowDepthBufferID);
 	glBindRenderbuffer(GL_RENDERBUFFER, renderer->shadowDepthBufferID);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 1024, 1024);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 2048, 2048);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, renderer->shadowDepthBufferID);
 
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, MAP_DEPTH_BUFFER + 1, 0);
@@ -311,17 +324,17 @@ void Renderer::RenderScene(Renderer *renderer)
 {
 //**TURN OVER TO THE SHADOW MAP FRAMEBUFFER TO DEPTH MAP PHYSICAL WORLD OBJECTS**********
 	glBindFramebuffer(GL_FRAMEBUFFER, renderer->shadowBufferID);
-	//glViewport(0, 0, 1920, 1080);
+	glViewport(0, 0, 2048, 2048);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glUseProgram(renderer->depthMapShader.program);
 
 	//Create WorldToView Matrix for light
 	Transform lightTransform = Transform();
 
-	lightTransform.position = vec3(5, 2, 5)*100.0f;
+	lightTransform.position = vec3(5, 2, 5)*17.0f;
 
-	lightTransform.Rotate(Transform::Up(), 2.65*Mathf::PI/4, false);
-	lightTransform.Rotate(lightTransform.GetRight(), -0.4*Mathf::PI/4, false);
+	lightTransform.Rotate(Transform::Up(), 135.0*Mathf::PI/180, false);
+	lightTransform.Rotate(lightTransform.GetRight(), -15.0*Mathf::PI/180, false);
 
 	mat4 scale = mat4(
 		1, 0, 0, 0,
@@ -338,7 +351,7 @@ void Renderer::RenderScene(Renderer *renderer)
 	mat4 lightWorldToView = translation * lightTransform.GetRotationMatrix() * scale;
 
 	float nearClip = 0.1;
-	float farClip = 10000;
+	float farClip = 1000;
 	float verticalFOV = Mathf::PI / 180 * 60;
 
 	mat4 lightViewToProjection = mat4(
@@ -486,7 +499,7 @@ void Renderer::RenderScene(Renderer *renderer)
 
 //**TURN OVER TO THE DEFAULT FRAMEBUFFER TO DRAW POST-PROCESS AND OVERLAY**********
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glViewport(0, 0, Camera::WIDTH, Camera::HEIGHT);
+	//glViewport(0, 0, Camera::WIDTH, Camera::HEIGHT);
 
 //**CLEAR DEPTH BUFFER AND DRAW POST-PROCESS RECT**********
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

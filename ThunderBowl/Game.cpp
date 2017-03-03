@@ -62,7 +62,7 @@ void Game::BuildWorld()
 	temp.standardMat.diffuseMap = MAP_CHASSIS_DIFFUSE;
 	temp.standardMat.bumpLevel = 2;
 	temp.standardMat.normalMap = MAP_CHASSIS_NORMAL;
-	temp.standardMat.tileUV = vec2(12,12);
+	//temp.standardMat.tileUV = vec2(12,12);
 	ptr = Game::CreateWorldObject(temp);
 
 	temp = GameObject();
@@ -74,7 +74,7 @@ void Game::BuildWorld()
 	temp.standardMat.roughness = 0.5;
 	temp.standardMat.metalness = 1.00;
 	temp.standardMat.isMetallic = true;
-	ptr = Game::CreateWorldObject(temp);
+	//ptr = Game::CreateWorldObject(temp);
 
 	tempP = ParticleSystem();
 	tempP.name = "testParticleSystemDefault";
@@ -169,11 +169,91 @@ void Game::BuildWorld()
 	//ptr->AddComponent(new PuddleComponent());
 
 	//Add initial Overlay GameObjects
-	temp = GameObject();
-	temp.mesh = GeoGenerator::MakeCircle(1, 64, 0.25);
-	temp.transform.Translate(vec3(0, 0.75, 0));
-	temp.particleOverlayMat.mainTexture = MAP_JERRY;
+	//Lacking a perspective these are only visible with -1 < position.z < 1
+	//Health meter
+	temp = GameObject("HealthMeterBack", TAGS_HUD);
+	temp.mesh = GeoGenerator::MakeRect(1.05, 0.20, GA_LEFT);
+	temp.transform.Translate(vec3(-0.2625, 0.8525, 0.0));
+	temp.particleOverlayMat.color = vec4(0, 0, 0, 0.5);
 	Game::CreateOverlayObject(temp);
+
+	temp = GameObject("HealthMeter", TAGS_HUD);
+	temp.mesh = GeoGenerator::MakeRect(1.00, 0.15, GA_LEFT);
+	temp.transform.Translate(vec3(-0.25, 0.85, -0.1));
+	temp.particleOverlayMat.color = vec4(0, 0.5, 1, 1);
+	Game::CreateOverlayObject(temp);
+
+	//Ammo meter
+	temp = GameObject("AmmoMeterBack", TAGS_HUD);
+	temp.mesh = GeoGenerator::MakeRect(1.05, 0.10, GA_LEFT);
+	temp.transform.Translate(vec3(-0.2625, 0.7025, 0.0));
+	temp.particleOverlayMat.color = vec4(0, 0, 0, 0.5);
+	Game::CreateOverlayObject(temp);
+
+	temp = GameObject("AmmoMeter", TAGS_HUD);
+	temp.mesh = GeoGenerator::MakeRect(1.00, 0.05, GA_LEFT);
+	temp.transform.Translate(vec3(-0.25, 0.70, -0.1));
+	temp.particleOverlayMat.color = vec4(0.8, 0.4, 0.0, 1);
+	Game::CreateOverlayObject(temp);
+
+	//Speedometer
+	temp = GameObject("SpeedometerBack", TAGS_HUD);
+	temp.mesh = GeoGenerator::MakeRect(0.8, 0.5, GA_CENTER);
+	temp.transform.Translate(vec3(0.73, -0.67, 0.0));
+	temp.particleOverlayMat.color = vec4(0, 0, 0, 0.5);
+	Game::CreateOverlayObject(temp);
+
+	temp = GameObject("SpeedometerGauge", TAGS_HUD);
+	temp.mesh = GeoGenerator::MakeRect(0.75, 0.45, GA_CENTER);
+	temp.transform.Translate(vec3(0.73, -0.67, -0.1));
+	temp.particleOverlayMat.color = vec4(0.5, 0.5, 0.5, 1.0);
+	Game::CreateOverlayObject(temp);
+
+	temp = GameObject("SpeedometerNeedle", TAGS_HUD);
+	temp.mesh = GeoGenerator::MakeRect(0.35, 0.05, GA_RIGHT);
+	temp.transform.Translate(vec3(0.73, -0.85, -0.2));
+	temp.particleOverlayMat.color = vec4(1.0, 0.0, 0.0, 1.0);
+	Game::CreateOverlayObject(temp);
+
+	//Score
+	temp = GameObject("ScoreBack", TAGS_HUD);
+	temp.mesh = GeoGenerator::MakeRect(0.5, 0.1, GA_LEFT);
+	temp.transform.Translate(vec3(0.35, 0.9, 0.0));
+	temp.particleOverlayMat.color = vec4(0, 0, 0, 0.5);
+	Game::CreateOverlayObject(temp);
+
+	temp = GameObject("ScoreLabel", TAGS_HUD);
+	temp.mesh = GeoGenerator::MakeRect(0.2, 0.2, GA_LEFT);
+	temp.transform.Translate(vec3(0.36, 0.9, -0.1));
+	temp.particleOverlayMat.color = vec4(1.0, 1.0, 1.0, 1.0);
+	temp.particleOverlayMat.mainTexture = MAP_SCORE;
+	Game::CreateOverlayObject(temp);
+
+	temp = GameObject("Score1", TAGS_HUD);
+	temp.mesh = GeoGenerator::MakeRect(0.075, 0.075, GA_LEFT);
+	temp.transform.Translate(vec3(0.48, 0.9, -0.2));
+	temp.particleOverlayMat.color = vec4(1.0, 1.0, 1.0, 1.0);
+	temp.particleOverlayMat.mainTexture = MAP_ZERO;
+	Game::CreateOverlayObject(temp);
+
+	temp = GameObject("Score2", TAGS_HUD);
+	temp.mesh = GeoGenerator::MakeRect(0.075, 0.075, GA_LEFT);
+	temp.transform.Translate(vec3(0.50, 0.9, -0.3));
+	temp.particleOverlayMat.color = vec4(1.0, 1.0, 1.0, 1.0);
+	temp.particleOverlayMat.mainTexture = MAP_ZERO;
+	Game::CreateOverlayObject(temp);
+
+	temp = GameObject("Score3", TAGS_HUD);
+	temp.mesh = GeoGenerator::MakeRect(0.075, 0.075, GA_LEFT);
+	temp.transform.Translate(vec3(0.52, 0.9, -0.4));
+	temp.particleOverlayMat.color = vec4(1.0, 1.0, 1.0, 1.0);
+	temp.particleOverlayMat.mainTexture = MAP_ZERO;
+	Game::CreateOverlayObject(temp);
+
+	//temp = GameObject();
+	//temp.mesh = GeoGenerator::MakeCircle(1.0, 32, 0.2);
+	//Game::CreateOverlayObject(temp);
+
 }
 
 void Game::DestroyWorld()

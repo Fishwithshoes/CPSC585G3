@@ -88,6 +88,10 @@ void Camera::Update()
 		if (Input::GetButton(ButtonCode::SPACE))
 		{
 			transform = Transform::Transform(vec3(0, 5, -10), vec4(0, 0, 0, 1), vec3(1));
+
+			//transform.position = vec3(5,2,5) * 17.0f;
+			//transform.Rotate(Transform::Up(), 135.0*Mathf::PI / 180, false);
+			//transform.Rotate(transform.GetRight(), -15.0*Mathf::PI / 180, false);
 		}
 		break;
 	case Modes::MODE_GAME:
@@ -117,7 +121,7 @@ mat4 Camera::GetWorldToViewMatrix()
 mat4 Camera::GetViewToProjectionMatrix()
 {
 	return mat4(
-		1/((float)WIDTH/(float)HEIGHT*tan(verticalFOV*0.5)), 0, 0, 0,
+		1/((float)Camera::WIDTH/(float)Camera::HEIGHT*tan(verticalFOV*0.5)), 0, 0, 0,
 		0, 1/tan(verticalFOV*0.5), 0, 0,
 		0, 0, (-nearClipPlane - farClipPlane) / (nearClipPlane - farClipPlane), (2 * farClipPlane*nearClipPlane) / (nearClipPlane - farClipPlane),
 		0, 0, 1, 0);

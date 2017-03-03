@@ -194,16 +194,29 @@ void main()
 		}
 	}
 	
-	// if(texture2D(shadowMap, ShadowCoord.xy*0.001).x < ShadowCoord.z*0.001)
+	// if(texture2D(shadowMap, ShadowCoord.xy*1.0).x < ShadowCoord.z*1.0)
 		// shadow = 1.0;
+	
+	float bias = 0;
+	vec3 revisedShadowCoords = ShadowCoord.xyz / ShadowCoord.w * 0.5 + 0.5;
+	revisedShadowCoords.z = (ShadowCoord.z-bias)/ShadowCoord.w;
+	
+	if(texture(shadowMap, revisedShadowCoords.xy).x < revisedShadowCoords.z);
+		shadow = 0.8;
 		
-	vec2 revisedShadowCoords = vec2(ShadowCoord.x, ShadowCoord.y)*0.0015 + vec2(0.2, 0.0);
+	// float currentSample = texture2D(shadowMap, revisedShadowCoords.xy).x;
+	// float otherSample = texture2D(shadowMap, revisedShadowCoords.xy + vec2(0.01, 0.01)).x;
+	
+	// if(abs(currentSample - otherSample) > 0.1)
+		// shadow = 0.8;
 		
-	if(texture2D(shadowMap, revisedShadowCoords).x < ShadowCoord.z*0.001)
-		shadow = 1.0;
+	// shadow = 1-texture2D(shadowMap, revisedShadowCoords.xy).x;
+	// if(shadow < 0.3)
+		// shadow = 0;
+	
+	// diffuse = clamp(diffuse-shadow, 0, 1);
 	
 	// diffuse *= 1-shadow;
-	// specular *= 1-shadow;
 	
 	//MIX IN AMBIENT COLOR AND SUM CONTRIBUTORS
 	diffuse += (1-_diffuseLevel)*(envColor*ambientLevel)*diffuseLevel*diffuseColor*diffuseTex*(1-_reflectivity);
@@ -213,12 +226,15 @@ void main()
 	float u = clamp(viewDist*0.01*fogLevel, 0, 1);
 	final = final * (1-u) + envColor * u;
 	
-	// final = vec3(ShadowCoord.x, 0, 0) * 0.001;
-	// final = vec3(0, ShadowCoord.y, 0) * 0.001;
-	// final = vec3(ShadowCoord.xy, 0) * 0.002;
-	// final = vec3(ShadowCoord.z) * 0.001;
+	//SHADOW MAP DEBUG
+	// final = vec3(revisedShadowCoords.x, 0, 0);
+	// final = vec3(0, revisedShadowCoords.y, 0);
+	// final = vec3(revisedShadowCoords.xy, 0);
 	
-	// final = vec3(texture2D(shadowMap, revisedShadowCoords).x);
+	// if(Position.z > 0)
+	// final = vec3(revisedShadowCoords.z);
+	// else
+	// final = vec3(1-texture2D(shadowMap, revisedShadowCoords.xy).x);
 	
 	//OUTPUT
 	OutputColor = vec4(final, 1.0);

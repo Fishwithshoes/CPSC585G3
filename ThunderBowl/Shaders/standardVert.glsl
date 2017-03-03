@@ -58,5 +58,5 @@ void main()
 	Normal = normalize(NormalToWorld * vec4(newNormal, 1.0)).xyz;
 	TexCoord = VertexTexCoord;
 	
-	ShadowCoord = Bias * LightToProjection * WorldToLight * ModelToWorld * vec4(VertexPosition, 1.0);
+	ShadowCoord = LightToProjection * WorldToLight * ModelToWorld * vec4(VertexPosition, 1.0);
 }

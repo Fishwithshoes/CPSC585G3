@@ -128,17 +128,20 @@ void VehicleComponent::Update()
 
 	//followCam->transform.rotationMatrix = glm::inverse(newRot);
 
-	followCam->transform.rotation.x = rotQuat.x;
-	followCam->transform.rotation.y = rotQuat.y;
-	followCam->transform.rotation.z = rotQuat.z;
-	followCam->transform.rotation.w = rotQuat.w;
+	if (followCam->mode == Camera::Modes::MODE_GAME)
+	{
+		followCam->transform.rotation.x = rotQuat.x;
+		followCam->transform.rotation.y = rotQuat.y;
+		followCam->transform.rotation.z = rotQuat.z;
+		followCam->transform.rotation.w = rotQuat.w;
 
-	followCam->transform.rotation = followCam->transform.GetInverseRotation();
+		followCam->transform.rotation = followCam->transform.GetInverseRotation();
 
-	glm::vec4 cameraOffset = glm::vec4(0.0, 5.0, -15.0, 0.0);
-	cameraOffset = glm::inverse(newRot) * cameraOffset;
-	cameraOffset = glm::vec4(transform.position, 0.0) + cameraOffset;
-	followCam->transform.position = cameraOffset;
+		glm::vec4 cameraOffset = glm::vec4(0.0, 5.0, -15.0, 0.0);
+		cameraOffset = glm::inverse(newRot) * cameraOffset;
+		cameraOffset = glm::vec4(transform.position, 0.0) + cameraOffset;
+		followCam->transform.position = cameraOffset;
+	}
 
 	//transform.rotationMatrix = newRot;
 	//glm::vec4 forward = glm::vec4(0.0, 0.0, 1.0, 0.0);
@@ -147,6 +150,15 @@ void VehicleComponent::Update()
 	//transform.forward.x = forward.x;
 	//transform.forward.y = forward.y;
 	//transform.forward.z = forward.z;
+
+	//IFNDEF_SPEEDOMETER
+	GameObject* speedNeedle = Game::Find("SpeedometerNeedle");
+	speedNeedle->transform.rotation = vec4(0, 0, 0, 1);
+	float speed = physVehicle->getLinearVelocity().magnitude() * 3.6;
+	float angle = -0.002 * Mathf::PI * speed; //At full the needle points to 500 km/h
+	speedNeedle->transform.Rotate(Transform::Forward(), angle, false);
+
+	//ENDIF_SPEEDOMETER
 
 	Finalize();
 }

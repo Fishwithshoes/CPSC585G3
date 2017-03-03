@@ -123,6 +123,17 @@ enum Maps
 	MAP_COLOR_BUFFER,//Store color & alpha for post-process
 	MAP_POSITION_BUFFER,//Store normals & distance for post-process
 	//Overlay
+	MAP_ZERO,
+	MAP_ONE,
+	MAP_TWO,
+	MAP_THREE,
+	MAP_FOUR,
+	MAP_FIVE,
+	MAP_SIX,
+	MAP_SEVEN,
+	MAP_EIGHT,
+	MAP_NINE,
+	MAP_SCORE,
 	MAP_JERRY,
 	MAP_SPIDER,
 	//Particles
