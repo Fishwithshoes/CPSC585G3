@@ -1,5 +1,6 @@
 #include "EnemyComponent.h"
 #include "PlayerComponent.h"
+#include "AIControlComponent1.h"
 #include "GeoGenerator.h"
 #include "Game.h"
 #include "Physics.h"
@@ -9,13 +10,13 @@ vector<GameObject*> enWheelVector;
 PlayerComponent* oppPlayer;
 MachineGunComponent* oppVehicleMG;
 EnemyComponent* opponentComp;
+AIControlComponent1* aiController;
 
 void EnemyComponent::Start()
 {
 	Initialize();
 
 
-	standardMat.diffuseColor = vec3(0.0, 0.0, 1.0);
 	physx::PxPhysics* worldPhys = Physics::getGPhysics();
 	physx::PxCooking* worldCook = Physics::getGCooking();
 	physx::PxScene* worldScene = Physics::getGScene();
@@ -78,12 +79,11 @@ void EnemyComponent::Update()
 
 	}
 
-	enVehicleNoDrive->setDriveTorque(0, 200);
-	enVehicleNoDrive->setDriveTorque(1, 200);
-
 	transform.position.x = enPhysVehicle->getGlobalPose().p.x;
 	transform.position.y = enPhysVehicle->getGlobalPose().p.y;
 	transform.position.z = enPhysVehicle->getGlobalPose().p.z;
+
+	enCurrentPosition = transform.position;
 
 	//NOTE INVERSIONS due to coordinate system
 
@@ -93,6 +93,10 @@ void EnemyComponent::Update()
 	transform.rotation.y = rotQuat.y;
 	transform.rotation.z = rotQuat.z;
 	transform.rotation.w = rotQuat.w;
+
+	cout << "transform: " << transform.position.x << " " << transform.position.y << " " << transform.position.z << endl;
+
+	MoveOnHeading();
 
 	Finalize();
 }
@@ -120,4 +124,16 @@ void EnemyComponent::OnCollision(Component::CollisionPair collisionPair) {
 	}
 
 	Finalize();
+}
+
+void EnemyComponent::MoveOnHeading() {
+	AIControlComponent1* tempController = &AIControlComponent1();
+	aiController = (AIControlComponent1*)Game::Find(selfName)->GetComponent(tempController);
+	vec3 requiredHeading = glm::normalize(aiController->currentHeading);
+	vec3 actualHeading = glm::normalize(transform.GetForward());
+	enVehicleNoDrive->setSteerAngle(2, clamp(1.0 - glm::dot(actualHeading, requiredHeading), 0.0, 1.0)*0.1);
+	enVehicleNoDrive->setSteerAngle(3, clamp(1.0 - glm::dot(actualHeading, requiredHeading), 0.0, 1.0)*0.1);
+	enVehicleNoDrive->setDriveTorque(0, 100);
+	enVehicleNoDrive->setDriveTorque(1, 100);
+	standardMat.diffuseColor = vec3(0.0, glm::dot(actualHeading, requiredHeading), 0.0);
 }

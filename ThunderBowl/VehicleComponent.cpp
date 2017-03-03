@@ -135,7 +135,6 @@ void VehicleComponent::Update()
 	transform.rotation.z = rotQuat.z;
 	transform.rotation.w = rotQuat.w;
 
-
 	mat4 newRot = glm::mat4_cast(glm::quat(rotQuat.w, rotQuat.x, rotQuat.y, rotQuat.z));
 	newRot = glm::inverse(newRot);
 

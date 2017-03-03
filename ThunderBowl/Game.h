@@ -11,6 +11,8 @@
 #include "StaticComponent.h"
 #include "PowerUpComponent.h"
 #include "PlayerComponent.h"
+#include "AINodeComponent.h"
+#include "AIControlComponent1.h"
 
 #include "OceanComponent.h"
 

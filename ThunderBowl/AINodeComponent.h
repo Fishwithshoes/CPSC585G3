@@ -7,6 +7,6 @@ public:
 	void Start();
 	void Update();
 
-
+	vec3 nodeCurrentPosition;
 };
 

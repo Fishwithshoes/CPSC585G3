@@ -136,6 +136,10 @@ int main(int argc, char *argv[])
 		{
 			Game::overlayObjectList[i].Update();
 		}
+		for (int i = Game::aiObjectList.size() - 1; i >= 0; i--)
+		{
+			Game::aiObjectList[i].Update();
+		}
 
 		Physics::stepPhysics();	//SUBJECT TO CHANGE
 

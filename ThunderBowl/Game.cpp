@@ -37,6 +37,11 @@ void Game::BuildWorld()
 	ptr = Game::CreateWorldObject(temp);
 	ptr->AddComponent(new VehicleComponent());
 	ptr->AddComponent(new MachineGunComponent());*/
+	GameObject pathNode1 = GameObject();
+	pathNode1.name = "Node1";
+	pathNode1.transform.position = vec3(0.0, 1.0, 65.0);
+	ptr = Game::CreateAIObject(pathNode1);
+	ptr->AddComponent(new AINodeComponent());
 
 	GameObject player1 = GameObject();
 	player1.mesh = GeoGenerator::MakeBox(2, 1, 2, false);
@@ -56,6 +61,7 @@ void Game::BuildWorld()
 	ptr->AddComponent(new PlayerComponent());
 	ptr->AddComponent(new EnemyComponent());
 	ptr->AddComponent(new MachineGunComponent());
+	ptr->AddComponent(new AIControlComponent1());
 
 
 	GameObject powerUp1 = GameObject();
@@ -66,7 +72,7 @@ void Game::BuildWorld()
 
 	GameObject powerUp2 = GameObject();
 	powerUp2.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
-	powerUp2.transform.position = vec3(0.0, 1.0, 30.0);
+	powerUp2.transform.position = vec3(0.0, 1.0, 65.0);
 	ptr = Game::CreateWorldObject(powerUp2);
 	ptr->AddComponent(new PowerUpComponent());
 
@@ -373,6 +379,11 @@ GameObject* Game::Find(string name)
 	{
 		if (name == overlayObjectList[i].name)
 			return &overlayObjectList[i];
+	}
+	for (int i = 0; i < aiObjectList.size(); i++)
+	{
+		if (name == aiObjectList[i].name)
+			return &aiObjectList[i];
 	}
 
 	cout << "GameObject with name: " << name << " not found! Check thy spelling?" << endl;

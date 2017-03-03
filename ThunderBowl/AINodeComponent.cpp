@@ -4,7 +4,7 @@
 
 void AINodeComponent::Start() {
 	Initialize();
-
+	nodeCurrentPosition = transform.position;
 	Finalize();
 }
 
