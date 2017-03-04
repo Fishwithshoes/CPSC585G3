@@ -311,6 +311,13 @@ void Game::BuildWorld()
 	temp.particleOverlayMat.mainTexture = MAP_ZERO;
 	Game::CreateOverlayObject(temp);
 
+	temp = GameObject("Score4", TAGS_HUD);
+	temp.mesh = GeoGenerator::MakeRect(0.075, 0.075, GA_LEFT);
+	temp.transform.Translate(vec3(0.54, 0.9, -0.5));
+	temp.particleOverlayMat.color = vec4(1.0, 1.0, 1.0, 1.0);
+	temp.particleOverlayMat.mainTexture = MAP_ZERO;
+	Game::CreateOverlayObject(temp);
+
 	//temp = GameObject();
 	//temp.mesh = GeoGenerator::MakeCircle(1.0, 32, 0.2);
 	//Game::CreateOverlayObject(temp);

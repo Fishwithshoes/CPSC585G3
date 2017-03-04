@@ -136,21 +136,22 @@ void VehicleComponent::Update()
 	transform.rotation.w = rotQuat.w;
 
 	mat4 newRot = glm::mat4_cast(glm::quat(rotQuat.w, rotQuat.x, rotQuat.y, rotQuat.z));
-	newRot = glm::inverse(newRot);
 
 	//followCam->transform.rotationMatrix = glm::inverse(newRot);
 
 	if (followCam->mode == Camera::Modes::MODE_GAME)
 	{
-		followCam->transform.rotation.x = rotQuat.x;
+		followCam->transform.rotation.x = 0.0;// rotQuat.x;
 		followCam->transform.rotation.y = rotQuat.y;
-		followCam->transform.rotation.z = rotQuat.z;
+		followCam->transform.rotation.z = 0.0;//rotQuat.z;
 		followCam->transform.rotation.w = rotQuat.w;
 
+		followCam->transform.rotation = normalize(followCam->transform.rotation);
 		followCam->transform.rotation = followCam->transform.GetInverseRotation();
 
+
 		glm::vec4 cameraOffset = glm::vec4(0.0, 5.0, -15.0, 0.0);
-		cameraOffset = glm::inverse(newRot) * cameraOffset;
+		cameraOffset = newRot * cameraOffset;
 		cameraOffset = glm::vec4(transform.position, 0.0) + cameraOffset;
 		followCam->transform.position = cameraOffset;
 	}

@@ -20,6 +20,9 @@ void MachineGunComponent::Update()
 	nextBullet -= Time::getDeltaTime();
 	nextBullet = Mathf::Clamp(nextBullet, 0.0f, bulletDelay);
 
+	GameObject* ammoMeter = Game::Find("AmmoMeter");
+	ammoMeter->transform.scale.x = (float)ammoCount / 500.0;
+
 	Finalize();
 }
 

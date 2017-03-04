@@ -900,14 +900,14 @@ Physics::VehicleDesc Physics::initVehicleDesc()
 	((chassisDims.y*chassisDims.y + chassisDims.z*chassisDims.z)*chassisMass / 12.0f,
 		(chassisDims.x*chassisDims.x + chassisDims.z*chassisDims.z)*0.8f*chassisMass / 12.0f,
 		(chassisDims.x*chassisDims.x + chassisDims.y*chassisDims.y)*chassisMass / 12.0f);
-	const PxVec3 chassisCMOffset(0.0f, -chassisDims.y*0.5f + 0.0f, 0.2f);						//Center of mass
+	const PxVec3 chassisCMOffset(0.0f, -chassisDims.y*0.5f + 0.0f, 0.3f);						//Center of mass
 
 	//Set up the wheel mass, radius, width, moment of inertia, and number of wheels.
 	//Moment of inertia is just the moment of inertia of a cylinder.
 	const PxF32 wheelMass = 10.0f;
 	const PxF32 wheelRadius = 0.5f;
 	const PxF32 wheelWidth = 0.4f;
-	const PxF32 wheelMOI = 0.5f*wheelMass*wheelRadius*wheelRadius;
+	const PxF32 wheelMOI = 0.25f*wheelMass*wheelRadius*wheelRadius;
 	const PxU32 nbWheels = 4;
 
 	Physics::VehicleDesc vehicleDesc;

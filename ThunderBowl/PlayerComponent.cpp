@@ -35,6 +35,41 @@ void PlayerComponent::Update() {
 		//driving without taking damage
 		//driving at high speed
 
+	string strScore = to_string(playerScore);
+
+	cout << "LENGTH -> " << strScore.length() << endl;
+	cout << "STRING -> " << strScore << endl;
+
+	GameObject* score1 = Game::Find("Score1");
+	GameObject* score2 = Game::Find("Score2");
+	GameObject* score3 = Game::Find("Score3");
+	GameObject* score4 = Game::Find("Score4");
+
+	for (int i = strScore.length()-1; i >= 0; i--)
+	{
+		switch (i)
+		{
+		case 0:
+			score4->particleOverlayMat.mainTexture = MAP_ZERO + (strScore[-1 + strScore.length()] - 48);
+			break;
+		case 1:
+			score3->particleOverlayMat.mainTexture = MAP_ZERO + (strScore[-2 + strScore.length()] - 48);
+			break;
+		case 2:
+			score2->particleOverlayMat.mainTexture = MAP_ZERO + (strScore[-3 + strScore.length()] - 48);
+			break;
+		case 3:
+			score1->particleOverlayMat.mainTexture = MAP_ZERO + (strScore[-4 + strScore.length()] - 48);
+			break;
+		default:
+			cout << "What are ya doin' matey? Score be too large!" << endl;
+			break;
+		}
+	}
+
+	GameObject* health = Game::Find("HealthMeter");
+	health->transform.scale.x = playerHealth / 100;
+
 	Finalize();
 }
 
