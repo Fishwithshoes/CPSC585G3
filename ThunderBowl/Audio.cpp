@@ -5,7 +5,8 @@ Transform Audio::listenerTransform = Transform::identity();
 
 vector<string> Audio::soundFilePaths =
 {
-	"Sounds/Hit_SFX.wav"
+	"Sounds/Hit_SFX.wav",
+	"Sounds/Pause_SFX.wav"
 };
 
 vector<string> Audio::musicFilePaths =

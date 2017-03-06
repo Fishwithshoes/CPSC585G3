@@ -1,14 +1,33 @@
 #pragma once
+#include "CommonIncludes.h"
+
 class GameManager
 {
 public:
-	double gameTimer;
+	static void Update();
 
-	enum gameState
-	{
-		GS_MENUS,
-		GS_IN_GAME,
-		GS_GAME,
-	};
+	//State changers
+	static void StartGame();
+	static void ToggleGamePause();
+	static void EndGame();
+	static void GotoMainMenu();
+
+	static float initialGameTime;//In seconds
+
+	static GameStates GetGameState();
+	static float GetGameTime();
+
+private:
+	static GameStates gameState;
+
+	static float gameTimeRemaining;
+
+	static int timerSeconds;
+	static int timerMinutes;
+
+	static string strMinutes;
+	static string strSeconds;
+
+	static bool startButtonPrev;
 };
 

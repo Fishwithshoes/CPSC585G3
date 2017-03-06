@@ -30,6 +30,7 @@ vector<string> Renderer::textureFilePaths =
 	"Textures/eight_TEXT.png",
 	"Textures/nine_TEXT.png",
 	"Textures/score_TEXT.png",
+	"Textures/time_TEXT.png",
 	"Textures/jerry_DIFF.jpg",
 	"Textures/SpiderTex.jpg",
 	"Textures/default_PART.png",
@@ -136,11 +137,13 @@ void Renderer::LoadTextures(Renderer *renderer)
 			glGenTextures(1, &texID);
 			glActiveTexture(GL_TEXTURE0 + i);
 			glBindTexture(GL_TEXTURE_2D, texID);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 2048, 2048, 0, GL_RGBA, GL_FLOAT, 0);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 4096, 4096, 0, GL_RED, GL_FLOAT, 0);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+			GLfloat borderColor[] = { 1.0, 1.0, 1.0, 1.0 };
+			glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
 			//glGenerateMipmap(GL_TEXTURE_2D);
 
 			cout << "Created shadow mapping image at: " << texID << "!" << endl;
@@ -194,10 +197,13 @@ void Renderer::LoadTextures(Renderer *renderer)
 void Renderer::LoadStaticGeo(Renderer *renderer)
 {
 	RendererUtility::InitializeGeometry(&renderer->oceanGeo);
-	BufferStaticGeoData(&renderer->oceanGeo, &GeoGenerator::MakePlane(500, 500, 100, 100));
+	BufferStaticGeoData(&renderer->oceanGeo, &GeoGenerator::MakePlane(1000, 1000, 200, 200, false));
+
+	RendererUtility::InitializeGeometry(&renderer->oceanGeoDown);
+	BufferStaticGeoData(&renderer->oceanGeoDown, &GeoGenerator::MakePlane(1000, 1000, 200, 200, true));
 
 	RendererUtility::InitializeGeometry(&renderer->puddleGeo);
-	BufferStaticGeoData(&renderer->puddleGeo, &GeoGenerator::MakePlane(10, 10, 100, 100));
+	BufferStaticGeoData(&renderer->puddleGeo, &GeoGenerator::MakePlane(10, 10, 100, 100, false));
 }
 
 void Renderer::GetShaderUniforms(Renderer *renderer)
@@ -209,6 +215,8 @@ void Renderer::GetShaderUniforms(Renderer *renderer)
 	renderer->roughness_uniform = glGetUniformLocation(renderer->standardShader.program, "roughness");
 	renderer->metalness_uniform = glGetUniformLocation(renderer->standardShader.program, "metalness");
 	renderer->isMetallic_uniform = glGetUniformLocation(renderer->standardShader.program, "isMetallic");
+	renderer->transparency_uniform = glGetUniformLocation(renderer->standardShader.program, "transparency");
+	renderer->isPhysicalTransparency_uniform = glGetUniformLocation(renderer->standardShader.program, "isPhysicalTransparency");
 	renderer->bumpLevel_uniform = glGetUniformLocation(renderer->standardShader.program, "bumpLevel");
 	renderer->selfIllumLevel_uniform = glGetUniformLocation(renderer->standardShader.program, "selfIllumLevel");
 	renderer->selfIllumColor_uniform = glGetUniformLocation(renderer->standardShader.program, "selfIllumColor");
@@ -274,6 +282,7 @@ void Renderer::GetShaderUniforms(Renderer *renderer)
 	renderer->worldToViewSkybox_uniform = glGetUniformLocation(renderer->skyboxShader.program, "WorldToView");
 	renderer->viewToProjectionSkybox_uniform = glGetUniformLocation(renderer->skyboxShader.program, "ViewToProjection");
 	renderer->normalToWorldSkybox_uniform = glGetUniformLocation(renderer->skyboxShader.program, "NormalToWorld");
+	renderer->cameraPosSkybox_uniform = glGetUniformLocation(renderer->skyboxShader.program, "cameraPos");
 	renderer->cameraForwardSkybox_uniform = glGetUniformLocation(renderer->skyboxShader.program, "cameraForward");
 
 	//Depth (Shadow) Map Shader - WorldInfo
@@ -310,7 +319,7 @@ void Renderer::SetupShadowMapping(Renderer *renderer)
 	//Create and bind a depth buffer
 	glGenRenderbuffers(1, &renderer->shadowDepthBufferID);
 	glBindRenderbuffer(GL_RENDERBUFFER, renderer->shadowDepthBufferID);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 2048, 2048);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 4096, 4096);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, renderer->shadowDepthBufferID);
 
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, MAP_DEPTH_BUFFER + 1, 0);
@@ -324,47 +333,32 @@ void Renderer::RenderScene(Renderer *renderer)
 {
 //**TURN OVER TO THE SHADOW MAP FRAMEBUFFER TO DEPTH MAP PHYSICAL WORLD OBJECTS**********
 	glBindFramebuffer(GL_FRAMEBUFFER, renderer->shadowBufferID);
-	glViewport(0, 0, 2048, 2048);
+	glViewport(0, 0, 4096, 4096);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glUseProgram(renderer->depthMapShader.program);
 
+	glCullFace(GL_FRONT);
+
 	//Create WorldToView Matrix for light
 	Transform lightTransform = Transform();
-
+	//IMPORTANT: To change light position. Update info in standardFrag and depthMapFrag
 	lightTransform.position = vec3(5, 2, 5)*17.0f;
-
 	lightTransform.Rotate(Transform::Up(), 135.0*Mathf::PI/180, false);
 	lightTransform.Rotate(lightTransform.GetRight(), -15.0*Mathf::PI/180, false);
-
-	mat4 scale = mat4(
-		1, 0, 0, 0,
-		0, 1, 0, 0,
-		0, 0, 1, 0,
-		0, 0, 0, 1);
-
-	mat4 translation = mat4(
-		1, 0, 0, -lightTransform.position.x,
-		0, 1, 0, -lightTransform.position.y,
-		0, 0, 1, -lightTransform.position.z,
-		0, 0, 0, 1);
-
-	mat4 lightWorldToView = translation * lightTransform.GetRotationMatrix() * scale;
-
 	float nearClip = 0.1;
 	float farClip = 1000;
-	float verticalFOV = Mathf::PI / 180 * 60;
 
-	mat4 lightViewToProjection = mat4(
-		1 / (tan(verticalFOV*0.5)), 0, 0, 0,
-		0, 1 / tan(verticalFOV*0.5), 0, 0,
-		0, 0, (-nearClip - farClip) / (nearClip - farClip), (2 * farClip*nearClip) / (nearClip - farClip),
-		0, 0, 1, 0);
+	//Calculate an orthographic worldToView and viewToProjection for light's perspective
+	mat4 lightWorldToView = glm::lookAt(lightTransform.position, vec3(0), Transform::Up());
+	mat4 lightViewToProjection = glm::ortho(-75.0f, 75.0f, -30.0f, 40.0f, nearClip, farClip);
 	
 	//Program Uniforms for WorldToView and ViewToProjection
-	glUniformMatrix4fv(renderer->worldToViewDepthMap_uniform, 1, GL_TRUE, value_ptr(lightWorldToView));
-	glUniformMatrix4fv(renderer->viewToProjectionDepthMap_uniform, 1, GL_TRUE, value_ptr(lightViewToProjection));
+	glUniformMatrix4fv(renderer->worldToViewDepthMap_uniform, 1, GL_FALSE, value_ptr(lightWorldToView));
+	glUniformMatrix4fv(renderer->viewToProjectionDepthMap_uniform, 1, GL_FALSE, value_ptr(lightViewToProjection));
 	
 	DrawPhysicalObjects(renderer, false);
+
+	glCullFace(GL_BACK);
 
 //**TURN OVER TO THE DEFERRED FRAMEBUFFER TO DRAW WORLD AND PARTICLES**********
 	glBindFramebuffer(GL_FRAMEBUFFER, renderer->framebufferID);
@@ -388,6 +382,7 @@ void Renderer::RenderScene(Renderer *renderer)
 		//TODO strip out position from camera's WorldToView so the skybox appears at an 'infinite distance'
 		glUniformMatrix4fv(renderer->worldToViewSkybox_uniform, 1, GL_TRUE, value_ptr(renderer->camera.GetWorldToViewMatrix()));
 		glUniformMatrix4fv(renderer->viewToProjectionSkybox_uniform, 1, GL_TRUE, value_ptr(renderer->camera.GetViewToProjectionMatrix()));
+		glUniform3fv(renderer->cameraPosSkybox_uniform, 1, value_ptr(renderer->camera.transform.position));
 		glUniform3fv(renderer->cameraForwardSkybox_uniform, 1, value_ptr(renderer->camera.transform.GetForward()));
 
 		BufferGeoData(renderer, &mesh);
@@ -411,9 +406,9 @@ void Renderer::RenderScene(Renderer *renderer)
 	GLint shadowMap_uniform = glGetUniformLocation(renderer->standardShader.program, "shadowMap");
 	glUniform1i(shadowMap_uniform, MAP_DEPTH_BUFFER);
 	GLint worldToLight_uniform = glGetUniformLocation(renderer->standardShader.program, "WorldToLight");
-	glUniformMatrix4fv(worldToLight_uniform, 1, GL_TRUE, value_ptr(lightWorldToView));
+	glUniformMatrix4fv(worldToLight_uniform, 1, GL_FALSE, value_ptr(lightWorldToView));
 	GLint lightToProjection_uniform = glGetUniformLocation(renderer->standardShader.program, "LightToProjection");
-	glUniformMatrix4fv(lightToProjection_uniform, 1, GL_TRUE, value_ptr(lightViewToProjection));
+	glUniformMatrix4fv(lightToProjection_uniform, 1, GL_FALSE, value_ptr(lightViewToProjection));
 	GLint bias_uniform = glGetUniformLocation(renderer->standardShader.program, "Bias");
 	mat4 bias = mat4(
 		0.5, 0.0, 0.0, 0.5,
@@ -552,7 +547,7 @@ void Renderer::RenderScene(Renderer *renderer)
 	glUseProgram(0);
 
 	// check for and report any OpenGL errors
-	RendererUtility::CheckGLErrors();
+	//RendererUtility::CheckGLErrors();
 }
 
 Camera* Renderer::GetCamera(int index)
@@ -562,50 +557,6 @@ Camera* Renderer::GetCamera(int index)
 
 void Renderer::DrawPhysicalObjects(Renderer *renderer, bool programStandardUniforms)
 {
-	//DRAW STATIC MESH WORLD OBJECTS
-	//For each Static World GameObject point to appropriate mesh on GPU and draw
-	for (int i = 0; i < Game::staticObjectList.size(); i++)
-	{
-		GameObject gameObject = Game::staticObjectList[i];
-		StandardMaterial standardMat = gameObject.standardMat;
-
-		if(programStandardUniforms)
-			ProgramStandardUniforms(renderer, &standardMat);
-
-		//PROGRAM UNIFORMS - WORLD INFO
-		mat4 modelToWorld = gameObject.GetModelToWorld();
-		mat4 normalToWorld = gameObject.GetNormalToWorld();
-		if (programStandardUniforms)
-		{
-			glUniformMatrix4fv(renderer->modelToWorldStandard_uniform, 1, GL_TRUE, value_ptr(modelToWorld));
-			glUniformMatrix4fv(renderer->normalToWorldStandard_uniform, 1, GL_TRUE, value_ptr(normalToWorld));
-		}
-		else
-			glUniformMatrix4fv(renderer->modelToWorldDepthMap_uniform, 1, GL_TRUE, value_ptr(modelToWorld));
-
-		Geometry geoToUse;
-		switch (gameObject.staticGeo)
-		{
-		case SG_OCEAN:
-			geoToUse = renderer->oceanGeo;
-			break;
-		case SG_PUDDLE:
-			geoToUse = renderer->puddleGeo;
-			break;
-		case SG_MAP:
-			geoToUse = renderer->mapGeo;
-			break;
-		default:
-			cout << "Invalid RenderMesh specified!" << endl;
-			break;
-		}
-
-		//Bind and draw with the appropriate arrays
-		glBindVertexArray(geoToUse.vertexArray);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, geoToUse.indexBuffer);
-		glDrawElements(GL_TRIANGLES, geoToUse.elementCount, GL_UNSIGNED_INT, nullptr);
-	}
-
 	//DRAW DYNAMIC MESH WORLD OBJECTS
 	//For each World GameObject Load geometry into GPU, bind and draw it
 	for (int i = 0; i < Game::worldObjectList.size(); i++)
@@ -633,6 +584,53 @@ void Renderer::DrawPhysicalObjects(Renderer *renderer, bool programStandardUnifo
 		BufferGeoData(renderer, &mesh);
 		glDrawElements(GL_TRIANGLES, renderer->geometry.elementCount, GL_UNSIGNED_INT, nullptr);
 	}
+
+	//DRAW STATIC MESH WORLD OBJECTS
+	//For each Static World GameObject point to appropriate mesh on GPU and draw
+	for (int i = 0; i < Game::staticObjectList.size(); i++)
+	{
+		GameObject gameObject = Game::staticObjectList[i];
+		StandardMaterial standardMat = gameObject.standardMat;
+
+		if (programStandardUniforms)
+			ProgramStandardUniforms(renderer, &standardMat);
+
+		//PROGRAM UNIFORMS - WORLD INFO
+		mat4 modelToWorld = gameObject.GetModelToWorld();
+		mat4 normalToWorld = gameObject.GetNormalToWorld();
+		if (programStandardUniforms)
+		{
+			glUniformMatrix4fv(renderer->modelToWorldStandard_uniform, 1, GL_TRUE, value_ptr(modelToWorld));
+			glUniformMatrix4fv(renderer->normalToWorldStandard_uniform, 1, GL_TRUE, value_ptr(normalToWorld));
+		}
+		else
+			glUniformMatrix4fv(renderer->modelToWorldDepthMap_uniform, 1, GL_TRUE, value_ptr(modelToWorld));
+
+		Geometry geoToUse;
+		switch (gameObject.staticGeo)
+		{
+		case SG_OCEAN:
+			geoToUse = renderer->oceanGeo;
+			break;
+		case SG_OCEAN_DOWN:
+			geoToUse = renderer->oceanGeoDown;
+			break;
+		case SG_PUDDLE:
+			geoToUse = renderer->puddleGeo;
+			break;
+		case SG_MAP:
+			geoToUse = renderer->mapGeo;
+			break;
+		default:
+			cout << "Invalid RenderMesh specified!" << endl;
+			break;
+		}
+
+		//Bind and draw with the appropriate arrays
+		glBindVertexArray(geoToUse.vertexArray);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, geoToUse.indexBuffer);
+		glDrawElements(GL_TRIANGLES, geoToUse.elementCount, GL_UNSIGNED_INT, nullptr);
+	}
 }
 
 void Renderer::ProgramStandardUniforms(Renderer *renderer, StandardMaterial *stdMat)
@@ -643,6 +641,8 @@ void Renderer::ProgramStandardUniforms(Renderer *renderer, StandardMaterial *std
 	glUniform1f(renderer->roughness_uniform, stdMat->roughness);
 	glUniform1f(renderer->metalness_uniform, stdMat->metalness);
 	glUniform1i(renderer->isMetallic_uniform, stdMat->isMetallic ? 1 : 0);
+	glUniform1f(renderer->transparency_uniform, stdMat->transparency);
+	glUniform1i(renderer->isPhysicalTransparency_uniform, stdMat->isPhysicalTransparency ? 1 : 0);
 	glUniform1f(renderer->bumpLevel_uniform, stdMat->bumpLevel);
 	glUniform1f(renderer->selfIllumLevel_uniform, stdMat->selfIllumLevel);
 	glUniform3fv(renderer->selfIllumColor_uniform, 1, value_ptr(stdMat->selfIllumColor));
@@ -657,6 +657,8 @@ void Renderer::ProgramStandardUniforms(Renderer *renderer, StandardMaterial *std
 	glUniform1i(renderer->envMap_uniform, stdMat->envMap);
 	glUniform1i(renderer->roughnessMap_uniform, stdMat->roughnessMap);
 	glUniform1i(renderer->metalnessMap_uniform, stdMat->metalnessMap);
+	glUniform1i(glGetUniformLocation(renderer->standardShader.program, "colorBufferMap"), MAP_COLOR_BUFFER);
+	glUniform2f(glGetUniformLocation(renderer->standardShader.program, "screenDims"), Camera::WIDTH, Camera::HEIGHT);
 
 	glUniform2fv(renderer->tileUV_uniform, 1, value_ptr(stdMat->tileUV));
 	glUniform2fv(renderer->offsetUV_uniform, 1, value_ptr(stdMat->offsetUV));

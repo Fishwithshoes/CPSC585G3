@@ -8,7 +8,8 @@ public:
 	enum Modes
 	{
 		MODE_FREE,
-		MODE_GAME
+		MODE_GAME,
+		MODE_PRESENTATION
 	};
 
 	//Properties for screen (big camera) NOT individual cameras
@@ -42,4 +43,6 @@ private:
 	float farClipPlane;
 
 	float panSpeedScale = 1.0;
+
+	Transform orbitTransform;
 };

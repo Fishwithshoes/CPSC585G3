@@ -4,6 +4,15 @@
 using namespace glm;
 using namespace std;
 
+//Game Logic
+enum GameStates
+{
+	GS_FRONT_MENU,
+	GS_IN_GAME,
+	GS_PAUSED,
+	GS_GAME_OVER
+};
+
 //Models
 struct Mesh
 {
@@ -29,11 +38,12 @@ struct Geometry
 enum StaticGeos
 {
 	SG_OCEAN,
+	SG_OCEAN_DOWN,
 	SG_PUDDLE,
 	SG_MAP
 };
 
-enum RenderTypes
+enum RenderTypes//Deprecated as of v0.72
 {
 	RT_EULER,
 	RT_QUAT
@@ -42,13 +52,17 @@ enum RenderTypes
 enum Tags
 {
 	TAGS_DEFAULT,
+	//World objects
 	TAGS_HUMAN_PLAYER,
 	TAGS_AI_PLAYER,
 	TAGS_PROJECTILE,
 	TAGS_DECORATION,
+	TAGS_PARTICLE_SYSTEM,
+	//Overlay objects
 	TAGS_MENU,
 	TAGS_HUD,
-	TAGS_PARTICLE_SYSTEM,
+	TAGS_PAUSE,
+	TAGS_GAME_OVER,
 	//Add more as needed...
 	max
 };
@@ -69,7 +83,9 @@ struct StandardMaterial
 
 	float roughness;
 	float metalness;
-	bool isMetallic;//When OFF metalness represents base reflectivity
+	bool isMetallic;//When OFF metalness represents base reflectivity.
+	float transparency;
+	bool isPhysicalTransparency;//When OFF transparency is simply reverse opacity.
 
 	float bumpLevel;
 
@@ -134,6 +150,7 @@ enum Maps
 	MAP_EIGHT,
 	MAP_NINE,
 	MAP_SCORE,
+	MAP_TIME,
 	MAP_JERRY,
 	MAP_SPIDER,
 	//Particles
@@ -219,8 +236,8 @@ struct ParticleSystemDesc
 //Audio WAV info
 enum Sounds 
 {
-	SFX_Hit
-
+	SFX_Hit,
+	SFX_Pause
 };
 
 enum Musics

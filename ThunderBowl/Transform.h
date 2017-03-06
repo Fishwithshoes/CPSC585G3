@@ -21,10 +21,10 @@ public:
 	~Transform();
 
 	//Use these when animating object directly.
-	void Translate(vec3 translation);
-	void Rotate(vec3 eulerAngles);
+	void Translate(vec3 translation, bool matchTimeScale);
+	void Rotate(vec3 eulerAngles, bool matchTimeScale);
 	void Rotate(vec3 axis, float angle, bool matchTimeScale);
-	void Scale(vec3 scalar);
+	void Scale(vec3 scalar, bool matchTimeScale);
 	void LookAt(vec3 point, bool forceUpright, vec3 desiredUp);
 
 	//THESE GET LOCAL ONLY!! Use the ones in GameObject to apply parent transforms too.

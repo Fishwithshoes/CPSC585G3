@@ -14,6 +14,8 @@ uniform vec3 diffuseColor;
 uniform float roughness;
 uniform float metalness;
 uniform int isMetallic;//When OFF=0 metalness simply represents base angle reflectivity
+uniform float transparency;
+uniform int isPhysicalTransparency;//When OFF=0 transparency simply represents reverse opacity
 uniform float bumpLevel;
 uniform float selfIllumLevel;
 uniform vec3 selfIllumColor;
@@ -31,6 +33,7 @@ uniform sampler2D mirrorMap;
 uniform samplerCube envMap;
 uniform sampler2D roughnessMap;
 uniform sampler2D metalnessMap;
+uniform sampler2D colorBufferMap;
 
 //Texture Coords
 uniform vec2 tileUV;
@@ -41,37 +44,23 @@ uniform vec3 cameraForward;
 uniform vec4 lightPos;
 uniform vec4 lightColor;
 uniform sampler2D shadowMap;
+uniform vec2 screenDims;
 
 //Post Process
 layout(location = 0) out vec4 OutputColor;
 layout(location = 1) out vec4 OutputPosition;
 
-struct Hit
-{
-	float distance;
-	vec3 position;
-	vec3 normal;
-};
-Hit hit;
-
 //OHH SUCH CHOICES!!
 const float EPSILON = 0.003;
-const float LIGHT_RADIUS = 1;//Set to 0 if SHADOW_SAMPLES = 1
-const int SHADOW_SAMPLES = 2;//4 is quite high enough, methinks!
-const float GLOSSY_STRETCH = 0.5;//Set to 0 i GLOSSY_SAMPLES = 1;
+const float SHADOW_STRIDE = 0.02;//Global shadow blur multiplier. Set to 0 if SHADOW_SAMPLES = 1
+const int SHADOW_SAMPLES = 8;//4 is quite high enough, methinks!
+const float GLOSSY_STRIDE = 0.5;//Set to 0 if GLOSSY_SAMPLES = 1
 const int GLOSSY_SAMPLES = 4;//Again, 4 should satisfy thee!
 //Eat memory, gain performance!
-const float SHADOW_CONTRIB = 1.0/(SHADOW_SAMPLES*SHADOW_SAMPLES);
+const float SHADOW_STEP = SHADOW_STRIDE/SHADOW_SAMPLES * 2.0;
+const float SHADOW_CONTRIB = 0.6/(SHADOW_SAMPLES*SHADOW_SAMPLES);
+const float GLOSSY_STEP = GLOSSY_STRIDE/GLOSSY_SAMPLES * 2.0;
 const float GLOSSY_CONTRIB = 1.0/(GLOSSY_SAMPLES*GLOSSY_SAMPLES*GLOSSY_SAMPLES);
-const float SHADOW_STRIDE = LIGHT_RADIUS/SHADOW_SAMPLES * 2.0;
-const float GLOSSY_STRIDE = GLOSSY_STRETCH/GLOSSY_SAMPLES * 2.0;
-
-void RunSceneCollisions(vec3 ray, vec3 origin);
-
-void TestPlane(vec3 p0, vec3 normal, vec3 ray, vec3 origin);
-void TestSphere(vec3 center, float radius, vec3 ray, vec3 origin);
-void TestCylinder(vec3 center, float radius, float height, vec3 ray, vec3 origin);
-void TestTriangle(vec3 p1, vec3 p2, vec3 p3, vec3 ray, vec3 origin);
 
 void main()
 {
@@ -82,15 +71,22 @@ void main()
 	t = (dot(normalize(dayPos), cameraForward)+1)*0.5;	
 	// vec3 envColor = vec3(0.7, 0.9, 1.0)*(1-t) + vec3(0.7, 0.9, 1.0)*t;
 	vec3 envColor = vec3(0.4, 0.4, 1.0)*(1-t) + vec3(1.0,0.5,0.2)*t;
+	
+	if(cameraPos.y < -2.0)
+	{
+		float v = clamp(0.0 - Position.y*0.0003, 0.0, 1.0);
+		vec3 newEnvColor = (vec3(0.0, 1.0, 1.0)*0.4)*0.5 + envColor*0.5;
+		envColor = (newEnvColor*(1-v) + vec3(0)*v);
+	}
 
 	//WORLD CALCULATIONS
 	vec3 lightPos0 = vec3(5,2,5)*600;
-	vec3 lightColor0 = vec3(1.0,0.5,0.0)*2.2;	
+	vec3 lightColor0 = vec3(1.0,0.5,0.0)*1.5;	
 	vec3 lightDir0 = normalize(lightPos0.xyz-Position);
 	float lightDist0 = length(lightPos0.xyz-Position);
 	
 	vec3 lightPos1 = vec3(-4,1,-4)*650;
-	vec3 lightColor1 = vec3(0.8,0.8,1.0)*0.7;	
+	vec3 lightColor1 = vec3(0.8,0.8,1.0)*0.5;	
 	vec3 lightDir1 = normalize(lightPos1.xyz-Position);
 	float lightDist1 = length(lightPos1.xyz-Position);
 	
@@ -101,11 +97,12 @@ void main()
 	vec2 _texCoord = TexCoord * tileUV + offsetUV;
 	
 	//GET MAP TEXTELS
-	vec3 diffuseTex = texture2D(diffuseMap, _texCoord).xyz;
+	vec4 diffuseTex = texture2D(diffuseMap, _texCoord);
 	vec3 normalTex = texture2D(normalMap, _texCoord).xyz;
 	vec3 roughnessTex = texture2D(roughnessMap, _texCoord).xyz;
 	vec3 metalnessTex = texture2D(metalnessMap, _texCoord).xyz;
 	vec3 shadowTex = texture2D(shadowMap, _texCoord).xyz;
+	vec3 colorBufferTex = texture2D(colorBufferMap, _texCoord).xyz;
 	
 	float _roughness = roughness*roughnessTex.x;
 	float _metalness = metalness*metalnessTex.x;
@@ -116,22 +113,22 @@ void main()
 	
 	//ENVIRONMENT MAPPING - CUBEMAP REFLECTION WITH BOX BLUR. WATCH THAT SAMPLE RATE!
 	vec3 red = reflect(-viewDir, normalDir);
-	float totalStride = GLOSSY_STRETCH*_roughness;
-	float strideIncrement = GLOSSY_STRIDE*_roughness;
-	float fade = 1;
+	float glossyStride = GLOSSY_STRIDE*_roughness;
+	float glossyStep = GLOSSY_STEP*_roughness;
+	float glossyFade = 1.0;
 	vec3 envTex = vec3(0);
 	
 	for(int i = 0; i < GLOSSY_SAMPLES; i++)
 	{
-		float x = red.x - totalStride + i*strideIncrement;
+		float x = red.x - glossyStride + i*glossyStep;
 		for(int j = 0; j < GLOSSY_SAMPLES; j++)
 		{
-			float y = red.y - totalStride + j*strideIncrement;
+			float y = red.y - glossyStride + j*glossyStep;
 			for(int k = 0; k < GLOSSY_SAMPLES; k++)
 			{
-				float z = red.z - totalStride + k*strideIncrement;
-				float fade = (1.0 - abs((i+j+z)/3 - GLOSSY_SAMPLES*0.5)/(GLOSSY_SAMPLES*0.5))*2;
-				envTex += textureCube(envMap, vec3(x, y, z)).xyz * GLOSSY_CONTRIB * fade;		
+				float z = red.z - glossyStride + k*glossyStep;
+				glossyFade = (1.0 - abs((i+j+z)/3 - GLOSSY_SAMPLES*0.5)/(GLOSSY_SAMPLES*0.5))*2;
+				envTex += textureCube(envMap, vec3(x, y, z)).xyz * GLOSSY_CONTRIB * glossyFade;		
 			}
 		}
 	}
@@ -144,86 +141,80 @@ void main()
 	float _diffuseLevel = clamp(1 - _reflectivity, 0, 1);
 	vec3 _diffuseColor = diffuseColor;
 	vec3 _reflectColor = vec3(1,1,1);
+	float _transparency = transparency * diffuseTex.w;
 	if(isMetallic == 1)//Metallic materials should have reflections colored more by diffuse color
 	{
-		_reflectColor = _reflectColor*(1-_metalness) + diffuseLevel*diffuseColor*diffuseTex*_metalness;
+		_reflectColor = _reflectColor*(1-_metalness) + diffuseLevel*diffuseColor*diffuseTex.xyz*_metalness;
 		_diffuseColor = _diffuseColor*(1-_metalness);
 	}
+	if(isPhysicalTransparency == 1)//Physical transparency subtracts from diffuse and is subtracted by reflectivity
+	{
+		_diffuseColor = clamp(_diffuseColor - _transparency, 0.0, 1.0);
+		_transparency = clamp(_transparency - _reflectivity, 0.0, 1.0);
+	}
+	
+	//SURFACE SPACE RERACTION
+	// vec3 refraction = vec3(1,1,1);
+	
+	// vec2 refractCoords = vec2(gl_FragCoord.x/screenDims.x, gl_FragCoord.y/screenDims.y);// + normalTex.xy*bumpLevel*0.02;
+	
+	// refraction = vec3(texture2D(colorBufferMap, refractCoords)).xyz;
+	
+	// refraction *= _transparency;
 	
 	//FINAL PSUEDO-PHONG LIGHTING CONTRIBUTIONS
 	float glossiness = (1-_roughness);
 	float specExp = pow(glossiness+1, 2 + glossiness*10);//4096;//(1.04-_roughness)*25;
 	float specFade = (1-_roughness) * 5;
 	
-	vec3 diffuse = _diffuseLevel * lightColor0 * diffuseLevel * _diffuseColor * diffuseTex * clamp(dot(lightDir0, normalDir), 0, 1);
+	vec3 diffuse = _diffuseLevel * lightColor0 * diffuseLevel * _diffuseColor * diffuseTex.xyz * clamp(dot(lightDir0, normalDir), 0, 1);
 	vec3 specular = _reflectivity * lightColor0 * _reflectColor * pow(clamp(dot(viewDir, reflect(-lightDir0, normalDir)), 0, 1), specExp) * specFade;
 	
-	diffuse += _diffuseLevel * lightColor1 * diffuseLevel * _diffuseColor * diffuseTex * clamp(dot(lightDir1, normalDir), 0, 1);
+	diffuse += _diffuseLevel * lightColor1 * diffuseLevel * _diffuseColor * diffuseTex.xyz * clamp(dot(lightDir1, normalDir), 0, 1);
 	specular += _reflectivity * lightColor1 * _reflectColor * pow(clamp(dot(viewDir, reflect(-lightDir1, normalDir)), 0, 1), specExp) * specFade;
 	
 	vec3 reflection = _reflectivity * _reflectColor * envTex;
-	vec3 selfIllum = selfIllumLevel * selfIllumColor * diffuseTex;
+	vec3 selfIllum = selfIllumLevel * selfIllumColor * diffuseTex.xyz;
 	vec3 rim = rimLevel * rimColor * clamp(dot(normalDir, lightDir0), 0, 1) * pow(1 - clamp(dot(viewDir, normalDir), 0, 1), rimPower);
 	
-	//SHADOWS!! BUT WATCH THAT SAMPLE RATE!
-	vec3 ray = lightDir0;
-	vec3 origin = Position;
+	//SHADOWS!! BUT WATCH THAT SAMPLE RATE!	
+	vec3 revisedShadowCoords = ShadowCoord.xyz * 0.5 + 0.5;
+	//Distances are in texture space 0.0-1.0 (where 1.0 is ~ 200m)
+	float casterToLightDist = texture2D(shadowMap, revisedShadowCoords.xy).x;
+	float fragToLightDist = distance(vec3(5,2,5)*17, Position) * 0.005;
+	float fragToCasterDist = fragToLightDist - casterToLightDist;//Estimate only. Error will increase with geometry thickness.	
+	float bias = clamp(0.05*dot(Normal, lightDir0), 0.0, 0.005);
 	
+	float shadowStride = SHADOW_STRIDE * fragToCasterDist;
+	float shadowStep = SHADOW_STEP * fragToCasterDist;
+	float shadowFade = 1.0;
 	float shadow = 0;
-	vec3 east = normalize(cross(lightPos.xyz-Position, normalDir));
-	vec3 north = normalize(cross(lightPos.xyz-Position, east));
-	//Simple floating-plane shadows, use the processed normals for increased sample jitter
-	if(dot(ray, normalDir) > EPSILON)//Don't trace fragments pointing away from light
+	
+	if(length(Position) < 75)//Maximum reach of shadows
 	{
 		for(int i = 0; i < SHADOW_SAMPLES; i++)
 		{
+			float x = revisedShadowCoords.x - shadowStride + i*shadowStep;
 			for(int j = 0; j < SHADOW_SAMPLES; j++)
 			{
-				vec3 destination = lightPos0;
-				destination += -LIGHT_RADIUS*east + i*SHADOW_STRIDE*east;
-				destination += -LIGHT_RADIUS*north + j*SHADOW_STRIDE*north;
-				
-				ray = destination-Position;
-				RunSceneCollisions(ray, origin);
-				
-				if(hit.distance > EPSILON && hit.distance < lightDist0)
-				{	
-					shadow += clamp(1-hit.distance, 0, 1) * SHADOW_CONTRIB;
-				}
+				float y = revisedShadowCoords.y - shadowStride + j*shadowStep;
+				casterToLightDist = texture2D(shadowMap, vec2(x, y)).x;
+				shadowFade = (1.0 - abs((i+j)*0.5 - SHADOW_SAMPLES*0.5)/(SHADOW_SAMPLES*0.5))*2;
+				if(casterToLightDist < fragToLightDist - bias)
+					shadow += SHADOW_CONTRIB * shadowFade;
 			}
 		}
 	}
 	
-	// if(texture2D(shadowMap, ShadowCoord.xy*1.0).x < ShadowCoord.z*1.0)
-		// shadow = 1.0;
-	
-	float bias = 0;
-	vec3 revisedShadowCoords = ShadowCoord.xyz / ShadowCoord.w * 0.5 + 0.5;
-	revisedShadowCoords.z = (ShadowCoord.z-bias)/ShadowCoord.w;
-	
-	if(texture(shadowMap, revisedShadowCoords.xy).x < revisedShadowCoords.z);
-		shadow = 0.8;
-		
-	// float currentSample = texture2D(shadowMap, revisedShadowCoords.xy).x;
-	// float otherSample = texture2D(shadowMap, revisedShadowCoords.xy + vec2(0.01, 0.01)).x;
-	
-	// if(abs(currentSample - otherSample) > 0.1)
-		// shadow = 0.8;
-		
-	// shadow = 1-texture2D(shadowMap, revisedShadowCoords.xy).x;
-	// if(shadow < 0.3)
-		// shadow = 0;
-	
-	// diffuse = clamp(diffuse-shadow, 0, 1);
-	
-	// diffuse *= 1-shadow;
+	diffuse *= 1.0-shadow;
+	specular *= 1.0-shadow;
 	
 	//MIX IN AMBIENT COLOR AND SUM CONTRIBUTORS
-	diffuse += (1-_diffuseLevel)*(envColor*ambientLevel)*diffuseLevel*diffuseColor*diffuseTex*(1-_reflectivity);
+	diffuse += (1-_diffuseLevel)*(envColor*ambientLevel)*diffuseLevel*diffuseColor*diffuseTex.xyz*(1-_reflectivity);
 	vec3 final = diffuse + specular + reflection + selfIllum + rim;
 	
 	//FOGGY FUGUE
-	float u = clamp(viewDist*0.01*fogLevel, 0, 1);
+	float u = clamp(viewDist*0.005*fogLevel, 0, 1);
 	final = final * (1-u) + envColor * u;
 	
 	//SHADOW MAP DEBUG
@@ -232,12 +223,12 @@ void main()
 	// final = vec3(revisedShadowCoords.xy, 0);
 	
 	// if(Position.z > 0)
-	// final = vec3(revisedShadowCoords.z);
+		// final = vec3(fragToLightDist);
 	// else
-	// final = vec3(1-texture2D(shadowMap, revisedShadowCoords.xy).x);
+		// final = vec3(casterToLightDist);
 	
 	//OUTPUT
-	OutputColor = vec4(final, 1.0);
+	OutputColor = vec4(final, 1.0-_transparency);
 	OutputPosition = vec4(Normal, viewDist*0.001);
 	
 	//DEBUG DANCING - COMMENT OUT FOR FINAL COLOR
@@ -249,19 +240,23 @@ void main()
 	// OutputColor = vec4(TexCoord.xy, 0, 1);
 	// OutputColor = vec4(gl_FragCoord.x/screenDims.x, gl_FragCoord.y/screenDims.y, 0, 1);
 	// OutputColor = vec4(_reflectivity);
-	// OutputColor = vec4(roughness);
-	// OutputColor = vec4(metalness);
-	// OutputColor = vec4(isMetallic);
+	// OutputColor = vec4(vec3(roughness), 1.0);
+	// OutputColor = vec4(vec3(metalness), 1.0);
+	// OutputColor = vec4(vec3(isMetallic), 1.0);
+	// OutputColor = vec4(vec3(transparency), 1.0);
+	// OutputColor = vec4(vec3(isPhysicalTransparency), 1.0);
 	// OutputColor = vec4(bumpLevel);
 	// OutputColor = vec4(fogLevel);
 	// OutputColor = vec4(viewDist*0.01);
-	// OutputColor = vec4(hit.distance);
 	
 	// OutputColor = vec4(-viewDir, 1);
 	// OutputColor = vec4(red, 1);
 	
-	// OutputColor = vec4(_diffuseLevel);
-	// OutputColor = vec4(_reflectivity);
+	// OutputColor = vec4(vec3(_diffuseLevel), 1.0);
+	// OutputColor = vec4(vec3(_reflectivity), 1.0);
+	// OutputColor = vec4(vec3(_metalness), 1.0);
+	// OutputColor = vec4(vec3(_roughness), 1.0);
+	// OutputColor = vec4(vec3(_transparency), 1.0);
 	// OutputColor = vec4(diffuse, 1.0);
 	// OutputColor = vec4(specular, 1.0);
 	// OutputColor = vec4(reflection, 1.0);
@@ -276,160 +271,5 @@ void main()
 	// OutputColor = vec4(mirrorTex, 1.0);
 	// OutputColor = vec4(envTex, 1.0);
 	// OutputColor = vec4(shadowTex, 1.0);
-	
-	// OutputColor = vec4(colorBufferTex);
-	// OutputColor = vec4(positionBufferTex);
+	// OutputColor = vec4(colorBufferTex.xyz, 1.0);
 }
-
-void RunSceneCollisions(vec3 ray, vec3 origin)
-{
-	hit.distance = 1000;
-	
-	// TestSphere(vec3(0,1,0), 1, ray, origin);
-	// TestCylinder(vec3(3, 2, 0), 1, 2, ray, origin);
-}
-
-void TestPlane(vec3 p0, vec3 normal, vec3 ray, vec3 origin)
-{
-	if(dot(ray,normal) != 0)
-	{
-		float d = dot((p0 - origin), normal)/dot(ray,normal);
-
-		if(d < hit.distance && d > EPSILON)
-		{
-			hit.distance = d;
-			//hit.position = origin + hit.distance*ray;
-			//hit.normal = normal;
-		}
-	}
-}
-
-void TestSphere(vec3 center, float radius, vec3 ray, vec3 origin)
-{
-	float det = pow(dot(ray, (origin-center)),2) - pow(length(origin-center),2) + pow(radius,2);
-
-	if(det > 0)//Two collisions
-	{
-		//Find smaller scalar (nearest collision)
-		det = sqrt(det);
-		float head = -dot(ray,(origin-center));
-		float d = head + det;
-
-		if(head - det < d)
-			d = head - det;
-
-		if(d < hit.distance && d > EPSILON)
-		{
-			hit.distance = d;
-			// hit.position = origin + hit.distance*ray;
-			// hit.normal = normalize(hit.position-center);
-		}
-	}
-}
-
-void TestCylinder(vec3 center, float radius, float height, vec3 ray, vec3 origin)
-{
-	//Cap
-	vec3 up = vec3(0,1,0);
-	center.y += height*0.5;
-	if(dot(ray,up) < 0)
-	{
-		float d = dot((center - origin), up/dot(ray,up));		
-		vec3 pos = origin + d*ray;		
-		if(distance(pos, center) < radius)
-		{
-			if(d < hit.distance && d > EPSILON)
-			{
-				hit.distance = d;
-				//hit.position = origin + hit.distance*ray;
-				//hit.normal = up;
-			}
-		}
-	}
-	
-	//Body
-	center.y -= height*0.5;
-	float a = pow(ray.x,2) + pow(ray.z,2);
-	float b = 2*(origin.x-center.x)*ray.x + 2*(origin.z-center.z)*ray.z;
-	float c = pow(origin.x-center.x,2) + pow(origin.z-center.z,2) - pow(radius,2);
-	float det = b*b - 4*a*c;
-
-	if(det > 0)//Two collisions
-	{
-		//Find smaller scalar (nearest collision), which is greater than zero
-		det = sqrt(det);
-		float head = -b;
-		float d;
-		float d1 = (head + det)/(2*a);
-		float d2 = (head - det)/(2*a);
-
-		d = min(d1,d2);
-		if(d < 0)
-			d = max(d1,d2);
-			
-		vec3 pos = origin + d*ray;
-		
-		if(pos.y > center.y - height*0.5 && pos.y < center.y + height*0.5)
-		{			
-			//Ensure distance is less that previous and > 0
-			if(d < hit.distance && d > EPSILON)
-			{			
-				hit.distance = d;
-				//hit.position = origin + hit.distance*ray;
-				//hit.normal = normalize(vec3(hit.position.x-center.x, 0, hit.position.z-center.z));
-			}		
-		}
-	}
-	
-	//Bottom
-	vec3 down = vec3(0,-1,0);
-	center.y -= height*0.5;
-	if(dot(ray,down) < 0)
-	{
-		float d = dot((center - origin), down/dot(ray,down));		
-		vec3 pos = origin + d*ray;		
-		if(distance(pos, center) < radius)
-		{
-			if(d < hit.distance && d > EPSILON)
-			{
-				hit.distance = d;
-				//hit.position = origin + hit.distance*ray;
-				//hit.normal = down;
-			}
-		}
-	}
-}
-
-void TestTriangle(vec3 p1, vec3 p2, vec3 p3, vec3 ray, vec3 origin)
-{
-	vec3 normal = normalize(cross(p2-p1, p3-p1));
-	if(dot(ray, normal) != 0)
-	{		
-		vec3 p1p2 = p2 - p1;
-		vec3 p1p3 = p3 - p1;
-		vec3 pvec = cross(ray, p1p3);
-		
-		float invDet = 1/ dot(p1p2, pvec);
-		
-		vec3 tvec = origin - p1;
-		float u = dot(tvec, pvec) * invDet;
-		
-		vec3 qvec = cross(tvec, p1p2);
-		float v = dot(ray, qvec) * invDet;
-		
-		//If u,v > 0 and u+v < 1, get distance d
-		if(u >= 0 && v >= 0 && u+v <= 1)
-		{
-			float d = dot(p1p3, qvec) * invDet;
-			
-			if(d < hit.distance && d > EPSILON)
-			{
-				hit.distance = d;
-				//hit.position = origin + d*ray;
-				//hit.normal = normal;
-				//hit.material = mat;
-			}
-		}
-	}
-}
-

@@ -26,6 +26,7 @@ private:
 	//STATIC GEOMETRIES - FOR STATIC OBJECT LIST
 	//These are uploaded ONCE during Init(), but can be used by any static world object
 	Geometry oceanGeo;
+	Geometry oceanGeoDown;
 	Geometry puddleGeo;
 	Geometry mapGeo;
 	//TODO add any additional high-res items below. Add to the StaticGeos enum too.
@@ -37,6 +38,8 @@ private:
 	GLint roughness_uniform;
 	GLint metalness_uniform;
 	GLint isMetallic_uniform;
+	GLint transparency_uniform;
+	GLint isPhysicalTransparency_uniform;
 	GLint bumpLevel_uniform;
 	GLint selfIllumLevel_uniform;
 	GLint selfIllumColor_uniform;
@@ -102,6 +105,7 @@ private:
 	GLint worldToViewSkybox_uniform;
 	GLint viewToProjectionSkybox_uniform;
 	GLint normalToWorldSkybox_uniform;
+	GLint cameraPosSkybox_uniform;
 	GLint cameraForwardSkybox_uniform;
 
 	//Depth Map Shader

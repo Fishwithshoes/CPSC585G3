@@ -9,6 +9,7 @@ in vec2 TexCoord;
 uniform vec4 color;
 uniform samplerCube envMap;
 uniform vec3 cameraForward;
+uniform vec3 cameraPos;
 
 //Post Process
 layout(location = 0) out vec4 OutputColor;
@@ -22,6 +23,13 @@ void main()
 	t = (dot(normalize(dayPos), cameraForward)+1)*0.5;	
 	// vec3 envColor = vec3(0.7, 0.9, 1.0)*(1-t) + vec3(0.7, 0.9, 1.0)*t;
 	vec3 envColor = vec3(0.4, 0.4, 1.0)*(1-t) + vec3(1.0,0.5,0.2)*t;
+	
+	if(cameraPos.y < -2.0)
+	{
+		float v = clamp(0.0 - Position.y*0.0003, 0.0, 1.0);
+		vec3 newEnvColor = (vec3(0.0, 1.0, 1.0)*0.4)*0.5 + envColor*0.5;
+		envColor = (newEnvColor*(1-v) + vec3(0)*v);
+	}
 
 	//SKYBOX
 	vec4 envTex = textureCube(envMap, -Normal);
@@ -29,7 +37,10 @@ void main()
 	
 	//FOGGY FUGUE
 	float u = 0.0;
-	if(Position.y < -50)
+	
+	float fogHorizon = cameraPos.y > -2.0 ? -50 : 200.0;
+	
+	if(Position.y < fogHorizon)
 		u = 1.0;
 	else
 	{

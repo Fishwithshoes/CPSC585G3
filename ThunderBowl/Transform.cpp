@@ -40,15 +40,18 @@ vec3 Transform::Forward()
 	return vec3(0, 0, 1);
 }
 
-void Transform::Translate(vec3 translation)
+void Transform::Translate(vec3 translation, bool matchTimeScale)
 {
-	position += translation * (float)Time::timeScale;
+	if (matchTimeScale)
+		translation = translation * (float)Time::timeScale;
+	position += translation;
 }
 
-void Transform::Rotate(vec3 eulerAngles)
+void Transform::Rotate(vec3 eulerAngles, bool matchTimeScale)
 {
 	//Match with timeScale
-	eulerAngles = eulerAngles * Time::timeScale;
+	if(matchTimeScale)
+		eulerAngles = eulerAngles * Time::timeScale;
 
 	//Convert input rotation into quaternion
 	vec4 newRot;
@@ -97,9 +100,11 @@ void Transform::Rotate(vec3 axis, float angle, bool matchTimeScale)
 	rotation.w = (r.w*q.w - r.x*q.x - r.y*q.y - r.z*q.z);
 }
 
-void Transform::Scale(vec3 scalar)
+void Transform::Scale(vec3 scalar, bool matchTimeScale)
 {
-	scale += scalar * (float)Time::timeScale;
+	if (matchTimeScale)
+		scalar = scalar * (float)Time::timeScale;
+	scale += scalar;
 }
 
 mat4 Transform::GetModelToWorld()

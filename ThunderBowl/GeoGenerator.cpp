@@ -129,11 +129,13 @@ Mesh GeoGenerator::MakeSphere(float radius, int lattitudes, int longitudes, bool
 	return result;
 }
 
-Mesh GeoGenerator::MakePlane(float width, float height, int widthSegs, int heightSegs)
+Mesh GeoGenerator::MakePlane(float width, float height, int widthSegs, int heightSegs, bool upsideDown)
 {
 	Mesh result;
 
 	//Prep
+	float flip = upsideDown ? -1.0 : 1.0;
+
 	float westStart = -width*0.5;
 	float northStart = height*0.5;
 	
@@ -150,7 +152,7 @@ Mesh GeoGenerator::MakePlane(float width, float height, int widthSegs, int heigh
 		{
 			result.positions.push_back(vec3(westStart+widthStep*i, 0, northStart-heightStep*j));
 			result.colors.push_back(vec3((float)i/widthSegs,1,(float)j/heightSegs));
-			result.normals.push_back(vec3(0,1,0));
+			result.normals.push_back(flip * vec3(0,1,0));
 			result.texcoords.push_back(vec2(0+(float)i/widthSegs, 1-(float)j/heightSegs));
 		}
 	}
@@ -160,13 +162,27 @@ Mesh GeoGenerator::MakePlane(float width, float height, int widthSegs, int heigh
 	{
 		for(int j = 0; j < heightSegs; j++)
 		{
-			result.indices.push_back(i*heightVerts + j);
-			result.indices.push_back(i*heightVerts + j + 1);
-			result.indices.push_back((i + 1)*heightVerts + j + 1);
-	
-			result.indices.push_back(i*heightVerts + j);
-			result.indices.push_back((i + 1)*heightVerts + j + 1);
-			result.indices.push_back((i + 1)*heightVerts + j);
+
+			if (!upsideDown)
+			{
+				result.indices.push_back(i*heightVerts + j);
+				result.indices.push_back(i*heightVerts + j + 1);
+				result.indices.push_back((i + 1)*heightVerts + j + 1);
+
+				result.indices.push_back(i*heightVerts + j);
+				result.indices.push_back((i + 1)*heightVerts + j + 1);
+				result.indices.push_back((i + 1)*heightVerts + j);
+			}
+			else
+			{
+				result.indices.push_back(i*heightVerts + j);
+				result.indices.push_back((i + 1)*heightVerts + j + 1);
+				result.indices.push_back(i*heightVerts + j + 1);
+
+				result.indices.push_back(i*heightVerts + j);
+				result.indices.push_back((i + 1)*heightVerts + j);
+				result.indices.push_back((i + 1)*heightVerts + j + 1);
+			}
 		}
 	}
 	

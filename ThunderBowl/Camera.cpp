@@ -27,7 +27,7 @@ Camera::~Camera()
 //Use this for initialization
 void Camera::Start()
 {
-	
+	orbitTransform = Transform();
 }
 
 //Use this for behaviour
@@ -38,27 +38,27 @@ void Camera::Update()
 	case Modes::MODE_FREE:
 		if (Input::GetButton(ButtonCode::A))
 		{
-			transform.Translate(-(float)0.5 * transform.GetRight() * panSpeedScale);
+			transform.Translate(-(float)0.5 * transform.GetRight() * panSpeedScale, false);
 		}
 		if (Input::GetButton(ButtonCode::D))
 		{
-			transform.Translate((float)0.5 * transform.GetRight() * panSpeedScale);
+			transform.Translate((float)0.5 * transform.GetRight() * panSpeedScale, false);
 		}
 		if (Input::GetButton(ButtonCode::W))
 		{
-			transform.Translate((float)0.5 * transform.GetForward() * panSpeedScale);
+			transform.Translate((float)0.5 * transform.GetForward() * panSpeedScale, false);
 		}
 		if (Input::GetButton(ButtonCode::S))
 		{
-			transform.Translate(-(float)0.3 * transform.GetForward() * panSpeedScale);
+			transform.Translate(-(float)0.3 * transform.GetForward() * panSpeedScale, false);
 		}
 		if (Input::GetButton(ButtonCode::E))
 		{
-			transform.Translate((float)0.5 * Transform::Up() * panSpeedScale);
+			transform.Translate((float)0.5 * Transform::Up() * panSpeedScale, false);
 		}
 		if (Input::GetButton(ButtonCode::Q))
 		{
-			transform.Translate(-(float)0.5 * Transform::Up() * panSpeedScale);
+			transform.Translate(-(float)0.5 * Transform::Up() * panSpeedScale, false);
 		}
 
 		if (Input::GetButton(ButtonCode::A) ||
@@ -78,23 +78,35 @@ void Camera::Update()
 		if (Input::GetButton(ButtonCode::RIGHT_MOUSE))
 		{
 			//Orient camera (pitch and yaw)
-			transform.Rotate((float)(Input::GetMouseDelta().y * 0.001) * transform.GetRight());
-			transform.Rotate((float)(Input::GetMouseDelta().x * 0.001) * Transform::Up());
+			transform.Rotate((float)(Input::GetMouseDelta().y * 0.001) * transform.GetRight(), false);
+			transform.Rotate((float)(Input::GetMouseDelta().x * 0.001) * Transform::Up(), false);
 		}
 		if (Input::GetButton(ButtonCode::MIDDLE_MOUSE))
 		{
-			transform.Rotate((float)(Input::GetMouseDelta().x * 0.001) * transform.GetForward());
+			transform.Rotate((float)(Input::GetMouseDelta().x * 0.001) * transform.GetForward(), false);
 		}
-		if (Input::GetButton(ButtonCode::SPACE))
+		if (Input::GetButtonDown(ButtonCode::SPACE))
 		{
+			//Jump to ~origin
 			transform = Transform::Transform(vec3(0, 5, -10), vec4(0, 0, 0, 1), vec3(1));
 
+			//Jump to the light position
 			//transform.position = vec3(5,2,5) * 17.0f;
 			//transform.Rotate(Transform::Up(), 135.0*Mathf::PI / 180, false);
 			//transform.Rotate(transform.GetRight(), -15.0*Mathf::PI / 180, false);
 		}
 		break;
 	case Modes::MODE_GAME:
+		//The camera is controlled by the player within VehicleComponent
+		break;
+	case Modes::MODE_PRESENTATION:
+		orbitTransform.Rotate(Transform::Up(), Mathf::PI / 180 * 7 * Time::getDeltaTime(), true);
+		transform.parent = &orbitTransform;
+
+		transform.position = vec3(0.0);
+		transform.Translate(vec3(0, 50, -100), false);
+		transform.rotation = normalize(vec4(-0.2, 0, 0, 1));
+
 		break;
 	default:
 		break;
@@ -114,8 +126,15 @@ mat4 Camera::GetWorldToViewMatrix()
 		0, 1, 0, -transform.position.y,
 		0, 0, 1, -transform.position.z,
 		0, 0, 0, 1);
-	
-	return translation * transform.GetRotationMatrix() * scale;
+
+	if (transform.parent == nullptr)
+	{
+		return translation * transform.GetRotationMatrix() * scale;
+	}
+	else
+	{
+		return transform.parent->GetModelToWorld() * translation * transform.GetRotationMatrix() * scale;
+	}	
 }
 
 mat4 Camera::GetViewToProjectionMatrix()

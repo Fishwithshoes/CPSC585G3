@@ -28,6 +28,8 @@ void GameObject::SetupDefaultMaterials()
 	standardMat.roughness = 0.5;
 	standardMat.metalness = 0.04;
 	standardMat.isMetallic = false;
+	standardMat.transparency = 0.0;
+	standardMat.isPhysicalTransparency = true;
 	standardMat.bumpLevel = 1.0;
 	standardMat.selfIllumLevel = 0.0;
 	standardMat.selfIllumColor = vec3(1);

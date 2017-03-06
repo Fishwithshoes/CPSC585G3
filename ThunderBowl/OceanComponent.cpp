@@ -14,7 +14,7 @@ void OceanComponent::Update()
 	standardMat.vertexOffsetScale = waveHeight;
 
 	currentVertOffset += currentSpeed * Time::timeScale * Time::getDeltaTime();
-	currentBumpOffset += vec2(-0.036,  0.03) * currentSpeed * Time::timeScale * Time::getDeltaTime();
+	currentBumpOffset += vec2(-0.018,  0.015) * currentSpeed * Time::timeScale * Time::getDeltaTime();
 
 	standardMat.vertexOffsetPhase = currentVertOffset;
 	standardMat.offsetUV = currentBumpOffset;

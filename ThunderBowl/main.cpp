@@ -1,4 +1,5 @@
 #include "CommonIncludes.h"
+#include "GameManager.h"
 #include "Game.h"
 #include "GameObject.h"
 #include "Renderer.h"
@@ -109,6 +110,7 @@ int main(int argc, char *argv[])
 	Renderer::Init(&renderer);
 
 	Game::BuildWorld();
+	Renderer::GetCamera(0)->Start();
 
 	//MAIN LOOP
 	while (!glfwWindowShouldClose(window))
@@ -121,34 +123,48 @@ int main(int argc, char *argv[])
 
 		if (Input::GetButtonDown(ButtonCode::SPACE))
 		{
-			Renderer::GetCamera(0)->mode = Camera::Modes::MODE_FREE;
+			if (GameManager::GetGameState() == GS_IN_GAME || GameManager::GetGameState() == GS_PAUSED)
+			{
+				if (Renderer::GetCamera(0)->mode == Camera::Modes::MODE_GAME)
+					Renderer::GetCamera(0)->mode = Camera::Modes::MODE_FREE;
+				else
+					Renderer::GetCamera(0)->mode = Camera::Modes::MODE_GAME;
+			}
+		}
+		if (GameManager::GetGameState() == GS_FRONT_MENU || GameManager::GetGameState() == GS_GAME_OVER)
+		{
+			Renderer::GetCamera(0)->mode = Camera::Modes::MODE_PRESENTATION;
 		}
 
 		//Game Logic
-		for (int i = Game::staticObjectList.size() - 1; i >= 0; i--)
+		if (GameManager::GetGameState() == GS_IN_GAME)
 		{
-			Game::staticObjectList[i].Update();
+			for (int i = Game::staticObjectList.size() - 1; i >= 0; i--)
+			{
+				Game::staticObjectList[i].Update();
+			}
+			for (int i = Game::worldObjectList.size() - 1; i >= 0; i--)
+			{
+				Game::worldObjectList[i].Update();
+			}
+			for (int i = Game::particleObjectList.size() - 1; i >= 0; i--)
+			{
+				Game::particleObjectList[i].Update();
+			}
+			for (int i = Game::overlayObjectList.size() - 1; i >= 0; i--)
+			{
+				Game::overlayObjectList[i].Update();
+			}
+			for (int i = Game::aiObjectList.size() - 1; i >= 0; i--)
+			{
+				Game::aiObjectList[i].Update();
+			}
+			Physics::stepPhysics();	//TODO SUBJECT TO CHANGE
 		}
-		for (int i = Game::worldObjectList.size()-1; i >= 0; i--)
-		{
-			Game::worldObjectList[i].Update();
-		}
-		for (int i = Game::particleObjectList.size() - 1; i >= 0; i--)
-		{
-			Game::particleObjectList[i].Update();
-		}
-		for (int i = Game::overlayObjectList.size() - 1; i >= 0; i--)
-		{
-			Game::overlayObjectList[i].Update();
-		}
-		for (int i = Game::aiObjectList.size() - 1; i >= 0; i--)
-		{
-			Game::aiObjectList[i].Update();
-		}
-
-		Physics::stepPhysics();	//SUBJECT TO CHANGE
 
 		Renderer::GetCamera(0)->Update();
+
+		GameManager::Update(); //TODO should this go elsewhere?
 
 		//Render Scene
 		Renderer::RenderScene(&renderer);
