@@ -1,4 +1,5 @@
 #include "MachineGunComponent.h"
+#include "Audio.h"
 #include "Game.h"
 #include "GeoGenerator.h"
 #include "BulletComponent.h"
@@ -42,6 +43,7 @@ void MachineGunComponent::FireMG() {
 		bulletTempRef = (BulletComponent*)Game::Find(selfName + "Bullet" + to_string(currentBullet))->GetComponent(bulletTempRef);
 		bulletTempRef->ownerName = selfName;
 
+		Audio::Play2DSound(SFX_MG, Random::rangef(0.20, 0.50), 0.0);
 		nextBullet = bulletDelay;
 	}
 }

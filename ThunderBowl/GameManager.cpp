@@ -3,7 +3,7 @@
 #include "Renderer.h"
 #include "Audio.h"
 
-float		GameManager::initialGameTime = 300.0;
+float		GameManager::initialGameTime = 60.0;
 GameStates	GameManager::gameState = GS_FRONT_MENU;
 float		GameManager::gameTimeRemaining = 0.0;
 int			GameManager::timerSeconds = 0;
@@ -76,9 +76,10 @@ void GameManager::Update()//Check stuff as game runs
 		}
 		break;
 	case GS_GAME_OVER:
-		if (Input::GetXBoxButton(1, ButtonCode::XBOX_A))
+		if (Input::GetXBoxButton(1, ButtonCode::XBOX_START) && !startButtonPrev)
 		{
 			GotoMainMenu();
+			startButtonPrev = true;
 		}
 		break;
 	default:
@@ -104,6 +105,8 @@ void GameManager::StartGame()
 	vector<GameObject*> menuItems = Game::FindGameObjectsWithTag(TAGS_MENU);
 	for (int i = 0; i < menuItems.size(); i++)
 		menuItems[i]->particleOverlayMat.color.w = 0.0;
+
+	Audio::Play2DSound(SFX_Select, 0.20, 0.0);
 }
 
 void GameManager::ToggleGamePause()
@@ -130,7 +133,7 @@ void GameManager::ToggleGamePause()
 	{
 		cout << "ERROR: Can't toggle pause in MENU or GAME_OVER states!" << endl;
 	}
-	Audio::Play2DSound(Sounds::SFX_Pause, 1, 0);
+	Audio::Play2DSound(Sounds::SFX_Pause, 0.20, 0);
 	
 }
 void GameManager::EndGame()
@@ -158,6 +161,8 @@ void GameManager::GotoMainMenu()
 	vector<GameObject*> menuItems = Game::FindGameObjectsWithTag(TAGS_MENU);
 	for (int i = 0; i < menuItems.size(); i++)
 		menuItems[i]->particleOverlayMat.color.w = 1.0;
+
+	Audio::Play2DSound(SFX_Select, 0.20, 0.0);
 }
 
 GameStates GameManager::GetGameState()
