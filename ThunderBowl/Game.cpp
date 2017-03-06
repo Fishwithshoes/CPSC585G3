@@ -38,8 +38,26 @@ void Game::BuildWorld()
 	ptr->AddComponent(new MachineGunComponent());*/
 	GameObject pathNode1 = GameObject();
 	pathNode1.name = "Node1";
-	pathNode1.transform.position = vec3(0.0, 1.0, 65.0);
+	pathNode1.transform.position = vec3(0.0, 1.0, 100.0);
 	ptr = Game::CreateAIObject(pathNode1);
+	ptr->AddComponent(new AINodeComponent());
+
+	GameObject pathNode2 = GameObject();
+	pathNode2.name = "Node2";
+	pathNode2.transform.position = vec3(0.0, 1.0, -100.0);
+	ptr = Game::CreateAIObject(pathNode2);
+	ptr->AddComponent(new AINodeComponent());
+
+	GameObject pathNode3 = GameObject();
+	pathNode3.name = "Node3";
+	pathNode3.transform.position = vec3(100.0, 1.0, 0.0);
+	ptr = Game::CreateAIObject(pathNode3);
+	ptr->AddComponent(new AINodeComponent());
+
+	GameObject pathNode4 = GameObject();
+	pathNode4.name = "Node4";
+	pathNode4.transform.position = vec3(-100.0, 1.0, 0.0);
+	ptr = Game::CreateAIObject(pathNode4);
 	ptr->AddComponent(new AINodeComponent());
 
 	GameObject player1 = GameObject();
@@ -71,7 +89,7 @@ void Game::BuildWorld()
 
 	GameObject powerUp2 = GameObject();
 	powerUp2.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
-	powerUp2.transform.position = vec3(0.0, 1.0, 65.0);
+	powerUp2.transform.position = vec3(0.0, 1.0, 30.0);
 	ptr = Game::CreateWorldObject(powerUp2);
 	ptr->AddComponent(new PowerUpComponent());
 
@@ -87,7 +105,7 @@ void Game::BuildWorld()
 	ptr = Game::CreateWorldObject(powerUp4);
 	ptr->AddComponent(new PowerUpComponent());
 
-	GameObject obstacle1 = GameObject();
+	/*GameObject obstacle1 = GameObject();
 	obstacle1.mesh = GeoGenerator::MakeBox(16.0, 40.0, 16.0, false);
 	obstacle1.transform.position = vec3(-25.0, 5.0, -25.0);
 	ptr = Game::CreateWorldObject(obstacle1);

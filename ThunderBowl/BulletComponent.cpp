@@ -64,14 +64,14 @@ void BulletComponent::Update()
 
 	Finalize();
 	
-	if (lifeSpan <= 0.0)
+	/*if (lifeSpan <= 0.0)
 	{	
 		selfGameObject = Game::Find(selfName);
 		cout << selfGameObject->objectID << " died" << endl;
 		//worldScene->removeActor(*bullet);
 		bullet->release();
 		Game::DestroyWorldObjectAt(selfGameObject->objectID);
-	}
+	}*/
 }
 
 void BulletComponent::OnCollision(Component::CollisionPair collisionPair) {

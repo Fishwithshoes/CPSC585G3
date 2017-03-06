@@ -19,7 +19,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AIControlComponent1.h" />
     <ClInclude Include="AINodeComponent.h" />
     <ClInclude Include="Audio.h" />
     <ClInclude Include="BulletComponent.h" />
@@ -33,6 +32,7 @@
     <ClInclude Include="GameManager.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GeoGenerator.h" />
+    <ClInclude Include="AIControlComponent1.h" />
     <ClInclude Include="HealthComponent.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="Loader.h" />

@@ -10,7 +10,7 @@ public:
 	void OnCollision(Component::CollisionPair collisionPair);
 
 	float currentSpeed;
-	float topSpeed = 200.0;
+	float topSpeed = 125.0;
 	float acceleration = 1.0;
 
 	float topTurn = 1.0;

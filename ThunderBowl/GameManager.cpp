@@ -3,7 +3,7 @@
 #include "Renderer.h"
 #include "Audio.h"
 
-float		GameManager::initialGameTime = 5.0;
+float		GameManager::initialGameTime = 300.0;
 GameStates	GameManager::gameState = GS_FRONT_MENU;
 float		GameManager::gameTimeRemaining = 0.0;
 int			GameManager::timerSeconds = 0;
