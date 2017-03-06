@@ -37,9 +37,6 @@ void PlayerComponent::Update() {
 
 	string strScore = to_string(playerScore);
 
-	cout << "LENGTH -> " << strScore.length() << endl;
-	cout << "STRING -> " << strScore << endl;
-
 	GameObject* score1 = Game::Find("Score1");
 	GameObject* score2 = Game::Find("Score2");
 	GameObject* score3 = Game::Find("Score3");

@@ -223,7 +223,7 @@ void main()
 	vec3 final = diffuse + specular + reflection + selfIllum + rim;
 	
 	//FOGGY FUGUE
-	float u = clamp(viewDist*0.01*fogLevel, 0, 1);
+	float u = clamp(viewDist*0.001*fogLevel, 0, 1);
 	final = final * (1-u) + envColor * u;
 	
 	//SHADOW MAP DEBUG

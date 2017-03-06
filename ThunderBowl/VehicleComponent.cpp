@@ -90,13 +90,19 @@ void VehicleComponent::Update()
 
 	}
 
-	physx::PxReal maxTorque = 1500.0;
-	physx::PxReal brakeTorque = 400.0;
-	physx::PxReal turnTemper = 0.1;
+	physx::PxReal maxTorque = 3000.0;
+	physx::PxReal brakeTorque = 1000.0;
+	physx::PxReal turnTemper = 0.15;
 
 	//Gas
-	gVehicleNoDrive->setDriveTorque(0, Input::GetXBoxAxis(1, ButtonCode::XBOX_RIGHT_TRIGGER)*maxTorque);
-	gVehicleNoDrive->setDriveTorque(1, Input::GetXBoxAxis(1, ButtonCode::XBOX_RIGHT_TRIGGER)*maxTorque);
+	if (gVehicleNoDrive->computeForwardSpeed() > topSpeed) {
+		gVehicleNoDrive->setDriveTorque(0, 0.0);
+		gVehicleNoDrive->setDriveTorque(1, 0.0);
+	}
+	else {
+		gVehicleNoDrive->setDriveTorque(0, Input::GetXBoxAxis(1, ButtonCode::XBOX_RIGHT_TRIGGER)*maxTorque);
+		gVehicleNoDrive->setDriveTorque(1, Input::GetXBoxAxis(1, ButtonCode::XBOX_RIGHT_TRIGGER)*maxTorque);
+	}
 	
 	//Steering
 	gVehicleNoDrive->setSteerAngle(2, Input::GetXBoxAxis(1, ButtonCode::XBOX_JOY_LEFT_HORIZONTAL)*turnTemper);
@@ -120,6 +126,15 @@ void VehicleComponent::Update()
 		vehicleMG->FireMG();
 	}
 
+	if (Input::GetXBoxButton(1, ButtonCode::XBOX_Y))
+	{
+		physVehicle->setLinearVelocity(physx::PxVec3(0.0, 0.0, 0.0));
+		physVehicle->setAngularVelocity(physx::PxVec3(0.0, 0.0, 0.0));
+		gVehicleNoDrive->setDriveTorque(0, 0.0);
+		gVehicleNoDrive->setDriveTorque(1, 0.0);
+		physVehicle->setGlobalPose(physx::PxTransform(physVehicle->getGlobalPose().p, physx::PxQuat(physx::PxIdentity)));
+	}
+
 	//if (Input::GetButton(ButtonCode::MIDDLE_MOUSE))
 		//Time::timeScale += Input::GetMouseDelta().x * Time::getDeltaTime();	
 
@@ -141,9 +156,11 @@ void VehicleComponent::Update()
 
 	if (followCam->mode == Camera::Modes::MODE_GAME)
 	{
-		followCam->transform.rotation.x = 0.0;// rotQuat.x;
+		followCam->transform.rotation.x = rotQuat.x*0.5;
+		// rotQuat.x;
 		followCam->transform.rotation.y = rotQuat.y;
-		followCam->transform.rotation.z = 0.0;//rotQuat.z;
+		followCam->transform.rotation.z = rotQuat.z*0.5;
+		//rotQuat.z;
 		followCam->transform.rotation.w = rotQuat.w;
 
 		followCam->transform.rotation = normalize(followCam->transform.rotation);
@@ -182,8 +199,11 @@ void VehicleComponent::OnCollision(Component::CollisionPair collisionPair) {
 	case(Component::CollisionPair::CP_VEHICLE_POWERUP):
 		vehicleMG = (MachineGunComponent*)Game::Find(selfName)->GetComponent(mgRef);
 		vehicleMG->ammoCount += 100;
-		vehPlayer = (PlayerComponent*)Game::Find(selfName)->GetComponent(playerRef);
-		vehPlayer->playerScore += 10.0;
+		if (vehicleMG->ammoCount >= vehicleMG->maxAmmo) {
+			vehicleMG->ammoCount = vehicleMG->maxAmmo;
+		}
+			vehPlayer = (PlayerComponent*)Game::Find(selfName)->GetComponent(playerRef);
+			vehPlayer->playerScore += 10.0;
 		break;
 	case(Component::CollisionPair::CP_VEHICLE_PROJECTILE):
 		vehPlayer = (PlayerComponent*)Game::Find(selfName)->GetComponent(playerRef);

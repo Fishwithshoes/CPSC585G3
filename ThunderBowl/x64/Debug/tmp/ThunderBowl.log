@@ -1,10 +1,7 @@
-﻿  VehicleComponent.cpp
-c:\cpsc585g3\thunderbowl\vehiclecomponent.h(17): warning C4305: 'initializing': truncation from 'double' to 'float'
+﻿  AIControlComponent1.cpp
 c:\cpsc585g3\thunderbowl\floatcomponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\vehiclecomponent.cpp(46): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\vehiclecomponent.cpp(95): warning C4305: 'initializing': truncation from 'double' to 'physx::PxReal'
-c:\cpsc585g3\thunderbowl\vehiclecomponent.cpp(169): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-c:\cpsc585g3\thunderbowl\vehiclecomponent.cpp(170): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-c:\cpsc585g3\thunderbowl\vehiclecomponent.cpp(186): warning C4244: '+=': conversion from 'double' to 'int', possible loss of data
+c:\cpsc585g3\thunderbowl\vehiclecomponent.h(17): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\cpsc585g3\thunderbowl\machineguncomponent.h(12): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library
   ThunderBowl.vcxproj -> C:\CPSC585G3\ThunderBowl\\x64\Debug\ThunderBowl.exe
   ThunderBowl.vcxproj -> C:\CPSC585G3\ThunderBowl\\x64\Debug\ThunderBowl.pdb (Full PDB)
