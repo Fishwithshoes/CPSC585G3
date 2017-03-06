@@ -5,13 +5,17 @@ Transform Audio::listenerTransform = Transform::identity();
 
 vector<string> Audio::soundFilePaths =
 {
-	"Sounds/Hit_SFX.wav",
-	"Sounds/Pause_SFX.wav"
+	"Sounds/hit_SFX.wav",
+	"Sounds/pause_SFX.wav",
+	"Sounds/select_SFX.wav",
+	"Sounds/machinefire_SFX.wav",
+	"Sounds/powerup_SFX.wav",
+
 };
 
 vector<string> Audio::musicFilePaths =
 {
-	"Sounds/Jerry_MUS.wav"
+	"Sounds/Automation.wav"
 };
 
 vector<Mix_Chunk*> Audio::sounds = {};

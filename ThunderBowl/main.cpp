@@ -112,6 +112,8 @@ int main(int argc, char *argv[])
 	Game::BuildWorld();
 	Renderer::GetCamera(0)->Start();
 
+	Audio::PlayMusic(MUS_Automation, 0.25);
+
 	//MAIN LOOP
 	while (!glfwWindowShouldClose(window))
 	{

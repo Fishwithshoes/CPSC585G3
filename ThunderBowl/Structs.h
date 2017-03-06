@@ -151,6 +151,9 @@ enum Maps
 	MAP_NINE,
 	MAP_SCORE,
 	MAP_TIME,
+	MAP_PAUSED,
+	MAP_GAME_OVER,
+	MAP_START,
 	MAP_JERRY,
 	MAP_SPIDER,
 	//Particles
@@ -237,12 +240,15 @@ struct ParticleSystemDesc
 enum Sounds 
 {
 	SFX_Hit,
-	SFX_Pause
+	SFX_Pause,
+	SFX_Select,
+	SFX_MG,
+	SFX_Powerup,
 };
 
 enum Musics
 {
-	MUS_Jerry
+	MUS_Automation
 
 };
 

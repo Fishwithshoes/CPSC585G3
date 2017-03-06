@@ -17,7 +17,7 @@ void BulletComponent::Start()
 
 	selfGameObject = Game::Find(selfName);
 	speed = 50.0f;
-	lifeSpan = 1.00f;
+	lifeSpan = 2.50f;
 	worldPhys = Physics::getGPhysics();
 	worldCook = Physics::getGCooking();
 	worldScene = Physics::getGScene();
@@ -32,7 +32,7 @@ void BulletComponent::Start()
 
 	physx::PxVec3 position;
 	position.x = transform.position.x;
-	position.y = transform.position.y + 2.0;
+	position.y = transform.position.y + 1.1;
 	position.z = transform.position.z;
 	bullet->setGlobalPose(physx::PxTransform(position));
 
@@ -64,14 +64,16 @@ void BulletComponent::Update()
 
 	Finalize();
 	
-	/*if (lifeSpan <= 0.0)
+	if (lifeSpan <= 0.0)
 	{	
 		selfGameObject = Game::Find(selfName);
 		cout << selfGameObject->objectID << " died" << endl;
+		bullet->putToSleep();
+		bullet->setGlobalPose(physx::PxTransform(physx::PxVec3(0.0, 100.00, 0.0), physx::PxQuat(physx::PxIdentity)), false);
 		//worldScene->removeActor(*bullet);
-		bullet->release();
-		Game::DestroyWorldObjectAt(selfGameObject->objectID);
-	}*/
+		//bullet->release();
+		//Game::DestroyWorldObjectAt(selfGameObject->objectID);
+	}
 }
 
 void BulletComponent::OnCollision(Component::CollisionPair collisionPair) {

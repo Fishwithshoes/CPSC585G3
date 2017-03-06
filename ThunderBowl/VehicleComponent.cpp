@@ -6,6 +6,8 @@
 #include "MachineGunComponent.h"
 #include "PlayerComponent.h"
 #include "Game.h"
+#include "Audio.h"
+
 
 
 Camera* followCam;
@@ -197,6 +199,7 @@ void VehicleComponent::OnCollision(Component::CollisionPair collisionPair) {
 	PlayerComponent* playerRef = &PlayerComponent();
 	switch (collisionPair) {
 	case(Component::CollisionPair::CP_VEHICLE_POWERUP):
+		Audio::Play2DSound(SFX_Powerup, Random::rangef(0.20, 0.50), 0.0);
 		vehicleMG = (MachineGunComponent*)Game::Find(selfName)->GetComponent(mgRef);
 		vehicleMG->ammoCount += 100;
 		if (vehicleMG->ammoCount >= vehicleMG->maxAmmo) {
@@ -206,6 +209,7 @@ void VehicleComponent::OnCollision(Component::CollisionPair collisionPair) {
 			vehPlayer->playerScore += 10.0;
 		break;
 	case(Component::CollisionPair::CP_VEHICLE_PROJECTILE):
+		Audio::Play2DSound(SFX_Hit, Random::rangef(0.20, 0.50), 0.0);
 		vehPlayer = (PlayerComponent*)Game::Find(selfName)->GetComponent(playerRef);
 		vehPlayer->playerHealth -= 25.0;
 		break;

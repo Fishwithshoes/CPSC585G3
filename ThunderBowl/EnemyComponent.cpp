@@ -4,6 +4,7 @@
 #include "GeoGenerator.h"
 #include "Game.h"
 #include "Physics.h"
+#include "Audio.h"
 
 physx::PxShape** enWheelBuffer;
 vector<GameObject*> enWheelVector;
@@ -110,12 +111,14 @@ void EnemyComponent::OnCollision(Component::CollisionPair collisionPair) {
 
 	switch (collisionPair) {
 	case(Component::CollisionPair::CP_VEHICLE_POWERUP):
+		Audio::Play2DSound(SFX_Powerup, Random::rangef(0.20, 0.50), 0.0);
 		oppVehicleMG = (MachineGunComponent*)Game::Find(selfName)->GetComponent(mgRef);
 		oppVehicleMG->ammoCount += 100;
 		oppPlayer = (PlayerComponent*)Game::Find(selfName)->GetComponent(oppRef);
 		oppPlayer->playerScore += 10.0;
 		break;
 	case(Component::CollisionPair::CP_VEHICLE_PROJECTILE):
+		Audio::Play2DSound(SFX_Hit, Random::rangef(0.20, 0.50), 0.0);
 		oppPlayer = (PlayerComponent*)Game::Find(selfName)->GetComponent(oppRef);
 		oppPlayer->playerHealth -= 25.0;
 		break;

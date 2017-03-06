@@ -143,7 +143,7 @@ void Game::BuildWorld()
 	temp.standardMat.tileUV = vec2(12,12);
 	ptr = Game::CreateWorldObject(temp);
 
-	temp = GameObject();
+	/*temp = GameObject();
 	temp.mesh = GeoGenerator::MakeSphere(1, 32, 64, false);
 	temp.name = "BigGoldAndShiny";
 	temp.transform.scale = vec3(5);
@@ -154,7 +154,7 @@ void Game::BuildWorld()
 	temp.standardMat.isMetallic = true;
 	temp.standardMat.transparency = 1.0;
 	temp.standardMat.isPhysicalTransparency = true;
-	ptr = Game::CreateWorldObject(temp);
+	ptr = Game::CreateWorldObject(temp);*/
 
 	/*tempP = ParticleSystem();
 	tempP.name = "testParticleSystemDefault";
@@ -267,12 +267,12 @@ void Game::BuildWorld()
 	temp.mesh = GeoGenerator::MakeRect(1.0, 0.40, GA_CENTER);
 	temp.transform.Translate(vec3(0.0, -0.7, 0.0), false);
 	temp.particleOverlayMat.color = vec4(0, 0, 0, 0.5);
-	Game::CreateOverlayObject(temp);
+	//Game::CreateOverlayObject(temp);
 
 	temp = GameObject("StartMenuButton", TAGS_MENU);
 	temp.mesh = GeoGenerator::MakeRect(0.95, 0.35, GA_CENTER);
 	temp.transform.Translate(vec3(0.0, -0.7, -0.1), false);
-	temp.particleOverlayMat.mainTexture = MAP_CHECKER;
+	temp.particleOverlayMat.mainTexture = MAP_START;
 	temp.particleOverlayMat.color = vec4(1, 1, 1, 0.5);
 	Game::CreateOverlayObject(temp);
 	
@@ -409,14 +409,14 @@ void Game::BuildWorld()
 	temp = GameObject("PauseMenuBack", TAGS_PAUSE);
 	temp.mesh = GeoGenerator::MakeRect(1.0, 0.40, GA_CENTER);
 	temp.transform.Translate(vec3(0.0, 0.0, 0.0), false);
-	temp.particleOverlayMat.color = vec4(0, 0, 0, 0.5);
-	Game::CreateOverlayObject(temp);
+	temp.particleOverlayMat.color = vec4(0, 0, 0, 0.25);
+	//Game::CreateOverlayObject(temp);
 
 	temp = GameObject("PauseMenuButton", TAGS_PAUSE);
 	temp.mesh = GeoGenerator::MakeRect(0.95, 0.35, GA_CENTER);
 	temp.transform.Translate(vec3(0.0, 0.0, -0.1), false);
-	temp.particleOverlayMat.mainTexture = MAP_BUBBLE_PART;
-	temp.particleOverlayMat.color = vec4(1, 1, 1, 0.5);
+	temp.particleOverlayMat.mainTexture = MAP_PAUSED;
+	temp.particleOverlayMat.color = vec4(1, 1, 1, 1.0);
 	Game::CreateOverlayObject(temp);
 
 	//IF_DEF HIDE PAUSE
@@ -428,15 +428,15 @@ void Game::BuildWorld()
 //OVERLAY GAMEOBJECTS - GAME OVER
 	temp = GameObject("GameOverBack", TAGS_GAME_OVER);
 	temp.mesh = GeoGenerator::MakeRect(1.0, 0.40, GA_CENTER);
-	temp.transform.Translate(vec3(0.0, 0.0, 0.0), false);
+	temp.transform.Translate(vec3(0.0, 0.7, -0.5), false);
 	temp.particleOverlayMat.color = vec4(0, 0, 0, 0.5);	
-	Game::CreateOverlayObject(temp);
+	//Game::CreateOverlayObject(temp);
 
 	temp = GameObject("GameOver", TAGS_GAME_OVER);
 	temp.mesh = GeoGenerator::MakeRect(0.95, 0.35, GA_CENTER);
-	temp.transform.Translate(vec3(0.0, 0.7, -0.1), false);
-	//temp.particleOverlayMat.mainTexture = MAP_JERRY;
-	temp.particleOverlayMat.color = vec4(1, 0, 0, 1.0);
+	temp.transform.Translate(vec3(0.0, 0.7, -0.6), false);
+	temp.particleOverlayMat.mainTexture = MAP_GAME_OVER;
+	temp.particleOverlayMat.color = vec4(1, 0, 0, 0.5);
 	Game::CreateOverlayObject(temp);
 
 	//IF_DEF HIDE GAME OVER
