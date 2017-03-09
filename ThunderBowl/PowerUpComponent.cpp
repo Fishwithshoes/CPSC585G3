@@ -50,10 +50,10 @@ void PowerUpComponent::Update()
 
 	physx::PxQuat rotQuat = statComp->getGlobalPose().q;
 
-	transform.rotation.x = rotQuat.x;
-	transform.rotation.y = rotQuat.y;
-	transform.rotation.z = rotQuat.z;
-	transform.rotation.w = rotQuat.w;
+	//transform.rotation.x = rotQuat.x;
+	//transform.rotation.y = rotQuat.y;
+	//transform.rotation.z = rotQuat.z;
+	//transform.rotation.w = rotQuat.w;
 
 	Finalize();
 }

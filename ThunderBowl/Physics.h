@@ -68,7 +68,9 @@ public:
 	static physx::PxRigidStatic* createPowerUp(physx::PxReal sideLength);
 	static physx::PxRigidDynamic* createTestProjectile();
 
-	static physx::PxRigidStatic* createStaticRecPrism(physx::PxReal length, physx::PxReal width, physx::PxReal height);
+	static physx::PxRigidStatic* CreateStaticBox(physx::PxReal length, physx::PxReal width, physx::PxReal height);
+	static physx::PxRigidStatic* CreateStaticSphere(physx::PxReal radius);
+	static physx::PxRigidStatic* CreateStaticCapsule(physx::PxReal radius, physx::PxReal height);
 
 	static void computeRotation(physx::PxQuat angle);
 	static void stepPhysics();
@@ -86,6 +88,7 @@ public:
 	//PxVehicleSetup
 	static void computeWheelCenterActorOffsets(const physx::PxF32 wheelFrontZ, const physx::PxF32 wheelRearZ, const physx::PxVec3& chassisDims, const physx::PxF32 wheelWidth, const physx::PxF32 wheelRadius, const physx::PxU32 numWheels, physx::PxVec3* wheelCentreOffsets);
 	static physx::PxRigidStatic* createDrivablePlane(physx::PxMaterial* material, physx::PxPhysics* physics);
+	static physx::PxRigidStatic* CreateDrivableThunderbowl(physx::PxMaterial* material, physx::PxPhysics* physics);
 
 	static void Physics::setupWheelsSimulationData
 	(const physx::PxF32 wheelMass, const physx::PxF32 wheelMOI, const physx::PxF32 wheelRadius, const physx::PxF32 wheelWidth,

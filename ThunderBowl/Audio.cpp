@@ -10,7 +10,6 @@ vector<string> Audio::soundFilePaths =
 	"Sounds/select_SFX.wav",
 	"Sounds/machinefire_SFX.wav",
 	"Sounds/powerup_SFX.wav",
-
 };
 
 vector<string> Audio::musicFilePaths =

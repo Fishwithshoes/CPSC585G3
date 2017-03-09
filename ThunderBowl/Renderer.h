@@ -39,6 +39,8 @@ private:
 	GLint metalness_uniform;
 	GLint isMetallic_uniform;
 	GLint transparency_uniform;
+	GLint IOR_uniform;
+	GLint refractColor_uniform;
 	GLint isPhysicalTransparency_uniform;
 	GLint bumpLevel_uniform;
 	GLint selfIllumLevel_uniform;
@@ -119,7 +121,7 @@ private:
 	GLenum shadowDrawBuffers[1] = { GL_COLOR_ATTACHMENT0 };
 	GLuint framebufferID;
 	GLuint depthBufferID;
-	GLenum drawBuffers[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+	GLenum drawBuffers[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
 
 	//Misc
 	static vector<Camera*> cameraList;
@@ -133,7 +135,7 @@ private:
 	static void SetupDeferedRendering(Renderer *renderer);//Turns on deffered rendering
 	static void SetupShadowMapping(Renderer *renderer);//Turns on shadow mapping
 	static void DrawPhysicalObjects(Renderer *renderer, bool programStandardUniforms);
-	static void ProgramStandardUniforms(Renderer *renderer, StandardMaterial *stdMat);
+	static void ProgramStandardUniforms(Renderer *renderer, StandardMaterial *stdMat, bool grabPass);
 	static void BufferGeoData(Renderer *renderer, Mesh *mesh);//Buffers mesh for dynamic object
 	static void BufferStaticGeoData(Geometry *geometry, Mesh *mesh);//Buffers mesh for static object
 };

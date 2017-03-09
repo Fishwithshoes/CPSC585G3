@@ -3,7 +3,7 @@
 #include "Renderer.h"
 #include "Audio.h"
 
-float		GameManager::initialGameTime = 60.0;
+float		GameManager::initialGameTime = 300.0;
 GameStates	GameManager::gameState = GS_FRONT_MENU;
 float		GameManager::gameTimeRemaining = 0.0;
 int			GameManager::timerSeconds = 0;
@@ -100,11 +100,11 @@ void GameManager::StartGame()
 
 	vector<GameObject*> hudItems = Game::FindGameObjectsWithTag(TAGS_HUD);
 	for (int i = 0; i < hudItems.size(); i++)
-		hudItems[i]->particleOverlayMat.color.w = 1.0;
+		hudItems[i]->isVisible = true;
 
 	vector<GameObject*> menuItems = Game::FindGameObjectsWithTag(TAGS_MENU);
 	for (int i = 0; i < menuItems.size(); i++)
-		menuItems[i]->particleOverlayMat.color.w = 0.0;
+		menuItems[i]->isVisible = false;
 
 	Audio::Play2DSound(SFX_Select, 0.20, 0.0);
 }
@@ -118,7 +118,7 @@ void GameManager::ToggleGamePause()
 
 		vector<GameObject*> pauseItems = Game::FindGameObjectsWithTag(TAGS_PAUSE);
 		for (int i = 0; i < pauseItems.size(); i++)
-			pauseItems[i]->particleOverlayMat.color.w = 1.0;
+			pauseItems[i]->isVisible = true;
 	}
 	else if(gameState == GS_PAUSED)
 	{
@@ -127,7 +127,7 @@ void GameManager::ToggleGamePause()
 
 		vector<GameObject*> pauseItems = Game::FindGameObjectsWithTag(TAGS_PAUSE);
 		for (int i = 0; i < pauseItems.size(); i++)
-			pauseItems[i]->particleOverlayMat.color.w = 0.0;
+			pauseItems[i]->isVisible = false;
 	}
 	else
 	{
@@ -143,11 +143,11 @@ void GameManager::EndGame()
 
 	vector<GameObject*> hudItems = Game::FindGameObjectsWithTag(TAGS_HUD);
 	for (int i = 0; i < hudItems.size(); i++)
-		hudItems[i]->particleOverlayMat.color.w = 0.0;
+		hudItems[i]->isVisible = false;
 
 	vector<GameObject*> gameOverItems = Game::FindGameObjectsWithTag(TAGS_GAME_OVER);
 	for (int i = 0; i < gameOverItems.size(); i++)
-		gameOverItems[i]->particleOverlayMat.color.w = 1.0;
+		gameOverItems[i]->isVisible = true;
 }
 void GameManager::GotoMainMenu()
 {
@@ -156,11 +156,11 @@ void GameManager::GotoMainMenu()
 
 	vector<GameObject*> gameOverItems = Game::FindGameObjectsWithTag(TAGS_GAME_OVER);
 	for (int i = 0; i < gameOverItems.size(); i++)
-		gameOverItems[i]->particleOverlayMat.color.w = 0.0;
+		gameOverItems[i]->isVisible = false;
 
 	vector<GameObject*> menuItems = Game::FindGameObjectsWithTag(TAGS_MENU);
 	for (int i = 0; i < menuItems.size(); i++)
-		menuItems[i]->particleOverlayMat.color.w = 1.0;
+		menuItems[i]->isVisible = true;
 
 	Audio::Play2DSound(SFX_Select, 0.20, 0.0);
 }

@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	GLFWmonitor *monitor = glfwGetPrimaryMonitor();
-	window = glfwCreateWindow(Camera::WIDTH, Camera::HEIGHT, "ThunderBowl", 0, 0);
+	window = glfwCreateWindow(Camera::WIDTH, Camera::HEIGHT, "Thunderbowl", 0, 0);
 	if (!window) {
 		cout << "Program failed to create GLFW window, TERMINATING" << endl;
 		glfwTerminate();
@@ -105,9 +105,9 @@ int main(int argc, char *argv[])
 
 	Time::Init();
 	Audio::Init();
-	Physics::initializePhysX();
 	Renderer renderer;
 	Renderer::Init(&renderer);
+	Physics::initializePhysX();
 
 	Game::BuildWorld();
 	Renderer::GetCamera(0)->Start();

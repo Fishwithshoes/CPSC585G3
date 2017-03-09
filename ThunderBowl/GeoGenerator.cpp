@@ -443,6 +443,106 @@ Mesh GeoGenerator::MakeParticle()
 	return result;
 }
 
+Mesh GeoGenerator::MakeThunderbowl(int curveSegments, int revolveSegments, bool insideOut)
+{
+	//Control Points
+	vector<vec3> cPoints = {};
+	cPoints.push_back(vec3(6, 0, 0));
+	cPoints.push_back(vec3(6, 8, 0));
+	cPoints.push_back(vec3(8, 9, 0));
+
+	cPoints.push_back(vec3(12, 6, 0));
+	cPoints.push_back(vec3(20, 4, 0));
+
+	cPoints.push_back(vec3(30, 8, 0));
+	cPoints.push_back(vec3(38, 16, 0));
+	
+	cPoints.push_back(vec3(40, 22, 0));
+	cPoints.push_back(vec3(32, 16, 0));
+	
+	cPoints.push_back(vec3(16, 4, 0));
+	cPoints.push_back(vec3(6, 0, 0));
+
+	int strides = cPoints.size() / 2;
+
+	for (int i = 0; i < cPoints.size(); i++)
+	{
+		cPoints[i].x *= 3;
+		cPoints[i].y *= 2;
+		cPoints[i].z *= 3;
+	}
+
+	//Prep
+	Mesh result;
+	float flip = insideOut ? -1.0 : 1.0;
+	float theta = 2 * Mathf::PI / revolveSegments;
+
+	mat3 yaw = mat3(
+		cos(theta), 0, sin(theta),
+		0, 1, 0,
+		-sin(theta), 0, cos(theta));
+
+	//Main construction
+	vector<vec3> curvePoints = {};
+
+	for (int i = 0; i < strides; i++)
+	{
+		for (int j = 0; j < curveSegments; j++)
+		{
+			float u = (float)j / (curveSegments-1);
+			//[(1-u)+u]^2
+			//(1-u)^2 + 2u(1-u) + u^2
+			vec3 point = (1 - u)*(1 - u)*cPoints[i*2] + 2 * u*(1 - u)*cPoints[i*2+1] + u*u*cPoints[i*2+2];
+			curvePoints.push_back(point);
+		}
+	}
+
+	for (int i = 0; i < revolveSegments+1; i++)
+	{
+		for (int j = 0; j < curvePoints.size(); j++)
+		{
+			result.positions.push_back(curvePoints[j]);
+			result.colors.push_back(vec3(1, 0, 0));
+			result.normals.push_back(normalize(flip*vec3(curvePoints[j])));
+			result.texcoords.push_back(vec2((float)i/revolveSegments, (float)j/curvePoints.size()));
+
+			curvePoints[j] = yaw * curvePoints[j];
+		}
+	}
+
+	//Indices
+	int quadCount = (curvePoints.size() - 1)*(revolveSegments + 1) -revolveSegments;
+	for (int i = 0; i < quadCount; i++)
+	{
+		if (insideOut)
+		{
+			result.indices.push_back(i);
+			result.indices.push_back(i + curvePoints.size());
+			result.indices.push_back(i + 1);
+
+			result.indices.push_back(i + curvePoints.size());
+			result.indices.push_back(i + curvePoints.size() + 1);
+			result.indices.push_back(i + 1);
+		}
+		else
+		{
+			result.indices.push_back(i);
+			result.indices.push_back(i + 1);
+			result.indices.push_back(i + curvePoints.size());
+
+			result.indices.push_back(i + curvePoints.size());
+			result.indices.push_back(i + 1);
+			result.indices.push_back(i + curvePoints.size() + 1);
+		}
+	}
+
+	result.elementCount = result.positions.size();
+
+	cout << "MINE " << result.indices.size() << endl;
+
+	return result;
+}
+
 //2D - For Overlay GameObjects
 Mesh GeoGenerator::MakeCircle(float sweep, int segments, float radius)
 {

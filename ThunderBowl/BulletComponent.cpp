@@ -12,20 +12,17 @@ physx::PxScene* worldScene;
 
 void BulletComponent::Start()
 {
-
 	Initialize();
 
 	selfGameObject = Game::Find(selfName);
-	speed = 50.0f;
-	lifeSpan = 2.50f;
+	speed = 200.0f;
+	lifeSpan = 1.00f;
 	worldPhys = Physics::getGPhysics();
 	worldCook = Physics::getGCooking();
 	worldScene = Physics::getGScene();
 
 	VehicleComponent* temp = &VehicleComponent();
 	VehicleComponent* thisVeh = (VehicleComponent*) Game::Find("Player1")->GetComponent(temp);
-	standardMat.diffuseColor = glm::vec3(1.0, 0.0, 0.0);
-
 
 	bullet = Physics::createTestProjectile();
 	bullet->userData = this;
@@ -67,12 +64,13 @@ void BulletComponent::Update()
 	if (lifeSpan <= 0.0)
 	{	
 		selfGameObject = Game::Find(selfName);
-		cout << selfGameObject->objectID << " died" << endl;
+		//cout << selfGameObject->objectID << " died" << endl;
 		bullet->putToSleep();
 		bullet->setGlobalPose(physx::PxTransform(physx::PxVec3(0.0, 100.00, 0.0), physx::PxQuat(physx::PxIdentity)), false);
-		//worldScene->removeActor(*bullet);
+		worldScene->removeActor(*bullet);
 		//bullet->release();
-		//Game::DestroyWorldObjectAt(selfGameObject->objectID);
+		Game::DestroyWorldObjectAt(selfGameObject->objectID);
+		//cout << "OBJECTIVELY SPEAKING: " << Game::worldObjectList.size() << endl;
 	}
 }
 
@@ -81,7 +79,8 @@ void BulletComponent::OnCollision(Component::CollisionPair collisionPair) {
 
 	PlayerComponent* playerRef = &PlayerComponent();
 
-	switch (collisionPair) {
+	switch (collisionPair) 
+	{
 	case(Component::CollisionPair::CP_VEHICLE_PROJECTILE):
 		shooter = (PlayerComponent*)Game::Find(ownerName)->GetComponent(playerRef);
 		shooter->playerScore += 10.0;

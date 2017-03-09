@@ -29,6 +29,25 @@ void Game::BuildWorld()
 	ParticleSystem tempP;//Change props then create particle systemes with this
 	ParticleSystem *ptrP;//Add components just as with basic gameObjects with this
 
+	temp = GameObject();
+	temp.mesh = GeoGenerator::MakeBox(100, 2, 100, false);
+	temp.standardMat.diffuseMap = MAP_CHASSIS_DIFFUSE;
+	temp.standardMat.bumpLevel = 2;
+	temp.standardMat.normalMap = MAP_CHASSIS_NORMAL;
+	temp.standardMat.tileUV = vec2(12, 12);
+	ptr = Game::CreateWorldObject(temp);
+
+	temp = GameObject("Thunderbowl", TAGS_DECORATION);
+	temp.staticGeo = SG_MAP;
+	//temp.standardMat.diffuseColor = vec3(1,0,0);
+	temp.standardMat.metalness = 0.5;
+	temp.standardMat.isMetallic = true;
+	temp.standardMat.roughness = 0.25;
+	temp.standardMat.diffuseMap = MAP_CHASSIS_DIFFUSE;
+	temp.standardMat.normalMap = MAP_CHASSIS_NORMAL;
+	temp.standardMat.tileUV = vec2(4, 4);
+	Game::CreateStaticObject(temp);
+
 	//ifndef Car Cacophony
 	/*temp = GameObject();
 	temp.mesh = GeoGenerator::MakeBox(2, 1, 2, false);
@@ -61,8 +80,8 @@ void Game::BuildWorld()
 	ptr->AddComponent(new AINodeComponent());
 
 	GameObject player1 = GameObject();
-	player1.mesh = GeoGenerator::MakeBox(2, 1, 2, false);
-	player1.transform.position = vec3(0.0, 2.0, -45.0);
+	player1.mesh = GeoGenerator::MakeBox(3, 1, 3, false);
+	player1.transform.position = vec3(0.0, 20.0, -45.0);
 	player1.name = "Player1";
 	ptr = Game::CreateWorldObject(player1);
 	ptr->AddComponent(new VehicleComponent());
@@ -71,7 +90,7 @@ void Game::BuildWorld()
 
 	GameObject opponent1 = GameObject();
 	opponent1.mesh = GeoGenerator::MakeBox(2, 1, 2, false);
-	opponent1.transform.position = vec3(0.0, 2.0, 45.0);
+	opponent1.transform.position = vec3(0.0, 20.0, 45.0);
 	opponent1.transform.Rotate(Transform::Up(), Mathf::PI, false);
 	opponent1.name = "AI1";
 	ptr = Game::CreateWorldObject(opponent1);
@@ -79,31 +98,47 @@ void Game::BuildWorld()
 	ptr->AddComponent(new EnemyComponent());
 	ptr->AddComponent(new MachineGunComponent());
 	ptr->AddComponent(new AIControlComponent1());
-
+	ptr->AddComponent(new HealthComponent());
 
 	GameObject powerUp1 = GameObject();
 	powerUp1.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
-	powerUp1.transform.position = vec3(0.0, 1.0, -30.0);
+	powerUp1.transform.position = vec3(0.0, 7.0, -30.0);
+	powerUp1.standardMat.selfIllumLevel = 1.0;
+	powerUp1.standardMat.selfIllumColor = vec3(0.0, 1.0, 0.0);
 	ptr = Game::CreateWorldObject(powerUp1);
 	ptr->AddComponent(new PowerUpComponent());
+	ptr->AddComponent(new FloatComponent());
+	ptr->AddComponent(new RotateComponent());
 
 	GameObject powerUp2 = GameObject();
 	powerUp2.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
-	powerUp2.transform.position = vec3(0.0, 1.0, 30.0);
+	powerUp2.transform.position = vec3(0.0, 7.0, 30.0);
+	powerUp2.standardMat.selfIllumLevel = 1.0;
+	powerUp2.standardMat.selfIllumColor = vec3(0.0, 1.0, 0.0);
 	ptr = Game::CreateWorldObject(powerUp2);
 	ptr->AddComponent(new PowerUpComponent());
+	ptr->AddComponent(new FloatComponent());
+	ptr->AddComponent(new RotateComponent());
 
 	GameObject powerUp3 = GameObject();
 	powerUp3.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
-	powerUp3.transform.position = vec3(-30.0, 1.0, 0.0);
+	powerUp3.transform.position = vec3(-30.0, 7.0, 0.0);
+	powerUp3.standardMat.selfIllumLevel = 1.0;
+	powerUp3.standardMat.selfIllumColor = vec3(0.0, 1.0, 0.0);
 	ptr = Game::CreateWorldObject(powerUp3);
 	ptr->AddComponent(new PowerUpComponent());
+	ptr->AddComponent(new FloatComponent());
+	ptr->AddComponent(new RotateComponent());
 
 	GameObject powerUp4 = GameObject();
 	powerUp4.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
-	powerUp4.transform.position = vec3(30.0, 1.0, 0.0);
+	powerUp4.transform.position = vec3(30.0, 7.0, 0.0);
+	powerUp4.standardMat.selfIllumLevel = 1.0;
+	powerUp4.standardMat.selfIllumColor = vec3(0.0, 1.0, 0.0);
 	ptr = Game::CreateWorldObject(powerUp4);
 	ptr->AddComponent(new PowerUpComponent());
+	ptr->AddComponent(new FloatComponent());
+	ptr->AddComponent(new RotateComponent());
 
 	/*GameObject obstacle1 = GameObject();
 	obstacle1.mesh = GeoGenerator::MakeBox(16.0, 40.0, 16.0, false);
@@ -134,27 +169,34 @@ void Game::BuildWorld()
 	ptr = Game::CreateWorldObject(temp2);
 	ptr->AddComponent(new EnemyComponent());*/
 	//ptr->AddComponent(new HealthComponent());
-	
-	temp = GameObject();
-	temp.mesh = GeoGenerator::MakePlane(100, 100, 4, 4, false);
-	temp.standardMat.diffuseMap = MAP_CHASSIS_DIFFUSE;
-	temp.standardMat.bumpLevel = 2;
-	temp.standardMat.normalMap = MAP_CHASSIS_NORMAL;
-	temp.standardMat.tileUV = vec2(12,12);
-	ptr = Game::CreateWorldObject(temp);
 
-	/*temp = GameObject();
-	temp.mesh = GeoGenerator::MakeSphere(1, 32, 64, false);
-	temp.name = "BigGoldAndShiny";
-	temp.transform.scale = vec3(5);
-	temp.transform.position = vec3(10,5,10);
-	temp.standardMat.diffuseColor = vec3(1.0, 1.0, 1.0);
-	temp.standardMat.roughness = 0.0;
-	temp.standardMat.metalness = 0.04;
-	temp.standardMat.isMetallic = true;
-	temp.standardMat.transparency = 1.0;
-	temp.standardMat.isPhysicalTransparency = true;
-	ptr = Game::CreateWorldObject(temp);*/
+	//temp = GameObject();
+	//temp.mesh = GeoGenerator::MakeCylinder(5, 5, 100, 32, true);
+	//temp.transform.position = vec3(70, 0, 50);
+	//temp.standardMat.roughness = 0.5;
+	//temp.standardMat.metalness = 0.2;
+	//temp.standardMat.diffuseMap = MAP_CHASSIS_DIFFUSE;
+	//temp.standardMat.normalMap = MAP_CHASSIS_NORMAL;
+	//temp.standardMat.bumpLevel = 1.4;
+	//temp.standardMat.tileUV = vec2(2, 10);
+	//ptr = Game::CreateWorldObject(temp);
+	//ptr->AddComponent(new RigidStaticComponent(5, 100));
+
+	//temp = GameObject();
+	//temp.mesh = GeoGenerator::MakeSphere(1, 32, 64, false);
+	//temp.name = "BigGoldAndShiny";
+	//temp.transform.scale = vec3(5);
+	//temp.transform.position = vec3(10, 5, 10);
+	//temp.standardMat.diffuseColor = vec3(1.0, 1.0, 1.0);
+	//temp.standardMat.roughness = 0.0;
+	//temp.standardMat.metalness = 0.04;
+	//temp.standardMat.isMetallic = true;
+	//temp.standardMat.transparency = 1.0;
+	//temp.standardMat.IOR = 0.33;
+	//temp.standardMat.refractColor = vec3(0.0, 1.0, 1.0);
+	//temp.standardMat.isPhysicalTransparency = true;
+	//temp.getGrabPass = true;
+	//ptr = Game::CreateWorldObject(temp);
 
 	/*tempP = ParticleSystem();
 	tempP.name = "testParticleSystemDefault";
@@ -234,6 +276,7 @@ void Game::BuildWorld()
 	temp.standardMat.normalMap = MAP_WATER_NORMAL;
 	temp.standardMat.bumpLevel = 0.2;
 	temp.standardMat.tileUV = vec2(10, 10);
+	temp.getGrabPass = true;
 	ptr = Game::CreateStaticObject(temp);
 	ptr->AddComponent(new OceanComponent());
 
@@ -243,11 +286,12 @@ void Game::BuildWorld()
 	temp.standardMat.diffuseColor = vec3(0.0, 1.0, 1.0)*0.5f;
 	temp.standardMat.roughness = 0.0;
 	temp.standardMat.metalness = 0.10;
-	temp.standardMat.transparency = 0.3;
+	temp.standardMat.transparency = 0.4;
 	temp.standardMat.normalMap = MAP_WATER_NORMAL;
 	temp.standardMat.bumpLevel = 0.2;
 	temp.standardMat.tileUV = vec2(10, 10);
 	ptr = Game::CreateStaticObject(temp);
+	temp.getGrabPass = true;
 	ptr->AddComponent(new OceanComponent());
 
 	/*temp = GameObject("Puddle", TAGS_DECORATION);
@@ -270,10 +314,10 @@ void Game::BuildWorld()
 	//Game::CreateOverlayObject(temp);
 
 	temp = GameObject("StartMenuButton", TAGS_MENU);
-	temp.mesh = GeoGenerator::MakeRect(0.95, 0.35, GA_CENTER);
+	temp.mesh = GeoGenerator::MakeRect(0.95, 0.45, GA_CENTER);
 	temp.transform.Translate(vec3(0.0, -0.7, -0.1), false);
 	temp.particleOverlayMat.mainTexture = MAP_START;
-	temp.particleOverlayMat.color = vec4(1, 1, 1, 0.5);
+	temp.particleOverlayMat.color = vec4(1, 1, 1, 1.0);
 	Game::CreateOverlayObject(temp);
 	
 //OVERLAY GAMEOBJECTS - HUD
@@ -402,7 +446,7 @@ void Game::BuildWorld()
 	//IF_DEF HIDE HUD
 	vector<GameObject*> hudItems = FindGameObjectsWithTag(TAGS_HUD);
 	for (int i = 0; i < hudItems.size(); i++)
-		hudItems[i]->particleOverlayMat.color.w = 0.0;
+		hudItems[i]->isVisible = false;
 	//END_IF HIDE HUD
 
 //OVERLAY GAMEOBJECTS - PAUSE
@@ -422,7 +466,7 @@ void Game::BuildWorld()
 	//IF_DEF HIDE PAUSE
 	vector<GameObject*> pauseItems = FindGameObjectsWithTag(TAGS_PAUSE);
 	for (int i = 0; i < pauseItems.size(); i++)
-		pauseItems[i]->particleOverlayMat.color.w = 0.0;
+		pauseItems[i]->isVisible = false;
 	//END_IF HIDE PAUSE
 
 //OVERLAY GAMEOBJECTS - GAME OVER
@@ -433,7 +477,7 @@ void Game::BuildWorld()
 	//Game::CreateOverlayObject(temp);
 
 	temp = GameObject("GameOver", TAGS_GAME_OVER);
-	temp.mesh = GeoGenerator::MakeRect(0.95, 0.35, GA_CENTER);
+	temp.mesh = GeoGenerator::MakeRect(0.95, 0.45, GA_CENTER);
 	temp.transform.Translate(vec3(0.0, 0.7, -0.6), false);
 	temp.particleOverlayMat.mainTexture = MAP_GAME_OVER;
 	temp.particleOverlayMat.color = vec4(1, 0, 0, 0.5);
@@ -442,7 +486,7 @@ void Game::BuildWorld()
 	//IF_DEF HIDE GAME OVER
 	vector<GameObject*> gameOverItems = FindGameObjectsWithTag(TAGS_GAME_OVER);
 	for (int i = 0; i < gameOverItems.size(); i++)
-		gameOverItems[i]->particleOverlayMat.color.w = 0.0;
+		gameOverItems[i]->isVisible = false;
 	//END_IF HIDE GAME OVER
 
 	//temp = GameObject();
@@ -519,36 +563,60 @@ GameObject* Game::CreateAIObject(GameObject object)
 //DESTROYERS
 void Game::DestroyStaticObjectAt(int objectID)
 {
-	GameObject object = staticObjectList[objectID];
-	staticObjectList.erase(staticObjectList.begin() + object.objectID);
+	staticObjectList[objectID].RemoveComponents();
+	staticObjectList.erase(staticObjectList.begin() + objectID);
 	for (int i = 0; i < staticObjectList.size(); i++)
 	{
-		if (staticObjectList[i].objectID > object.objectID)
-			staticObjectList[i].objectID--;
+		staticObjectList[i].objectID = i;
+
+		for (int j = 0; j < staticObjectList[i].componentList.size(); j++)
+		{
+			staticObjectList[i].componentList[j]->SetSelfID(&i);
+			staticObjectList[i].componentList[j]->SetSelfName(&staticObjectList[i].name);
+			staticObjectList[i].componentList[j]->SetMesh(&staticObjectList[i].mesh);
+			staticObjectList[i].componentList[j]->SetTransform(&staticObjectList[i].transform);
+			staticObjectList[i].componentList[j]->SetStandardMaterial(&staticObjectList[i].standardMat);
+			staticObjectList[i].componentList[j]->SetParticleOverlayMaterial(&staticObjectList[i].particleOverlayMat);
+		}
 	}
-	object.RemoveComponents();
 }
 void Game::DestroyWorldObjectAt(int objectID)
 {
-	//GameObject object = worldObjectList[objectID];
 	worldObjectList[objectID].RemoveComponents();
 	worldObjectList.erase(worldObjectList.begin() + objectID);
 	for (int i = 0; i < worldObjectList.size(); i++)
 	{
-		//if (worldObjectList[i].objectID >= object.objectID)				//CHECK
-			worldObjectList[i].objectID = i;
+		worldObjectList[i].objectID = i;
+
+		for (int j = 0; j < worldObjectList[i].componentList.size(); j++)
+		{
+			worldObjectList[i].componentList[j]->SetSelfID(&i);
+			worldObjectList[i].componentList[j]->SetSelfName(&worldObjectList[i].name);
+			worldObjectList[i].componentList[j]->SetMesh(&worldObjectList[i].mesh);
+			worldObjectList[i].componentList[j]->SetTransform(&worldObjectList[i].transform);
+			worldObjectList[i].componentList[j]->SetStandardMaterial(&worldObjectList[i].standardMat);
+			worldObjectList[i].componentList[j]->SetParticleOverlayMaterial(&worldObjectList[i].particleOverlayMat);
+		}
 	}
 }
 void Game::DestroyParticleObjectAt(int objectID)
 {
-	ParticleSystem object = particleObjectList[objectID];
-	particleObjectList.erase(particleObjectList.begin() + object.objectID);
+	particleObjectList[objectID].RemoveComponents();
+	particleObjectList.erase(particleObjectList.begin() + objectID);
 	for (int i = 0; i < particleObjectList.size(); i++)
 	{
-		if (particleObjectList[i].objectID > object.objectID)
-			particleObjectList[i].objectID--;
+		particleObjectList[i].objectID = i;
+
+		for (int j = 0; j < particleObjectList[i].componentList.size(); j++)
+		{
+			particleObjectList[i].componentList[j]->SetSelfID(&i);
+			particleObjectList[i].componentList[j]->SetSelfName(&particleObjectList[i].name);
+			particleObjectList[i].componentList[j]->SetMesh(&particleObjectList[i].mesh);
+			particleObjectList[i].componentList[j]->SetTransform(&particleObjectList[i].transform);
+			particleObjectList[i].componentList[j]->SetStandardMaterial(&particleObjectList[i].standardMat);
+			particleObjectList[i].componentList[j]->SetParticleOverlayMaterial(&particleObjectList[i].particleOverlayMat);
+		}
 	}
-	object.RemoveComponents();
 }
 void Game::DestroyOverlayObjectAt(int objectID)
 {

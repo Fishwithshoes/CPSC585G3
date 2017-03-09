@@ -173,17 +173,26 @@ void Transform::LookAt(vec3 point, bool forceUpright, vec3 desiredUp)
 
 vec3 Transform::GetUp()
 {
-	return GetRotationMatrix() * vec4(Up(), 1.0);
+	if(parent == nullptr)
+		return GetRotationMatrix() * vec4(Up(), 1.0);
+	else
+		return parent->GetRotationMatrix() * GetRotationMatrix() * vec4(Up(), 1.0);
 }
 
 vec3 Transform::GetRight()
 {
-	return GetRotationMatrix() * vec4(Right(), 1.0);
+	if (parent == nullptr)
+		return GetRotationMatrix() * vec4(Right(), 1.0);
+	else
+		return parent->GetRotationMatrix() * GetRotationMatrix() * vec4(Right(), 1.0);
 }
 
 vec3 Transform::GetForward()
 {
-	return GetRotationMatrix() * vec4(Forward(), 1.0);
+	if (parent == nullptr)
+		return GetRotationMatrix() * vec4(Forward(), 1.0);
+	else
+		return parent->GetRotationMatrix() * GetRotationMatrix() * vec4(Forward(), 1.0);
 }
 
 mat4 Transform::GetRotationMatrix()

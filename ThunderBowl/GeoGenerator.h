@@ -18,6 +18,7 @@ public:
 	static Mesh MakePlane(float width, float height, int widthSegs, int heightSegs, bool upsideDown);
 	static Mesh MakeCylinder(float startRadius, float endRadius, float height, int segments, bool upright);
 	static Mesh MakeBox(float width, float height, float depth, bool insideOut);
+	static Mesh MakeThunderbowl(int curveSegments, int revolveSegments, bool insideOut);
 	static Mesh MakeParticle();
 
 	//2D - For Overlay GameObjects

@@ -12,7 +12,7 @@ public:
 
 	//string directory;
 
-	void loadModel(string path);
+	void loadModel(string path, vec3 scale, bool insideOut);
 	void processNode(aiNode* node, const aiScene* scene);
 	Mesh processMesh(aiMesh* mesh, const aiScene* scene);
 
@@ -21,7 +21,7 @@ public:
 private:
 	vector<Mesh> meshes;
 
-
-
+	vec3 scalar;
+	bool flipMesh;
 };
 

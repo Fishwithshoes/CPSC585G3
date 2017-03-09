@@ -52,6 +52,12 @@ enum RenderTypes//Deprecated as of v0.72
 enum Tags
 {
 	TAGS_DEFAULT,
+	//Debug
+	TAGS_DEBUG_0,
+	TAGS_DEBUG_1,
+	TAGS_DEBUG_2,
+	TAGS_DEBUG_3,
+	TAGS_DEBUG_4,
 	//World objects
 	TAGS_HUMAN_PLAYER,
 	TAGS_AI_PLAYER,
@@ -85,6 +91,8 @@ struct StandardMaterial
 	float metalness;
 	bool isMetallic;//When OFF metalness represents base reflectivity.
 	float transparency;
+	float IOR;//Index of Refraction Default = 1.333 (Water)
+	vec3 refractColor;
 	bool isPhysicalTransparency;//When OFF transparency is simply reverse opacity.
 
 	float bumpLevel;
@@ -137,7 +145,9 @@ enum Maps
 	MAP_CHECKER,//Testing
 	MAP_DEPTH_BUFFER,//Store depth for shadow mapping
 	MAP_COLOR_BUFFER,//Store color & alpha for post-process
-	MAP_POSITION_BUFFER,//Store normals & distance for post-process
+	MAP_POSITION_BUFFER,//Store position for post-process
+	MAP_NORMAL_BUFFER,//Store normal for post-process
+	MAP_GRAB_PASS,//Feed Color Buffer into this when an object requests it (For refraction)
 	//Overlay
 	MAP_ZERO,
 	MAP_ONE,

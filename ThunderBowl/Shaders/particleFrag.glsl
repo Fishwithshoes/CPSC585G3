@@ -15,6 +15,7 @@ uniform vec3 cameraForward;
 //Post Process
 layout(location = 0) out vec4 OutputColor;
 layout(location = 1) out vec4 OutputPosition;
+layout(location = 2) out vec4 OutputNormal;
 
 void main()
 {
@@ -46,7 +47,8 @@ void main()
 	
 	//OUTPUT
 	OutputColor = vec4(final);
-	OutputPosition = vec4(Normal, viewDist*0.001);
+	OutputPosition = vec4(Position*0.0005+0.5, 1.0);
+	OutputNormal = vec4(Normal*0.5+0.5, 1.0);
 	
 	// OutputColor = vec4(Color.xyz, 1);
 	// OutputColor = vec4(Normal, 1);	

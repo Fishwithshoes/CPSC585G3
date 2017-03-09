@@ -13,6 +13,9 @@ public:
 	ParticleOverlayMaterial particleOverlayMat;
 	string name;//Should be unique
 	Tags tag;//Intended for group classification
+	bool isVisible;//Should the object be rendered? (Primary visibility)
+	bool castShadow;//Should the object cast a shadow? (Be included in depth map pass)
+	bool getGrabPass;//Should the object copy the color buffer? (For refraction effects) PERFORMANCE HEAVY!!
 
 	GameObject();
 	GameObject(string nameIn, Tags tagIn);
@@ -33,9 +36,9 @@ public:
 	//DO NOT modify, unless Creating or Destroying objects.
 	//This Should ONLY be done in Game.CreateXXX() and Game.DestroyXXX()
 	int objectID = -1;
+	vector<Component*> componentList;
 
 protected:
 
 private:
-	vector<Component*> componentList;
 };

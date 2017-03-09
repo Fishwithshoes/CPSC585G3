@@ -7,8 +7,8 @@ public:
 	void Start();
 	void Update();
 
-	float speed = 2;
-	float range = 0.1;
+	float speed = 4;
+	float range = 0.5;
 
 protected:
 

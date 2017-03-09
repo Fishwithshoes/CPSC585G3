@@ -22,6 +22,10 @@ GameObject::GameObject(string nameIn, Tags tagIn)
 
 void GameObject::SetupDefaultMaterials()
 {
+	isVisible = true;
+	castShadow = true;
+	getGrabPass = false;
+
 	//Initialize Standard Shader Props (Used to draw World Objects)
 	standardMat.diffuseLevel = 1.0;
 	standardMat.diffuseColor = vec3(1);
@@ -29,6 +33,8 @@ void GameObject::SetupDefaultMaterials()
 	standardMat.metalness = 0.04;
 	standardMat.isMetallic = false;
 	standardMat.transparency = 0.0;
+	standardMat.IOR = 1.333;
+	standardMat.refractColor = vec3(1);
 	standardMat.isPhysicalTransparency = true;
 	standardMat.bumpLevel = 1.0;
 	standardMat.selfIllumLevel = 0.0;
@@ -75,6 +81,9 @@ void GameObject::Update()
 {
 	for (int i = 0; i < componentList.size(); i++)
 		componentList[i]->Update();
+
+	if (name == "Billet" && GetComponent(&FloatComponent()))
+		transform.Translate(vec3(0, 1, 0) * Time::getDeltaTime(), true);
 }
 
 mat4 GameObject::GetModelToWorld()

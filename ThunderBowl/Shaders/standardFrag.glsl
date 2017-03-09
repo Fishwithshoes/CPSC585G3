@@ -15,6 +15,8 @@ uniform float roughness;
 uniform float metalness;
 uniform int isMetallic;//When OFF=0 metalness simply represents base angle reflectivity
 uniform float transparency;
+uniform float IOR;
+uniform vec3 refractColor;
 uniform int isPhysicalTransparency;//When OFF=0 transparency simply represents reverse opacity
 uniform float bumpLevel;
 uniform float selfIllumLevel;
@@ -33,7 +35,7 @@ uniform sampler2D mirrorMap;
 uniform samplerCube envMap;
 uniform sampler2D roughnessMap;
 uniform sampler2D metalnessMap;
-uniform sampler2D colorBufferMap;
+uniform sampler2D grabPassMap;
 
 //Texture Coords
 uniform vec2 tileUV;
@@ -49,11 +51,12 @@ uniform vec2 screenDims;
 //Post Process
 layout(location = 0) out vec4 OutputColor;
 layout(location = 1) out vec4 OutputPosition;
+layout(location = 2) out vec4 OutputNormal;
 
 //OHH SUCH CHOICES!!
 const float EPSILON = 0.003;
 const float SHADOW_STRIDE = 0.02;//Global shadow blur multiplier. Set to 0 if SHADOW_SAMPLES = 1
-const int SHADOW_SAMPLES = 8;//4 is quite high enough, methinks!
+const int SHADOW_SAMPLES = 4;//4 is quite high enough, methinks!
 const float GLOSSY_STRIDE = 0.5;//Set to 0 if GLOSSY_SAMPLES = 1
 const int GLOSSY_SAMPLES = 4;//Again, 4 should satisfy thee!
 //Eat memory, gain performance!
@@ -86,7 +89,7 @@ void main()
 	float lightDist0 = length(lightPos0.xyz-Position);
 	
 	vec3 lightPos1 = vec3(-4,1,-4)*650;
-	vec3 lightColor1 = vec3(0.8,0.8,1.0)*0.5;	
+	vec3 lightColor1 = vec3(0.8,0.8,1.0)*0.3;	
 	vec3 lightDir1 = normalize(lightPos1.xyz-Position);
 	float lightDist1 = length(lightPos1.xyz-Position);
 	
@@ -102,7 +105,7 @@ void main()
 	vec3 roughnessTex = texture2D(roughnessMap, _texCoord).xyz;
 	vec3 metalnessTex = texture2D(metalnessMap, _texCoord).xyz;
 	vec3 shadowTex = texture2D(shadowMap, _texCoord).xyz;
-	vec3 colorBufferTex = texture2D(colorBufferMap, _texCoord).xyz;
+	vec3 grabPassTex = texture2D(grabPassMap, _texCoord).xyz;
 	
 	float _roughness = roughness*roughnessTex.x;
 	float _metalness = metalness*metalnessTex.x;
@@ -154,24 +157,26 @@ void main()
 	}
 	
 	//SURFACE SPACE RERACTION
-	// vec3 refraction = vec3(1,1,1);
+	vec3 refraction = vec3(1,1,1);
 	
-	// vec2 refractCoords = vec2(gl_FragCoord.x/screenDims.x, gl_FragCoord.y/screenDims.y);// + normalTex.xy*bumpLevel*0.02;
+	vec2 refractCoords = vec2(gl_FragCoord.x/screenDims.x, gl_FragCoord.y/screenDims.y)
+		// + normalTex.xz*normalTex.yz*normalTex.xy*bumpLevel*IOR;
+		+ normalDir.xz*normalDir.yz*normalDir.xy*IOR;
 	
-	// refraction = vec3(texture2D(colorBufferMap, refractCoords)).xyz;
+	refraction = vec3(texture2D(grabPassMap, refractCoords)).xyz;
 	
-	// refraction *= _transparency;
+	refraction = refraction * refractColor * _transparency;
 	
 	//FINAL PSUEDO-PHONG LIGHTING CONTRIBUTIONS
 	float glossiness = (1-_roughness);
 	float specExp = pow(glossiness+1, 2 + glossiness*10);//4096;//(1.04-_roughness)*25;
 	float specFade = (1-_roughness) * 5;
 	
-	vec3 diffuse = _diffuseLevel * lightColor0 * diffuseLevel * _diffuseColor * diffuseTex.xyz * clamp(dot(lightDir0, normalDir), 0, 1);
-	vec3 specular = _reflectivity * lightColor0 * _reflectColor * pow(clamp(dot(viewDir, reflect(-lightDir0, normalDir)), 0, 1), specExp) * specFade;
+	vec3 diffuse0 = _diffuseLevel * lightColor0 * diffuseLevel * _diffuseColor * diffuseTex.xyz * clamp(dot(lightDir0, normalDir), 0, 1);
+	vec3 specular0 = _reflectivity * lightColor0 * _reflectColor * pow(clamp(dot(viewDir, reflect(-lightDir0, normalDir)), 0, 1), specExp) * specFade;
 	
-	diffuse += _diffuseLevel * lightColor1 * diffuseLevel * _diffuseColor * diffuseTex.xyz * clamp(dot(lightDir1, normalDir), 0, 1);
-	specular += _reflectivity * lightColor1 * _reflectColor * pow(clamp(dot(viewDir, reflect(-lightDir1, normalDir)), 0, 1), specExp) * specFade;
+	vec3 diffuse1 = _diffuseLevel * lightColor1 * diffuseLevel * _diffuseColor * diffuseTex.xyz * clamp(dot(lightDir1, normalDir), 0, 1);
+	vec3 specular1 = _reflectivity * lightColor1 * _reflectColor * pow(clamp(dot(viewDir, reflect(-lightDir1, normalDir)), 0, 1), specExp) * specFade;
 	
 	vec3 reflection = _reflectivity * _reflectColor * envTex;
 	vec3 selfIllum = selfIllumLevel * selfIllumColor * diffuseTex.xyz;
@@ -183,10 +188,11 @@ void main()
 	float casterToLightDist = texture2D(shadowMap, revisedShadowCoords.xy).x;
 	float fragToLightDist = distance(vec3(5,2,5)*17, Position) * 0.005;
 	float fragToCasterDist = fragToLightDist - casterToLightDist;//Estimate only. Error will increase with geometry thickness.	
-	float bias = clamp(0.05*dot(Normal, lightDir0), 0.0, 0.005);
+	float bias = clamp(0.05*dot(Normal, lightDir0), 0.0, 0.003);
 	
-	float shadowStride = SHADOW_STRIDE * fragToCasterDist;
-	float shadowStep = SHADOW_STEP * fragToCasterDist;
+	float baseSampleStride = 0.02;
+	float shadowStride = 	SHADOW_STRIDE	* (fragToCasterDist + baseSampleStride);
+	float shadowStep = 	SHADOW_STEP 	* (fragToCasterDist + baseSampleStride);
 	float shadowFade = 1.0;
 	float shadow = 0;
 	
@@ -206,12 +212,15 @@ void main()
 		}
 	}
 	
-	diffuse *= 1.0-shadow;
-	specular *= 1.0-shadow;
+	diffuse0 *= 1.0-shadow;
+	specular0 *= 1.0-shadow;
+	
+	vec3 diffuse = diffuse0 + diffuse1;
+	vec3 specular = specular0 + specular1;
 	
 	//MIX IN AMBIENT COLOR AND SUM CONTRIBUTORS
 	diffuse += (1-_diffuseLevel)*(envColor*ambientLevel)*diffuseLevel*diffuseColor*diffuseTex.xyz*(1-_reflectivity);
-	vec3 final = diffuse + specular + reflection + selfIllum + rim;
+	vec3 final = diffuse + specular + reflection + refraction + selfIllum + rim;
 	
 	//FOGGY FUGUE
 	float u = clamp(viewDist*0.005*fogLevel, 0, 1);
@@ -228,8 +237,9 @@ void main()
 		// final = vec3(casterToLightDist);
 	
 	//OUTPUT
-	OutputColor = vec4(final, 1.0-_transparency);
-	OutputPosition = vec4(Normal, viewDist*0.001);
+	OutputColor = vec4(final, 1.0);
+	OutputPosition = vec4(Position*0.0005+0.5, 1.0);
+	OutputNormal = vec4(normalDir*0.5+0.5, 1.0);
 	
 	//DEBUG DANCING - COMMENT OUT FOR FINAL COLOR
 	// OutputColor = vec4(Color, 1);
@@ -271,5 +281,5 @@ void main()
 	// OutputColor = vec4(mirrorTex, 1.0);
 	// OutputColor = vec4(envTex, 1.0);
 	// OutputColor = vec4(shadowTex, 1.0);
-	// OutputColor = vec4(colorBufferTex.xyz, 1.0);
+	// OutputColor = vec4(grabPassTex.xyz, 1.0);
 }

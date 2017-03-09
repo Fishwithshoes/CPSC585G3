@@ -8,7 +8,7 @@ public:
 	void Update();
 
 	float currentSpeed = 0.5;
-	float waveHeight = 0.5;
+	float waveHeight = 0.3;
 
 protected:
 

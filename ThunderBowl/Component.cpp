@@ -56,8 +56,8 @@ void Component::SetParticleOverlayMaterial(ParticleOverlayMaterial *particleOver
 //If selfID and selfName have changed this will update their values
 void Component::Initialize()
 {
-	//selfID = *selfIDPtr;
-	//selfName = *selfNamePtr;
+	selfID = *selfIDPtr;
+	selfName = *selfNamePtr;
 	mesh = *meshPtr;
 	transform = *transformPtr;
 	standardMat = *standardMatPtr;

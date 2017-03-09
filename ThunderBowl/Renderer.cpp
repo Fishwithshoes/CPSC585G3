@@ -3,6 +3,7 @@
 #include "Game.h"
 #include "GameObject.h"
 #include "GeoGenerator.h"
+#include "Loader.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb/stb_image.h"
 #define STB_IMAGE_WRITE_IMPLEMENTATION
@@ -19,6 +20,8 @@ vector<string> Renderer::textureFilePaths =
 	"GL_TEXTURE_DEPTH_BUFFER",
 	"GL_TEXTURE_COLOR_BUFFER",
 	"GL_TEXTURE_POSITION_BUFFER",
+	"GL_TEXTURE_NORMAL_BUFFER",
+	"GL_TEXTURE_GRAB_PASS",
 	"Textures/zero_TEXT.png",
 	"Textures/one_TEXT.png",
 	"Textures/two_TEXT.png",
@@ -113,7 +116,12 @@ void Renderer::LoadTextures(Renderer *renderer)
 
 	for (int i = 0; i < textureFilePaths.size(); i++)
 	{
-		if (i != MAP_ENV && i != MAP_DEPTH_BUFFER && i != MAP_COLOR_BUFFER && i != MAP_POSITION_BUFFER)//Bind images to GL_TEXTURE_2D
+		if (i != MAP_ENV && 
+			i != MAP_DEPTH_BUFFER && 
+			i != MAP_COLOR_BUFFER && 
+			i != MAP_POSITION_BUFFER &&
+			i != MAP_NORMAL_BUFFER &&
+			i != MAP_GRAB_PASS)//Bind images to GL_TEXTURE_2D
 		{
 			stbi_set_flip_vertically_on_load(true);
 			//Load image with stb and bind into GPU texture table, freeing stb memory afterwards
@@ -151,7 +159,7 @@ void Renderer::LoadTextures(Renderer *renderer)
 
 			cout << "Created shadow mapping image at: " << texID << "!" << endl;
 		}
-		else if (i == MAP_COLOR_BUFFER || i == MAP_POSITION_BUFFER)//These are for the Post Process Effects
+		else if (i == MAP_COLOR_BUFFER || i == MAP_POSITION_BUFFER || i == MAP_NORMAL_BUFFER)//These are for the Post Process Effects
 		{
 			glGenTextures(1, &texID);
 			glActiveTexture(GL_TEXTURE0 + i);
@@ -161,9 +169,23 @@ void Renderer::LoadTextures(Renderer *renderer)
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-			glGenerateMipmap(GL_TEXTURE_2D);
+			//glGenerateMipmap(GL_TEXTURE_2D);
 
 			cout << "Created post-process buffer image at: " << texID << "!" << endl;
+		}
+		else if (i == MAP_GRAB_PASS)//For refraction effects. Filled per object on demand only.
+		{
+			glGenTextures(1, &texID);
+			glActiveTexture(GL_TEXTURE0 + i);
+			glBindTexture(GL_TEXTURE_2D, texID);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, Camera::WIDTH, Camera::HEIGHT, 0, GL_RGBA, GL_FLOAT, 0);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			//glGenerateMipmap(GL_TEXTURE_2D);
+
+			cout << "Created grab pass image at: " << texID << "!" << endl;
 		}
 		else//Bind images to GL_TEXTURE_CUBEMAP_xx for statndard texturing
 		{
@@ -207,6 +229,11 @@ void Renderer::LoadStaticGeo(Renderer *renderer)
 
 	RendererUtility::InitializeGeometry(&renderer->puddleGeo);
 	BufferStaticGeoData(&renderer->puddleGeo, &GeoGenerator::MakePlane(10, 10, 100, 100, false));
+
+	Loader loader;
+	loader.loadModel("Models/thunderbowl001.obj", vec3(10, 8, 10), true);
+	RendererUtility::InitializeGeometry(&renderer->mapGeo);
+	BufferStaticGeoData(&renderer->mapGeo, &loader.getMeshes()[0]);
 }
 
 void Renderer::GetShaderUniforms(Renderer *renderer)
@@ -219,6 +246,8 @@ void Renderer::GetShaderUniforms(Renderer *renderer)
 	renderer->metalness_uniform = glGetUniformLocation(renderer->standardShader.program, "metalness");
 	renderer->isMetallic_uniform = glGetUniformLocation(renderer->standardShader.program, "isMetallic");
 	renderer->transparency_uniform = glGetUniformLocation(renderer->standardShader.program, "transparency");
+	renderer->IOR_uniform = glGetUniformLocation(renderer->standardShader.program, "IOR");
+	renderer->refractColor_uniform = glGetUniformLocation(renderer->standardShader.program, "refractColor");
 	renderer->isPhysicalTransparency_uniform = glGetUniformLocation(renderer->standardShader.program, "isPhysicalTransparency");
 	renderer->bumpLevel_uniform = glGetUniformLocation(renderer->standardShader.program, "bumpLevel");
 	renderer->selfIllumLevel_uniform = glGetUniformLocation(renderer->standardShader.program, "selfIllumLevel");
@@ -308,7 +337,8 @@ void Renderer::SetupDeferedRendering(Renderer *renderer)
 	//Configure final framebuffer
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, MAP_COLOR_BUFFER + 1, 0);
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, MAP_POSITION_BUFFER + 1, 0);
-	glDrawBuffers(2, renderer->drawBuffers);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, MAP_NORMAL_BUFFER + 1, 0);
+	glDrawBuffers(3, renderer->drawBuffers);
 
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 		cout << "Flumpty failed to create the post-process framebuffer!" << endl;
@@ -370,6 +400,7 @@ void Renderer::RenderScene(Renderer *renderer)
 
 //**DRAW SKYBOX FIRST AS BACKGROUND**********
 	glUseProgram(renderer->skyboxShader.program);
+	if(Game::skybox.isVisible)
 	{
 		//Get skybox
 		Mesh mesh = Game::skybox.mesh;
@@ -400,7 +431,10 @@ void Renderer::RenderScene(Renderer *renderer)
 	glUniformMatrix4fv(renderer->viewToProjectionStandard_uniform, 1, GL_TRUE, value_ptr(renderer->camera.GetViewToProjectionMatrix()));
 
 	//Program Other Program Scope Uniforms
-	glUniform3fv(renderer->cameraPosStandard_uniform, 1, value_ptr(renderer->camera.transform.position));
+	vec3 realCameraPos = renderer->camera.transform.position;
+	if (renderer->camera.transform.parent != nullptr)
+		realCameraPos = renderer->camera.transform.parent->GetModelToWorld() * vec4(realCameraPos, 1.0);
+	glUniform3fv(renderer->cameraPosStandard_uniform, 1, value_ptr(realCameraPos));
 	glUniform3fv(renderer->cameraForwardStandard_uniform, 1, value_ptr(renderer->camera.transform.GetForward()));
 	glUniform4fv(renderer->lightPosStandard_uniform, 1, value_ptr(vec4(7, 10, -7, 1)));
 	glUniform4fv(renderer->lightColorStandard_uniform, 1, value_ptr(vec4(1, 1, 1, 1)));
@@ -412,13 +446,6 @@ void Renderer::RenderScene(Renderer *renderer)
 	glUniformMatrix4fv(worldToLight_uniform, 1, GL_FALSE, value_ptr(lightWorldToView));
 	GLint lightToProjection_uniform = glGetUniformLocation(renderer->standardShader.program, "LightToProjection");
 	glUniformMatrix4fv(lightToProjection_uniform, 1, GL_FALSE, value_ptr(lightViewToProjection));
-	GLint bias_uniform = glGetUniformLocation(renderer->standardShader.program, "Bias");
-	mat4 bias = mat4(
-		0.5, 0.0, 0.0, 0.5,
-		0.0, 0.5, 0.0, 0.5,
-		0.0, 0.0, 0.5, 0.5,
-		0.0, 0.0, 0.0, 1.0);
-	glUniformMatrix4fv(bias_uniform, 1, GL_TRUE, value_ptr(bias));
 
 	DrawPhysicalObjects(renderer, true);
 
@@ -430,7 +457,7 @@ void Renderer::RenderScene(Renderer *renderer)
 	glUniformMatrix4fv(renderer->viewToProjectionParticle_uniform, 1, GL_TRUE, value_ptr(renderer->camera.GetViewToProjectionMatrix()));
 	
 	//Program Other Program Scope Uniforms
-	glUniform3fv(renderer->cameraPosParticle_uniform, 1, value_ptr(renderer->camera.transform.position));
+	glUniform3fv(renderer->cameraPosParticle_uniform, 1, value_ptr(realCameraPos));
 	glUniform3fv(renderer->cameraForwardParticle_uniform, 1, value_ptr(renderer->camera.transform.GetForward()));
 
 	//Load bilboard mesh into GPU to draw particles with
@@ -445,9 +472,12 @@ void Renderer::RenderScene(Renderer *renderer)
 	{
 		ParticleSystem ps = Game::particleObjectList[i];
 
-		for (int j = 0; j < ps.GetParticleCount(); j++)
+		if (ps.isVisible)//Only add to sort queue if the system is visible
 		{
-			particleRenderQueue.push_back(ps.GetParticles()[j]);
+			for (int j = 0; j < ps.GetParticleCount(); j++)
+			{
+				particleRenderQueue.push_back(ps.GetParticles()[j]);
+			}
 		}
 	}
 	//Sort particles in queue by depth
@@ -504,13 +534,17 @@ void Renderer::RenderScene(Renderer *renderer)
 	glUseProgram(renderer->fsppShader.program);
 	//Program Post-Process Uniforms
 	GLint screenDims_uniform = glGetUniformLocation(renderer->fsppShader.program, "screenDims");
+	GLint cameraPosPost_uniform = glGetUniformLocation(renderer->fsppShader.program, "cameraPos");
 	GLint colorBuffer_uniform = glGetUniformLocation(renderer->fsppShader.program, "colorBufferMap");
 	GLint positionBuffer_uniform = glGetUniformLocation(renderer->fsppShader.program, "positionBufferMap");
+	GLint normalBuffer_uniform = glGetUniformLocation(renderer->fsppShader.program, "normalBufferMap");
 	GLint depthBuffer_uniform = glGetUniformLocation(renderer->fsppShader.program, "depthBufferMap");
 
 	glUniform2f(screenDims_uniform, (float)Camera::WIDTH, (float)Camera::HEIGHT);
+	glUniform3fv(cameraPosPost_uniform, 1, value_ptr(realCameraPos));
 	glUniform1i(colorBuffer_uniform, MAP_COLOR_BUFFER);
 	glUniform1i(positionBuffer_uniform, MAP_POSITION_BUFFER);
+	glUniform1i(normalBuffer_uniform, MAP_NORMAL_BUFFER);
 	glUniform1i(depthBuffer_uniform, MAP_DEPTH_BUFFER);
 	{
 		Mesh mesh = GeoGenerator::MakeRect(2.0, 2.0, GA_CENTER);
@@ -529,20 +563,23 @@ void Renderer::RenderScene(Renderer *renderer)
 	{
 		//Setup drawing configs
 		GameObject gameObject = Game::overlayObjectList[i];
-		Mesh mesh = gameObject.mesh;
-		ParticleOverlayMaterial particleOverlayMat = gameObject.particleOverlayMat;
-		renderer->geometry.elementCount = mesh.indices.size();
+		if (gameObject.isVisible)
+		{
+			Mesh mesh = gameObject.mesh;
+			ParticleOverlayMaterial particleOverlayMat = gameObject.particleOverlayMat;
+			renderer->geometry.elementCount = mesh.indices.size();
 
-		//PROGRAM UNIFORMS - PRIMARY
-		glUniform4fv(renderer->colorOverlay_uniform, 1, value_ptr(particleOverlayMat.color));
-		glUniform1i(renderer->mainTextureOverlay_uniform, particleOverlayMat.mainTexture);
+			//PROGRAM UNIFORMS - PRIMARY
+			glUniform4fv(renderer->colorOverlay_uniform, 1, value_ptr(particleOverlayMat.color));
+			glUniform1i(renderer->mainTextureOverlay_uniform, particleOverlayMat.mainTexture);
 
-		//PROGRAM UNIFORMS - WORLD INFO
-		mat4 modelToWorld = gameObject.GetModelToWorld();
-		glUniformMatrix4fv(renderer->modelToWorldOverlay_uniform, 1, GL_TRUE, value_ptr(modelToWorld));
+			//PROGRAM UNIFORMS - WORLD INFO
+			mat4 modelToWorld = gameObject.GetModelToWorld();
+			glUniformMatrix4fv(renderer->modelToWorldOverlay_uniform, 1, GL_TRUE, value_ptr(modelToWorld));
 
-		BufferGeoData(renderer, &mesh);
-		glDrawElements(GL_TRIANGLES, renderer->geometry.elementCount, GL_UNSIGNED_INT, nullptr);
+			BufferGeoData(renderer, &mesh);
+			glDrawElements(GL_TRIANGLES, renderer->geometry.elementCount, GL_UNSIGNED_INT, nullptr);
+		}
 	}
 
 	//Unbind geometry and shader
@@ -571,21 +608,28 @@ void Renderer::DrawPhysicalObjects(Renderer *renderer, bool programStandardUnifo
 		renderer->geometry.elementCount = mesh.indices.size();
 
 		if (programStandardUniforms)
-			ProgramStandardUniforms(renderer, &standardMat);
+			ProgramStandardUniforms(renderer, &standardMat, gameObject.getGrabPass);
 
-		//PROGRAM UNIFORMS - WORLD INFO
-		mat4 modelToWorld = gameObject.GetModelToWorld();
-		mat4 normalToWorld = gameObject.GetNormalToWorld();
-		if (programStandardUniforms)
+		//Only draw object if doing primary render and is visible OR
+		//Doing shadow map pass && casts shadow
+		if ((programStandardUniforms && gameObject.isVisible) ||
+			(!programStandardUniforms && gameObject.castShadow))
 		{
-			glUniformMatrix4fv(renderer->modelToWorldStandard_uniform, 1, GL_TRUE, value_ptr(modelToWorld));
-			glUniformMatrix4fv(renderer->normalToWorldStandard_uniform, 1, GL_TRUE, value_ptr(normalToWorld));
-		}
-		else
-			glUniformMatrix4fv(renderer->modelToWorldDepthMap_uniform, 1, GL_TRUE, value_ptr(modelToWorld));
+			//PROGRAM UNIFORMS - WORLD INFO
+			mat4 modelToWorld = gameObject.GetModelToWorld();
+			mat4 normalToWorld = gameObject.GetNormalToWorld();
+			if (programStandardUniforms)
+			{
+				glUniformMatrix4fv(renderer->modelToWorldStandard_uniform, 1, GL_TRUE, value_ptr(modelToWorld));
+				glUniformMatrix4fv(renderer->normalToWorldStandard_uniform, 1, GL_TRUE, value_ptr(normalToWorld));
+			}
+			else
+				glUniformMatrix4fv(renderer->modelToWorldDepthMap_uniform, 1, GL_TRUE, value_ptr(modelToWorld));
 
-		BufferGeoData(renderer, &mesh);
-		glDrawElements(GL_TRIANGLES, renderer->geometry.elementCount, GL_UNSIGNED_INT, nullptr);
+			BufferGeoData(renderer, &mesh);
+			glPointSize(15);
+			glDrawElements(GL_TRIANGLES, renderer->geometry.elementCount, GL_UNSIGNED_INT, nullptr);
+		}
 	}
 
 	//DRAW STATIC MESH WORLD OBJECTS
@@ -596,47 +640,53 @@ void Renderer::DrawPhysicalObjects(Renderer *renderer, bool programStandardUnifo
 		StandardMaterial standardMat = gameObject.standardMat;
 
 		if (programStandardUniforms)
-			ProgramStandardUniforms(renderer, &standardMat);
+			ProgramStandardUniforms(renderer, &standardMat, gameObject.getGrabPass);
 
-		//PROGRAM UNIFORMS - WORLD INFO
-		mat4 modelToWorld = gameObject.GetModelToWorld();
-		mat4 normalToWorld = gameObject.GetNormalToWorld();
-		if (programStandardUniforms)
+		//Only draw object if doing primary render and is visible OR
+		//Doing shadow map pass && casts shadow
+		if ((programStandardUniforms && gameObject.isVisible) ||
+			(!programStandardUniforms && gameObject.castShadow))
 		{
-			glUniformMatrix4fv(renderer->modelToWorldStandard_uniform, 1, GL_TRUE, value_ptr(modelToWorld));
-			glUniformMatrix4fv(renderer->normalToWorldStandard_uniform, 1, GL_TRUE, value_ptr(normalToWorld));
-		}
-		else
-			glUniformMatrix4fv(renderer->modelToWorldDepthMap_uniform, 1, GL_TRUE, value_ptr(modelToWorld));
+			//PROGRAM UNIFORMS - WORLD INFO
+			mat4 modelToWorld = gameObject.GetModelToWorld();
+			mat4 normalToWorld = gameObject.GetNormalToWorld();
+			if (programStandardUniforms)
+			{
+				glUniformMatrix4fv(renderer->modelToWorldStandard_uniform, 1, GL_TRUE, value_ptr(modelToWorld));
+				glUniformMatrix4fv(renderer->normalToWorldStandard_uniform, 1, GL_TRUE, value_ptr(normalToWorld));
+			}
+			else
+				glUniformMatrix4fv(renderer->modelToWorldDepthMap_uniform, 1, GL_TRUE, value_ptr(modelToWorld));
 
-		Geometry geoToUse;
-		switch (gameObject.staticGeo)
-		{
-		case SG_OCEAN:
-			geoToUse = renderer->oceanGeo;
-			break;
-		case SG_OCEAN_DOWN:
-			geoToUse = renderer->oceanGeoDown;
-			break;
-		case SG_PUDDLE:
-			geoToUse = renderer->puddleGeo;
-			break;
-		case SG_MAP:
-			geoToUse = renderer->mapGeo;
-			break;
-		default:
-			cout << "Invalid RenderMesh specified!" << endl;
-			break;
-		}
+			Geometry geoToUse;
+			switch (gameObject.staticGeo)
+			{
+			case SG_OCEAN:
+				geoToUse = renderer->oceanGeo;
+				break;
+			case SG_OCEAN_DOWN:
+				geoToUse = renderer->oceanGeoDown;
+				break;
+			case SG_PUDDLE:
+				geoToUse = renderer->puddleGeo;
+				break;
+			case SG_MAP:
+				geoToUse = renderer->mapGeo;
+				break;
+			default:
+				cout << "Invalid RenderMesh specified!" << endl;
+				break;
+			}
 
-		//Bind and draw with the appropriate arrays
-		glBindVertexArray(geoToUse.vertexArray);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, geoToUse.indexBuffer);
-		glDrawElements(GL_TRIANGLES, geoToUse.elementCount, GL_UNSIGNED_INT, nullptr);
+			//Bind and draw with the appropriate arrays
+			glBindVertexArray(geoToUse.vertexArray);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, geoToUse.indexBuffer);
+			glDrawElements(GL_TRIANGLES, geoToUse.elementCount, GL_UNSIGNED_INT, nullptr);
+		}
 	}
 }
 
-void Renderer::ProgramStandardUniforms(Renderer *renderer, StandardMaterial *stdMat)
+void Renderer::ProgramStandardUniforms(Renderer *renderer, StandardMaterial *stdMat, bool grabPass)
 {
 	//PROGRAM UNIFORMS - PRIMARY
 	glUniform1f(renderer->diffuseLevel_uniform, stdMat->diffuseLevel);
@@ -645,6 +695,8 @@ void Renderer::ProgramStandardUniforms(Renderer *renderer, StandardMaterial *std
 	glUniform1f(renderer->metalness_uniform, stdMat->metalness);
 	glUniform1i(renderer->isMetallic_uniform, stdMat->isMetallic ? 1 : 0);
 	glUniform1f(renderer->transparency_uniform, stdMat->transparency);
+	glUniform1f(renderer->IOR_uniform, stdMat->IOR);
+	glUniform3fv(renderer->refractColor_uniform, 1, value_ptr(stdMat->refractColor));
 	glUniform1i(renderer->isPhysicalTransparency_uniform, stdMat->isPhysicalTransparency ? 1 : 0);
 	glUniform1f(renderer->bumpLevel_uniform, stdMat->bumpLevel);
 	glUniform1f(renderer->selfIllumLevel_uniform, stdMat->selfIllumLevel);
@@ -660,7 +712,11 @@ void Renderer::ProgramStandardUniforms(Renderer *renderer, StandardMaterial *std
 	glUniform1i(renderer->envMap_uniform, stdMat->envMap);
 	glUniform1i(renderer->roughnessMap_uniform, stdMat->roughnessMap);
 	glUniform1i(renderer->metalnessMap_uniform, stdMat->metalnessMap);
-	glUniform1i(glGetUniformLocation(renderer->standardShader.program, "colorBufferMap"), MAP_COLOR_BUFFER);
+	if (grabPass)
+	{
+		glCopyImageSubData(MAP_COLOR_BUFFER+1, GL_TEXTURE_2D, 0, 0, 0, 0, MAP_GRAB_PASS+1, GL_TEXTURE_2D, 0, 0, 0, 0, Camera::WIDTH, Camera::HEIGHT, 1);
+	}
+	glUniform1i(glGetUniformLocation(renderer->standardShader.program, "grabPassMap"), MAP_GRAB_PASS);
 	glUniform2f(glGetUniformLocation(renderer->standardShader.program, "screenDims"), Camera::WIDTH, Camera::HEIGHT);
 
 	glUniform2fv(renderer->tileUV_uniform, 1, value_ptr(stdMat->tileUV));

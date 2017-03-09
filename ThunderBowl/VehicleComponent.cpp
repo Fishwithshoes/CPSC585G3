@@ -7,14 +7,13 @@
 #include "PlayerComponent.h"
 #include "Game.h"
 #include "Audio.h"
-
-
-
 Camera* followCam;
 physx::PxShape** wheelBuffer;
 vector<GameObject*> wheelVector;
 MachineGunComponent* vehicleMG;
 PlayerComponent* vehPlayer;
+
+physx::PxVec3 myStartPosition;
 
 void VehicleComponent::Start()
 {
@@ -24,7 +23,7 @@ void VehicleComponent::Start()
 	physx::PxPhysics* worldPhys = Physics::getGPhysics();
 	physx::PxCooking* worldCook = Physics::getGCooking();
 	physx::PxScene* worldScene = Physics::getGScene();	
-	physx::PxVec3 startPosition = physx::PxVec3(transform.position.x, transform.position.y, transform.position.z);
+	myStartPosition = physx::PxVec3(transform.position.x, transform.position.y, transform.position.z);
 	
 	Physics::VehicleDesc vehicleDesc = Physics::initVehicleDesc();
 	gVehicleNoDrive = Physics::createVehicleNoDrive(vehicleDesc, worldPhys, worldCook);
@@ -35,7 +34,7 @@ void VehicleComponent::Start()
 	worldScene->addActor(*gVehicleNoDrive->getRigidDynamicActor());
 	
 	physVehicle = gVehicleNoDrive->getRigidDynamicActor();
-	physVehicle->setGlobalPose(physx::PxTransform(startPosition, physx::PxQuat(physx::PxIdentity))); //set global position based on vec created in Game
+	physVehicle->setGlobalPose(physx::PxTransform(myStartPosition, physx::PxQuat(physx::PxIdentity))); //set global position based on vec created in Game
 	physVehicle->userData = this;
 
 	physx::PxU32 wheelBufferSize = gVehicleNoDrive->mWheelsSimData.getNbWheels() * sizeof(physx::PxShape*);
@@ -45,7 +44,7 @@ void VehicleComponent::Start()
 	for (int i = 0; i < 4; i++) {
 		GameObject temp = GameObject();
 		physx::PxTransform currWheel = wheelBuffer[i]->getLocalPose();
-		temp.mesh = GeoGenerator::MakeCylinder(0.5, 0.5, 0.4, 8, false); //change to take in physx values
+		temp.mesh = GeoGenerator::MakeCylinder(0.5, 0.5, 0.6, 16, false); //change to take in physx values
 		if(i==0)
 			temp.standardMat.diffuseColor = vec3(1, 0, 0);
 		if(i==1)
@@ -181,6 +180,13 @@ void VehicleComponent::Update()
 	//transform.forward.x = forward.x;
 	//transform.forward.y = forward.y;
 	//transform.forward.z = forward.z;
+
+	if (transform.position.y < -20)
+	{
+		physVehicle->setGlobalPose(physx::PxTransform(myStartPosition, physx::PxQuat(physx::PxIdentity)));
+		physVehicle->setAngularVelocity(physx::PxVec3(0, 0, 0));
+		physVehicle->setLinearVelocity(physx::PxVec3(0, 0, 0));
+	}
 
 	//IFNDEF_SPEEDOMETER
 	GameObject* speedNeedle = Game::Find("SpeedometerNeedle");

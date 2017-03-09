@@ -24,7 +24,6 @@ uniform mat4 NormalToWorld;
 
 uniform mat4 WorldToLight;
 uniform mat4 LightToProjection;
-uniform mat4 Bias;
 
 const float PI = 3.1415926535;
 
@@ -34,11 +33,17 @@ void main()
 	vec3 newNormal = VertexNormal;
 	
 	//Waves
-	newPos.y += sin(VertexPosition.x + vertexOffsetPhase) * vertexOffsetScale * 1.5;
-	newPos.y += cos(VertexPosition.z + vertexOffsetPhase) * vertexOffsetScale * 0.8;
+	newPos.y += sin(VertexPosition.x*0.15*0.5 + VertexPosition.z*0.20*0.5 + vertexOffsetPhase) * vertexOffsetScale * 1.5;
+	newPos.y += cos(-VertexPosition.z*0.2*0.5 + VertexPosition.x*0.15*0.5 + vertexOffsetPhase) * vertexOffsetScale * 0.8;
 	
-	newNormal.x += sin(VertexPosition.x + vertexOffsetPhase) * vertexOffsetScale * 0.4;
-	newNormal.z += cos(VertexPosition.z + vertexOffsetPhase) * vertexOffsetScale * 0.2;
+	newPos.y += cos(VertexPosition.x*1.5 + vertexOffsetPhase*0.8) * vertexOffsetScale * 0.8;
+	newPos.y += sin(-VertexPosition.z*1.2 + vertexOffsetPhase*1.2) * vertexOffsetScale * 1.5;
+	
+	newNormal.x += sin(VertexPosition.x*0.15*0.5 + VertexPosition.z*0.20*0.5 + vertexOffsetPhase) * vertexOffsetScale * 0.4;
+	newNormal.z += cos(-VertexPosition.z*0.2*0.5 + VertexPosition.x*0.15*0.5 + vertexOffsetPhase) * vertexOffsetScale * 0.2;
+	
+	newNormal.x += cos(VertexPosition.x*1.5 + vertexOffsetPhase*0.8) * vertexOffsetScale * 0.2;
+	newNormal.z += sin(-VertexPosition.z*1.2 + vertexOffsetPhase*1.2) * vertexOffsetScale * 0.4;
 	
 	//Ripple splashes
 	float x = VertexPosition.x - vertexRippleOrigins[0].x;

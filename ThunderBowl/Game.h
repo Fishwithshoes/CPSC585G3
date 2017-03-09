@@ -13,6 +13,7 @@
 #include "PlayerComponent.h"
 #include "AINodeComponent.h"
 #include "AIControlComponent1.h"
+#include "HealthComponent.h"
 
 #include "OceanComponent.h"
 

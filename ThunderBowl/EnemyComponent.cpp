@@ -13,6 +13,9 @@ MachineGunComponent* oppVehicleMG;
 EnemyComponent* opponentComp;
 AIControlComponent1* aiController;
 
+physx::PxVec3 startPosition;
+physx::PxQuat startRotation;
+
 void EnemyComponent::Start()
 {
 	Initialize();
@@ -21,8 +24,8 @@ void EnemyComponent::Start()
 	physx::PxPhysics* worldPhys = Physics::getGPhysics();
 	physx::PxCooking* worldCook = Physics::getGCooking();
 	physx::PxScene* worldScene = Physics::getGScene();
-	physx::PxVec3 startPosition = physx::PxVec3(transform.position.x, transform.position.y, transform.position.z);
-	physx::PxQuat startRotation = physx::PxQuat(transform.rotation.x, transform.rotation.y, transform.rotation.z, transform.rotation.w);
+	startPosition = physx::PxVec3(transform.position.x, transform.position.y, transform.position.z);
+	startRotation = physx::PxQuat(transform.rotation.x, transform.rotation.y, transform.rotation.z, transform.rotation.w);
 
 	Physics::VehicleDesc vehicleDesc = Physics::initVehicleDesc();
 	enVehicleNoDrive = Physics::createVehicleNoDrive(vehicleDesc, worldPhys, worldCook);
@@ -95,6 +98,13 @@ void EnemyComponent::Update()
 	transform.rotation.z = rotQuat.z;
 	transform.rotation.w = rotQuat.w;
 
+	if (transform.position.y < -20)
+	{
+		enPhysVehicle->setGlobalPose(physx::PxTransform(startPosition, startRotation));
+		enPhysVehicle->setAngularVelocity(physx::PxVec3(0, 0, 0));
+		enPhysVehicle->setLinearVelocity(physx::PxVec3(0, 0, 0));
+	}
+
 	MoveOnHeading();
 
 	Finalize();
@@ -144,5 +154,5 @@ void EnemyComponent::MoveOnHeading() {
 
 	enVehicleNoDrive->setDriveTorque(0, maxTorque);
 	enVehicleNoDrive->setDriveTorque(1, maxTorque);
-	standardMat.diffuseColor = vec3(0.0, glm::dot(actualHeading, requiredHeading), 0.0);
+	//standardMat.diffuseColor = vec3(0.0, glm::dot(actualHeading, requiredHeading), 0.0);
 }
