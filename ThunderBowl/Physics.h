@@ -4,7 +4,6 @@
 #include <PxRigidBodyExt.h>
 #include "VehicleRaycast.h"
 
-
 physx::PxFilterFlags VehicleFilterShader
 (physx::PxFilterObjectAttributes attributes0, physx::PxFilterData filterData0,
 	physx::PxFilterObjectAttributes attributes1, physx::PxFilterData filterData1,
@@ -60,9 +59,10 @@ public:
 		eDRIVE_MODE_NONE
 	};
 
-
-	//Physics();
-	//~Physics();
+	static const int playerVehiclesNum = 1;
+	static const int opponentVehiclesNum = 3;
+	static const int totalVehiclesNum = playerVehiclesNum + opponentVehiclesNum;
+	
 	static void initializePhysX();
 	static physx::PxRigidDynamic* createTestBox(physx::PxReal sideLength);
 	static physx::PxRigidStatic* createPowerUp(physx::PxReal sideLength);
@@ -82,8 +82,9 @@ public:
 	static physx::PxScene* getGScene();
 
 	//setter
-	static void setGVehicleNoDrive(physx::PxVehicleNoDrive* in);
-	static void setEnVehicleNoDrive(physx::PxVehicleNoDrive* in);
+	//static void setGVehicleNoDrive(physx::PxVehicleNoDrive* in);
+	static void addPlVehicleNoDrive(physx::PxVehicleNoDrive* in);
+	static void addEnVehicleNoDrive(physx::PxVehicleNoDrive* in);
 
 	//PxVehicleSetup
 	static void computeWheelCenterActorOffsets(const physx::PxF32 wheelFrontZ, const physx::PxF32 wheelRearZ, const physx::PxVec3& chassisDims, const physx::PxF32 wheelWidth, const physx::PxF32 wheelRadius, const physx::PxU32 numWheels, physx::PxVec3* wheelCentreOffsets);

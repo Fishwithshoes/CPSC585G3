@@ -22,7 +22,7 @@ void BulletComponent::Start()
 	worldScene = Physics::getGScene();
 
 	VehicleComponent* temp = &VehicleComponent();
-	VehicleComponent* thisVeh = (VehicleComponent*) Game::Find("Player1")->GetComponent(temp);
+	VehicleComponent* thisVeh = (VehicleComponent*) Game::Find("Player0")->GetComponent(temp);
 
 	bullet = Physics::createTestProjectile();
 	bullet->userData = this;

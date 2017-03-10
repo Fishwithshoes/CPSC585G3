@@ -1,19 +1,10 @@
 #include "VehicleComponent.h"
 #include "Renderer.h"
 #include "Physics.h"
-#include "GameObject.h"
 #include "GeoGenerator.h"
-#include "MachineGunComponent.h"
-#include "PlayerComponent.h"
 #include "Game.h"
 #include "Audio.h"
-Camera* followCam;
-physx::PxShape** wheelBuffer;
-vector<GameObject*> wheelVector;
-MachineGunComponent* vehicleMG;
-PlayerComponent* vehPlayer;
 
-physx::PxVec3 myStartPosition;
 
 void VehicleComponent::Start()
 {
@@ -28,7 +19,7 @@ void VehicleComponent::Start()
 	Physics::VehicleDesc vehicleDesc = Physics::initVehicleDesc();
 	gVehicleNoDrive = Physics::createVehicleNoDrive(vehicleDesc, worldPhys, worldCook);
 	physx::PxTransform startTransform(physx::PxVec3(0, (vehicleDesc.chassisDims.y*0.5f + vehicleDesc.wheelRadius + 1.0f), 0), physx::PxQuat(physx::PxIdentity));
-	Physics::setGVehicleNoDrive(gVehicleNoDrive);
+	Physics::addPlVehicleNoDrive(gVehicleNoDrive);
 	gVehicleNoDrive->getRigidDynamicActor()->setGlobalPose(startTransform);
 
 	worldScene->addActor(*gVehicleNoDrive->getRigidDynamicActor());

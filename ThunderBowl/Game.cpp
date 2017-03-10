@@ -1,6 +1,7 @@
 #include "Game.h"
 #include "GeoGenerator.h"
 #include "Loader.h"
+#include "Physics.h"
 
 GameObject Game::skybox = GameObject();
 vector<GameObject> Game::staticObjectList = {};
@@ -8,6 +9,8 @@ vector<GameObject> Game::worldObjectList = {};
 vector<ParticleSystem> Game::particleObjectList = {};
 vector<GameObject> Game::overlayObjectList = {};
 vector<GameObject> Game::aiObjectList = {};
+vector<vec3> Game::plVehStartPositions = {};
+vector<vec3> Game::aiVehStartPositions = {};
 
 void Game::BuildWorld()
 {
@@ -17,6 +20,15 @@ void Game::BuildWorld()
 	particleObjectList.reserve(100);
 	overlayObjectList.reserve(50);
 	aiObjectList.reserve(100);
+	aiVehStartPositions.reserve(2);
+	aiVehStartPositions.reserve(5);
+
+	plVehStartPositions.push_back(vec3(0.0, 20.0, -120.0));
+	plVehStartPositions.push_back(vec3(0.0, 20.0, 120.0));
+
+	aiVehStartPositions.push_back(vec3(-120.0, 20.0, 0.0));
+	aiVehStartPositions.push_back(vec3(120.0, 20.0, 0.0));
+	aiVehStartPositions.push_back(vec3(0.0, 20.0, 120.0));
 
 	//Skybox
 	skybox.mesh = GeoGenerator::MakeSphere(5000, 16, 32, true);
@@ -79,30 +91,34 @@ void Game::BuildWorld()
 	ptr = Game::CreateAIObject(pathNode4);
 	ptr->AddComponent(new AINodeComponent());
 
-	GameObject player1 = GameObject();
-	player1.mesh = GeoGenerator::MakeBox(3, 1, 3, false);
-	player1.transform.position = vec3(0.0, 20.0, -45.0);
-	player1.name = "Player1";
-	ptr = Game::CreateWorldObject(player1);
-	ptr->AddComponent(new VehicleComponent());
-	ptr->AddComponent(new MachineGunComponent());
-	ptr->AddComponent(new PlayerComponent());
+	for (int i = 0; i < Physics::playerVehiclesNum; i++) {								//CREATE PLAYERS
+		GameObject player = GameObject();
+		player.mesh = GeoGenerator::MakeBox(3, 1, 3, false);
+		player.transform.position = plVehStartPositions[i];
+		player.name = "Player" + to_string(i);
+		ptr = Game::CreateWorldObject(player);
+		ptr->AddComponent(new PlayerComponent());
+		ptr->AddComponent(new VehicleComponent());
+		ptr->AddComponent(new MachineGunComponent());
+	}
 
-	GameObject opponent1 = GameObject();
-	opponent1.mesh = GeoGenerator::MakeBox(2, 1, 2, false);
-	opponent1.transform.position = vec3(0.0, 20.0, 45.0);
-	opponent1.transform.Rotate(Transform::Up(), Mathf::PI, false);
-	opponent1.name = "AI1";
-	ptr = Game::CreateWorldObject(opponent1);
-	ptr->AddComponent(new PlayerComponent());
-	ptr->AddComponent(new EnemyComponent());
-	ptr->AddComponent(new MachineGunComponent());
-	ptr->AddComponent(new AIControlComponent1());
-	ptr->AddComponent(new HealthComponent());
+	for (int i = 0; i < Physics::opponentVehiclesNum; i++) {								//CREATE AI
+		GameObject opponent = GameObject();
+		opponent.mesh = GeoGenerator::MakeBox(2, 1, 2, false);
+		opponent.transform.position = aiVehStartPositions[i];
+		opponent.transform.Rotate(Transform::Up(), Mathf::PI, false);
+		opponent.name = "AI" + to_string(i);
+		ptr = Game::CreateWorldObject(opponent);
+		ptr->AddComponent(new PlayerComponent());
+		ptr->AddComponent(new EnemyComponent());
+		ptr->AddComponent(new MachineGunComponent());
+		ptr->AddComponent(new AIControlComponent1());
+		ptr->AddComponent(new HealthComponent());
+	}
 
 	GameObject powerUp1 = GameObject();
 	powerUp1.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
-	powerUp1.transform.position = vec3(0.0, 7.0, -30.0);
+	powerUp1.transform.position = vec3(0.0, 10.0, -80.0);
 	powerUp1.standardMat.selfIllumLevel = 1.0;
 	powerUp1.standardMat.selfIllumColor = vec3(0.0, 1.0, 0.0);
 	ptr = Game::CreateWorldObject(powerUp1);
@@ -112,7 +128,7 @@ void Game::BuildWorld()
 
 	GameObject powerUp2 = GameObject();
 	powerUp2.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
-	powerUp2.transform.position = vec3(0.0, 7.0, 30.0);
+	powerUp2.transform.position = vec3(0.0, 10.0, 80.0);
 	powerUp2.standardMat.selfIllumLevel = 1.0;
 	powerUp2.standardMat.selfIllumColor = vec3(0.0, 1.0, 0.0);
 	ptr = Game::CreateWorldObject(powerUp2);
@@ -122,7 +138,7 @@ void Game::BuildWorld()
 
 	GameObject powerUp3 = GameObject();
 	powerUp3.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
-	powerUp3.transform.position = vec3(-30.0, 7.0, 0.0);
+	powerUp3.transform.position = vec3(-80.0, 10.0, 0.0);
 	powerUp3.standardMat.selfIllumLevel = 1.0;
 	powerUp3.standardMat.selfIllumColor = vec3(0.0, 1.0, 0.0);
 	ptr = Game::CreateWorldObject(powerUp3);
@@ -132,7 +148,7 @@ void Game::BuildWorld()
 
 	GameObject powerUp4 = GameObject();
 	powerUp4.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
-	powerUp4.transform.position = vec3(30.0, 7.0, 0.0);
+	powerUp4.transform.position = vec3(80.0, 10.0, 0.0);
 	powerUp4.standardMat.selfIllumLevel = 1.0;
 	powerUp4.standardMat.selfIllumColor = vec3(0.0, 1.0, 0.0);
 	ptr = Game::CreateWorldObject(powerUp4);

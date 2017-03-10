@@ -1,20 +1,9 @@
 #include "EnemyComponent.h"
-#include "PlayerComponent.h"
-#include "AIControlComponent1.h"
 #include "GeoGenerator.h"
 #include "Game.h"
 #include "Physics.h"
 #include "Audio.h"
 
-physx::PxShape** enWheelBuffer;
-vector<GameObject*> enWheelVector;
-PlayerComponent* oppPlayer;
-MachineGunComponent* oppVehicleMG;
-EnemyComponent* opponentComp;
-AIControlComponent1* aiController;
-
-physx::PxVec3 startPosition;
-physx::PxQuat startRotation;
 
 void EnemyComponent::Start()
 {
@@ -30,7 +19,8 @@ void EnemyComponent::Start()
 	Physics::VehicleDesc vehicleDesc = Physics::initVehicleDesc();
 	enVehicleNoDrive = Physics::createVehicleNoDrive(vehicleDesc, worldPhys, worldCook);
 	physx::PxTransform startTransform(physx::PxVec3(0, (vehicleDesc.chassisDims.y*0.5f + vehicleDesc.wheelRadius + 1.0f), 0), physx::PxQuat(physx::PxIdentity));
-	Physics::setEnVehicleNoDrive(enVehicleNoDrive);
+	//Physics::setEnVehicleNoDrive(enVehicleNoDrive);
+	Physics::addEnVehicleNoDrive(enVehicleNoDrive);
 	enVehicleNoDrive->getRigidDynamicActor()->setGlobalPose(startTransform);
 	worldScene->addActor(*enVehicleNoDrive->getRigidDynamicActor());
 
@@ -46,10 +36,6 @@ void EnemyComponent::Start()
 		GameObject temp = GameObject();
 		physx::PxTransform currWheel = enWheelBuffer[i]->getLocalPose();
 		temp.mesh = GeoGenerator::MakeCylinder(0.5, 0.5, 0.4, 8, false); //change to take in physx values
-		if (i == 0)
-			temp.standardMat.diffuseColor = vec3(1, 0, 0);
-		if (i == 1)
-			temp.standardMat.diffuseColor = vec3(0, 1, 0);
 		enWheelVector.push_back(Game::CreateWorldObject(temp));
 	}
 

@@ -231,7 +231,7 @@ void Renderer::LoadStaticGeo(Renderer *renderer)
 	BufferStaticGeoData(&renderer->puddleGeo, &GeoGenerator::MakePlane(10, 10, 100, 100, false));
 
 	Loader loader;
-	loader.loadModel("Models/thunderbowl001.obj", vec3(10, 8, 10), true);
+	loader.loadModel("Models/thunderbowl001.obj", vec3(15, 13, 15), true);
 	RendererUtility::InitializeGeometry(&renderer->mapGeo);
 	BufferStaticGeoData(&renderer->mapGeo, &loader.getMeshes()[0]);
 }

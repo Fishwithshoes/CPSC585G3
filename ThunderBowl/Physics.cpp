@@ -21,7 +21,8 @@ PxVehicleDrivableSurfaceToTireFrictionPairs* gFrictionPairs = NULL;
 
 PxRigidStatic*			gGroundPlane = NULL;
 PxVehicleNoDrive*		gVehicleNoDrive = NULL;
-PxVehicleNoDrive*		enVehicleNoDrive = NULL;
+vector<PxVehicleNoDrive*> playerVehicleNoDrives;
+vector<PxVehicleNoDrive*> opponentVehicleNoDrives;
 
 
 
@@ -188,7 +189,31 @@ void Physics::stepPhysics()
 	const PxF32 timestep = 1.0f / 60.0f;
 
 	//Raycasts.
-	PxVehicleWheels* vehicles[2] = { gVehicleNoDrive, enVehicleNoDrive };
+	PxVehicleWheels* vehicles[totalVehiclesNum];
+	for (int i = 0; i < playerVehicleNoDrives.size(); i++) {
+		vehicles[i] = playerVehicleNoDrives[i];
+	}
+	for (int j=0; j < opponentVehicleNoDrives.size(); j++) {
+		vehicles[playerVehicleNoDrives.size()+j] = opponentVehicleNoDrives[j];
+	}
+
+	PxRaycastQueryResult* raycastResults = gVehicleSceneQueryData->getRaycastQueryResultBuffer(0);
+	const PxU32 raycastResultsSize = gVehicleSceneQueryData->getRaycastQueryResultBufferSize();
+	PxVehicleSuspensionRaycasts(gBatchQuery, totalVehiclesNum, vehicles, raycastResultsSize, raycastResults);
+
+	//Vehicle update.
+	const PxVec3 grav = gScene->getGravity();
+	PxWheelQueryResult wheelQueryResults[PX_MAX_NB_WHEELS];
+	PxVehicleWheelQueryResult vehicleQueryResults[totalVehiclesNum];// = { { wheelQueryResults, gVehicleNoDrive->mWheelsSimData.getNbWheels() },{ wheelQueryResults, opponentVehicleNoDrives[0]->mWheelsSimData.getNbWheels() },{ wheelQueryResults, opponentVehicleNoDrives[1]->mWheelsSimData.getNbWheels() } };
+	for (int i = 0; i < playerVehicleNoDrives.size(); i++) {
+		vehicleQueryResults[i] = {wheelQueryResults, playerVehicleNoDrives[i]->mWheelsSimData.getNbWheels()};
+	}
+	for (int j = 0; j < opponentVehicleNoDrives.size(); j++) {
+		vehicleQueryResults[playerVehicleNoDrives.size() + j] = { wheelQueryResults, opponentVehicleNoDrives[j]->mWheelsSimData.getNbWheels() };
+	}
+	PxVehicleUpdates(timestep, grav, *gFrictionPairs, totalVehiclesNum, vehicles, vehicleQueryResults);
+
+	/*PxVehicleWheels* vehicles[2] = { gVehicleNoDrive, enVehicleNoDrive };
 	PxRaycastQueryResult* raycastResults = gVehicleSceneQueryData->getRaycastQueryResultBuffer(0);
 	const PxU32 raycastResultsSize = gVehicleSceneQueryData->getRaycastQueryResultBufferSize();
 	PxVehicleSuspensionRaycasts(gBatchQuery, 2, vehicles, raycastResultsSize, raycastResults);
@@ -197,34 +222,24 @@ void Physics::stepPhysics()
 	const PxVec3 grav = gScene->getGravity();
 	PxWheelQueryResult wheelQueryResults[PX_MAX_NB_WHEELS];
 	PxVehicleWheelQueryResult vehicleQueryResults[2] = { { wheelQueryResults, gVehicleNoDrive->mWheelsSimData.getNbWheels() },{ wheelQueryResults, enVehicleNoDrive->mWheelsSimData.getNbWheels() } };
-	PxVehicleUpdates(timestep, grav, *gFrictionPairs, 2, vehicles, vehicleQueryResults);
+	PxVehicleUpdates(timestep, grav, *gFrictionPairs, 2, vehicles, vehicleQueryResults);*/
 
 	//Scene update.
 	gScene->simulate(1.0f / 60.0f);
 	gScene->fetchResults(true);
-
-	/*//Raycasts.
-	PxVehicleWheels* vehicles[1] = { gVehicleNoDrive };
-	PxRaycastQueryResult* raycastResults = gVehicleSceneQueryData->getRaycastQueryResultBuffer(0);
-	const PxU32 raycastResultsSize = gVehicleSceneQueryData->getRaycastQueryResultBufferSize();
-	PxVehicleSuspensionRaycasts(gBatchQuery, 1, vehicles, raycastResultsSize, raycastResults);
-
-	//Vehicle update.
-	const PxVec3 grav = gScene->getGravity();
-	PxWheelQueryResult wheelQueryResults[PX_MAX_NB_WHEELS];
-	PxVehicleWheelQueryResult vehicleQueryResults[1] = { { wheelQueryResults, gVehicleNoDrive->mWheelsSimData.getNbWheels() } };
-	PxVehicleUpdates(timestep, grav, *gFrictionPairs, 1, vehicles, vehicleQueryResults);
-
-	//Scene update.
-	gScene->simulate(1.0f / 60.0f);
-	gScene->fetchResults(true);*/
 }
 
 void Physics::cleanupPhysics()
 {
+	for (int i = 0; i < playerVehicleNoDrives.size(); i++) {
+		playerVehicleNoDrives[i]->getRigidDynamicActor()->release();
+		playerVehicleNoDrives[i]->free();
+	}
+	for (int i = 0; i < opponentVehicleNoDrives.size(); i++) {
+		opponentVehicleNoDrives[i]->getRigidDynamicActor()->release();
+		opponentVehicleNoDrives[i]->free();
+	}
 
-	gVehicleNoDrive->getRigidDynamicActor()->release();
-	gVehicleNoDrive->free();
 	gBatchQuery->release();
 	gVehicleSceneQueryData->free(gDefaultAllocator);
 	gFrictionPairs->release();
@@ -258,17 +273,15 @@ physx::PxScene* Physics::getGScene()
 	return gScene;
 }
 
-//setters
-void Physics::setGVehicleNoDrive(physx::PxVehicleNoDrive* in)
+void Physics::addPlVehicleNoDrive(physx::PxVehicleNoDrive* in)
 {
-	gVehicleNoDrive = in;
+	playerVehicleNoDrives.push_back(in);
 }
 
-void Physics::setEnVehicleNoDrive(physx::PxVehicleNoDrive* in)
+void Physics::addEnVehicleNoDrive(physx::PxVehicleNoDrive* in)
 {
-	enVehicleNoDrive = in;
+	opponentVehicleNoDrives.push_back(in);
 }
-
 
 //PxVehicleFunctions
 void Physics::computeWheelCenterActorOffsets
@@ -604,7 +617,7 @@ physx::PxRigidStatic* Physics::CreateDrivableThunderbowl(physx::PxMaterial* mate
 	//Create Mesh
 	//Mesh mesh = GeoGenerator::MakeBox(100, 2, 100, true);
 	Loader loader;
-	loader.loadModel("Models/thunderbowl001.obj", vec3(10, 8, 10), false);
+	loader.loadModel("Models/thunderbowl001.obj", vec3(15, 13, 15), false);
 	Mesh mesh = loader.getMeshes()[0];
 
 	//Create Triangle Mesh Desc

@@ -1,5 +1,9 @@
 #pragma once
 #include "Component.h"
+#include "GameObject.h"
+#include "MachineGunComponent.h"
+#include "PlayerComponent.h"
+#include "Camera.h"
 #include <PxPhysicsAPI.h>
 
 class VehicleComponent :public Component
@@ -18,6 +22,13 @@ public:
 
 	physx::PxRigidDynamic* physVehicle;
 	physx::PxVehicleNoDrive* gVehicleNoDrive;
+	Camera* followCam;
+	physx::PxShape** wheelBuffer;
+	vector<GameObject*> wheelVector;
+	MachineGunComponent* vehicleMG;
+	PlayerComponent* vehPlayer;
+
+	physx::PxVec3 myStartPosition;
 
 protected:
 

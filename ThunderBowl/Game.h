@@ -26,6 +26,9 @@ public:
 	static vector<ParticleSystem> particleObjectList;//For particle systems which spawn particles
 	static vector<GameObject> overlayObjectList;//For menu and HUD elements to draw atop all else
 	static vector<GameObject> aiObjectList; //For quick access to all AI nodes
+	static vector<glm::vec3> plVehStartPositions; //For assigning player vehicle start positions
+	static vector<glm::vec3> aiVehStartPositions; //For assigning AI vehicle start positions
+
 
 	static void BuildWorld();//Reserves space in vectors and adds initial objects
 	static void DestroyWorld();//Empties vectors, destroying all objects inside
