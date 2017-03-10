@@ -149,7 +149,7 @@ void MissileComponent::Explode()
 	}
 
 	
-	//Audio::Play2DSound(SFX_ExplodeMissile, Random::rangef(0.1,0.2), 0);
+	Audio::Play2DSound(SFX_ExplodeMissile, Random::rangef(0.1,0.2), 0);
 
 	ParticleSystem ps = ParticleSystem();
 	ps.initialSpeed.min = 25;

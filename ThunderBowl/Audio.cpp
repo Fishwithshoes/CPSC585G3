@@ -159,7 +159,11 @@ void Audio::LoadSounds()
 		{
 			cout << "Flumpty can't load sound at: " << soundFilePaths[i] << " !" << endl;
 		}
-		sounds.push_back(sound);
+		else {
+			sounds.push_back(sound);
+			cout << "sound loaded " << soundFilePaths[i] << endl;
+			cout << sounds.size() << endl;
+		}
 	}
 
 	for (int i = 0; i < musicFilePaths.size(); i++)

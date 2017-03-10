@@ -1,16 +1,8 @@
-﻿  MissileComponent.cpp
+﻿  MissileLauncherComponent.cpp
+c:\cpsc585g3\thunderbowl\missilelaunchercomponent.h(12): warning C4305: 'initializing': truncation from 'double' to 'float'
 c:\cpsc585g3\thunderbowl\machineguncomponent.h(12): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
 c:\cpsc585g3\thunderbowl\vehiclecomponent.h(22): warning C4305: 'initializing': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\missilelaunchercomponent.h(12): warning C4305: 'initializing': truncation from 'double' to 'float'
 c:\cpsc585g3\thunderbowl\oceancomponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\missilecomponent.cpp(38): warning C4305: '=': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\missilecomponent.cpp(39): warning C4305: '=': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\missilecomponent.cpp(40): warning C4305: '=': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\missilecomponent.cpp(41): warning C4305: '=': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\missilecomponent.cpp(157): warning C4305: '=': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\missilecomponent.cpp(160): warning C4305: '=': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\missilecomponent.cpp(161): warning C4305: '=': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\missilecomponent.cpp(162): warning C4305: '=': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\missilecomponent.cpp(163): warning C4305: '=': truncation from 'double' to 'float'
+c:\cpsc585g3\thunderbowl\missilelaunchercomponent.cpp(59): warning C4305: 'argument': truncation from 'double' to 'float'
   ThunderBowl.vcxproj -> C:\CPSC585G3\ThunderBowl\\x64\Debug\ThunderBowl.exe
   ThunderBowl.vcxproj -> C:\CPSC585G3\ThunderBowl\\x64\Debug\ThunderBowl.pdb (Full PDB)
