@@ -222,10 +222,10 @@ void Renderer::LoadTextures(Renderer *renderer)
 void Renderer::LoadStaticGeo(Renderer *renderer)
 {
 	RendererUtility::InitializeGeometry(&renderer->oceanGeo);
-	BufferStaticGeoData(&renderer->oceanGeo, &GeoGenerator::MakePlane(1000, 1000, 200, 200, false));
+	BufferStaticGeoData(&renderer->oceanGeo, &GeoGenerator::MakePlane(2000, 2000, 200, 200, false));
 
 	RendererUtility::InitializeGeometry(&renderer->oceanGeoDown);
-	BufferStaticGeoData(&renderer->oceanGeoDown, &GeoGenerator::MakePlane(1000, 1000, 200, 200, true));
+	BufferStaticGeoData(&renderer->oceanGeoDown, &GeoGenerator::MakePlane(2000, 2000, 200, 200, true));
 
 	RendererUtility::InitializeGeometry(&renderer->puddleGeo);
 	BufferStaticGeoData(&renderer->puddleGeo, &GeoGenerator::MakePlane(10, 10, 100, 100, false));

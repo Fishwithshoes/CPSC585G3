@@ -95,11 +95,23 @@ class ContactReportCallback : public PxSimulationEventCallback
 					//firstCollider->OnCollision(Component::CollisionPair::CP_VEHICLE_STATIC);
 					//secondCollider->OnCollision(Component::CollisionPair::CP_VEHICLE_STATIC);
 				}
+				else if (shapeBuffer1[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_MISSILE &&
+					shapeBuffer2[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_WHEEL)
+				{
+					firstCollider->OnCollision(Component::CollisionPair::CP_VEHICLE_MISSILE);
+					secondCollider->OnCollision(Component::CollisionPair::CP_VEHICLE_MISSILE);
+				}
+				else if (shapeBuffer1[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_MISSILE &&
+					shapeBuffer2[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_OBSTACLE)
+				{
+					firstCollider->OnCollision(Component::CollisionPair::CP_STATIC_MISSILE);
+					secondCollider->OnCollision(Component::CollisionPair::CP_STATIC_MISSILE);
+				}
 				else 
 				{
-					//cout << "collision not caught" << endl;
-					//cout << shapeBuffer1[0]->getSimulationFilterData().word0 << endl;
-					//cout << shapeBuffer2[0]->getSimulationFilterData().word0 << endl;
+					cout << "collision not caught" << endl;
+					cout << shapeBuffer1[0]->getSimulationFilterData().word0 << endl;
+					cout << shapeBuffer2[0]->getSimulationFilterData().word0 << endl;
 				}
 				/*
 				if (shapeBuffer[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_OBSTACLE) 
@@ -750,6 +762,21 @@ PxRigidDynamic* Physics::createTestProjectile()
 	shape->setSimulationFilterData(projSimFilterData);
 	body->attachShape(*shape);
 	//PxRigidBodyExt::updateMassAndInertia(*body, 1.0f);
+	gScene->addActor(*body);
+	return body;
+}
+
+PxRigidDynamic* Physics::CreateMissile(vec3 size)
+{
+	size = size*0.5f;
+	PxShape* shape = gPhysics->createShape(PxBoxGeometry(size.x, size.y, size.z), *gMaterial);
+	PxRigidDynamic* body = gPhysics->createRigidDynamic(PxTransform(PxIdentity));
+
+	PxFilterData projSimFilterData;
+	projSimFilterData.word0 = Physics::CollisionTypes::COLLISION_FLAG_MISSILE;
+	projSimFilterData.word1 = Physics::CollisionTypes::COLLISION_FLAG_MISSILE_AGAINST;
+	shape->setSimulationFilterData(projSimFilterData);
+	body->attachShape(*shape);
 	gScene->addActor(*body);
 	return body;
 }

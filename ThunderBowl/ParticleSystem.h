@@ -19,7 +19,7 @@ public:
 
 	int maxParticles;
 	float spawnRate;
-	float coneAngle;
+	float coneAngle;//In degrees
 	RandRangeFloat initialSpeed;
 	RandRangeFloat initialRadius;
 	RandRangeColor initialColor;

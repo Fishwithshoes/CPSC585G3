@@ -41,13 +41,13 @@ void Game::BuildWorld()
 	ParticleSystem tempP;//Change props then create particle systemes with this
 	ParticleSystem *ptrP;//Add components just as with basic gameObjects with this
 
-	temp = GameObject();
-	temp.mesh = GeoGenerator::MakeBox(100, 2, 100, false);
-	temp.standardMat.diffuseMap = MAP_CHASSIS_DIFFUSE;
-	temp.standardMat.bumpLevel = 2;
-	temp.standardMat.normalMap = MAP_CHASSIS_NORMAL;
-	temp.standardMat.tileUV = vec2(12, 12);
-	ptr = Game::CreateWorldObject(temp);
+	//temp = GameObject();
+	//temp.mesh = GeoGenerator::MakeBox(100, 2, 100, false);
+	//temp.standardMat.diffuseMap = MAP_CHASSIS_DIFFUSE;
+	//temp.standardMat.bumpLevel = 2;
+	//temp.standardMat.normalMap = MAP_CHASSIS_NORMAL;
+	//temp.standardMat.tileUV = vec2(12, 12);
+	//ptr = Game::CreateWorldObject(temp);
 
 	temp = GameObject("Thunderbowl", TAGS_DECORATION);
 	temp.staticGeo = SG_MAP;
@@ -96,10 +96,13 @@ void Game::BuildWorld()
 		player.mesh = GeoGenerator::MakeBox(3, 1, 3, false);
 		player.transform.position = plVehStartPositions[i];
 		player.name = "Player" + to_string(i);
+		player.tag = TAGS_HUMAN_PLAYER;
 		ptr = Game::CreateWorldObject(player);
-		ptr->AddComponent(new PlayerComponent());
 		ptr->AddComponent(new VehicleComponent());
 		ptr->AddComponent(new MachineGunComponent());
+		ptr->AddComponent(new MissileLauncherComponent());
+		ptr->AddComponent(new FlamethrowerComponent());
+		ptr->AddComponent(new PlayerComponent());
 	}
 
 	for (int i = 0; i < Physics::opponentVehiclesNum; i++) {								//CREATE AI
@@ -108,6 +111,7 @@ void Game::BuildWorld()
 		opponent.transform.position = aiVehStartPositions[i];
 		opponent.transform.Rotate(Transform::Up(), Mathf::PI, false);
 		opponent.name = "AI" + to_string(i);
+		opponent.tag = TAGS_AI_PLAYER;
 		ptr = Game::CreateWorldObject(opponent);
 		ptr->AddComponent(new PlayerComponent());
 		ptr->AddComponent(new EnemyComponent());
@@ -284,11 +288,11 @@ void Game::BuildWorld()
 
 	temp = GameObject("OceanTop", TAGS_DECORATION);
 	temp.staticGeo = SG_OCEAN;
-	temp.transform.position.y = -2;
+	temp.transform.position.y = 8;
 	temp.standardMat.diffuseColor = vec3(0.0, 1.0, 1.0)*0.5f;
 	temp.standardMat.roughness = 0.0;
 	temp.standardMat.metalness = 0.10;
-	temp.standardMat.transparency = 0.3;
+	temp.standardMat.transparency = 0.4;
 	temp.standardMat.normalMap = MAP_WATER_NORMAL;
 	temp.standardMat.bumpLevel = 0.2;
 	temp.standardMat.tileUV = vec2(10, 10);
@@ -298,7 +302,7 @@ void Game::BuildWorld()
 
 	temp = GameObject("OceanBottom", TAGS_DECORATION);
 	temp.staticGeo = SG_OCEAN_DOWN;
-	temp.transform.position.y = -2;
+	temp.transform.position.y = 8;
 	temp.standardMat.diffuseColor = vec3(0.0, 1.0, 1.0)*0.5f;
 	temp.standardMat.roughness = 0.0;
 	temp.standardMat.metalness = 0.10;
@@ -587,13 +591,17 @@ void Game::DestroyStaticObjectAt(int objectID)
 
 		for (int j = 0; j < staticObjectList[i].componentList.size(); j++)
 		{
-			staticObjectList[i].componentList[j]->SetSelfID(&i);
 			staticObjectList[i].componentList[j]->SetSelfName(&staticObjectList[i].name);
 			staticObjectList[i].componentList[j]->SetMesh(&staticObjectList[i].mesh);
 			staticObjectList[i].componentList[j]->SetTransform(&staticObjectList[i].transform);
 			staticObjectList[i].componentList[j]->SetStandardMaterial(&staticObjectList[i].standardMat);
 			staticObjectList[i].componentList[j]->SetParticleOverlayMaterial(&staticObjectList[i].particleOverlayMat);
 		}
+	}
+	for (int i = 0; i < staticObjectList.size(); i++)
+	{
+		for (int j = 0; j < staticObjectList[i].componentList.size(); j++)
+			staticObjectList[i].componentList[j]->SetSelfID(&staticObjectList[i].objectID);
 	}
 }
 void Game::DestroyWorldObjectAt(int objectID)
@@ -606,13 +614,17 @@ void Game::DestroyWorldObjectAt(int objectID)
 
 		for (int j = 0; j < worldObjectList[i].componentList.size(); j++)
 		{
-			worldObjectList[i].componentList[j]->SetSelfID(&i);
 			worldObjectList[i].componentList[j]->SetSelfName(&worldObjectList[i].name);
 			worldObjectList[i].componentList[j]->SetMesh(&worldObjectList[i].mesh);
 			worldObjectList[i].componentList[j]->SetTransform(&worldObjectList[i].transform);
 			worldObjectList[i].componentList[j]->SetStandardMaterial(&worldObjectList[i].standardMat);
 			worldObjectList[i].componentList[j]->SetParticleOverlayMaterial(&worldObjectList[i].particleOverlayMat);
 		}
+	}
+	for (int i = 0; i < worldObjectList.size(); i++)
+	{
+		for (int j = 0; j < worldObjectList[i].componentList.size(); j++)
+			worldObjectList[i].componentList[j]->SetSelfID(&worldObjectList[i].objectID);
 	}
 }
 void Game::DestroyParticleObjectAt(int objectID)
@@ -632,6 +644,11 @@ void Game::DestroyParticleObjectAt(int objectID)
 			particleObjectList[i].componentList[j]->SetStandardMaterial(&particleObjectList[i].standardMat);
 			particleObjectList[i].componentList[j]->SetParticleOverlayMaterial(&particleObjectList[i].particleOverlayMat);
 		}
+	}
+	for (int i = 0; i < particleObjectList.size(); i++)
+	{
+		for (int j = 0; j < particleObjectList[i].componentList.size(); j++)
+			particleObjectList[i].componentList[j]->SetSelfID(&particleObjectList[i].objectID);
 	}
 }
 void Game::DestroyOverlayObjectAt(int objectID)

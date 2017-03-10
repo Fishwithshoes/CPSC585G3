@@ -1,48 +1,16 @@
-﻿  Game.cpp
+﻿  MissileComponent.cpp
 c:\cpsc585g3\thunderbowl\machineguncomponent.h(12): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
-c:\cpsc585g3\thunderbowl\vehiclecomponent.h(21): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\cpsc585g3\thunderbowl\vehiclecomponent.h(22): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\cpsc585g3\thunderbowl\missilelaunchercomponent.h(12): warning C4305: 'initializing': truncation from 'double' to 'float'
 c:\cpsc585g3\thunderbowl\oceancomponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\game.cpp(278): warning C4305: '=': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\game.cpp(290): warning C4305: '=': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\game.cpp(291): warning C4305: '=': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\game.cpp(293): warning C4305: '=': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\game.cpp(304): warning C4305: '=': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\game.cpp(305): warning C4305: '=': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\game.cpp(307): warning C4305: '=': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\game.cpp(327): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\game.cpp(333): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\game.cpp(342): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\game.cpp(348): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\game.cpp(355): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\game.cpp(361): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\game.cpp(368): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\game.cpp(374): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\game.cpp(380): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\game.cpp(387): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\game.cpp(393): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\game.cpp(400): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\game.cpp(407): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\game.cpp(414): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\game.cpp(422): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\game.cpp(428): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\game.cpp(435): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\game.cpp(442): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\game.cpp(449): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\game.cpp(456): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\game.cpp(470): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\game.cpp(476): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\game.cpp(490): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\game.cpp(496): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\game.cpp(42): warning C4101: 'ptrP': unreferenced local variable
-c:\cpsc585g3\thunderbowl\game.cpp(515): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-c:\cpsc585g3\thunderbowl\game.cpp(519): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-c:\cpsc585g3\thunderbowl\game.cpp(523): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-c:\cpsc585g3\thunderbowl\game.cpp(527): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-c:\cpsc585g3\thunderbowl\game.cpp(535): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-c:\cpsc585g3\thunderbowl\game.cpp(544): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-c:\cpsc585g3\thunderbowl\game.cpp(551): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-c:\cpsc585g3\thunderbowl\game.cpp(559): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-c:\cpsc585g3\thunderbowl\game.cpp(566): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-c:\cpsc585g3\thunderbowl\game.cpp(573): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+c:\cpsc585g3\thunderbowl\missilecomponent.cpp(38): warning C4305: '=': truncation from 'double' to 'float'
+c:\cpsc585g3\thunderbowl\missilecomponent.cpp(39): warning C4305: '=': truncation from 'double' to 'float'
+c:\cpsc585g3\thunderbowl\missilecomponent.cpp(40): warning C4305: '=': truncation from 'double' to 'float'
+c:\cpsc585g3\thunderbowl\missilecomponent.cpp(41): warning C4305: '=': truncation from 'double' to 'float'
+c:\cpsc585g3\thunderbowl\missilecomponent.cpp(157): warning C4305: '=': truncation from 'double' to 'float'
+c:\cpsc585g3\thunderbowl\missilecomponent.cpp(160): warning C4305: '=': truncation from 'double' to 'float'
+c:\cpsc585g3\thunderbowl\missilecomponent.cpp(161): warning C4305: '=': truncation from 'double' to 'float'
+c:\cpsc585g3\thunderbowl\missilecomponent.cpp(162): warning C4305: '=': truncation from 'double' to 'float'
+c:\cpsc585g3\thunderbowl\missilecomponent.cpp(163): warning C4305: '=': truncation from 'double' to 'float'
   ThunderBowl.vcxproj -> C:\CPSC585G3\ThunderBowl\\x64\Debug\ThunderBowl.exe
   ThunderBowl.vcxproj -> C:\CPSC585G3\ThunderBowl\\x64\Debug\ThunderBowl.pdb (Full PDB)

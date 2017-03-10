@@ -25,7 +25,7 @@ void main()
 	// vec3 envColor = vec3(0.7, 0.9, 1.0)*(1-t) + vec3(0.7, 0.9, 1.0)*t;
 	vec3 envColor = vec3(0.4, 0.4, 1.0)*(1-t) + vec3(1.0,0.5,0.2)*t;
 	
-	if(cameraPos.y < -2.0)
+	if(cameraPos.y < 8.0)
 	{
 		float v = clamp(0.0 - Position.y*0.0003, 0.0, 1.0);
 		vec3 newEnvColor = (vec3(0.0, 1.0, 1.0)*0.4)*0.5 + envColor*0.5;
@@ -39,7 +39,7 @@ void main()
 	//FOGGY FUGUE
 	float u = 0.0;
 	
-	float fogHorizon = cameraPos.y > -2.0 ? -50 : 200.0;
+	float fogHorizon = cameraPos.y > 8.0 ? -50 : 1200.0;
 	
 	if(Position.y < fogHorizon)
 		u = 1.0;

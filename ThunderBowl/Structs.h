@@ -62,6 +62,7 @@ enum Tags
 	TAGS_HUMAN_PLAYER,
 	TAGS_AI_PLAYER,
 	TAGS_PROJECTILE,
+	TAGS_MISSILE,
 	TAGS_DECORATION,
 	TAGS_PARTICLE_SYSTEM,
 	//Overlay objects
@@ -228,7 +229,7 @@ struct ParticleSystemDesc
 {
 	int							maxParticles;
 	float						spawnRate;
-	float						coneAngle;
+	float						coneAngle;//In degrees
 	RandRangeFloat				initialSpeed;
 	RandRangeFloat				initialRadius;
 	RandRangeColor				initialColor;
@@ -254,6 +255,8 @@ enum Sounds
 	SFX_Select,
 	SFX_MG,
 	SFX_Powerup,
+	SFX_FireMissile,
+	SFX_ExplodeMissile
 };
 
 enum Musics
