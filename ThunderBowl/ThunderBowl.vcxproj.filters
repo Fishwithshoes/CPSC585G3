@@ -103,6 +103,15 @@
     <ClCompile Include="Loader.cpp">
       <Filter>Utility</Filter>
     </ClCompile>
+    <ClCompile Include="MissileLauncherComponent.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="MissileComponent.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="FlamethrowerComponent.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AIControlComponent1.h">
@@ -212,6 +221,15 @@
     </ClInclude>
     <ClInclude Include="Loader.h">
       <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="MissileLauncherComponent.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="MissileComponent.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="FlamethrowerComponent.h">
+      <Filter>Game</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

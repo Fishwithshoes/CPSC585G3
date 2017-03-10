@@ -61,6 +61,36 @@ void VehicleComponent::Start()
 
 	//cout << physVehicle->getLinearVelocity().magnitude() << endl;
 	//currentSpeed = physVehicle->getLinearVelocity().magnitude();
+
+	//IF_DEF Wheel Spray particle systems
+
+	ParticleSystem ps = ParticleSystem();
+	ps.name = selfName + "WheelSprayLeft";
+	ps.initialSpeed.min = 3;
+	ps.initialSpeed.max = 4;
+	ps.coneAngle = 20;
+	ps.gravityScale = 2.0;
+	ps.initialColor.alpha = vec4(0.2, 0.1, 0.0, 1);
+	ps.initialColor.bravo = vec4(0.3, 0.15, 0.0, 1);
+	ps.initialRadius.min = 0.6;
+	ps.initialRadius.max = 0.8;
+	ps.lifeSpan.min = 0.7;
+	ps.lifeSpan.max = 0.8;
+	ps.spawnPointVariance = vec3(0.5);
+	ps.monochromatic = false;
+	ps.mainTexture = MAP_SMOKE_PART;
+	ps.spawnRate = 20;
+	ps.destroySystemWhenEmpty = false;
+	ps.useSystemLifespan = false;
+	Game::CreateParticleObject(ps);
+	wheelSprayNameLeft = ps.name;
+
+	ps.name = selfName + "WheelSprayRight";
+	Game::CreateParticleObject(ps);
+	wheelSprayNameRight = ps.name;
+	UpdateParticleSystems();
+	//END_IF Wheel Spray particle systems
+
 	Finalize();
 }
 
@@ -194,11 +224,17 @@ void VehicleComponent::Update()
 	float speed = physVehicle->getLinearVelocity().magnitude() * 3.6;
 	float angle = -0.002 * Mathf::PI * speed; //At full the needle points to 500 km/h
 	speedNeedle->transform.Rotate(Transform::Forward(), angle, false);
-
 	//ENDIF_SPEEDOMETER
+
+	//IF_DEF Wheel Spray Particles
+	UpdateParticleSystems();
+	//END_IF Wheel Spray Particles
+
 	Finalize();
 }
-void VehicleComponent::OnCollision(Component::CollisionPair collisionPair) {
+
+void VehicleComponent::OnCollision(Component::CollisionPair collisionPair) 
+{
 	Initialize();
 
 	MachineGunComponent* mgRef = &MachineGunComponent();
@@ -222,4 +258,55 @@ void VehicleComponent::OnCollision(Component::CollisionPair collisionPair) {
 }
 
 	Finalize();
+}
+
+void VehicleComponent::UpdateParticleSystems()
+{
+	//Get 'em
+	ParticleSystem* wheelSprayLeft = (ParticleSystem*)Game::Find(wheelSprayNameLeft);
+	ParticleSystem* wheelSprayRight = (ParticleSystem*)Game::Find(wheelSprayNameRight);
+
+	Transform t = transform;
+	t.rotation = t.GetInverseRotation();
+
+	//Move 'em
+	wheelSprayLeft->transform = t;
+	wheelSprayLeft->transform.Translate(-t.GetRight()*2.0f, false);
+	wheelSprayLeft->transform.Translate(-t.GetForward()*3.0f, false);
+	wheelSprayLeft->transform.Translate(-t.GetUp()*1.0f, false);
+	wheelSprayLeft->transform.Rotate(t.GetUp(), Mathf::PI, false);
+	wheelSprayLeft->transform.Rotate(t.GetRight(), Mathf::PI*0.4, false);
+
+	wheelSprayRight->transform = t;
+	wheelSprayRight->transform.Translate(t.GetRight()*2.0f, false);
+	wheelSprayRight->transform.Translate(-t.GetForward()*3.0f, false);
+	wheelSprayRight->transform.Translate(-t.GetUp()*1.0f, false);
+	wheelSprayRight->transform.Rotate(t.GetUp(), Mathf::PI, false);
+	wheelSprayRight->transform.Rotate(t.GetRight(), Mathf::PI*0.4, false);
+
+	//Change 'em
+	vector<ParticleSystem*> systems;
+	systems.push_back(wheelSprayLeft);
+	systems.push_back(wheelSprayRight);
+
+	float speed = physVehicle->getLinearVelocity().magnitude();
+	for (int i = 0; i < systems.size(); i++)
+	{
+		systems[i]->spawnRate = speed * 0.5;
+		systems[i]->spawnRate = Mathf::Clamp(systems[i]->spawnRate, 0.0, 30.0);
+
+		//systems[i]->initialSpeed.min = speed * 1.0;
+		//systems[i]->initialSpeed.max = speed * 1.3;
+
+		if (systems[i]->transform.position.y < 8.0)
+		{
+			systems[i]->initialColor.alpha = vec4(0.8, 0.9, 1.0, 1.0);
+			systems[i]->initialColor.bravo = vec4(0.6, 0.7, 0.9, 1.0);
+		}
+		else
+		{
+			systems[i]->initialColor.alpha = vec4(0.2, 0.1, 0.0, 1);
+			systems[i]->initialColor.bravo = vec4(0.3, 0.15, 0.0, 1);
+		}
+	}
 }

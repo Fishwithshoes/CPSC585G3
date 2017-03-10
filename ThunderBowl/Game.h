@@ -8,6 +8,8 @@
 #include "VehicleComponent.h"
 #include "EnemyComponent.h"
 #include "MachineGunComponent.h"
+#include "MissileLauncherComponent.h"
+#include "FlamethrowerComponent.h"
 #include "StaticComponent.h"
 #include "PowerUpComponent.h"
 #include "PlayerComponent.h"

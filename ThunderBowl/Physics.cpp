@@ -94,11 +94,23 @@ class ContactReportCallback : public PxSimulationEventCallback
 					//firstCollider->OnCollision(Component::CollisionPair::CP_VEHICLE_STATIC);
 					//secondCollider->OnCollision(Component::CollisionPair::CP_VEHICLE_STATIC);
 				}
+				else if (shapeBuffer1[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_MISSILE &&
+					shapeBuffer2[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_WHEEL)
+				{
+					firstCollider->OnCollision(Component::CollisionPair::CP_VEHICLE_MISSILE);
+					secondCollider->OnCollision(Component::CollisionPair::CP_VEHICLE_MISSILE);
+				}
+				else if (shapeBuffer1[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_MISSILE &&
+					shapeBuffer2[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_OBSTACLE)
+				{
+					firstCollider->OnCollision(Component::CollisionPair::CP_STATIC_MISSILE);
+					secondCollider->OnCollision(Component::CollisionPair::CP_STATIC_MISSILE);
+				}
 				else 
 				{
-					//cout << "collision not caught" << endl;
-					//cout << shapeBuffer1[0]->getSimulationFilterData().word0 << endl;
-					//cout << shapeBuffer2[0]->getSimulationFilterData().word0 << endl;
+					cout << "collision not caught" << endl;
+					cout << shapeBuffer1[0]->getSimulationFilterData().word0 << endl;
+					cout << shapeBuffer2[0]->getSimulationFilterData().word0 << endl;
 				}
 				/*
 				if (shapeBuffer[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_OBSTACLE) 
@@ -604,7 +616,7 @@ physx::PxRigidStatic* Physics::CreateDrivableThunderbowl(physx::PxMaterial* mate
 	//Create Mesh
 	//Mesh mesh = GeoGenerator::MakeBox(100, 2, 100, true);
 	Loader loader;
-	loader.loadModel("Models/thunderbowl001.obj", vec3(10, 8, 10), false);
+	loader.loadModel("Models/thunderbowl001.obj", vec3(15, 13, 15), false);
 	Mesh mesh = loader.getMeshes()[0];
 
 	//Create Triangle Mesh Desc
@@ -737,6 +749,21 @@ PxRigidDynamic* Physics::createTestProjectile()
 	shape->setSimulationFilterData(projSimFilterData);
 	body->attachShape(*shape);
 	//PxRigidBodyExt::updateMassAndInertia(*body, 1.0f);
+	gScene->addActor(*body);
+	return body;
+}
+
+PxRigidDynamic* Physics::CreateMissile(vec3 size)
+{
+	size = size*0.5f;
+	PxShape* shape = gPhysics->createShape(PxBoxGeometry(size.x, size.y, size.z), *gMaterial);
+	PxRigidDynamic* body = gPhysics->createRigidDynamic(PxTransform(PxIdentity));
+
+	PxFilterData projSimFilterData;
+	projSimFilterData.word0 = Physics::CollisionTypes::COLLISION_FLAG_MISSILE;
+	projSimFilterData.word1 = Physics::CollisionTypes::COLLISION_FLAG_MISSILE_AGAINST;
+	shape->setSimulationFilterData(projSimFilterData);
+	body->attachShape(*shape);
 	gScene->addActor(*body);
 	return body;
 }

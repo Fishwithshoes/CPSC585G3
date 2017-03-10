@@ -191,7 +191,14 @@ void ParticleSystem::SpawnParticle()
 		sin(phi), cos(phi), 0,
 		0, 0, 1);
 
-	vec3 dir = roll * pitch * Transform::Forward();
+	//Transform t = Transform();
+	//t.Rotate(Transform::Right(), theta, false);
+	//t.Rotate(t.GetForward(), phi, false);
+	//vec3 dir = t.rotation * vec4(transform.GetForward(), 1.0);
+
+	vec3 dir = pitch * transform.GetForward();
+	if (coneAngle > 10)
+		dir = roll * dir;
 
 	p.velocity = dir * Random::rangef(initialSpeed.min, initialSpeed.max);
 	ParticleOverlayMaterial mat;

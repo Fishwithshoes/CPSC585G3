@@ -82,8 +82,8 @@ void GameObject::Update()
 	for (int i = 0; i < componentList.size(); i++)
 		componentList[i]->Update();
 
-	if (name == "Billet" && GetComponent(&FloatComponent()))
-		transform.Translate(vec3(0, 1, 0) * Time::getDeltaTime(), true);
+	//if (name == "Billet" && GetComponent(&FloatComponent()))
+	//	transform.Translate(vec3(0, 1, 0) * Time::getDeltaTime(), true);
 }
 
 mat4 GameObject::GetModelToWorld()
@@ -144,6 +144,22 @@ void GameObject::AddComponent(Component *source)
 	source->SetParticleOverlayMaterial(&particleOverlayMat);
 	source->Start();
 	componentList.push_back(source);
+}
+
+void GameObject::RemoveComponent(Component* type)
+{
+	//Search for component of supplied type and remove the first instance
+	for (int i = 0; i < componentList.size(); i++)
+	{
+		if (typeid(*componentList[i]) == typeid(*type))
+		{
+			delete componentList[i];
+			componentList[i] = nullptr;
+			componentList.erase(componentList.begin() + i);
+			return;
+		}
+	}
+	cout << "ERROR. Unable to remove component from: "<< name <<"! No such type found" << endl;
 }
 
 void GameObject::RemoveComponents()

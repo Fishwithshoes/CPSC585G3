@@ -31,6 +31,7 @@ public:
 	Component* GetComponent(Component* type);//Returns first compoent of type. Static cast.
 	Component* GetComponentAt(int index);//Returns component at index. Needs dynamic cast.
 	void AddComponent(Component *source);//Adds the supplied component to GameObject
+	void RemoveComponent(Component* type);
 	void RemoveComponents();//Removes all components from the GameObject
 
 	//DO NOT modify, unless Creating or Destroying objects.
