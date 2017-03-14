@@ -29,7 +29,7 @@ void BulletComponent::Start()
 
 	physx::PxVec3 position;
 	position.x = transform.position.x;
-	position.y = transform.position.y + 1.1;
+	position.y = transform.position.y + 2.5;
 	position.z = transform.position.z;
 	bullet->setGlobalPose(physx::PxTransform(position));
 
@@ -68,7 +68,7 @@ void BulletComponent::Update()
 		bullet->putToSleep();
 		bullet->setGlobalPose(physx::PxTransform(physx::PxVec3(0.0, 100.00, 0.0), physx::PxQuat(physx::PxIdentity)), false);
 		worldScene->removeActor(*bullet);
-		//bullet->release();
+		bullet->release();
 		Game::DestroyWorldObjectAt(selfGameObject->objectID);
 		//cout << "OBJECTIVELY SPEAKING: " << Game::worldObjectList.size() << endl;
 	}

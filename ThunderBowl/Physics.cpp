@@ -61,7 +61,6 @@ class ContactReportCallback : public PxSimulationEventCallback
 	}
 			void onContact(const PxContactPairHeader& pairHeader, const PxContactPair* pairs, PxU32 nbPairs)
 			{
-
 				PxU32 shapeBuffer1Size = pairHeader.actors[0]->getNbShapes() * sizeof(PxShape*);	//get first actor's shape
 				PxU32 shapeBuffer2Size = pairHeader.actors[1]->getNbShapes() * sizeof(PxShape*);	//get second actor's shape
 				PxShape** shapeBuffer1 = new PxShape*[shapeBuffer1Size];
@@ -84,19 +83,21 @@ class ContactReportCallback : public PxSimulationEventCallback
 					secondCollider->OnCollision(Component::CollisionPair::CP_VEHICLE_VEHICLE);
 				}
 				else if (shapeBuffer1[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_PROJECTILE &&
-					shapeBuffer2[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_WHEEL) 
+					(shapeBuffer2[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_WHEEL ||
+					shapeBuffer2[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_CHASSIS))
 				{
 					firstCollider->OnCollision(Component::CollisionPair::CP_VEHICLE_PROJECTILE);
 					secondCollider->OnCollision(Component::CollisionPair::CP_VEHICLE_PROJECTILE);
 				}
-				else if (shapeBuffer1[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_WHEEL &&
+				/*else if (shapeBuffer1[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_WHEEL &&
 					shapeBuffer2[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_OBSTACLE)
 				{
 					//firstCollider->OnCollision(Component::CollisionPair::CP_VEHICLE_STATIC);
 					//secondCollider->OnCollision(Component::CollisionPair::CP_VEHICLE_STATIC);
-				}
+				}*/
 				else if (shapeBuffer1[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_MISSILE &&
-					shapeBuffer2[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_WHEEL)
+					(shapeBuffer2[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_WHEEL ||
+					shapeBuffer2[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_CHASSIS))
 				{
 					firstCollider->OnCollision(Component::CollisionPair::CP_VEHICLE_MISSILE);
 					secondCollider->OnCollision(Component::CollisionPair::CP_VEHICLE_MISSILE);
@@ -107,6 +108,12 @@ class ContactReportCallback : public PxSimulationEventCallback
 					firstCollider->OnCollision(Component::CollisionPair::CP_STATIC_MISSILE);
 					secondCollider->OnCollision(Component::CollisionPair::CP_STATIC_MISSILE);
 				}
+				/*else if (shapeBuffer1[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_MISSILE &&
+					shapeBuffer2[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_GROUND)
+				{
+					firstCollider->OnCollision(Component::CollisionPair::CP_STATIC_MISSILE);
+					secondCollider->OnCollision(Component::CollisionPair::CP_STATIC_MISSILE);
+				}*/
 				else 
 				{
 					cout << "collision not caught" << endl;
@@ -161,7 +168,7 @@ void Physics::initializePhysX()
 	}*/
 
 	PxSceneDesc sceneDesc(gPhysics->getTolerancesScale());
-	sceneDesc.gravity = PxVec3(0.0f, -9.81f, 0.0f);
+	sceneDesc.gravity = PxVec3(0.0f, 4*-9.81f, 0.0f);
 	gDispatcher = PxDefaultCpuDispatcherCreate(2);
 	sceneDesc.cpuDispatcher = gDispatcher;
 	sceneDesc.filterShader = VehicleFilterShader;//PxFilterFlag::eSUPPRESS;
@@ -357,8 +364,8 @@ void Physics::setupWheelsSimulationData
 		{
 			suspensions[i].mMaxCompression = 0.4f;	//Original 0.3
 			suspensions[i].mMaxDroop = 0.5f;		//Original 0.1
-			suspensions[i].mSpringStrength = 30000.0f;	//Original 35000
-			suspensions[i].mSpringDamperRate = 8500.0f;	//Originial 4500
+			suspensions[i].mSpringStrength = 55000.0f;	//Original 35000
+			suspensions[i].mSpringDamperRate = 5000.0f;	//Originial 4500
 			suspensions[i].mSprungMass = suspSprungMasses[i];
 		}
 
@@ -1029,20 +1036,20 @@ Physics::VehicleDesc Physics::initVehicleDesc()
 	//Set up the chassis mass, dimensions, moment of inertia, and center of mass offset.
 	//The moment of inertia is just the moment of inertia of a cuboid but modified for easier steering.
 	//Center of mass offset is 0.65m above the base of the chassis and 0.25m towards the front.
-	const PxF32 chassisMass = 700.0f;
+	const PxF32 chassisMass = 1500.0f;
 	const PxVec3 chassisDims(3.0f, 1.0f, 3.0f);	//CHASDIM
 	const PxVec3 chassisMOI
-	((chassisDims.y*chassisDims.y + chassisDims.z*chassisDims.z)*chassisMass / 12.0f,
-		(chassisDims.x*chassisDims.x + chassisDims.z*chassisDims.z)*0.8f*chassisMass / 12.0f,
-		(chassisDims.x*chassisDims.x + chassisDims.y*chassisDims.y)*chassisMass / 12.0f);
+	((chassisDims.y*chassisDims.y + chassisDims.z*chassisDims.z)*chassisMass / 10.0f,
+		(chassisDims.x*chassisDims.x + chassisDims.z*chassisDims.z)*0.6f*chassisMass / 10.0f,
+		(chassisDims.x*chassisDims.x + chassisDims.y*chassisDims.y)*chassisMass / 10.0f);
 	const PxVec3 chassisCMOffset(0.0f, -chassisDims.y*0.5f + 0.25f, 0.20f);						//Center of mass
 
 	//Set up the wheel mass, radius, width, moment of inertia, and number of wheels.
 	//Moment of inertia is just the moment of inertia of a cylinder.
-	const PxF32 wheelMass = 80.0f;
+	const PxF32 wheelMass = 100.0f;
 	const PxF32 wheelRadius = 0.5f;
 	const PxF32 wheelWidth = 0.4f;
-	const PxF32 wheelMOI = 0.25f*wheelMass*wheelRadius*wheelRadius;
+	const PxF32 wheelMOI = 0.30f*wheelMass*wheelRadius*wheelRadius;
 	const PxU32 nbWheels = 4;
 
 	Physics::VehicleDesc vehicleDesc;

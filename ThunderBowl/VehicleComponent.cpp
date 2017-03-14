@@ -112,9 +112,9 @@ void VehicleComponent::Update()
 
 	}
 
-	physx::PxReal maxTorque = 3000.0;
-	physx::PxReal brakeTorque = 1000.0;
-	physx::PxReal turnTemper = 0.15;
+	physx::PxReal maxTorque = 6000.0;
+	physx::PxReal brakeTorque = 3000.0;
+	physx::PxReal turnTemper = 0.10;
 
 	//Gas
 	if (gVehicleNoDrive->computeForwardSpeed() > topSpeed) {

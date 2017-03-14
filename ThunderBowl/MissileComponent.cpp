@@ -15,6 +15,7 @@ void MissileComponent::Start()
 	Initialize();
 
 	missile = Physics::CreateMissile(missileSize);
+	missile->userData = this;
 
 	//Set up initial pose
 	physx::PxVec3 startPos = physx::PxVec3(transform.position.x, transform.position.y, transform.position.z);	
@@ -60,8 +61,15 @@ void MissileComponent::Update()
 	Finalize();
 
 	lifeRemaining -= Time::getDeltaTime();
-	if (lifeRemaining <= 0)
+	if (lifeRemaining <= 0) {
 		Explode();
+
+		Physics::getGScene()->removeActor(*missile);
+		missile->release();
+		ParticleSystem* temp = (ParticleSystem*)Game::Find(particleTrailName);
+		temp->spawnRate = 0;
+		Game::DestroyWorldObjectAt(selfID);
+	}
 }
 
 void MissileComponent::MoveTransform()
@@ -89,18 +97,22 @@ void MissileComponent::OnCollision(CollisionPair collisionPair)
 	switch (collisionPair)
 	{
 	case CollisionPair::CP_VEHICLE_MISSILE:
+		cout << "Missile collided with a vehicle" << endl;
+		//Explode();
 		break;
 	case CollisionPair::CP_STATIC_MISSILE:
+		cout << "Missile collided with a static" << endl;
+		//Explode();
 		break;
 	default:
 		cout << "Missile collided with an unknown object!" << endl;
 		break;
 	}
-
+	Finalize();
 	if (collisionPair == CP_VEHICLE_MISSILE || collisionPair == CP_STATIC_MISSILE)
 		Explode();
 
-	Finalize();
+
 }
 
 void MissileComponent::Explode()
@@ -173,8 +185,5 @@ void MissileComponent::Explode()
 	ParticleSystem* ptr = Game::CreateParticleObject(ps);
 	ptr->AddParticleBurst(20, 0);
 
-	Physics::getGScene()->removeActor(*missile);
-	ParticleSystem* temp = (ParticleSystem*)Game::Find(particleTrailName);
-	temp->spawnRate = 0;
-	Game::DestroyWorldObjectAt(selfID);
+	lifeRemaining = 0.0;
 }
