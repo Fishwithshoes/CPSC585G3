@@ -13,6 +13,13 @@ enum GameStates
 	GS_GAME_OVER
 };
 
+enum GameWeapons
+{
+	GW_MACHINE_GUN,
+	GW_MISSILE_LAUNCHER,
+	GW_FLAMETHROWER
+};
+
 //Models
 struct Mesh
 {

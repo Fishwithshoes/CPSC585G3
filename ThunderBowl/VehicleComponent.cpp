@@ -141,14 +141,7 @@ void VehicleComponent::Update()
 		gVehicleNoDrive->setDriveTorque(1, -Input::GetXBoxAxis(1, ButtonCode::XBOX_LEFT_TRIGGER)*brakeTorque);
 	}
 
-	if (Input::GetXBoxButton(1, ButtonCode::XBOX_B))
-	{
-		MachineGunComponent* mgRef = &MachineGunComponent();
-		vehicleMG = (MachineGunComponent*)Game::Find(selfName)->GetComponent(mgRef);
-		vehicleMG->FireMG();
-	}
-
-	if (Input::GetXBoxButton(1, ButtonCode::XBOX_Y))
+	if (Input::GetXBoxButton(1, ButtonCode::XBOX_A))
 	{
 		physVehicle->setLinearVelocity(physx::PxVec3(0.0, 0.0, 0.0));
 		physVehicle->setAngularVelocity(physx::PxVec3(0.0, 0.0, 0.0));
@@ -230,23 +223,30 @@ void VehicleComponent::OnCollision(Component::CollisionPair collisionPair)
 
 	MachineGunComponent* mgRef = &MachineGunComponent();
 	PlayerComponent* playerRef = &PlayerComponent();
-	switch (collisionPair) {
+	switch (collisionPair) 
+	{
 	case(Component::CollisionPair::CP_VEHICLE_POWERUP):
 		Audio::Play2DSound(SFX_Powerup, Random::rangef(0.20, 0.50), 0.0);
-		vehicleMG = (MachineGunComponent*)Game::Find(selfName)->GetComponent(mgRef);
-		vehicleMG->ammoCount += 100;
-		if (vehicleMG->ammoCount >= vehicleMG->maxAmmo) {
-			vehicleMG->ammoCount = vehicleMG->maxAmmo;
-		}
-			vehPlayer = (PlayerComponent*)Game::Find(selfName)->GetComponent(playerRef);
-			vehPlayer->playerScore += 10.0;
+		//vehicleMG = (MachineGunComponent*)Game::Find(selfName)->GetComponent(mgRef);
+		//vehicleMG->ammoCount += 100;
+		//if (vehicleMG->ammoCount >= vehicleMG->maxAmmo) {
+		//	vehicleMG->ammoCount = vehicleMG->maxAmmo;
+		//}
+		//	vehPlayer = (PlayerComponent*)Game::Find(selfName)->GetComponent(playerRef);
+		//	vehPlayer->playerScore += 10.0;
+		//IF_DEF PROVIDE MG AMMO
+		vehPlayer = (PlayerComponent*)Game::Find(selfName)->GetComponent(playerRef);
+		vehPlayer->machineGunAmmo += 50;
+		if (vehPlayer->machineGunAmmo > vehPlayer->MAX_MACHINE_GUN_AMMO)
+			vehPlayer->machineGunAmmo = vehPlayer->MAX_MACHINE_GUN_AMMO;
+		//END_IF PROVIDE MG AMMO
 		break;
 	case(Component::CollisionPair::CP_VEHICLE_PROJECTILE):
 		Audio::Play2DSound(SFX_Hit, Random::rangef(0.20, 0.50), 0.0);
 		vehPlayer = (PlayerComponent*)Game::Find(selfName)->GetComponent(playerRef);
 		vehPlayer->playerHealth -= 25.0;
 		break;
-}
+	}
 
 	Finalize();
 }

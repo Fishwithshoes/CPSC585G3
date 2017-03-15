@@ -48,39 +48,47 @@ void FlamethrowerComponent::UpdateParticles()
 {
 	ParticleSystem* fireStream = (ParticleSystem*)Game::Find(fireStreamName);
 	GameObject* self = Game::Find(selfName);
+	PlayerComponent* player = &PlayerComponent();
+	player = (PlayerComponent*)self->GetComponent(player);
 
 	//t.rotation = t.GetInverseRotation();
-
-	fireStream->transform = t;
-	fireStream->transform.Translate(t.GetForward() * 3.0f, false);
-	fireStream->transform.Translate(t.GetUp() * 0.5f, false);
-
-	fireStream->transform.Rotate(Transform::Up(), 0.1, true);
-
-	float streamPower = 0.0;
-	float inheritedVelocity = 0.0;
-	if (self->tag == TAGS_HUMAN_PLAYER)
+	if (player->currentWeapon == GW_FLAMETHROWER && player->flamethrowerAmmo > 0)
 	{
-		float vertical = Input::GetXBoxAxis(1, ButtonCode::XBOX_JOY_RIGHT_VERTICAL);
-		float horizontal = Input::GetXBoxAxis(1, ButtonCode::XBOX_JOY_RIGHT_HORIZONTAL);
-		streamPower = vertical + abs(horizontal);
-		streamPower = Mathf::Clamp(streamPower, 0.0, 1.0);
+		fireStream->transform = t;
+		fireStream->transform.Translate(t.GetForward() * 3.0f, false);
+		fireStream->transform.Translate(t.GetUp() * 0.5f, false);
 
-		float theta = -Mathf::PI * 0.3 * horizontal;
-		fireStream->transform.Rotate(t.GetUp(), theta, false);
+		fireStream->transform.Rotate(Transform::Up(), 0.1, true);
 
-		VehicleComponent* vehicle = &VehicleComponent();
-		vehicle = (VehicleComponent*)self->GetComponent(vehicle);
-		inheritedVelocity = vehicle->physVehicle->getLinearVelocity().magnitude();
+		float streamPower = 0.0;
+		float inheritedVelocity = 0.0;
+		if (self->tag == TAGS_HUMAN_PLAYER)
+		{
+			float vertical = Input::GetXBoxAxis(1, ButtonCode::XBOX_JOY_RIGHT_VERTICAL);
+			float horizontal = Input::GetXBoxAxis(1, ButtonCode::XBOX_JOY_RIGHT_HORIZONTAL);
+			streamPower = vertical + abs(horizontal);
+			streamPower = Mathf::Clamp(streamPower, 0.0, 1.0);
+
+			float theta = -Mathf::PI * 0.3 * horizontal;
+			fireStream->transform.Rotate(t.GetUp(), theta, false);
+
+			VehicleComponent* vehicle = &VehicleComponent();
+			vehicle = (VehicleComponent*)self->GetComponent(vehicle);
+			inheritedVelocity = vehicle->physVehicle->getLinearVelocity().magnitude();
+		}
+		else
+		{
+
+		}
+
+		fireStream->initialSpeed.min = streamPower * 16 + inheritedVelocity;
+		fireStream->initialSpeed.max = streamPower * 18 + inheritedVelocity;
+		fireStream->spawnRate = streamPower * 10;
+		fireStream->initialRadius.min = streamPower * 1.4;
+		fireStream->initialRadius.max = streamPower * 1.8;
+
+		player->flamethrowerAmmo -= streamPower*Time::getDeltaTime();
+		if (player->flamethrowerAmmo < 0)
+			player->flamethrowerAmmo = 0;
 	}
-	else
-	{
-
-	}
-
-	fireStream->initialSpeed.min = streamPower * 16 + inheritedVelocity;
-	fireStream->initialSpeed.max = streamPower * 18 + inheritedVelocity;
-	fireStream->spawnRate = streamPower * 10;
-	fireStream->initialRadius.min = streamPower * 1.4;
-	fireStream->initialRadius.max = streamPower * 1.8;
 }

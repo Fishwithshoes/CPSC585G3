@@ -15,5 +15,7 @@ public:
 	void Update();
 	void OnCollision(Component::CollisionPair collisionPair);
 	bool CheckCollide();
+
+	GameWeapons type;
 };
 

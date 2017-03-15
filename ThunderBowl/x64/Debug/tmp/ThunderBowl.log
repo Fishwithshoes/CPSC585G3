@@ -1,23 +1,11 @@
-﻿  VehicleComponent.cpp
-c:\cpsc585g3\thunderbowl\machineguncomponent.h(12): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
-c:\cpsc585g3\thunderbowl\vehiclecomponent.h(22): warning C4305: 'initializing': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\missilelaunchercomponent.h(12): warning C4305: 'initializing': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\oceancomponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\vehiclecomponent.cpp(38): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\vehiclecomponent.cpp(66): warning C4305: '=': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\vehiclecomponent.cpp(67): warning C4305: '=': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\vehiclecomponent.cpp(68): warning C4305: '=': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\vehiclecomponent.cpp(69): warning C4305: '=': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\vehiclecomponent.cpp(117): warning C4305: 'initializing': truncation from 'double' to 'physx::PxReal'
-c:\cpsc585g3\thunderbowl\vehiclecomponent.cpp(181): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\cpsc585g3\thunderbowl\vehiclecomponent.cpp(184): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\cpsc585g3\thunderbowl\vehiclecomponent.cpp(215): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-c:\cpsc585g3\thunderbowl\vehiclecomponent.cpp(216): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-c:\cpsc585g3\thunderbowl\vehiclecomponent.cpp(235): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\vehiclecomponent.cpp(242): warning C4244: '+=': conversion from 'double' to 'int', possible loss of data
-c:\cpsc585g3\thunderbowl\vehiclecomponent.cpp(245): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\vehiclecomponent.cpp(269): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-c:\cpsc585g3\thunderbowl\vehiclecomponent.cpp(276): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-c:\cpsc585g3\thunderbowl\vehiclecomponent.cpp(286): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-  ThunderBowl.vcxproj -> C:\CPSC585G3\ThunderBowl\\x64\Debug\ThunderBowl.exe
-  ThunderBowl.vcxproj -> C:\CPSC585G3\ThunderBowl\\x64\Debug\ThunderBowl.pdb (Full PDB)
+﻿  MachineGunComponent.cpp
+c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\machineguncomponent.h(12): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\vehiclecomponent.h(22): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\oceancomponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\machineguncomponent.cpp(11): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\machineguncomponent.cpp(92): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\machineguncomponent.cpp(93): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\machineguncomponent.cpp(99): warning C4305: '=': truncation from 'double' to 'float'
+c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\machineguncomponent.cpp(108): warning C4305: 'argument': truncation from 'double' to 'float'
+  ThunderBowl.vcxproj -> C:\Users\james.hollowaycurrie\CPSC585G3\ThunderBowl\\x64\Debug\ThunderBowl.exe
+  ThunderBowl.vcxproj -> C:\Users\james.hollowaycurrie\CPSC585G3\ThunderBowl\\x64\Debug\ThunderBowl.pdb (Full PDB)

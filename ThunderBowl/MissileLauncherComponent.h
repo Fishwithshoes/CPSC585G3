@@ -7,9 +7,9 @@ class MissileLauncherComponent :
 public:
 	void Start();
 	void Update();
-	void FireMissile(float ownerVelocity);
+	void FireMissile();
 
-	float launchDelay = 0.3;
+	float launchDelay;
 
 protected:
 
