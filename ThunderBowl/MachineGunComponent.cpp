@@ -22,8 +22,8 @@ void MachineGunComponent::Update()
 	nextBullet -= Time::getDeltaTime();
 	nextBullet = Mathf::Clamp(nextBullet, 0.0f, bulletDelay);
 
-	GameObject* ammoMeter = Game::Find("AmmoMeter");
-	ammoMeter->transform.scale.x = (float)ammoCount / maxAmmo;
+	//GameObject* ammoMeter = Game::Find("AmmoMeter");
+	//ammoMeter->transform.scale.x = (float)ammoCount / maxAmmo;
 
 	//IF_DEF BULLET DESTRUCTION DEBUG
 	//if (Time::getElapsedFrames() % 2 == 0)
@@ -56,16 +56,45 @@ void MachineGunComponent::Update()
 	Finalize();
 }
 
-void MachineGunComponent::FireMG() {
-	if (nextBullet <= 0.0f && ammoCount > 0)
+void MachineGunComponent::FireMG() 
+{
+	int ammo = 0;
+	GameObject* self = Game::Find(selfName);
+	if (self->tag == TAGS_HUMAN_PLAYER)
+	{
+		PlayerComponent* player = &PlayerComponent();
+		player = (PlayerComponent*)self->GetComponent(player);
+		ammo = player->machineGunAmmo;
+	}
+
+	if (nextBullet <= 0.0f && ammo > 0)
 	{
 		//Spawn bullet
 		cout << "Fire!" << endl;
 		currentBullet++;
-		ammoCount -= 1;
+		ammo -= 1;
+		if (self->tag == TAGS_HUMAN_PLAYER)
+		{
+			PlayerComponent* player = &PlayerComponent();
+			player = (PlayerComponent*)self->GetComponent(player);
+			//player->machineGunAmmo--;
+			if (player->machineGunAmmo < 0)
+				player->machineGunAmmo = 0;
+		}
 		GameObject temp = GameObject(selfName + "Bullet" + to_string(currentBullet), Tags::TAGS_PROJECTILE);
 		temp.mesh = bulletMesh;
 		temp.transform = transform;
+		if (self->tag == TAGS_HUMAN_PLAYER)
+		{
+			float vertical = Input::GetXBoxAxis(1, ButtonCode::XBOX_JOY_RIGHT_VERTICAL);
+			float horizontal = Input::GetXBoxAxis(1, ButtonCode::XBOX_JOY_RIGHT_HORIZONTAL);
+
+			float theta = Mathf::PI * 0.15 * horizontal;
+			float phi = -Mathf::PI * 0.1 * vertical;
+
+			temp.transform.Rotate(temp.transform.GetUp(), theta, false);
+			temp.transform.Rotate(temp.transform.GetRight(), phi, false);
+		}
 		temp.transform.Translate(vec3(0,-0.5,0), false);
 		temp.standardMat.roughness = 0.3;
 		temp.standardMat.metalness = 1.0;
