@@ -109,6 +109,7 @@ void MissileComponent::OnCollision(CollisionPair collisionPair)
 		break;
 	}
 	Finalize();
+
 	if (collisionPair == CP_VEHICLE_MISSILE || collisionPair == CP_STATIC_MISSILE)
 		Explode();
 
