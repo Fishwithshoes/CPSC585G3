@@ -12,8 +12,9 @@ public:
 	void Start();
 	void Update();
 	void MoveTransform();
-	void OnCollision(CollisionPair collisionPair);
+	void OnCollision(CollisionPair collisionPair, Component* collider);
 	void Explode();
+	void DirectHit(Component* collider);
 
 	float speed = 100.0;
 	float initialLife = 1.0;

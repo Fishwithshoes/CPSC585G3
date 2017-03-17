@@ -4,8 +4,6 @@ class PlayerComponent :
 	public Component
 {
 public:
-	double playerHealth;
-	double oldHealth;
 	int playerScore;
 	int oldScore;
 

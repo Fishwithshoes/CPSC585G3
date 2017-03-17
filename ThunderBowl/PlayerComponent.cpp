@@ -6,14 +6,11 @@
 void PlayerComponent::Start() 
 {
 	Initialize();
-
-	playerHealth = 100.0;
-	oldHealth = playerHealth;
 	playerScore = 0;
 	oldScore = playerScore;
 
 	machineGunAmmo = 40;
-	missileLauncherAmmo = 2;
+	missileLauncherAmmo = 1000;
 	flamethrowerAmmo = 10.0;
 
 	Finalize();
@@ -23,10 +20,9 @@ void PlayerComponent::Update()
 {
 	Initialize();
 
-	if (oldHealth != playerHealth || oldScore != playerScore) 
+	if (oldScore != playerScore) 
 	{
 		PlayerStateToConsole();
-		oldHealth = playerHealth;
 		oldScore = playerScore;
 	}
 
@@ -99,7 +95,7 @@ void PlayerComponent::Update()
 	if (self->tag == TAGS_HUMAN_PLAYER)
 	{
 		GameObject* health = Game::Find("HealthMeter");
-		health->transform.scale.x = playerHealth / 100;
+		//health->transform.scale.x = playerHealth / 100;
 
 		GameObject* ammo = Game::Find("AmmoMeter");
 		float ratio;
@@ -155,7 +151,6 @@ void PlayerComponent::Update()
 void PlayerComponent::PlayerStateToConsole() 
 {
 	cout << selfName << endl;
-	cout << "Player Health: " << playerHealth << endl;
 	cout << "Player Score: " << playerScore << endl;
 	cout << endl;
 }

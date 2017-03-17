@@ -11,6 +11,10 @@ void Component::Update()
 	cout << "Tum de dum da doo! You should not be seeing me!!" << endl;
 }
 
+string Component::getName() {
+	return selfName;
+}
+
 void Component::SetSelfID(int *selfIDIn)
 {
 	selfIDPtr = selfIDIn;
@@ -23,7 +27,7 @@ void Component::SetSelfName(string *selfNameIn)
 	selfName = *selfNamePtr;
 }
 
-void Component::OnCollision(Component::CollisionPair collisionPair) 
+void Component::OnCollision(Component::CollisionPair collisionPair, Component* collider) 
 {
 }
 

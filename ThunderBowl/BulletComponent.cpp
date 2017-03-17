@@ -1,35 +1,54 @@
 #include "BulletComponent.h"
 #include "PlayerComponent.h"
+#include "HealthComponent.h"
 #include "Physics.h"
 #include "Game.h"
 #include "GameObject.h"
+#include "Audio.h"
 
 GameObject* selfGameObject;
-PlayerComponent* shooter;
+PlayerComponent* MGShooter;
+HealthComponent* targetHealth;
 physx::PxPhysics* worldPhys;
 physx::PxCooking* worldCook;
 physx::PxScene* worldScene;
+
+BulletComponent::BulletComponent(string owner) {
+	ownerName = owner;
+}
 
 void BulletComponent::Start()
 {
 	Initialize();
 
-	selfGameObject = Game::Find(selfName);
+	VehicleComponent* thisVeh;
+	EnemyComponent* aiVeh;
+
+	selfGameObject = Game::Find(ownerName);
+	if (selfGameObject->tag == TAGS_HUMAN_PLAYER) {
+		VehicleComponent* temp = &VehicleComponent();
+		thisVeh = (VehicleComponent*)Game::Find(ownerName)->GetComponent(temp);
+	}
+	else {
+		EnemyComponent* temp = &EnemyComponent();
+		aiVeh = (EnemyComponent*)Game::Find(ownerName)->GetComponent(temp);
+	}
+
+
 	speed = 200.0f;
 	lifeSpan = 1.00f;
 	worldPhys = Physics::getGPhysics();
 	worldCook = Physics::getGCooking();
 	worldScene = Physics::getGScene();
 
-	VehicleComponent* temp = &VehicleComponent();
-	VehicleComponent* thisVeh = (VehicleComponent*) Game::Find("Player0")->GetComponent(temp);
+
 
 	bullet = Physics::createTestProjectile();
 	bullet->userData = this;
 
 	physx::PxVec3 position;
 	position.x = transform.position.x;
-	position.y = transform.position.y + 2.5;
+	position.y = transform.position.y;// +2.5;
 	position.z = transform.position.z;
 	bullet->setGlobalPose(physx::PxTransform(position));
 
@@ -42,7 +61,11 @@ void BulletComponent::Start()
 	forward.y = newForward.y;
 	forward.z = newForward.z;
 
-	bullet->setLinearVelocity(forward*(speed + thisVeh->physVehicle->getLinearVelocity().magnitude()));
+	if (selfGameObject->tag == TAGS_HUMAN_PLAYER) {
+		bullet->setLinearVelocity(forward*(speed + thisVeh->physVehicle->getLinearVelocity().magnitude()));
+	}
+	else
+		bullet->setLinearVelocity(forward*(speed + aiVeh->enPhysVehicle->getLinearVelocity().magnitude()));
 
 	Finalize();
 }
@@ -65,8 +88,6 @@ void BulletComponent::Update()
 	{	
 		selfGameObject = Game::Find(selfName);
 		//cout << selfGameObject->objectID << " died" << endl;
-		bullet->putToSleep();
-		bullet->setGlobalPose(physx::PxTransform(physx::PxVec3(0.0, 100.00, 0.0), physx::PxQuat(physx::PxIdentity)), false);
 		worldScene->removeActor(*bullet);
 		bullet->release();
 		Game::DestroyWorldObjectAt(selfGameObject->objectID);
@@ -74,18 +95,26 @@ void BulletComponent::Update()
 	}
 }
 
-void BulletComponent::OnCollision(Component::CollisionPair collisionPair) {
+void BulletComponent::OnCollision(Component::CollisionPair collisionPair, Component* collider) {
 	Initialize();
 
 	PlayerComponent* playerRef = &PlayerComponent();
+	HealthComponent* targetHealthRef = &HealthComponent();
 
 	switch (collisionPair) 
 	{
 	case(Component::CollisionPair::CP_VEHICLE_PROJECTILE):
-		shooter = (PlayerComponent*)Game::Find(ownerName)->GetComponent(playerRef);
-		shooter->playerScore += 10.0;
+		Audio::Play2DSound(SFX_Hit, Random::rangef(0.20, 0.50), 0.0);
+		MGShooter = (PlayerComponent*)Game::Find(ownerName)->GetComponent(playerRef);
+		MGShooter->playerScore += 10.0;
+		targetHealth = (HealthComponent*)Game::Find(collider->getName())->GetComponent(targetHealthRef);
+		targetHealth->currentHealth -= 25.0;
+
 		break;
 	}
 
+	if (targetHealth->isDead()) {
+		MGShooter->playerScore += 100.0;
+	}
 	Finalize();
 }

@@ -5,11 +5,12 @@
 class BulletComponent : public Component
 {
 public:
+	BulletComponent(string owner);
 	physx::PxRigidDynamic* bullet;
 
 	void Start();
 	void Update();
-	void OnCollision(Component::CollisionPair collisionPair);
+	void OnCollision(Component::CollisionPair collisionPair, Component* collider);
 
 	float speed;
 	float lifeSpan;

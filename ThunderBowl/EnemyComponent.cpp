@@ -1,4 +1,5 @@
 #include "EnemyComponent.h"
+#include "BulletComponent.h"
 #include "GeoGenerator.h"
 #include "Game.h"
 #include "Physics.h"
@@ -96,12 +97,13 @@ void EnemyComponent::Update()
 	Finalize();
 }
 
-void EnemyComponent::OnCollision(Component::CollisionPair collisionPair) {
+void EnemyComponent::OnCollision(Component::CollisionPair collisionPair, Component* collider) {
 	Initialize();
 
 	MachineGunComponent* mgRef = &MachineGunComponent();
 	PlayerComponent* oppRef = &PlayerComponent();
 	EnemyComponent* enemyRef = &EnemyComponent();
+	//BulletComponent* bulletRef = &BulletComponent();
 
 	opponentComp = (EnemyComponent*)Game::Find(selfName)->GetComponent(enemyRef);
 
@@ -114,9 +116,11 @@ void EnemyComponent::OnCollision(Component::CollisionPair collisionPair) {
 		oppPlayer->playerScore += 10.0;
 		break;
 	case(Component::CollisionPair::CP_VEHICLE_PROJECTILE):
-		Audio::Play2DSound(SFX_Hit, Random::rangef(0.20, 0.50), 0.0);
-		oppPlayer = (PlayerComponent*)Game::Find(selfName)->GetComponent(oppRef);
-		oppPlayer->playerHealth -= 25.0;
+		//cout << "bullet hit " << selfName << endl;
+		//Audio::Play2DSound(SFX_Hit, Random::rangef(0.20, 0.50), 0.0);
+		//oppPlayer = (PlayerComponent*)Game::Find(selfName)->GetComponent(oppRef);
+		//oppPlayer->playerHealth -= 25.0;
+		//damagingBullet = (BulletComponent*)Game::Find(collider->getName())->GetComponent(bulletRef);
 		break;
 	}
 

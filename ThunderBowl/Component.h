@@ -21,7 +21,9 @@ public:
 	virtual void Start();
 	virtual void Update();
 	virtual bool CheckCollide();
-	virtual void OnCollision(CollisionPair collisionPair);
+	virtual void OnCollision(CollisionPair collisionPair, Component* collider);
+
+	string getName();
 
 	void SetSelfID(int *selfID);
 	void SetSelfName(string *selfName);
@@ -32,6 +34,7 @@ public:
 
 	void Initialize();//Call this at start of Start() and Update() to get GameObject info
 	void Finalize();//Call this at the end of Start() and Update() to pass changes to GameObject
+
 
 protected:
 	int selfID;

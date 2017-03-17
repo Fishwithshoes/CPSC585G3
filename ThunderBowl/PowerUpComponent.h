@@ -13,7 +13,7 @@ public:
 
 	void Start();
 	void Update();
-	void OnCollision(Component::CollisionPair collisionPair);
+	void OnCollision(Component::CollisionPair collisionPair, Component* collider);
 	bool CheckCollide();
 
 	GameWeapons type;
