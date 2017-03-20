@@ -118,6 +118,7 @@ private:
 	//Shadow and Deferred buffers
 	GLuint shadowBufferID;
 	GLuint shadowDepthBufferID;
+	static const int shadowSize = 4096;
 	GLenum shadowDrawBuffers[1] = { GL_COLOR_ATTACHMENT0 };
 	GLuint framebufferID;
 	GLuint depthBufferID;

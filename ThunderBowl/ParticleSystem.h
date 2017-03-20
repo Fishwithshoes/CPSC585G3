@@ -25,6 +25,7 @@ public:
 	RandRangeColor initialColor;
 	bool monochromatic;
 	GLuint mainTexture;
+	vector<GLuint> textures;
 	RandRangeFloat initialFogLevel;
 	RandRangeFloat lifeSpan;
 	vec3 spawnPointVariance;

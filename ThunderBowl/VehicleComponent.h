@@ -12,7 +12,7 @@ public:
 	void Start();
 	void Update();
 	void OnCollision(Component::CollisionPair collisionPair);
-	void UpdateParticleSystems();
+	void UpdateParticles();
 
 	float currentSpeed;
 	float topSpeed = 125.0;
@@ -37,5 +37,6 @@ private:
 	float currentTurn = 0;
 	string wheelSprayNameLeft;
 	string wheelSprayNameRight;
+	bool enteredWaterPrev = false;
 };
 

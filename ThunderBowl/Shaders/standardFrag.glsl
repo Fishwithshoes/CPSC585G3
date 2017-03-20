@@ -184,11 +184,12 @@ void main()
 	
 	//SHADOWS!! BUT WATCH THAT SAMPLE RATE!	
 	vec3 revisedShadowCoords = ShadowCoord.xyz * 0.5 + 0.5;
-	//Distances are in texture space 0.0-1.0 (where 1.0 is ~ 200m)
+	//Distances are in texture space 0.0-1.0 (where 1.0 is ~ 1000m)
 	float casterToLightDist = texture2D(shadowMap, revisedShadowCoords.xy).x;
-	float fragToLightDist = distance(vec3(5,2,5)*17, Position) * 0.005;
+	float fragToLightDist = distance(vec3(5,4,5)*47, Position) * 0.001;//LIGHTPOS
 	float fragToCasterDist = fragToLightDist - casterToLightDist;//Estimate only. Error will increase with geometry thickness.	
-	float bias = clamp(0.05*dot(Normal, lightDir0), 0.0, 0.003);
+	float bias = clamp(0.0006*dot(Normal, lightDir0), 0.0, 0.0006);
+	// bias = 0;
 	
 	float baseSampleStride = 0.02;
 	float shadowStride = 	SHADOW_STRIDE	* (fragToCasterDist + baseSampleStride);
@@ -196,7 +197,7 @@ void main()
 	float shadowFade = 1.0;
 	float shadow = 0;
 	
-	if(length(Position) < 75)//Maximum reach of shadows
+	if(length(Position) < 250)//Maximum reach of shadows
 	{
 		for(int i = 0; i < SHADOW_SAMPLES; i++)
 		{
@@ -223,7 +224,7 @@ void main()
 	vec3 final = diffuse + specular + reflection + refraction + selfIllum + rim;
 	
 	//FOGGY FUGUE
-	float u = clamp(viewDist*0.004*fogLevel, 0, 1);
+	float u = clamp(viewDist*0.003*fogLevel, 0, 1);
 	final = final * (1-u) + envColor * u;
 	
 	//SHADOW MAP DEBUG
@@ -272,7 +273,7 @@ void main()
 	// OutputColor = vec4(reflection, 1.0);
 	// OutputColor = vec4(selfIllum, 1.0);
 	// OutputColor = vec4(rim, 1.0);
-	// OutputColor = vec4(1-shadow);
+	// OutputColor = vec4(vec3(1.0-shadow), 1.0);
 	
 	// OutputColor = vec4(diffuseTex, 1.0);
 	// OutputColor = vec4(roughnessTex, 1.0);

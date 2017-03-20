@@ -22,6 +22,7 @@ void ParticleSystem::InitParticleSystem(ParticleSystemDesc desc)
 	initialColor.alpha = desc.initialColor.alpha; initialColor.bravo = desc.initialColor.bravo;
 	monochromatic = desc.monochromatic;
 	mainTexture = desc.mainTexture;
+	textures = desc.textures;
 	initialFogLevel.min = desc.initialFogLevel.min; initialFogLevel.max = desc.initialFogLevel.max;
 	lifeSpan.min = desc.lifeSpan.min; lifeSpan.max = desc.lifeSpan.max;
 	spawnPointVariance = desc.spawnPointVariance;
@@ -86,7 +87,7 @@ void ParticleSystem::Update()
 		nextSpawn -= Time::getDeltaTime();
 		if (nextSpawn <= 0.0f)
 		{
-			numToSpawn = (int)ceil(spawnRate * Time::getDeltaTime());
+			numToSpawn = (int)ceil(spawnRate * Time::timeScale * Time::getDeltaTime());
 
 			for (int i = 0; i < numToSpawn; i++)
 			{
@@ -109,7 +110,12 @@ void ParticleSystem::Update()
 		{
 			for (int j = 0; j < burst->count; j++)
 			{
-				SpawnParticle();
+				if (particles.size() < maxParticles)
+				{
+					SpawnParticle();
+				}
+				else
+					break;
 			}
 			burst->fired = true;
 		}
@@ -124,8 +130,8 @@ void ParticleSystem::Update()
 		p->velocity *= accelerationScale;
 		p->position += p->velocity * Time::timeScale * Time::getDeltaTime();
 	
-		if (p->position.y < p->scale.x*0.5)
-			p->velocity = reflect(p->velocity, Transform::Up());
+		//if (p->position.y < p->scale.x*0.5)
+			//p->velocity = reflect(p->velocity, Transform::Up());
 	
 		float u = Mathf::Clamp(1.0-p->lifeRemaining/p->startingLife, 0, 1);
 	
@@ -192,7 +198,7 @@ void ParticleSystem::SpawnParticle()
 		0, 0, 1);
 
 	//Transform t = Transform();
-	//t.Rotate(Transform::Right(), theta, false);
+	//t.Rotate(t.GetRight(), theta, false);
 	//t.Rotate(t.GetForward(), phi, false);
 	//vec3 dir = t.rotation * vec4(transform.GetForward(), 1.0);
 
@@ -219,7 +225,12 @@ void ParticleSystem::SpawnParticle()
 		mat.color.z = Random::rangef(initialColor.alpha.z, initialColor.bravo.z);
 		mat.color.w = Random::rangef(initialColor.alpha.w, initialColor.bravo.w);
 	}
-	mat.mainTexture = mainTexture;
+	if(textures.size() <= 0)
+		mat.mainTexture = mainTexture;
+	else
+	{
+		mat.mainTexture = textures[Random::rangei(0, textures.size(), false)];
+	}
 	mat.fogLevel = Random::rangef(initialFogLevel.min, initialFogLevel.max);
 	p.material = mat;
 	p.startingLife = Random::rangef(lifeSpan.min, lifeSpan.max);

@@ -3,7 +3,7 @@
 //Static member initialization
 vector<int> Input::buttonPrevList = vector<int>(300);
 vector<int> Input::buttonCurrentList = vector<int>(300);
-const float Input::deadZone = 0.10;
+const float Input::deadZone = 0.02;
 vec2 Input::newMousePos = vec2(0, 0);
 vec2 Input::oldMousePos = vec2(0,0);
 vec2 Input::windowSize = vec2(0,0);

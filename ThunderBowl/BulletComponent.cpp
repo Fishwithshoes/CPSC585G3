@@ -3,6 +3,7 @@
 #include "Physics.h"
 #include "Game.h"
 #include "GameObject.h"
+#include "Audio.h"
 
 GameObject* selfGameObject;
 PlayerComponent* shooter;
@@ -59,6 +60,36 @@ void BulletComponent::Update()
 
 	lifeSpan -= Time::getDeltaTime();
 
+	//IF_DEF SPLASH
+	if (transform.position.y < 7.5 && !splashed)
+	{
+		Audio::Play2DSound(SFX_Splish, Random::rangef(0.3, 0.4), 0.0);
+		ParticleSystem ps = ParticleSystem();
+		ps.name = selfName + "Splish";
+		ps.transform = transform;
+		ps.transform.rotation = normalize(vec4(1, 0, 0, 1));
+		ps.transform.Translate(transform.GetForward()*2.0f, false);
+		ps.initialSpeed.min = 28;
+		ps.initialSpeed.max = 35;
+		ps.coneAngle = 0;
+		ps.gravityScale = 92;
+		ps.initialColor.alpha = vec4(0.8, 0.9, 1.0, 1.0);
+		ps.initialColor.bravo = vec4(0.6, 0.7, 0.9, 1.0);
+		ps.initialRadius.min = 0.3;
+		ps.initialRadius.max = 0.6;
+		ps.lifeSpan.min = 0.4;
+		ps.lifeSpan.max = 0.5;
+		ps.monochromatic = false;
+		ps.mainTexture = MAP_SMOKE_PART;
+		ps.spawnRate = 0.0;
+		ps.spawnPointVariance = vec3(0.2);
+		ps.destroySystemWhenEmpty = true;
+		ParticleSystem *sparkPtr = Game::CreateParticleObject(ps);
+		sparkPtr->AddParticleBurst(1, 0.0);
+		splashed = true;
+	}
+	//END_IF SPLASH
+
 	Finalize();
 	
 	if (lifeSpan <= 0.0)
@@ -74,7 +105,8 @@ void BulletComponent::Update()
 	}
 }
 
-void BulletComponent::OnCollision(Component::CollisionPair collisionPair) {
+void BulletComponent::OnCollision(Component::CollisionPair collisionPair) 
+{
 	Initialize();
 
 	PlayerComponent* playerRef = &PlayerComponent();
@@ -84,6 +116,34 @@ void BulletComponent::OnCollision(Component::CollisionPair collisionPair) {
 	case(Component::CollisionPair::CP_VEHICLE_PROJECTILE):
 		shooter = (PlayerComponent*)Game::Find(ownerName)->GetComponent(playerRef);
 		shooter->playerScore += 10.0;
+
+		//IF_DEF SPARKS
+		ParticleSystem ps = ParticleSystem();
+		ps.name = selfName + "Spark";
+		ps.transform = transform;
+		ps.transform.Translate(transform.GetForward()*2.0f, false);
+		ps.initialSpeed.min = 30;
+		ps.initialSpeed.max = 36;
+		ps.coneAngle = 360;
+		ps.gravityScale = 82;
+		ps.initialColor.alpha = vec4(1.0, 1.0, 1.0, 1.0);
+		ps.initialColor.bravo = vec4(0.8, 0.8, 1.0, 1.0);
+		ps.initialRadius.min = 1.2;
+		ps.initialRadius.max = 1.6;
+		ps.lifeSpan.min = 0.4;
+		ps.lifeSpan.max = 0.5;
+		ps.monochromatic = false;
+		ps.mainTexture = MAP_DEFAULT_PART;
+		ps.textures =
+		{ MAP_SPARK01_PART, MAP_SPARK02_PART, MAP_SPARK03_PART, MAP_SPARK04_PART,
+			MAP_SPARK05_PART, MAP_SPARK06_PART, MAP_SPARK07_PART, MAP_SPARK08_PART };
+		ps.spawnRate = 0.0;
+		ps.spawnPointVariance = vec3(0.0);
+		ps.destroySystemWhenEmpty = true;
+		ParticleSystem *sparkPtr = Game::CreateParticleObject(ps);
+		sparkPtr->AddParticleBurst(3, 0.0);
+		//END_IF SPARKS
+
 		break;
 	}
 

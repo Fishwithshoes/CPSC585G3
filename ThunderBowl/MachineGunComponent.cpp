@@ -8,7 +8,7 @@ void MachineGunComponent::Start()
 {
 	Initialize();
 
-	bulletMesh = GeoGenerator::MakeSphere(0.15, 4, 8, false);
+	bulletMesh = GeoGenerator::MakeSphere(0.20, 4, 8, false);
 
 	Finalize();
 }

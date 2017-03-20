@@ -26,6 +26,5 @@ private:
 	float lifeRemaining = initialLife;
 	ParticleSystem* particleTrail;
 	string particleTrailName;
-
 };
 

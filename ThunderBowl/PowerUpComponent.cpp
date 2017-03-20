@@ -31,17 +31,27 @@ void PowerUpComponent::Update()
 {
 	Initialize();
 
-	if (!validCollide) {
+	if (!validCollide) 
+	{
 		transform.scale = vec3(0.0);
 		deactivationTime += Time::getDeltaTime();
-		if (deactivationTime >= 3.0) {
+		if (deactivationTime >= 3.0) 
+		{
 			validCollide = true;
 			deactivationTime = 0.0;
 		}
 	}
-	else {
+	else 
+	{
 		standardMat.diffuseColor = vec3(0.0, 1.0, 0.0);
-		transform.scale = vec3(1.0);
+		if (transform.scale.x < 1.0)
+		{
+			transform.scale += vec3(2.0) * Time::timeScale * Time::getDeltaTime();
+		}
+		else if (transform.scale.x > 1.0)
+		{
+			transform.scale = vec3(1);
+		}
 	}
 
 	transform.position.x = statComp->getGlobalPose().p.x;
@@ -58,11 +68,13 @@ void PowerUpComponent::Update()
 	Finalize();
 }
 
-void PowerUpComponent::OnCollision(Component::CollisionPair collisionPair) {
+void PowerUpComponent::OnCollision(Component::CollisionPair collisionPair) 
+{
 	cout << "PU Collision" << endl;
 	validCollide = false;
 }
 
-bool PowerUpComponent::CheckCollide() {
+bool PowerUpComponent::CheckCollide() 
+{
 	return validCollide;
 }

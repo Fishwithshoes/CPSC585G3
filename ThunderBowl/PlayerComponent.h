@@ -4,8 +4,6 @@ class PlayerComponent :
 	public Component
 {
 public:
-	double playerHealth;
-	double oldHealth;
 	int playerScore;
 	int oldScore;
 
@@ -27,7 +25,14 @@ public:
 	void PlayerStateToConsole();
 	void BurnCheck();
 	void Burning();
+
+	void StartParticles();
+	void UpdateParticles(float currentHealth);
+
 private:
 	bool switchWeaponPrev = false;
+
+	Transform t;
+	string damagedSmokeName;
 };
 
