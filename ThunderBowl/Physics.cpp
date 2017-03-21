@@ -2,6 +2,7 @@
 #include "Component.h"
 #include "GeoGenerator.h"
 #include "Loader.h"
+#include "PlayerComponent.h"
 
 using namespace physx;
 
@@ -50,7 +51,8 @@ class ContactReportCallback : public PxSimulationEventCallback
 			if (pairs[i].triggerShape->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_POWERUP) {
 				if (pairs[i].otherShape->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_CHASSIS) {
 					Component* triggerComp = reinterpret_cast<Component*>(pairs[i].triggerActor->userData);
-					if (triggerComp->CheckCollide()) {
+					if (triggerComp->CheckCollide()) 
+					{
 						Component* colliderComp = reinterpret_cast<Component*>(pairs[i].otherActor->userData);
 						triggerComp->OnCollision(Component::CollisionPair::CP_VEHICLE_POWERUP, colliderComp);
 						colliderComp->OnCollision(Component::CollisionPair::CP_VEHICLE_POWERUP, triggerComp);

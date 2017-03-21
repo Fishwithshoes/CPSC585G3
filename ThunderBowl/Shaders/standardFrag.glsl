@@ -186,9 +186,9 @@ void main()
 	vec3 revisedShadowCoords = ShadowCoord.xyz * 0.5 + 0.5;
 	//Distances are in texture space 0.0-1.0 (where 1.0 is ~ 1000m)
 	float casterToLightDist = texture2D(shadowMap, revisedShadowCoords.xy).x;
-	float fragToLightDist = distance(vec3(5,4,5)*47, Position) * 0.001;//LIGHTPOS
+	float fragToLightDist = distance(vec3(5,2,5)*50, Position) * 0.001;//LIGHTPOS
 	float fragToCasterDist = fragToLightDist - casterToLightDist;//Estimate only. Error will increase with geometry thickness.	
-	float bias = clamp(0.0006*dot(Normal, lightDir0), 0.0, 0.0006);
+	float bias = clamp(0.006*dot(Normal, lightDir0), 0.0, 0.006);
 	// bias = 0;
 	
 	float baseSampleStride = 0.02;

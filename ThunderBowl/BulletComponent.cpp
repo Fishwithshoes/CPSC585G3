@@ -25,11 +25,13 @@ void BulletComponent::Start()
 	EnemyComponent* aiVeh;
 
 	selfGameObject = Game::Find(ownerName);
-	if (selfGameObject->tag == TAGS_HUMAN_PLAYER) {
+	if (selfGameObject->tag == TAGS_HUMAN_PLAYER) 
+	{
 		VehicleComponent* temp = &VehicleComponent();
 		thisVeh = (VehicleComponent*)Game::Find(ownerName)->GetComponent(temp);
 	}
-	else {
+	else 
+	{
 		EnemyComponent* temp = &EnemyComponent();
 		aiVeh = (EnemyComponent*)Game::Find(ownerName)->GetComponent(temp);
 	}
@@ -41,18 +43,14 @@ void BulletComponent::Start()
 	worldCook = Physics::getGCooking();
 	worldScene = Physics::getGScene();
 
-
-
 	bullet = Physics::createTestProjectile();
 	bullet->userData = this;
 
 	physx::PxVec3 position;
 	position.x = transform.position.x;
-	position.y = transform.position.y;// +2.5;
+	position.y = transform.position.y;
 	position.z = transform.position.z;
 	bullet->setGlobalPose(physx::PxTransform(position));
-
-	transform.rotation = transform.GetInverseRotation();
 
 	vec3 newForward = transform.GetForward();
 
@@ -61,9 +59,8 @@ void BulletComponent::Start()
 	forward.y = newForward.y;
 	forward.z = newForward.z;
 
-	if (selfGameObject->tag == TAGS_HUMAN_PLAYER) {
+	if (selfGameObject->tag == TAGS_HUMAN_PLAYER)
 		bullet->setLinearVelocity(forward*(speed + thisVeh->physVehicle->getLinearVelocity().magnitude()));
-	}
 	else
 		bullet->setLinearVelocity(forward*(speed + aiVeh->enPhysVehicle->getLinearVelocity().magnitude()));
 
@@ -120,7 +117,7 @@ void BulletComponent::Update()
 		//cout << selfGameObject->objectID << " died" << endl;
 		worldScene->removeActor(*bullet);
 		bullet->release();
-		Game::DestroyWorldObjectAt(selfGameObject->objectID);
+		Game::DestroyStaticObjectAt(selfGameObject->objectID);
 		//cout << "OBJECTIVELY SPEAKING: " << Game::worldObjectList.size() << endl;
 	}
 }

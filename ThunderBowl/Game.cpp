@@ -125,40 +125,40 @@ void Game::BuildWorld()
 	GameObject powerUp1 = GameObject();
 	powerUp1.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
 	powerUp1.transform.position = vec3(0.0, 10.0, -80.0);
-	powerUp1.standardMat.selfIllumLevel = 1.0;
-	powerUp1.standardMat.selfIllumColor = vec3(0.0, 1.0, 0.0);
 	ptr = Game::CreateWorldObject(powerUp1);
-	ptr->AddComponent(new PowerUpComponent());
+	ptr->AddComponent(new PowerUpComponent(GW_MACHINE_GUN));
 	ptr->AddComponent(new FloatComponent());
 	ptr->AddComponent(new RotateComponent());
 
 	GameObject powerUp2 = GameObject();
 	powerUp2.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
 	powerUp2.transform.position = vec3(0.0, 10.0, 80.0);
-	powerUp2.standardMat.selfIllumLevel = 1.0;
-	powerUp2.standardMat.selfIllumColor = vec3(0.0, 1.0, 0.0);
 	ptr = Game::CreateWorldObject(powerUp2);
-	ptr->AddComponent(new PowerUpComponent());
+	ptr->AddComponent(new PowerUpComponent(GW_MACHINE_GUN));
 	ptr->AddComponent(new FloatComponent());
 	ptr->AddComponent(new RotateComponent());
 
 	GameObject powerUp3 = GameObject();
 	powerUp3.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
 	powerUp3.transform.position = vec3(-80.0, 10.0, 0.0);
-	powerUp3.standardMat.selfIllumLevel = 1.0;
-	powerUp3.standardMat.selfIllumColor = vec3(0.0, 1.0, 0.0);
 	ptr = Game::CreateWorldObject(powerUp3);
-	ptr->AddComponent(new PowerUpComponent());
+	ptr->AddComponent(new PowerUpComponent(GW_FLAMETHROWER));
 	ptr->AddComponent(new FloatComponent());
 	ptr->AddComponent(new RotateComponent());
 
 	GameObject powerUp4 = GameObject();
 	powerUp4.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
 	powerUp4.transform.position = vec3(80.0, 10.0, 0.0);
-	powerUp4.standardMat.selfIllumLevel = 1.0;
-	powerUp4.standardMat.selfIllumColor = vec3(0.0, 1.0, 0.0);
 	ptr = Game::CreateWorldObject(powerUp4);
-	ptr->AddComponent(new PowerUpComponent());
+	ptr->AddComponent(new PowerUpComponent(GW_FLAMETHROWER));
+	ptr->AddComponent(new FloatComponent());
+	ptr->AddComponent(new RotateComponent());
+
+	GameObject powerUp5 = GameObject();
+	powerUp5.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
+	powerUp5.transform.position = vec3(0.0, 38.0, 0.0);
+	ptr = Game::CreateWorldObject(powerUp5);
+	ptr->AddComponent(new PowerUpComponent(GW_MISSILE_LAUNCHER));
 	ptr->AddComponent(new FloatComponent());
 	ptr->AddComponent(new RotateComponent());
 
@@ -265,7 +265,7 @@ void Game::BuildWorld()
 
 	temp = GameObject("Sun", TAGS_DECORATION);
 	temp.mesh = GeoGenerator::MakeSphere(250, 16, 32, false);
-	temp.transform.position = vec3(5, 4, 5)*560.0f;
+	temp.transform.position = vec3(5, 2, 5)*560.0f;
 	temp.standardMat.roughness = 1.0;
 	temp.standardMat.metalness = 0.00;
 	temp.standardMat.diffuseLevel = 0.0;
@@ -276,7 +276,7 @@ void Game::BuildWorld()
 
 	temp = GameObject("LightSymbol", TAGS_DEBUG_2);
 	temp.mesh = GeoGenerator::MakeSphere(20, 4, 8, false);
-	temp.transform.position = vec3(5, 4, 5)*47.0f;
+	temp.transform.position = vec3(5, 2, 5)*50.0f;
 	temp.standardMat.roughness = 1.0;
 	temp.standardMat.metalness = 0.00;
 	temp.standardMat.diffuseLevel = 0.0;
@@ -766,6 +766,12 @@ GameObject* Game::Find(string name)
 			return &worldObjectList[i];
 	}
 
+	for (int i = 0; i < staticObjectList.size(); i++)
+	{
+		if (name == staticObjectList[i].name)
+			return &staticObjectList[i];
+	}
+
 	for (int i = 0; i < particleObjectList.size(); i++)
 	{
 		if (name == particleObjectList[i].name)
@@ -795,6 +801,12 @@ vector<GameObject*> Game::FindGameObjectsWithTag(Tags tag)
 	{
 		if (tag == worldObjectList[i].tag)
 			result.push_back(&worldObjectList[i]);
+	}
+
+	for (int i = 0; i < staticObjectList.size(); i++)
+	{
+		if (tag == staticObjectList[i].tag)
+			result.push_back(&staticObjectList[i]);
 	}
 
 	for (int i = 0; i < particleObjectList.size(); i++)

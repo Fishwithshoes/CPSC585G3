@@ -26,20 +26,27 @@ void VehicleComponent::Start()
 	
 	physVehicle = gVehicleNoDrive->getRigidDynamicActor();
 	physVehicle->setGlobalPose(physx::PxTransform(myStartPosition, physx::PxQuat(physx::PxIdentity))); //set global position based on vec created in Game
-	physVehicle->userData = this;
+	PlayerComponent* player = &PlayerComponent();
+	player = (PlayerComponent*)Game::Find(selfName)->GetComponent(player);
+	physVehicle->userData = player;
 
 	physx::PxU32 wheelBufferSize = gVehicleNoDrive->mWheelsSimData.getNbWheels() * sizeof(physx::PxShape*);
 	wheelBuffer = new physx::PxShape*[wheelBufferSize];
 	physVehicle->getShapes(wheelBuffer, wheelBufferSize);
 
-	for (int i = 0; i < 4; i++) {
+	for (int i = 0; i < 4; i++) 
+	{
 		GameObject temp = GameObject();
 		physx::PxTransform currWheel = wheelBuffer[i]->getLocalPose();
 		temp.mesh = GeoGenerator::MakeCylinder(0.5, 0.5, 0.6, 16, false); //change to take in physx values
-		if(i==0)
-			temp.standardMat.diffuseColor = vec3(1, 0, 0);
-		if(i==1)
-			temp.standardMat.diffuseColor = vec3(0, 1, 0);
+		//if(i==0)
+		//	temp.standardMat.diffuseColor = vec3(1, 0, 0);
+		//if(i==1)
+		//	temp.standardMat.diffuseColor = vec3(0, 1, 0);
+		temp.standardMat.diffuseColor = vec3(0);
+		temp.standardMat.roughness = 0.5;
+		temp.standardMat.metalness = 0.2;
+		temp.standardMat.isMetallic = false;
 		wheelVector.push_back(Game::CreateWorldObject(temp));
 	}
 
@@ -222,25 +229,28 @@ void VehicleComponent::OnCollision(Component::CollisionPair collisionPair, Compo
 {
 	Initialize();
 
-	MachineGunComponent* mgRef = &MachineGunComponent();
-	HealthComponent* playerHealth = &HealthComponent();
-	PlayerComponent* playerRef = &PlayerComponent();
-	switch (collisionPair) 
-	{
-	case(Component::CollisionPair::CP_VEHICLE_POWERUP):
-		Audio::Play2DSound(SFX_Powerup, Random::rangef(0.20, 0.50), 0.0);
-		playerRef = (PlayerComponent*)Game::Find(selfName)->GetComponent(playerRef);
-		playerRef->playerScore += 10.0;
-		playerRef->machineGunAmmo += 50;
-		if (playerRef->machineGunAmmo > playerRef->MAX_MACHINE_GUN_AMMO)
-			playerRef->machineGunAmmo = playerRef->MAX_MACHINE_GUN_AMMO;
-		break;
-	case(Component::CollisionPair::CP_VEHICLE_PROJECTILE):
-		Audio::Play2DSound(SFX_Hit, Random::rangef(0.20, 0.50), 0.0);
-		playerHealth = (HealthComponent*)Game::Find(selfName)->GetComponent(playerHealth);
-		playerHealth->currentHealth -= 10.0;
-		break;
-	}
+	//Note: Ammo and damage now handled in PlayerComponent OnCollision() to avoid duplicate logic
+
+	//MachineGunComponent* mgRef = &MachineGunComponent();
+	//HealthComponent* playerHealth = &HealthComponent();
+	//PlayerComponent* playerRef = &PlayerComponent();
+	//
+	//switch (collisionPair) 
+	//{
+	//case(Component::CollisionPair::CP_VEHICLE_POWERUP):
+	//	Audio::Play2DSound(SFX_Powerup, Random::rangef(0.20, 0.50), 0.0);
+	//	playerRef = (PlayerComponent*)Game::Find(selfName)->GetComponent(playerRef);
+	//	playerRef->playerScore += 10.0;
+	//	playerRef->machineGunAmmo += 50;
+	//	if (playerRef->machineGunAmmo > playerRef->MAX_MACHINE_GUN_AMMO)
+	//		playerRef->machineGunAmmo = playerRef->MAX_MACHINE_GUN_AMMO;
+	//	break;
+	//case(Component::CollisionPair::CP_VEHICLE_PROJECTILE):
+	//	Audio::Play2DSound(SFX_Hit, Random::rangef(0.20, 0.50), 0.0);
+	//	playerHealth = (HealthComponent*)Game::Find(selfName)->GetComponent(playerHealth);
+	//	playerHealth->currentHealth -= 10.0;
+	//	break;
+	//}
 
 	Finalize();
 }

@@ -162,6 +162,8 @@ void Renderer::LoadTextures(Renderer *renderer)
 				glActiveTexture(GL_TEXTURE0 + i);
 				glBindTexture(GL_TEXTURE_2D, texID);
 				glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 				glGenerateMipmap(GL_TEXTURE_2D);
 			}
 			else
@@ -256,6 +258,9 @@ void Renderer::LoadStaticGeo(Renderer *renderer)
 
 	RendererUtility::InitializeGeometry(&renderer->puddleGeo);
 	BufferStaticGeoData(&renderer->puddleGeo, &GeoGenerator::MakePlane(10, 10, 100, 100, false));
+
+	RendererUtility::InitializeGeometry(&renderer->mgbulletGeo);
+	BufferStaticGeoData(&renderer->mgbulletGeo, &GeoGenerator::MakeSphere(0.2, 16, 32, false));
 
 	Loader loader;
 	loader.loadModel("Models/thunderbowl001.obj", vec3(15, 13, 15), true);
@@ -397,12 +402,12 @@ void Renderer::RenderScene(Renderer *renderer)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glUseProgram(renderer->depthMapShader.program);
 
-	//glCullFace(GL_FRONT);
+	glCullFace(GL_FRONT);
 
 	//Create WorldToView Matrix for light
 	Transform lightTransform = Transform();
 	//IMPORTANT: To change light position. Update info in standardFrag and depthMapFrag
-	lightTransform.position = vec3(5, 5, 5)*47.0f;
+	lightTransform.position = vec3(5, 2, 5)*50.0f;
 	lightTransform.Rotate(Transform::Up(), 135.0*Mathf::PI / 180, false);
 	lightTransform.Rotate(lightTransform.GetRight(), -15.0*Mathf::PI / 180, false);
 	float nearClip = 0.1;
@@ -418,7 +423,7 @@ void Renderer::RenderScene(Renderer *renderer)
 	
 	DrawPhysicalObjects(renderer, false);
 
-	//glCullFace(GL_BACK);
+	glCullFace(GL_BACK);
 
 //**TURN OVER TO THE DEFERRED FRAMEBUFFER TO DRAW WORLD AND PARTICLES**********
 	glBindFramebuffer(GL_FRAMEBUFFER, renderer->framebufferID);
@@ -696,6 +701,9 @@ void Renderer::DrawPhysicalObjects(Renderer *renderer, bool programStandardUnifo
 				break;
 			case SG_PUDDLE:
 				geoToUse = renderer->puddleGeo;
+				break;
+			case SG_MG_BULLET:
+				geoToUse = renderer->mgbulletGeo;
 				break;
 			case SG_MAP:
 				geoToUse = renderer->mapGeo;

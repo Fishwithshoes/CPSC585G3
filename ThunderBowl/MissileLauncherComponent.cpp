@@ -61,7 +61,7 @@ void MissileLauncherComponent::FireMissile()
 	
 		PlayerComponent* player = &PlayerComponent();
 		player = (PlayerComponent*)self->GetComponent(player);
-		//player->missileLauncherAmmo--;
+		player->missileLauncherAmmo--;
 		if (player->missileLauncherAmmo < 0)
 			player->missileLauncherAmmo = 0;
 	

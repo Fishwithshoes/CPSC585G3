@@ -129,7 +129,7 @@ void FlamethrowerComponent::UpdateParticles()
 		}
 	}
 
-	//player->flamethrowerAmmo -= streamPower*Time::getDeltaTime();
+	ownerPlayer->flamethrowerAmmo -= streamPower*Time::getDeltaTime();
 	if (ownerPlayer->flamethrowerAmmo < 0)
 		ownerPlayer->flamethrowerAmmo = 0;
 }

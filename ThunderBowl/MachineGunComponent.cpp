@@ -8,6 +8,7 @@ void MachineGunComponent::Start()
 {
 	Initialize();
 
+	//Find it now in Renderer::LoadStaticGeo(args...)
 	bulletMesh = GeoGenerator::MakeSphere(0.20, 4, 8, false);
 
 	Finalize();
@@ -18,7 +19,7 @@ void MachineGunComponent::Update()
 	Initialize();
 
 	GameObject* owner = Game::Find(selfName);
-	cout << "selfname: " << selfName << endl;
+	//cout << "selfname: " << selfName << endl;
 
 	nextBullet -= Time::getDeltaTime();
 	nextBullet = Mathf::Clamp(nextBullet, 0.0f, bulletDelay);
@@ -74,33 +75,34 @@ void MachineGunComponent::FireMG()
 		//cout << "Fire!" << endl;
 		currentBullet++;
 		ammo -= 1;
-		if (self->tag == TAGS_HUMAN_PLAYER)
-		{
-			PlayerComponent* player = &PlayerComponent();
-			player = (PlayerComponent*)self->GetComponent(player);
-			//player->machineGunAmmo--;
-			if (player->machineGunAmmo < 0)
-				player->machineGunAmmo = 0;
-		}
+		PlayerComponent* player = &PlayerComponent();
+		player = (PlayerComponent*)self->GetComponent(player);
+		player->machineGunAmmo--;
+		if (player->machineGunAmmo < 0)
+			player->machineGunAmmo = 0;
+
 		GameObject temp = GameObject(selfName + "Bullet" + to_string(currentBullet), Tags::TAGS_PROJECTILE);
-		temp.mesh = bulletMesh;
+		//temp.mesh = bulletMesh;
+		temp.staticGeo = SG_MG_BULLET;
 		temp.transform = transform;
+		temp.transform.rotation = temp.transform.GetInverseRotation();
 		if (self->tag == TAGS_HUMAN_PLAYER)
 		{
 			float vertical = Input::GetXBoxAxis(1, ButtonCode::XBOX_JOY_RIGHT_VERTICAL);
 			float horizontal = Input::GetXBoxAxis(1, ButtonCode::XBOX_JOY_RIGHT_HORIZONTAL);
 
-			float theta = Mathf::PI * 0.15 * horizontal;
-			float phi = -Mathf::PI * 0.1 * vertical;
+			float theta = -Mathf::PI * 0.15 * horizontal;
+			float phi = Mathf::PI * 0.1 * vertical;
 
 			temp.transform.Rotate(temp.transform.GetUp(), theta, false);
 			temp.transform.Rotate(temp.transform.GetRight(), phi, false);
 		}
-		temp.transform.Translate(vec3(0,2.5,0), false);
+		temp.transform.Translate(temp.transform.GetUp() * 1.25f, false);
+		temp.transform.Translate(temp.transform.GetForward() * 3.0f, false);
 		temp.standardMat.roughness = 0.3;
 		temp.standardMat.metalness = 1.0;
 		temp.standardMat.isMetallic = true;
-		GameObject* bullet = Game::CreateWorldObject(temp);
+		GameObject* bullet = Game::CreateStaticObject(temp);
 		bullet->AddComponent(new BulletComponent(selfName));
 		//BulletComponent* bulletTempRef = &BulletComponent();
 		//bulletTempRef = (BulletComponent*)Game::Find(selfName + "Bullet" + to_string(currentBullet))->GetComponent(bulletTempRef);
@@ -110,10 +112,10 @@ void MachineGunComponent::FireMG()
 		ParticleSystem ps = ParticleSystem();
 		ps.transform = transform;
 		ps.transform.rotation = ps.transform.GetInverseRotation();
-		ps.transform.Translate(ps.transform.GetUp()*2.0f, false);
-		ps.transform.Translate(ps.transform.GetForward()*1.0f, false);
-		ps.initialRadius.min = 0.5;
-		ps.initialRadius.max = 0.6;
+		ps.transform.Translate(ps.transform.GetUp()*1.25f, false);
+		ps.transform.Translate(ps.transform.GetForward()*2.5f, false);
+		ps.initialRadius.min = 0.4;
+		ps.initialRadius.max = 0.7;
 		ps.initialColor.alpha = vec4(vec3(1), 1.0);
 		ps.initialColor.bravo = vec4(vec3(1), 1.0);
 		ps.mainTexture = MAP_FLASH_PART;

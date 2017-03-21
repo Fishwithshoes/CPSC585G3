@@ -28,6 +28,7 @@ private:
 	Geometry oceanGeo;
 	Geometry oceanGeoDown;
 	Geometry puddleGeo;
+	Geometry mgbulletGeo;
 	Geometry mapGeo;
 	//TODO add any additional high-res items below. Add to the StaticGeos enum too.
 

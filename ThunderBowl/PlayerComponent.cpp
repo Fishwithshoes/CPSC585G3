@@ -1,6 +1,7 @@
 #include "PlayerComponent.h"
 #include "VehicleComponent.h"
 #include "Game.h"
+#include "Audio.h"
 
 //VehicleComponent* playerVeh;
 void PlayerComponent::Start() 
@@ -12,7 +13,7 @@ void PlayerComponent::Start()
 
 	machineGunAmmo = 40;
 	missileLauncherAmmo = 2;
-	flamethrowerAmmo = 10.0;
+	flamethrowerAmmo = 2.0;
 
 	StartParticles();
 
@@ -183,6 +184,49 @@ void PlayerComponent::Update()
 	UpdateParticles(playerHealth->currentHealth);
 
 	Finalize();
+}
+
+void PlayerComponent::OnCollision(Component::CollisionPair collisionPair, Component* collider)
+{
+	MachineGunComponent* mgRef = &MachineGunComponent();
+	HealthComponent* playerHealth = &HealthComponent();
+	PowerUpComponent* powerUp = (PowerUpComponent*)collider;
+
+	switch (collisionPair)
+	{
+	case(Component::CollisionPair::CP_VEHICLE_POWERUP):
+		Audio::Play2DSound(SFX_Powerup, Random::rangef(0.20, 0.50), 0.0);
+		playerScore += 10.0;
+		switch (powerUp->type)
+		{
+		case GW_MACHINE_GUN:
+			machineGunAmmo += 50;
+			if (machineGunAmmo > MAX_MACHINE_GUN_AMMO)
+				machineGunAmmo = MAX_MACHINE_GUN_AMMO;
+			break;
+		case GW_MISSILE_LAUNCHER:
+			missileLauncherAmmo += 2;
+			if (missileLauncherAmmo > MAX_MISSILE_LAUNCHER_AMMO)
+				missileLauncherAmmo = MAX_MISSILE_LAUNCHER_AMMO;
+			break;
+		case GW_FLAMETHROWER:
+			flamethrowerAmmo += 5;
+			if (flamethrowerAmmo > MAX_FLAMETHROWER_AMMO)
+				flamethrowerAmmo = MAX_FLAMETHROWER_AMMO;
+			break;
+		default:
+			cout << "ERROR: Can't add ammo to illegal weapon at PlayerComponent OnColllision()!" << endl;
+			break;
+		}
+		break;
+	case(Component::CollisionPair::CP_VEHICLE_PROJECTILE):
+		Audio::Play2DSound(SFX_Hit, Random::rangef(0.20, 0.50), 0.0);
+		playerHealth = (HealthComponent*)Game::Find(selfName)->GetComponent(playerHealth);
+		playerHealth->currentHealth -= 10.0;
+		break;
+	default:
+		break;
+	}
 }
 
 void PlayerComponent::UpdateParticles(float currentHealth)

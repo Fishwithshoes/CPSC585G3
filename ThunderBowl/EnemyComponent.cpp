@@ -27,7 +27,9 @@ void EnemyComponent::Start()
 
 	enPhysVehicle = enVehicleNoDrive->getRigidDynamicActor();
 	enPhysVehicle->setGlobalPose(physx::PxTransform(startPosition, startRotation)); //set global position based on vec created in Game
-	enPhysVehicle->userData = this;
+	PlayerComponent* player = &PlayerComponent();
+	player = (PlayerComponent*)Game::Find(selfName)->GetComponent(player);
+	enPhysVehicle->userData = player;
 
 	physx::PxU32 wheelBufferSize = enVehicleNoDrive->mWheelsSimData.getNbWheels() * sizeof(physx::PxShape*);
 	enWheelBuffer = new physx::PxShape*[wheelBufferSize];
@@ -100,30 +102,32 @@ void EnemyComponent::Update()
 void EnemyComponent::OnCollision(Component::CollisionPair collisionPair, Component* collider) {
 	Initialize();
 
-	MachineGunComponent* mgRef = &MachineGunComponent();
-	PlayerComponent* oppRef = &PlayerComponent();
-	EnemyComponent* enemyRef = &EnemyComponent();
+	//Note: Ammo and damage now handled in PlayerComponent On Collision() to avoid duplicate logic
 
-	HealthComponent* playerHealth = &HealthComponent();
-	//BulletComponent* bulletRef = &BulletComponent();
-
-	opponentComp = (EnemyComponent*)Game::Find(selfName)->GetComponent(enemyRef);
-
-	switch (collisionPair) 
-	{
-	case(Component::CollisionPair::CP_VEHICLE_POWERUP):
-		Audio::Play2DSound(SFX_Powerup, Random::rangef(0.20, 0.50), 0.0);
-		oppVehicleMG = (MachineGunComponent*)Game::Find(selfName)->GetComponent(mgRef);
-		oppVehicleMG->ammoCount += 100;
-		oppPlayer = (PlayerComponent*)Game::Find(selfName)->GetComponent(oppRef);
-		oppPlayer->playerScore += 10.0;
-		break;
-	case(Component::CollisionPair::CP_VEHICLE_PROJECTILE):
-		Audio::Play2DSound(SFX_Hit, Random::rangef(0.20, 0.50), 0.0);
-		playerHealth = (HealthComponent*)Game::Find(selfName)->GetComponent(playerHealth);
-		playerHealth->currentHealth -= 10.0;
-		break;
-	}
+	//MachineGunComponent* mgRef = &MachineGunComponent();
+	//PlayerComponent* oppRef = &PlayerComponent();
+	//EnemyComponent* enemyRef = &EnemyComponent();
+	//
+	//HealthComponent* playerHealth = &HealthComponent();
+	////BulletComponent* bulletRef = &BulletComponent();
+	//
+	//opponentComp = (EnemyComponent*)Game::Find(selfName)->GetComponent(enemyRef);
+	//
+	//switch (collisionPair) 
+	//{
+	//case(Component::CollisionPair::CP_VEHICLE_POWERUP):
+	//	Audio::Play2DSound(SFX_Powerup, Random::rangef(0.20, 0.50), 0.0);
+	//	oppVehicleMG = (MachineGunComponent*)Game::Find(selfName)->GetComponent(mgRef);
+	//	oppVehicleMG->ammoCount += 100;
+	//	oppPlayer = (PlayerComponent*)Game::Find(selfName)->GetComponent(oppRef);
+	//	oppPlayer->playerScore += 10.0;
+	//	break;
+	//case(Component::CollisionPair::CP_VEHICLE_PROJECTILE):
+	//	Audio::Play2DSound(SFX_Hit, Random::rangef(0.20, 0.50), 0.0);
+	//	playerHealth = (HealthComponent*)Game::Find(selfName)->GetComponent(playerHealth);
+	//	playerHealth->currentHealth -= 10.0;
+	//	break;
+	//}
 
 	Finalize();
 }

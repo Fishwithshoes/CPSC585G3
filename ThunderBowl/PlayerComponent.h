@@ -22,6 +22,7 @@ public:
 
 	void Start();
 	void Update();
+	void OnCollision(Component::CollisionPair collisionPair, Component* collider);
 	void PlayerStateToConsole();
 	void BurnCheck();
 	void Burning();

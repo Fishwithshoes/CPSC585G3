@@ -44,9 +44,15 @@ struct Geometry
 
 enum StaticGeos
 {
+	//To add a new one:
+	//Add it here
+	//In Renderer.h
+	//In Renderer::LoadStaticGeo()
+	//In Renderer::DrawPhysicalObjects() "Static Mesh" section
 	SG_OCEAN,
 	SG_OCEAN_DOWN,
 	SG_PUDDLE,
+	SG_MG_BULLET,
 	SG_MAP
 };
 

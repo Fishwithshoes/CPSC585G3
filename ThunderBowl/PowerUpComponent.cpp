@@ -2,14 +2,17 @@
 #include "Game.h"
 #include "Physics.h"
 
+PowerUpComponent::PowerUpComponent(GameWeapons typeIn)
+{
+	type = typeIn;
+}
+
 void PowerUpComponent::Start()
 {
 	Initialize();
 
 	validCollide = true;
 	deactivationTime = 0.0;
-
-	standardMat.diffuseColor = vec3(1.0, 0.0, 0.0);
 
 	physx::PxPhysics* worldPhys = Physics::getGPhysics();
 	physx::PxCooking* worldCook = Physics::getGCooking();
@@ -23,6 +26,25 @@ void PowerUpComponent::Start()
 	transform.position.x = statComp->getGlobalPose().p.x;
 	transform.position.y = statComp->getGlobalPose().p.y;
 	transform.position.z = statComp->getGlobalPose().p.z;
+
+	standardMat.selfIllumLevel = 0.5;
+	standardMat.diffuseColor = vec3(1.0);
+
+	switch (type)
+	{
+	case GW_MACHINE_GUN:
+		standardMat.diffuseMap = MAP_MACHINE_GUN_ICON;
+		break;
+	case GW_MISSILE_LAUNCHER:
+		standardMat.diffuseMap = MAP_MISSILE_LAUNCHER_ICON;
+		break;
+	case GW_FLAMETHROWER:
+		standardMat.diffuseMap = MAP_FLAMETHROWER_ICON;
+		break;
+	default:
+		cout << "ERROR: Can't setup illegal type at PowerUpComponent Start()!" << endl;
+		break;
+	}
 
 	Finalize();
 }
@@ -43,7 +65,6 @@ void PowerUpComponent::Update()
 	}
 	else 
 	{
-		standardMat.diffuseColor = vec3(0.0, 1.0, 0.0);
 		if (transform.scale.x < 1.0)
 		{
 			transform.scale += vec3(2.0) * Time::timeScale * Time::getDeltaTime();
@@ -72,6 +93,7 @@ void PowerUpComponent::OnCollision(Component::CollisionPair collisionPair, Compo
 {
 	cout << "PU Collision" << endl;
 	validCollide = false;
+	//Note: Ammo collection now handled in PlayerComponent OnCollision(args...)
 }
 
 bool PowerUpComponent::CheckCollide() 
