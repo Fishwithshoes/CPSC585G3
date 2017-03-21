@@ -70,6 +70,7 @@ vector<string> Renderer::textureFilePaths =
 	"Textures/spark06_PART.png",
 	"Textures/spark07_PART.png",
 	"Textures/spark08_PART.png",
+	"Textures/flash_PART.png",
 	"Textures/Sun_DIFF.jpg",
 	"Textures/Moon_DIFF.jpg",
 	"Textures/Moon_NORM.jpg",

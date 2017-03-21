@@ -637,7 +637,6 @@ GameObject* Game::CreateStaticObject(GameObject object)
 GameObject* Game::CreateWorldObject(GameObject object)
 {
 	object.objectID = worldObjectList.size();
-	cout << object.objectID << endl;
 	object.Start();
 	worldObjectList.push_back(object);
 	return &worldObjectList[worldObjectList.size() - 1];

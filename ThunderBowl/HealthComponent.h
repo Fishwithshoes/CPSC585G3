@@ -6,7 +6,9 @@ class HealthComponent :
 public:
 	void Start();
 	void Update();
+	bool isDead();
 
 	float currentHealth;
+	float respawnTime;
 };
 

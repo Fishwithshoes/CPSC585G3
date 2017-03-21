@@ -218,30 +218,22 @@ void VehicleComponent::Update()
 	Finalize();
 }
 
-void VehicleComponent::OnCollision(Component::CollisionPair collisionPair) 
+void VehicleComponent::OnCollision(Component::CollisionPair collisionPair, Component* collider) 
 {
 	Initialize();
 
 	MachineGunComponent* mgRef = &MachineGunComponent();
 	HealthComponent* playerHealth = &HealthComponent();
-	PlayerComponent* vehPlayer = &PlayerComponent();
+	PlayerComponent* playerRef = &PlayerComponent();
 	switch (collisionPair) 
 	{
 	case(Component::CollisionPair::CP_VEHICLE_POWERUP):
 		Audio::Play2DSound(SFX_Powerup, Random::rangef(0.20, 0.50), 0.0);
-		//vehicleMG = (MachineGunComponent*)Game::Find(selfName)->GetComponent(mgRef);
-		//vehicleMG->ammoCount += 100;
-		//if (vehicleMG->ammoCount >= vehicleMG->maxAmmo) {
-		//	vehicleMG->ammoCount = vehicleMG->maxAmmo;
-		//}
-		//	vehPlayer = (PlayerComponent*)Game::Find(selfName)->GetComponent(playerRef);
-		//	vehPlayer->playerScore += 10.0;
-		//IF_DEF PROVIDE MG AMMO
-		vehPlayer = (PlayerComponent*)Game::Find(selfName)->GetComponent(vehPlayer);
-		vehPlayer->machineGunAmmo += 50;
-		if (vehPlayer->machineGunAmmo > vehPlayer->MAX_MACHINE_GUN_AMMO)
-			vehPlayer->machineGunAmmo = vehPlayer->MAX_MACHINE_GUN_AMMO;
-		//END_IF PROVIDE MG AMMO
+		playerRef = (PlayerComponent*)Game::Find(selfName)->GetComponent(playerRef);
+		playerRef->playerScore += 10.0;
+		playerRef->machineGunAmmo += 50;
+		if (playerRef->machineGunAmmo > playerRef->MAX_MACHINE_GUN_AMMO)
+			playerRef->machineGunAmmo = playerRef->MAX_MACHINE_GUN_AMMO;
 		break;
 	case(Component::CollisionPair::CP_VEHICLE_PROJECTILE):
 		Audio::Play2DSound(SFX_Hit, Random::rangef(0.20, 0.50), 0.0);

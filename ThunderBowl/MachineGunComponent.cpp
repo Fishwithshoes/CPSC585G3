@@ -18,6 +18,7 @@ void MachineGunComponent::Update()
 	Initialize();
 
 	GameObject* owner = Game::Find(selfName);
+	cout << "selfname: " << selfName << endl;
 
 	nextBullet -= Time::getDeltaTime();
 	nextBullet = Mathf::Clamp(nextBullet, 0.0f, bulletDelay);
@@ -70,7 +71,7 @@ void MachineGunComponent::FireMG()
 	if (nextBullet <= 0.0f && ammo > 0)
 	{
 		//Spawn bullet
-		cout << "Fire!" << endl;
+		//cout << "Fire!" << endl;
 		currentBullet++;
 		ammo -= 1;
 		if (self->tag == TAGS_HUMAN_PLAYER)
@@ -95,15 +96,37 @@ void MachineGunComponent::FireMG()
 			temp.transform.Rotate(temp.transform.GetUp(), theta, false);
 			temp.transform.Rotate(temp.transform.GetRight(), phi, false);
 		}
-		temp.transform.Translate(vec3(0,-0.5,0), false);
+		temp.transform.Translate(vec3(0,2.5,0), false);
 		temp.standardMat.roughness = 0.3;
 		temp.standardMat.metalness = 1.0;
 		temp.standardMat.isMetallic = true;
 		GameObject* bullet = Game::CreateWorldObject(temp);
-		bullet->AddComponent(new BulletComponent());
-		BulletComponent* bulletTempRef = &BulletComponent();
-		bulletTempRef = (BulletComponent*)Game::Find(selfName + "Bullet" + to_string(currentBullet))->GetComponent(bulletTempRef);
-		bulletTempRef->ownerName = selfName;
+		bullet->AddComponent(new BulletComponent(selfName));
+		//BulletComponent* bulletTempRef = &BulletComponent();
+		//bulletTempRef = (BulletComponent*)Game::Find(selfName + "Bullet" + to_string(currentBullet))->GetComponent(bulletTempRef);
+		//bulletTempRef->ownerName = selfName;
+
+		//IF_DEF MUZZLE FLASH
+		ParticleSystem ps = ParticleSystem();
+		ps.transform = transform;
+		ps.transform.rotation = ps.transform.GetInverseRotation();
+		ps.transform.Translate(ps.transform.GetUp()*2.0f, false);
+		ps.transform.Translate(ps.transform.GetForward()*1.0f, false);
+		ps.initialRadius.min = 0.5;
+		ps.initialRadius.max = 0.6;
+		ps.initialColor.alpha = vec4(vec3(1), 1.0);
+		ps.initialColor.bravo = vec4(vec3(1), 1.0);
+		ps.mainTexture = MAP_FLASH_PART;
+		ps.initialSpeed.min = 0;
+		ps.initialSpeed.max = 0;
+		ps.gravityScale = 0.0;
+		ps.lifeSpan.min = 0.04;
+		ps.lifeSpan.max = 0.04;
+		ps.spawnRate = 0.0;
+		ps.destroySystemWhenEmpty = true;
+		ParticleSystem* flashPtr = Game::CreateParticleObject(ps);
+		flashPtr->AddParticleBurst(1, 0.0);
+		//END_IF MUZZLE FLASH
 
 		Audio::Play2DSound(SFX_MG, Random::rangef(0.20, 0.40), 0.0);
 		nextBullet = bulletDelay;

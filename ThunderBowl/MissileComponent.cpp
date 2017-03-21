@@ -3,6 +3,8 @@
 #include "Audio.h"
 #include "Physics.h"
 
+PlayerComponent* MissileShooter;
+
  MissileComponent::MissileComponent(vec3 size, float ownerVelocity, string ownerName)
 {
 	missileSize = size;
@@ -90,7 +92,7 @@ void MissileComponent::MoveTransform()
 	particleTrail->transform = transform;
 }
 
-void MissileComponent::OnCollision(CollisionPair collisionPair)
+void MissileComponent::OnCollision(CollisionPair collisionPair, Component* collider)
 {
 	Initialize();
 
@@ -98,21 +100,25 @@ void MissileComponent::OnCollision(CollisionPair collisionPair)
 	{
 	case CollisionPair::CP_VEHICLE_MISSILE:
 		cout << "Missile collided with a vehicle" << endl;
-		//Explode();
-		break;
-	case CollisionPair::CP_STATIC_MISSILE:
-		cout << "Missile collided with a static" << endl;
-		//Explode();
+		DirectHit(collider);
 		break;
 	default:
 		cout << "Missile collided with an unknown object!" << endl;
 		break;
 	}
 	Finalize();
-	if (collisionPair == CP_VEHICLE_MISSILE || collisionPair == CP_STATIC_MISSILE)
-		Explode();
+}
 
+void MissileComponent::DirectHit(Component* collider) {
+	PlayerComponent* playerRef = &PlayerComponent();
 
+	GameObject* hitDirectly = Game::Find(collider->getName());
+	HealthComponent* health = &HealthComponent();
+	health = (HealthComponent*)hitDirectly->GetComponent(health);
+	health->currentHealth = 0.0;
+	lifeRemaining = 0.0;
+	MissileShooter = (PlayerComponent*)Game::Find(missileOwnerName)->GetComponent(playerRef);
+	MissileShooter->playerScore += 100.00;
 }
 
 void MissileComponent::Explode()
@@ -155,12 +161,17 @@ void MissileComponent::Explode()
 					ownerPlayer->playerScore += damage*0.5;
 				}
 
+				//Add score to Player Component
+				PlayerComponent* playerRef = &PlayerComponent();
+				MissileShooter = (PlayerComponent*)Game::Find(missileOwnerName)->GetComponent(playerRef);
+				MissileShooter->playerScore += 100 - distance * 2;;
+
 				//Add force at rigid body position
 				if (players[i]->tag == TAGS_AI_PLAYER)
 				{
 					EnemyComponent* enemy = &EnemyComponent();
 					enemy = (EnemyComponent*)players[i]->GetComponent(enemy);
-					enemy->enPhysVehicle->addForce(explosionForce, physx::PxForceMode::eIMPULSE);
+					enemy->enPhysVehicle->addForce(explosionForce, physx::PxForceMode::eIMPULSE);		//BOTH THROW NPWRITECHECK WARNING
 					enemy->enPhysVehicle->addTorque(explosionForce, physx::PxForceMode::eIMPULSE);
 
 				}

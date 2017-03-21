@@ -1,4 +1,5 @@
 #include "EnemyComponent.h"
+#include "BulletComponent.h"
 #include "GeoGenerator.h"
 #include "Game.h"
 #include "Physics.h"
@@ -96,17 +97,20 @@ void EnemyComponent::Update()
 	Finalize();
 }
 
-void EnemyComponent::OnCollision(Component::CollisionPair collisionPair) {
+void EnemyComponent::OnCollision(Component::CollisionPair collisionPair, Component* collider) {
 	Initialize();
 
 	MachineGunComponent* mgRef = &MachineGunComponent();
 	PlayerComponent* oppRef = &PlayerComponent();
 	EnemyComponent* enemyRef = &EnemyComponent();
+
 	HealthComponent* playerHealth = &HealthComponent();
+	//BulletComponent* bulletRef = &BulletComponent();
 
 	opponentComp = (EnemyComponent*)Game::Find(selfName)->GetComponent(enemyRef);
 
-	switch (collisionPair) {
+	switch (collisionPair) 
+	{
 	case(Component::CollisionPair::CP_VEHICLE_POWERUP):
 		Audio::Play2DSound(SFX_Powerup, Random::rangef(0.20, 0.50), 0.0);
 		oppVehicleMG = (MachineGunComponent*)Game::Find(selfName)->GetComponent(mgRef);
@@ -118,7 +122,6 @@ void EnemyComponent::OnCollision(Component::CollisionPair collisionPair) {
 		Audio::Play2DSound(SFX_Hit, Random::rangef(0.20, 0.50), 0.0);
 		playerHealth = (HealthComponent*)Game::Find(selfName)->GetComponent(playerHealth);
 		playerHealth->currentHealth -= 10.0;
-
 		break;
 	}
 

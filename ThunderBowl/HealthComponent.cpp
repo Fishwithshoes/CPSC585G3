@@ -8,6 +8,7 @@ void HealthComponent::Start()
 {
 	Initialize();
 	currentHealth = 100.0;
+	respawnTime = 20.00;
 	standardMat.diffuseColor = glm::vec3(0.0, 1.0, 0.0);
 	Finalize();
 }
@@ -15,6 +16,7 @@ void HealthComponent::Start()
 void HealthComponent::Update()
 {
 	Initialize();
+
 	//vector<GameObject*> currBullets = Game::FindGameObjectsWithTag(Tags::TAGS_PROJECTILE);
 	//for (int i = 0; i < currBullets.size(); i++) 
 	//{
@@ -31,8 +33,10 @@ void HealthComponent::Update()
 	//	}
 	//}
 	//
+
 	standardMat.diffuseColor = glm::vec3(0.0, currentHealth/100.0, 0.0);
-	if (currentHealth <= 0.0) 
+
+	if (currentHealth <= 0.0)
 	{
 		//transform.position = glm::vec3(0.0, -1005.0, 0.0);
 		GameObject* self = Game::Find(selfName);
@@ -84,7 +88,16 @@ void HealthComponent::Update()
 		ParticleSystem* ptr = Game::CreateParticleObject(ps);
 		ptr->AddParticleBurst(10, 0);
 		//END_IF EXPLOSION PARTICLES
+
+		respawnTime = 20.0;
 	}
 	Finalize();
 }
 
+bool HealthComponent::isDead() 
+{
+	if (currentHealth <= 0.0)
+		return true;
+	else
+		return false;
+}

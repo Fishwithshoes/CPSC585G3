@@ -52,8 +52,8 @@ class ContactReportCallback : public PxSimulationEventCallback
 					Component* triggerComp = reinterpret_cast<Component*>(pairs[i].triggerActor->userData);
 					if (triggerComp->CheckCollide()) {
 						Component* colliderComp = reinterpret_cast<Component*>(pairs[i].otherActor->userData);
-						triggerComp->OnCollision(Component::CollisionPair::CP_VEHICLE_POWERUP);
-						colliderComp->OnCollision(Component::CollisionPair::CP_VEHICLE_POWERUP);
+						triggerComp->OnCollision(Component::CollisionPair::CP_VEHICLE_POWERUP, colliderComp);
+						colliderComp->OnCollision(Component::CollisionPair::CP_VEHICLE_POWERUP, triggerComp);
 					}
 				}
 			}
@@ -71,23 +71,28 @@ class ContactReportCallback : public PxSimulationEventCallback
 				Component* secondCollider = reinterpret_cast<Component*>(pairHeader.actors[1]->userData);
 
 				if (shapeBuffer1[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_PROJECTILE &&
-					shapeBuffer2[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_OBSTACLE) 
+					shapeBuffer2[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_OBSTACLE)
 				{
-					firstCollider->OnCollision(Component::CollisionPair::CP_STATIC_PROJECTILE);
-					secondCollider->OnCollision(Component::CollisionPair::CP_STATIC_PROJECTILE);
+					firstCollider->OnCollision(Component::CollisionPair::CP_STATIC_PROJECTILE, secondCollider);
+					secondCollider->OnCollision(Component::CollisionPair::CP_STATIC_PROJECTILE, firstCollider);
 				}
 				else if (shapeBuffer1[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_WHEEL &&
-					shapeBuffer2[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_WHEEL) 
+					shapeBuffer2[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_WHEEL)
 				{
-					firstCollider->OnCollision(Component::CollisionPair::CP_VEHICLE_VEHICLE);
-					secondCollider->OnCollision(Component::CollisionPair::CP_VEHICLE_VEHICLE);
+					firstCollider->OnCollision(Component::CollisionPair::CP_VEHICLE_VEHICLE, secondCollider);
+					secondCollider->OnCollision(Component::CollisionPair::CP_VEHICLE_VEHICLE, firstCollider);
 				}
 				else if (shapeBuffer1[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_PROJECTILE &&
-					(shapeBuffer2[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_WHEEL ||
-					shapeBuffer2[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_CHASSIS))
+					shapeBuffer2[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_WHEEL)
 				{
-					firstCollider->OnCollision(Component::CollisionPair::CP_VEHICLE_PROJECTILE);
-					secondCollider->OnCollision(Component::CollisionPair::CP_VEHICLE_PROJECTILE);
+					firstCollider->OnCollision(Component::CollisionPair::CP_VEHICLE_PROJECTILE, secondCollider);
+					secondCollider->OnCollision(Component::CollisionPair::CP_VEHICLE_PROJECTILE, firstCollider);
+				}
+				else if (shapeBuffer1[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_PROJECTILE &&
+					shapeBuffer2[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_CHASSIS)
+				{
+					firstCollider->OnCollision(Component::CollisionPair::CP_VEHICLE_PROJECTILE, secondCollider);
+					secondCollider->OnCollision(Component::CollisionPair::CP_VEHICLE_PROJECTILE, firstCollider);
 				}
 				/*else if (shapeBuffer1[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_WHEEL &&
 					shapeBuffer2[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_OBSTACLE)
@@ -99,14 +104,14 @@ class ContactReportCallback : public PxSimulationEventCallback
 					(shapeBuffer2[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_WHEEL ||
 					shapeBuffer2[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_CHASSIS))
 				{
-					firstCollider->OnCollision(Component::CollisionPair::CP_VEHICLE_MISSILE);
-					secondCollider->OnCollision(Component::CollisionPair::CP_VEHICLE_MISSILE);
+					firstCollider->OnCollision(Component::CollisionPair::CP_VEHICLE_MISSILE, secondCollider);
+					secondCollider->OnCollision(Component::CollisionPair::CP_VEHICLE_MISSILE, firstCollider);
 				}
 				else if (shapeBuffer1[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_MISSILE &&
 					shapeBuffer2[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_OBSTACLE)
 				{
-					firstCollider->OnCollision(Component::CollisionPair::CP_STATIC_MISSILE);
-					secondCollider->OnCollision(Component::CollisionPair::CP_STATIC_MISSILE);
+					//firstCollider->OnCollision(Component::CollisionPair::CP_STATIC_MISSILE);
+					//secondCollider->OnCollision(Component::CollisionPair::CP_STATIC_MISSILE);
 				}
 				/*else if (shapeBuffer1[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_MISSILE &&
 					shapeBuffer2[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_GROUND)
@@ -116,9 +121,9 @@ class ContactReportCallback : public PxSimulationEventCallback
 				}*/
 				else 
 				{
-					cout << "collision not caught" << endl;
-					cout << shapeBuffer1[0]->getSimulationFilterData().word0 << endl;
-					cout << shapeBuffer2[0]->getSimulationFilterData().word0 << endl;
+					//cout << "collision not caught" << endl;
+					//cout << shapeBuffer1[0]->getSimulationFilterData().word0 << endl;
+					//cout << shapeBuffer2[0]->getSimulationFilterData().word0 << endl;
 				}
 				/*
 				if (shapeBuffer[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_OBSTACLE) 

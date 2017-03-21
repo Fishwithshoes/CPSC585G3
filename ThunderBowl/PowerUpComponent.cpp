@@ -68,7 +68,7 @@ void PowerUpComponent::Update()
 	Finalize();
 }
 
-void PowerUpComponent::OnCollision(Component::CollisionPair collisionPair) 
+void PowerUpComponent::OnCollision(Component::CollisionPair collisionPair, Component* collider) 
 {
 	cout << "PU Collision" << endl;
 	validCollide = false;

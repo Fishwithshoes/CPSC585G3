@@ -49,12 +49,11 @@ void PlayerComponent::Update()
 {
 	Initialize();
 
-	//if (oldHealth != playerHealth || oldScore != playerScore) 
-	//{
-	//	PlayerStateToConsole();
-	//	oldHealth = playerHealth;
-	//	oldScore = playerScore;
-	//}
+	if (oldScore != playerScore) 
+	{
+		PlayerStateToConsole();
+		oldScore = playerScore;
+	}
 
 	//SBurnCheck();
 
@@ -203,10 +202,9 @@ void PlayerComponent::UpdateParticles(float currentHealth)
 
 void PlayerComponent::PlayerStateToConsole() 
 {
-	//cout << selfName << endl;
-	//cout << "Player Health: " << playerHealth << endl;
-	//cout << "Player Score: " << playerScore << endl;
-	//cout << endl;
+	cout << selfName << endl;
+	cout << "Player Score: " << playerScore << endl;
+	cout << endl;
 }
 
 /*void PlayerComponent::BurnCheck() {
