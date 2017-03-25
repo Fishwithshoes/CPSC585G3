@@ -148,6 +148,45 @@ void GameManager::EndGame()
 	vector<GameObject*> gameOverItems = Game::FindGameObjectsWithTag(TAGS_GAME_OVER);
 	for (int i = 0; i < gameOverItems.size(); i++)
 		gameOverItems[i]->isVisible = true;
+
+	//Display scores
+	vector<GameObject*> players = Game::FindGameObjectsWithTag(TAGS_HUMAN_PLAYER);
+	vector<GameObject*> playeri = Game::FindGameObjectsWithTag(TAGS_AI_PLAYER);
+	players.insert(players.end(), playeri.begin(), playeri.end());
+
+	for (int i = 0; i < players.size(); i++)
+	{
+		PlayerComponent* player = &PlayerComponent();
+		player = (PlayerComponent*)players[i]->GetComponent(player);
+
+		string strScore = to_string(player->playerScore);
+		GameObject* score1 = Game::Find("PlayerScore-1-" + i);
+		GameObject* score2 = Game::Find("PlayerScore-2-" + i);
+		GameObject* score3 = Game::Find("PlayerScore-3-" + i);
+		GameObject* score4 = Game::Find("PlayerScore-4-" + i);
+
+		for (int i = strScore.length() - 1; i >= 0; i--)
+		{
+			switch (i)
+			{
+			case 0:
+				score4->particleOverlayMat.mainTexture = MAP_ZERO + (strScore[-1 + strScore.length()] - 48);
+				break;
+			case 1:
+				score3->particleOverlayMat.mainTexture = MAP_ZERO + (strScore[-2 + strScore.length()] - 48);
+				break;
+			case 2:
+				score2->particleOverlayMat.mainTexture = MAP_ZERO + (strScore[-3 + strScore.length()] - 48);
+				break;
+			case 3:
+				score1->particleOverlayMat.mainTexture = MAP_ZERO + (strScore[-4 + strScore.length()] - 48);
+				break;
+			default:
+				cout << "What are ya doin' matey? Score be too large!" << endl;
+				break;
+			}
+		}
+	}
 }
 void GameManager::GotoMainMenu()
 {

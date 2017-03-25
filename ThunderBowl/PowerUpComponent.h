@@ -2,10 +2,11 @@
 #include "Component.h"
 #include <PxPhysicsAPI.h>
 
-class PowerUpComponent :
-	public Component
+class PowerUpComponent : public Component
 {
 public:
+	PowerUpComponent(GameWeapons typeIn);
+
 	//physx::PxRigidDynamic* statComp;
 	physx::PxRigidStatic* statComp;
 	bool validCollide;
@@ -16,6 +17,6 @@ public:
 	void OnCollision(Component::CollisionPair collisionPair, Component* collider);
 	bool CheckCollide();
 
-	GameWeapons type;
+	GameWeapons type = GW_MACHINE_GUN;
 };
 

@@ -36,8 +36,8 @@ void MissileComponent::Start()
 	ps.name = selfName + "Trail";
 	ps.initialSpeed.min = 0;
 	ps.initialSpeed.max = 0;
-	ps.initialColor.alpha = vec4(0.6, 0.6, 0.6, 1);
-	ps.initialColor.bravo = vec4(0.9, 0.9, 0.9, 1);
+	ps.initialColor.alpha = vec4(vec3(0.5), 1);
+	ps.initialColor.bravo = vec4(vec3(0.7), 1);
 	ps.initialRadius.min = 0.7;
 	ps.initialRadius.max = 1.3;
 	ps.lifeSpan.min = 1.3;
@@ -125,6 +125,11 @@ void MissileComponent::Explode()
 {
 	vector<GameObject*> players = Game::FindGameObjectsWithTag(TAGS_AI_PLAYER);
 	vector<GameObject*> playeri = Game::FindGameObjectsWithTag(TAGS_HUMAN_PLAYER);
+
+	GameObject* owner = Game::Find(missileOwnerName);
+	PlayerComponent* ownerPlayer = &PlayerComponent();
+	ownerPlayer = (PlayerComponent*)owner->GetComponent(ownerPlayer);
+
 	players.insert(players.end(), playeri.begin(), playeri.end());
 	for (int i = 0; i < players.size(); i++)
 	{
@@ -139,12 +144,22 @@ void MissileComponent::Explode()
 				physx::PxVec3 explosionForce;
 				explosionForce = physx::PxVec3(missileToPlayer.x, missileToPlayer.y, missileToPlayer.z);
 				explosionForce = physx::PxVec3(0, 1, 0);
-				explosionForce *= 20000 - distance * 200;
+				explosionForce *= 40000 - distance * 100;
 
 				//Do damage to Health Component
-				HealthComponent* health = &HealthComponent();
-				health = (HealthComponent*)players[i]->GetComponent(health);
-				health->currentHealth -= 100 - distance*2;
+				HealthComponent* victimHealth = &HealthComponent();
+				victimHealth = (HealthComponent*)players[i]->GetComponent(victimHealth);
+				float damage = 100 - distance * 2;
+				victimHealth->currentHealth -= damage;
+
+				if (victimHealth->currentHealth <= 0.0)//Points for making a kill
+				{
+					ownerPlayer->playerScore += 100;
+				}
+				else//Points for damage
+				{
+					ownerPlayer->playerScore += damage*0.5;
+				}
 
 				//Add score to Player Component
 				PlayerComponent* playerRef = &PlayerComponent();
@@ -175,26 +190,27 @@ void MissileComponent::Explode()
 	Audio::Play2DSound(SFX_ExplodeMissile, Random::rangef(0.1,0.2), 0);
 
 	ParticleSystem ps = ParticleSystem();
-	ps.initialSpeed.min = 25;
-	ps.initialSpeed.max = 28;
-	ps.accelerationScale = 0.97;
-	ps.initialColor.alpha = vec4(0.8, 0.2, 0.0, 1);
-	ps.initialColor.bravo = vec4(0.8, 0.4, 0.0, 1);
-	ps.initialRadius.min = 2.3;
-	ps.initialRadius.max = 2.9;
-	ps.lifeSpan.min = 2.3;
-	ps.lifeSpan.max = 2.8;
+	ps.initialSpeed.min = 115;
+	ps.initialSpeed.max = 118;
+	ps.accelerationScale = 0.88;
+	ps.initialColor.alpha = vec4(vec3(1.0), 1);
+	ps.initialColor.bravo = vec4(vec3(0.7), 1);
+	ps.initialRadius.min = 3.3;
+	ps.initialRadius.max = 3.9;
+	ps.lifeSpan.min = 1.3;
+	ps.lifeSpan.max = 1.8;
 	ps.spawnPointVariance = vec3(0.5);
-	ps.monochromatic = false;
-	ps.mainTexture = MAP_SMOKE_PART;
+	ps.monochromatic = true;
+	ps.mainTexture = MAP_FLAME13_PART;
+	ps.textures = {MAP_FLAME09_PART, MAP_FLAME13_PART, MAP_FLAME13_PART, MAP_SMOKE_PART};
 	ps.spawnRate = 0;
 	ps.destroySystemWhenEmpty = true;
-	ps.gravityScale = -2;
+	ps.gravityScale = -15;
 	ps.transform = transform;
 	ps.initialFogLevel.min = 0;
 	ps.initialFogLevel.max = 0;
 	ParticleSystem* ptr = Game::CreateParticleObject(ps);
-	ptr->AddParticleBurst(20, 0);
+	ptr->AddParticleBurst(30, 0);
 
 	lifeRemaining = 0.0;
 }

@@ -11,8 +11,9 @@ class VehicleComponent :public Component
 public:
 	void Start();
 	void Update();
+
 	void OnCollision(Component::CollisionPair collisionPair, Component* collider);
-	void UpdateParticleSystems();
+	void UpdateParticles();
 
 	float currentSpeed;
 	float topSpeed = 125.0;
@@ -37,5 +38,6 @@ private:
 	float currentTurn = 0;
 	string wheelSprayNameLeft;
 	string wheelSprayNameRight;
+	bool enteredWaterPrev = false;
 };
 

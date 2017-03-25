@@ -42,7 +42,7 @@ void main()
 	vec4 final = color * mainTex;
 	
 	//FOGGY FUGUE
-	float u = clamp(viewDist*0.004*fogLevel, 0, 1);
+	float u = clamp(viewDist*0.003*fogLevel, 0, 1);
 	final.xyz = final.xyz * (1-u) + envColor * u;
 	
 	//OUTPUT

@@ -49,16 +49,17 @@ void Game::BuildWorld()
 	//temp.standardMat.tileUV = vec2(12, 12);
 	//ptr = Game::CreateWorldObject(temp);
 
-	temp = GameObject("Thunderbowl", TAGS_DECORATION);
+	/*temp = GameObject("Thunderbowl", TAGS_DECORATION);
 	temp.staticGeo = SG_MAP;
 	//temp.standardMat.diffuseColor = vec3(1,0,0);
+	//temp.castShadow = false;
 	temp.standardMat.metalness = 0.5;
 	temp.standardMat.isMetallic = true;
 	temp.standardMat.roughness = 0.25;
 	temp.standardMat.diffuseMap = MAP_CHASSIS_DIFFUSE;
 	temp.standardMat.normalMap = MAP_CHASSIS_NORMAL;
 	temp.standardMat.tileUV = vec2(4, 4);
-	Game::CreateStaticObject(temp);
+	Game::CreateStaticObject(temp);*/
 
 	//ifndef Car Cacophony
 	/*temp = GameObject();
@@ -67,29 +68,93 @@ void Game::BuildWorld()
 	ptr = Game::CreateWorldObject(temp);
 	ptr->AddComponent(new VehicleComponent());
 	ptr->AddComponent(new MachineGunComponent());*/
+
 	GameObject pathNode1 = GameObject();
 	pathNode1.name = "Node1";
-	pathNode1.transform.position = vec3(0.0, 1.0, 100.0);
-	ptr = Game::CreateAIObject(pathNode1);
+	pathNode1.transform.position = vec3(-150.0, 1.0, 0.0);
+	pathNode1.mesh = GeoGenerator::MakeBox(1, 1, 1, false);
+	pathNode1.tag = TAGS_AI_NODE;
+	ptr = Game::CreateWorldObject(pathNode1);
 	ptr->AddComponent(new AINodeComponent());
 
 	GameObject pathNode2 = GameObject();
 	pathNode2.name = "Node2";
-	pathNode2.transform.position = vec3(0.0, 1.0, -100.0);
-	ptr = Game::CreateAIObject(pathNode2);
+	pathNode2.transform.position = vec3(150.0, 1.0, 0.0);
+	pathNode2.mesh = GeoGenerator::MakeBox(1, 1, 1, false);
+	pathNode2.tag = TAGS_AI_NODE;
+	ptr = Game::CreateWorldObject(pathNode2);
 	ptr->AddComponent(new AINodeComponent());
 
 	GameObject pathNode3 = GameObject();
 	pathNode3.name = "Node3";
-	pathNode3.transform.position = vec3(100.0, 1.0, 0.0);
-	ptr = Game::CreateAIObject(pathNode3);
+	pathNode3.transform.position = vec3(0.0, 1.0, -150.0);
+	pathNode3.mesh = GeoGenerator::MakeBox(1, 1, 1, false);
+	pathNode3.tag = TAGS_AI_NODE;
+	ptr = Game::CreateWorldObject(pathNode3);
 	ptr->AddComponent(new AINodeComponent());
 
 	GameObject pathNode4 = GameObject();
 	pathNode4.name = "Node4";
-	pathNode4.transform.position = vec3(-100.0, 1.0, 0.0);
-	ptr = Game::CreateAIObject(pathNode4);
+	pathNode4.transform.position = vec3(0.0, 1.0, 150.0);
+	pathNode4.mesh = GeoGenerator::MakeBox(1, 1, 1, false);
+	pathNode4.tag = TAGS_AI_NODE;
+	ptr = Game::CreateWorldObject(pathNode4);
 	ptr->AddComponent(new AINodeComponent());
+
+	GameObject powerUp1 = GameObject();
+	powerUp1.name = "Node5";
+	powerUp1.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
+	powerUp1.transform.position = vec3(0.0, 1.0, -80.0);
+	powerUp1.tag = TAGS_AI_NODE;
+	ptr = Game::CreateWorldObject(powerUp1);
+	ptr->AddComponent(new PowerUpComponent(GW_MACHINE_GUN));
+	ptr->AddComponent(new FloatComponent());
+	ptr->AddComponent(new RotateComponent());
+	ptr->AddComponent(new AINodeComponent(NodeTypes::NT_MG_POWERUP));
+
+	GameObject powerUp2 = GameObject();
+	powerUp2.name = "Node6";
+	powerUp2.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
+	powerUp2.transform.position = vec3(0.0, 1.0, 80.0);
+	powerUp2.tag = TAGS_AI_NODE;
+	ptr = Game::CreateWorldObject(powerUp2);
+	ptr->AddComponent(new PowerUpComponent(GW_MACHINE_GUN));
+	ptr->AddComponent(new FloatComponent());
+	ptr->AddComponent(new RotateComponent());
+	ptr->AddComponent(new AINodeComponent(NodeTypes::NT_MG_POWERUP));
+
+	GameObject powerUp3 = GameObject();
+	powerUp3.name = "Node7";
+	powerUp3.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
+	powerUp3.transform.position = vec3(-80.0, 1.0, 0.0);
+	powerUp3.tag = TAGS_AI_NODE;
+	ptr = Game::CreateWorldObject(powerUp3);
+	ptr->AddComponent(new PowerUpComponent(GW_FLAMETHROWER));
+	ptr->AddComponent(new FloatComponent());
+	ptr->AddComponent(new RotateComponent());
+	ptr->AddComponent(new AINodeComponent(NodeTypes::NT_FT_POWERUP));
+
+	GameObject powerUp4 = GameObject();
+	powerUp4.name = "Node8";
+	powerUp4.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
+	powerUp4.transform.position = vec3(80.0, 1.0, 0.0);
+	powerUp4.tag = TAGS_AI_NODE;
+	ptr = Game::CreateWorldObject(powerUp4);
+	ptr->AddComponent(new PowerUpComponent(GW_FLAMETHROWER));
+	ptr->AddComponent(new FloatComponent());
+	ptr->AddComponent(new RotateComponent());
+	ptr->AddComponent(new AINodeComponent(NodeTypes::NT_FT_POWERUP));
+
+	GameObject powerUp5 = GameObject();
+	powerUp5.name = "Node9";
+	powerUp5.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
+	powerUp5.transform.position = vec3(0.0, 1.0, 0.0);
+	powerUp5.tag = TAGS_AI_NODE;
+	ptr = Game::CreateWorldObject(powerUp5);
+	ptr->AddComponent(new PowerUpComponent(GW_MISSILE_LAUNCHER));
+	ptr->AddComponent(new FloatComponent());
+	ptr->AddComponent(new RotateComponent());
+	ptr->AddComponent(new AINodeComponent(NodeTypes::NT_RK_POWERUP));
 
 	for (int i = 0; i < Physics::playerVehiclesNum; i++) {								//CREATE PLAYERS
 		GameObject player = GameObject();
@@ -98,11 +163,12 @@ void Game::BuildWorld()
 		player.name = "Player" + to_string(i);
 		player.tag = TAGS_HUMAN_PLAYER;
 		ptr = Game::CreateWorldObject(player);
+		ptr->AddComponent(new PlayerComponent());
 		ptr->AddComponent(new VehicleComponent());
 		ptr->AddComponent(new MachineGunComponent());
 		ptr->AddComponent(new MissileLauncherComponent());
 		ptr->AddComponent(new FlamethrowerComponent());
-		ptr->AddComponent(new PlayerComponent());
+		ptr->AddComponent(new HealthComponent());
 	}
 
 	for (int i = 0; i < Physics::opponentVehiclesNum; i++) {								//CREATE AI
@@ -119,46 +185,6 @@ void Game::BuildWorld()
 		ptr->AddComponent(new AIControlComponent1());
 		ptr->AddComponent(new HealthComponent());
 	}
-
-	GameObject powerUp1 = GameObject();
-	powerUp1.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
-	powerUp1.transform.position = vec3(0.0, 10.0, -80.0);
-	powerUp1.standardMat.selfIllumLevel = 1.0;
-	powerUp1.standardMat.selfIllumColor = vec3(0.0, 1.0, 0.0);
-	ptr = Game::CreateWorldObject(powerUp1);
-	ptr->AddComponent(new PowerUpComponent());
-	ptr->AddComponent(new FloatComponent());
-	ptr->AddComponent(new RotateComponent());
-
-	GameObject powerUp2 = GameObject();
-	powerUp2.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
-	powerUp2.transform.position = vec3(0.0, 10.0, 80.0);
-	powerUp2.standardMat.selfIllumLevel = 1.0;
-	powerUp2.standardMat.selfIllumColor = vec3(0.0, 1.0, 0.0);
-	ptr = Game::CreateWorldObject(powerUp2);
-	ptr->AddComponent(new PowerUpComponent());
-	ptr->AddComponent(new FloatComponent());
-	ptr->AddComponent(new RotateComponent());
-
-	GameObject powerUp3 = GameObject();
-	powerUp3.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
-	powerUp3.transform.position = vec3(-80.0, 10.0, 0.0);
-	powerUp3.standardMat.selfIllumLevel = 1.0;
-	powerUp3.standardMat.selfIllumColor = vec3(0.0, 1.0, 0.0);
-	ptr = Game::CreateWorldObject(powerUp3);
-	ptr->AddComponent(new PowerUpComponent());
-	ptr->AddComponent(new FloatComponent());
-	ptr->AddComponent(new RotateComponent());
-
-	GameObject powerUp4 = GameObject();
-	powerUp4.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
-	powerUp4.transform.position = vec3(80.0, 10.0, 0.0);
-	powerUp4.standardMat.selfIllumLevel = 1.0;
-	powerUp4.standardMat.selfIllumColor = vec3(0.0, 1.0, 0.0);
-	ptr = Game::CreateWorldObject(powerUp4);
-	ptr->AddComponent(new PowerUpComponent());
-	ptr->AddComponent(new FloatComponent());
-	ptr->AddComponent(new RotateComponent());
 
 	/*GameObject obstacle1 = GameObject();
 	obstacle1.mesh = GeoGenerator::MakeBox(16.0, 40.0, 16.0, false);
@@ -263,7 +289,7 @@ void Game::BuildWorld()
 
 	temp = GameObject("Sun", TAGS_DECORATION);
 	temp.mesh = GeoGenerator::MakeSphere(250, 16, 32, false);
-	temp.transform.position = vec3(5, 2, 5)*650.0f;
+	temp.transform.position = vec3(5, 2, 5)*560.0f;
 	temp.standardMat.roughness = 1.0;
 	temp.standardMat.metalness = 0.00;
 	temp.standardMat.diffuseLevel = 0.0;
@@ -271,6 +297,17 @@ void Game::BuildWorld()
 	temp.standardMat.selfIllumColor = vec3(1.0, 0.5, 0.1);
 	temp.standardMat.fogLevel = 0.0;
 	Game::CreateWorldObject(temp);
+
+	temp = GameObject("LightSymbol", TAGS_DEBUG_2);
+	temp.mesh = GeoGenerator::MakeSphere(20, 4, 8, false);
+	temp.transform.position = vec3(5, 2, 5)*50.0f;
+	temp.standardMat.roughness = 1.0;
+	temp.standardMat.metalness = 0.00;
+	temp.standardMat.diffuseLevel = 0.0;
+	temp.standardMat.selfIllumLevel = 3.0;
+	temp.standardMat.selfIllumColor = vec3(1.0, 0.0, 0.0);
+	temp.standardMat.fogLevel = 0.0;
+	//Game::CreateWorldObject(temp);
 
 	temp = GameObject("Moon", TAGS_DECORATION);
 	temp.mesh = GeoGenerator::MakeSphere(100, 16, 32, false);
@@ -286,8 +323,9 @@ void Game::BuildWorld()
 	temp.standardMat.fogLevel = 0.0;
 	Game::CreateWorldObject(temp);
 
-	temp = GameObject("OceanTop", TAGS_DECORATION);
+	/*temp = GameObject("OceanTop", TAGS_DECORATION);
 	temp.staticGeo = SG_OCEAN;
+	temp.castShadow = false;
 	temp.transform.position.y = 8;
 	temp.standardMat.diffuseColor = vec3(0.0, 1.0, 1.0)*0.5f;
 	temp.standardMat.roughness = 0.0;
@@ -298,10 +336,11 @@ void Game::BuildWorld()
 	temp.standardMat.tileUV = vec2(10, 10);
 	temp.getGrabPass = true;
 	ptr = Game::CreateStaticObject(temp);
-	ptr->AddComponent(new OceanComponent());
+	ptr->AddComponent(new OceanComponent());*/
 
-	temp = GameObject("OceanBottom", TAGS_DECORATION);
+	/*temp = GameObject("OceanBottom", TAGS_DECORATION);
 	temp.staticGeo = SG_OCEAN_DOWN;
+	temp.castShadow = false;
 	temp.transform.position.y = 8;
 	temp.standardMat.diffuseColor = vec3(0.0, 1.0, 1.0)*0.5f;
 	temp.standardMat.roughness = 0.0;
@@ -312,7 +351,7 @@ void Game::BuildWorld()
 	temp.standardMat.tileUV = vec2(10, 10);
 	ptr = Game::CreateStaticObject(temp);
 	temp.getGrabPass = true;
-	ptr->AddComponent(new OceanComponent());
+	ptr->AddComponent(new OceanComponent());*/
 
 	/*temp = GameObject("Puddle", TAGS_DECORATION);
 	temp.staticGeo = SG_PUDDLE;
@@ -342,9 +381,9 @@ void Game::BuildWorld()
 	
 //OVERLAY GAMEOBJECTS - HUD
 	//Health meter
-	temp = GameObject("HealthMeterBack", TAGS_HUD);
-	temp.mesh = GeoGenerator::MakeRect(1.05, 0.20, GA_LEFT);
-	temp.transform.Translate(vec3(-0.2625, 0.8525, 0.0), false);
+	temp = GameObject("StatusMeterBack", TAGS_HUD);
+	temp.mesh = GeoGenerator::MakeRect(1.25, 0.32, GA_LEFT);
+	temp.transform.Translate(vec3(-0.3725, 0.79, 0.0), false);
 	temp.particleOverlayMat.color = vec4(0, 0, 0, 0.5);
 	Game::CreateOverlayObject(temp);
 
@@ -354,17 +393,23 @@ void Game::BuildWorld()
 	temp.particleOverlayMat.color = vec4(0, 0.5, 1, 1);
 	Game::CreateOverlayObject(temp);
 
-	//Ammo meter
-	temp = GameObject("AmmoMeterBack", TAGS_HUD);
-	temp.mesh = GeoGenerator::MakeRect(1.05, 0.10, GA_LEFT);
-	temp.transform.Translate(vec3(-0.2625, 0.7025, 0.0), false);
-	temp.particleOverlayMat.color = vec4(0, 0, 0, 0.5);
+	temp = GameObject("HeathIcon", TAGS_HUD);
+	temp.mesh = GeoGenerator::MakeRect(0.15, 0.15, GA_CENTER);
+	temp.transform.Translate(vec3(-0.3175, 0.85, -0.1), false);
+	temp.particleOverlayMat.mainTexture = MAP_HEALTH_ICON;
 	Game::CreateOverlayObject(temp);
 
+	//Ammo meter
 	temp = GameObject("AmmoMeter", TAGS_HUD);
 	temp.mesh = GeoGenerator::MakeRect(1.00, 0.05, GA_LEFT);
 	temp.transform.Translate(vec3(-0.25, 0.70, -0.1), false);
 	temp.particleOverlayMat.color = vec4(0.8, 0.4, 0.0, 1);
+	Game::CreateOverlayObject(temp);
+
+	temp = GameObject("WeaponIcon", TAGS_HUD);
+	temp.mesh = GeoGenerator::MakeRect(0.1, 0.1, GA_CENTER);
+	temp.transform.Translate(vec3(-0.3175, 0.70, -0.1), false);
+	temp.particleOverlayMat.mainTexture = MAP_MACHINE_GUN_ICON;
 	Game::CreateOverlayObject(temp);
 
 	//Speedometer
@@ -388,35 +433,35 @@ void Game::BuildWorld()
 
 	//Game Timer
 	temp = GameObject("TimerBack", TAGS_HUD);
-	temp.mesh = GeoGenerator::MakeRect(0.45, 0.1, GA_LEFT);
-	temp.transform.Translate(vec3(-0.54, 0.9, 0.0), false);
+	temp.mesh = GeoGenerator::MakeRect(0.442, 0.1, GA_LEFT);
+	temp.transform.Translate(vec3(-0.63, 0.9, 0.0), false);
 	temp.particleOverlayMat.color = vec4(0, 0, 0, 0.5);
 	Game::CreateOverlayObject(temp);
 
 	temp = GameObject("TimerLabel", TAGS_HUD);
 	temp.mesh = GeoGenerator::MakeRect(0.2, 0.2, GA_LEFT);
-	temp.transform.Translate(vec3(-0.54, 0.9, -0.1), false);
+	temp.transform.Translate(vec3(-0.63, 0.9, -0.1), false);
 	temp.particleOverlayMat.color = vec4(1.0, 1.0, 1.0, 1.0);
 	temp.particleOverlayMat.mainTexture = MAP_TIME;
 	Game::CreateOverlayObject(temp);
 
 	temp = GameObject("Timer1", TAGS_HUD);
 	temp.mesh = GeoGenerator::MakeRect(0.075, 0.075, GA_LEFT);
-	temp.transform.Translate(vec3(-0.44, 0.9, -0.2), false);
+	temp.transform.Translate(vec3(-0.52, 0.9, -0.2), false);
 	temp.particleOverlayMat.color = vec4(1.0, 1.0, 1.0, 1.0);
 	temp.particleOverlayMat.mainTexture = MAP_ZERO;
 	Game::CreateOverlayObject(temp);
 
 	temp = GameObject("Timer2", TAGS_HUD);
 	temp.mesh = GeoGenerator::MakeRect(0.075, 0.075, GA_LEFT);
-	temp.transform.Translate(vec3(-0.40, 0.9, -0.3), false);
+	temp.transform.Translate(vec3(-0.48, 0.9, -0.3), false);
 	temp.particleOverlayMat.color = vec4(1.0, 1.0, 1.0, 1.0);
 	temp.particleOverlayMat.mainTexture = MAP_ZERO;
 	Game::CreateOverlayObject(temp);
 
 	temp = GameObject("Timer3", TAGS_HUD);
 	temp.mesh = GeoGenerator::MakeRect(0.075, 0.075, GA_LEFT);
-	temp.transform.Translate(vec3(-0.38, 0.9, -0.4), false);
+	temp.transform.Translate(vec3(-0.46, 0.9, -0.4), false);
 	temp.particleOverlayMat.color = vec4(1.0, 1.0, 1.0, 1.0);
 	temp.particleOverlayMat.mainTexture = MAP_ZERO;
 	Game::CreateOverlayObject(temp);
@@ -424,7 +469,7 @@ void Game::BuildWorld()
 	//Score
 	temp = GameObject("ScoreBack", TAGS_HUD);
 	temp.mesh = GeoGenerator::MakeRect(0.5, 0.1, GA_LEFT);
-	temp.transform.Translate(vec3(0.35, 0.9, 0.0), false);
+	temp.transform.Translate(vec3(0.34, 0.9, 0.0), false);
 	temp.particleOverlayMat.color = vec4(0, 0, 0, 0.5);
 	Game::CreateOverlayObject(temp);
 
@@ -491,17 +536,80 @@ void Game::BuildWorld()
 
 //OVERLAY GAMEOBJECTS - GAME OVER
 	temp = GameObject("GameOverBack", TAGS_GAME_OVER);
-	temp.mesh = GeoGenerator::MakeRect(1.0, 0.40, GA_CENTER);
-	temp.transform.Translate(vec3(0.0, 0.7, -0.5), false);
-	temp.particleOverlayMat.color = vec4(0, 0, 0, 0.5);	
+	temp.mesh = GeoGenerator::MakeRect(1.0, 0.50, GA_CENTER);
+	temp.transform.Translate(vec3(0.0, 0.7, -0.0), false);
+	temp.particleOverlayMat.color = vec4(0, 0, 0, 1.0);	
 	//Game::CreateOverlayObject(temp);
 
 	temp = GameObject("GameOver", TAGS_GAME_OVER);
-	temp.mesh = GeoGenerator::MakeRect(0.95, 0.45, GA_CENTER);
-	temp.transform.Translate(vec3(0.0, 0.7, -0.6), false);
+	temp.mesh = GeoGenerator::MakeRect(0.95, 0.55, GA_CENTER);
+	temp.transform.Translate(vec3(0.0, 0.8, -0.01), false);
 	temp.particleOverlayMat.mainTexture = MAP_GAME_OVER;
-	temp.particleOverlayMat.color = vec4(1, 0, 0, 0.5);
+	temp.particleOverlayMat.color = vec4(1, 0, 0, 1.0);
 	Game::CreateOverlayObject(temp);
+
+	for (int i = 0; i < Physics::totalVehiclesNum; i++)
+	{
+		float offset = -i*0.2;
+		float layer = -i*0.1;
+
+		vec4 nameColor = i < Physics::playerVehiclesNum ? vec4(1) : vec4(vec3(0.6), 1);
+
+		temp = GameObject("PlayerScoreBack" + i, TAGS_GAME_OVER);
+		temp.mesh = GeoGenerator::MakeRect(1.5, 0.18, GA_CENTER);
+		temp.transform.Translate(vec3(0.0, 0.6 + offset, -0.10 + layer), false);
+		temp.particleOverlayMat.color = vec4(0, 0, 0, 0.5);
+		Game::CreateOverlayObject(temp);
+
+		temp = GameObject("PlayerScoreName-0-" + i, TAGS_GAME_OVER);
+		temp.mesh = GeoGenerator::MakeRect(0.2, 0.15, GA_LEFT);
+		temp.transform.Translate(vec3(-0.40, 0.6 + offset, -0.11 + layer), false);
+		temp.particleOverlayMat.mainTexture = MAP_ZERO;
+		temp.particleOverlayMat.color = nameColor;
+		Game::CreateOverlayObject(temp);
+
+		temp = GameObject("PlayerScoreName-1-" + i, TAGS_GAME_OVER);
+		temp.mesh = GeoGenerator::MakeRect(0.2, 0.15, GA_LEFT);
+		temp.transform.Translate(vec3(-0.33, 0.6 + offset, -0.12 + layer), false);
+		temp.particleOverlayMat.mainTexture = MAP_ONE + i;
+		temp.particleOverlayMat.color = nameColor;
+		Game::CreateOverlayObject(temp);
+
+		temp = GameObject("PlayerScoreLabel" + i, TAGS_GAME_OVER);
+		temp.mesh = GeoGenerator::MakeRect(0.3, 0.3, GA_LEFT);
+		temp.transform.Translate(vec3(-0.02, 0.6 + offset, -0.13 + layer), false);
+		temp.particleOverlayMat.mainTexture = MAP_SCORE;
+		temp.particleOverlayMat.color = nameColor;
+		Game::CreateOverlayObject(temp);
+
+		temp = GameObject("PlayerScore-1-" + i, TAGS_GAME_OVER);
+		temp.mesh = GeoGenerator::MakeRect(0.16, 0.12, GA_LEFT);
+		temp.transform.Translate(vec3(0.15, 0.6 + offset, -0.14 + layer), false);
+		temp.particleOverlayMat.mainTexture = MAP_ZERO;
+		temp.particleOverlayMat.color = nameColor;
+		Game::CreateOverlayObject(temp);
+
+		temp = GameObject("PlayerScore-2-" + i, TAGS_GAME_OVER);
+		temp.mesh = GeoGenerator::MakeRect(0.15, 0.12, GA_LEFT);
+		temp.transform.Translate(vec3(0.20, 0.6 + offset, -0.15 + layer), false);
+		temp.particleOverlayMat.mainTexture = MAP_ZERO;
+		temp.particleOverlayMat.color = nameColor;
+		Game::CreateOverlayObject(temp);
+
+		temp = GameObject("PlayerScore-3-" + i, TAGS_GAME_OVER);
+		temp.mesh = GeoGenerator::MakeRect(0.15, 0.12, GA_LEFT);
+		temp.transform.Translate(vec3(0.25, 0.6 + offset, -0.16 + layer), false);
+		temp.particleOverlayMat.mainTexture = MAP_ZERO;
+		temp.particleOverlayMat.color = nameColor;
+		Game::CreateOverlayObject(temp);
+
+		temp = GameObject("PlayerScore-4-" + i, TAGS_GAME_OVER);
+		temp.mesh = GeoGenerator::MakeRect(0.15, 0.12, GA_LEFT);
+		temp.transform.Translate(vec3(0.30, 0.6 + offset, -0.17 + layer), false);
+		temp.particleOverlayMat.mainTexture = MAP_ZERO;
+		temp.particleOverlayMat.color = nameColor;
+		Game::CreateOverlayObject(temp);
+	}
 
 	//IF_DEF HIDE GAME OVER
 	vector<GameObject*> gameOverItems = FindGameObjectsWithTag(TAGS_GAME_OVER);
@@ -571,13 +679,13 @@ GameObject* Game::CreateOverlayObject(GameObject object)
 	overlayObjectList.push_back(object);
 	return &overlayObjectList[overlayObjectList.size() - 1];
 }
-GameObject* Game::CreateAIObject(GameObject object)
+/*GameObject* Game::CreateAIObject(GameObject object)
 {
 	object.objectID = aiObjectList.size();
 	object.Start();
 	aiObjectList.push_back(object);
 	return &aiObjectList[aiObjectList.size() - 1];
-}
+}*/
 
 //DESTROYERS
 void Game::DestroyStaticObjectAt(int objectID)
@@ -661,7 +769,8 @@ void Game::DestroyOverlayObjectAt(int objectID)
 	}
 	object.RemoveComponents();
 }
-void Game::DestroyAIObjectAt(int objectID)
+
+/*void Game::DestroyAIObjectAt(int objectID)
 {
 	GameObject object = aiObjectList[objectID];
 	aiObjectList.erase(aiObjectList.begin() + object.objectID);
@@ -671,7 +780,7 @@ void Game::DestroyAIObjectAt(int objectID)
 			aiObjectList[i].objectID--;
 	}
 	object.RemoveComponents();
-}
+}*/
 
 //THE FIND ENGINE
 GameObject* Game::Find(string name)
@@ -680,6 +789,12 @@ GameObject* Game::Find(string name)
 	{
 		if (name == worldObjectList[i].name)
 			return &worldObjectList[i];
+	}
+
+	for (int i = 0; i < staticObjectList.size(); i++)
+	{
+		if (name == staticObjectList[i].name)
+			return &staticObjectList[i];
 	}
 
 	for (int i = 0; i < particleObjectList.size(); i++)
@@ -693,11 +808,11 @@ GameObject* Game::Find(string name)
 		if (name == overlayObjectList[i].name)
 			return &overlayObjectList[i];
 	}
-	for (int i = 0; i < aiObjectList.size(); i++)
+	/*for (int i = 0; i < aiObjectList.size(); i++)
 	{
 		if (name == aiObjectList[i].name)
 			return &aiObjectList[i];
-	}
+	}*/
 
 	cout << "GameObject with name: " << name << " not found! Check thy spelling?" << endl;
 	return nullptr;//Nothing was found
@@ -711,6 +826,12 @@ vector<GameObject*> Game::FindGameObjectsWithTag(Tags tag)
 	{
 		if (tag == worldObjectList[i].tag)
 			result.push_back(&worldObjectList[i]);
+	}
+
+	for (int i = 0; i < staticObjectList.size(); i++)
+	{
+		if (tag == staticObjectList[i].tag)
+			result.push_back(&staticObjectList[i]);
 	}
 
 	for (int i = 0; i < particleObjectList.size(); i++)

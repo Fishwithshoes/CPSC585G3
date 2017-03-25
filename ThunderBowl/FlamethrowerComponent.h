@@ -1,5 +1,6 @@
 #pragma once
 #include "Component.h"
+#include "GameObject.h"
 class FlamethrowerComponent : public Component
 {
 public:

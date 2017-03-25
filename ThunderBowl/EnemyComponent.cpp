@@ -27,7 +27,9 @@ void EnemyComponent::Start()
 
 	enPhysVehicle = enVehicleNoDrive->getRigidDynamicActor();
 	enPhysVehicle->setGlobalPose(physx::PxTransform(startPosition, startRotation)); //set global position based on vec created in Game
-	enPhysVehicle->userData = this;
+	PlayerComponent* player = &PlayerComponent();
+	player = (PlayerComponent*)Game::Find(selfName)->GetComponent(player);
+	enPhysVehicle->userData = player;
 
 	physx::PxU32 wheelBufferSize = enVehicleNoDrive->mWheelsSimData.getNbWheels() * sizeof(physx::PxShape*);
 	enWheelBuffer = new physx::PxShape*[wheelBufferSize];
@@ -39,6 +41,15 @@ void EnemyComponent::Start()
 		temp.mesh = GeoGenerator::MakeCylinder(0.5, 0.5, 0.4, 8, false); //change to take in physx values
 		enWheelVector.push_back(Game::CreateWorldObject(temp));
 	}
+
+	AIControlComponent1* tempController = &AIControlComponent1();
+	aiController = (AIControlComponent1*)Game::Find(selfName)->GetComponent(tempController);
+
+	maxTorque = 1000.0;
+	brakeTorque = 3000.0;
+	turnTemper = 0.25;
+
+	performUTurn = false;
 
 	Finalize();
 }
@@ -92,7 +103,21 @@ void EnemyComponent::Update()
 		enPhysVehicle->setLinearVelocity(physx::PxVec3(0, 0, 0));
 	}
 
-	MoveOnHeading();
+	vec3 requiredHeading = glm::normalize(aiController->currentHeading);
+	vec3 actualHeading = glm::normalize(-transform.GetForward());
+
+	if (glm::dot(actualHeading, requiredHeading) <= -0.95) {	//
+		uTurnHeading = -actualHeading;
+		performUTurn = true;
+	}
+
+	if (performUTurn) {
+		cout <<selfName << " UTURN" << endl;
+		UTurn(actualHeading);
+	}
+	else {
+		MoveOnHeading();
+	}
 
 	Finalize();
 }
@@ -100,49 +125,70 @@ void EnemyComponent::Update()
 void EnemyComponent::OnCollision(Component::CollisionPair collisionPair, Component* collider) {
 	Initialize();
 
-	MachineGunComponent* mgRef = &MachineGunComponent();
-	PlayerComponent* oppRef = &PlayerComponent();
-	EnemyComponent* enemyRef = &EnemyComponent();
-	//BulletComponent* bulletRef = &BulletComponent();
+	//Note: Ammo and damage now handled in PlayerComponent On Collision() to avoid duplicate logic
 
-	opponentComp = (EnemyComponent*)Game::Find(selfName)->GetComponent(enemyRef);
-
-	switch (collisionPair) {
-	case(Component::CollisionPair::CP_VEHICLE_POWERUP):
-		Audio::Play2DSound(SFX_Powerup, Random::rangef(0.20, 0.50), 0.0);
-		oppVehicleMG = (MachineGunComponent*)Game::Find(selfName)->GetComponent(mgRef);
-		oppVehicleMG->ammoCount += 100;
-		oppPlayer = (PlayerComponent*)Game::Find(selfName)->GetComponent(oppRef);
-		oppPlayer->playerScore += 10.0;
-		break;
-	case(Component::CollisionPair::CP_VEHICLE_PROJECTILE):
-		//cout << "bullet hit " << selfName << endl;
-		//Audio::Play2DSound(SFX_Hit, Random::rangef(0.20, 0.50), 0.0);
-		//oppPlayer = (PlayerComponent*)Game::Find(selfName)->GetComponent(oppRef);
-		//oppPlayer->playerHealth -= 25.0;
-		//damagingBullet = (BulletComponent*)Game::Find(collider->getName())->GetComponent(bulletRef);
-		break;
-	}
+	//MachineGunComponent* mgRef = &MachineGunComponent();
+	//PlayerComponent* oppRef = &PlayerComponent();
+	//EnemyComponent* enemyRef = &EnemyComponent();
+	//
+	//HealthComponent* playerHealth = &HealthComponent();
+	////BulletComponent* bulletRef = &BulletComponent();
+	//
+	//opponentComp = (EnemyComponent*)Game::Find(selfName)->GetComponent(enemyRef);
+	//
+	//switch (collisionPair) 
+	//{
+	//case(Component::CollisionPair::CP_VEHICLE_POWERUP):
+	//	Audio::Play2DSound(SFX_Powerup, Random::rangef(0.20, 0.50), 0.0);
+	//	oppVehicleMG = (MachineGunComponent*)Game::Find(selfName)->GetComponent(mgRef);
+	//	oppVehicleMG->ammoCount += 100;
+	//	oppPlayer = (PlayerComponent*)Game::Find(selfName)->GetComponent(oppRef);
+	//	oppPlayer->playerScore += 10.0;
+	//	break;
+	//case(Component::CollisionPair::CP_VEHICLE_PROJECTILE):
+	//	Audio::Play2DSound(SFX_Hit, Random::rangef(0.20, 0.50), 0.0);
+	//	playerHealth = (HealthComponent*)Game::Find(selfName)->GetComponent(playerHealth);
+	//	playerHealth->currentHealth -= 10.0;
+	//	break;
+	//}
 
 	Finalize();
 }
 
 void EnemyComponent::MoveOnHeading() {
-	physx::PxReal maxTorque = 1000.0;
-	physx::PxReal brakeTorque = 1000.0;
-	physx::PxReal turnTemper = 0.25;
 	AIControlComponent1* tempController = &AIControlComponent1();
 	aiController = (AIControlComponent1*)Game::Find(selfName)->GetComponent(tempController);
 	vec3 requiredHeading = glm::normalize(aiController->currentHeading);
-	vec3 actualHeading = glm::normalize(transform.GetForward());
-	actualHeading.x = -actualHeading.x;
+	vec3 actualHeading = glm::normalize(-transform.GetForward());
+	//actualHeading.z = -actualHeading.z;
 	//cout << "R: " << requiredHeading.x << " " << requiredHeading.y << " " << requiredHeading.z << endl;
 	//cout << "A: " << actualHeading.x << " " << actualHeading.y << " " << actualHeading.z << endl;
 	//cout << "D: " << glm::dot(actualHeading, requiredHeading) << endl;
-	enVehicleNoDrive->setSteerAngle(2, clamp(1.0 - glm::dot(actualHeading, requiredHeading), 0.0, 1.0)*turnTemper);
-	enVehicleNoDrive->setSteerAngle(3, clamp(1.0 - glm::dot(actualHeading, requiredHeading), 0.0, 1.0)*turnTemper);
-
+	//cout << "dot right: " << glm::dot(glm::normalize(transform.GetRight()), requiredHeading) << " dot left: " << glm::dot(glm::normalize(-transform.GetRight()), requiredHeading) << endl;
+	if (glm::dot(glm::normalize(transform.GetRight()), requiredHeading) >= glm::dot(glm::normalize(-transform.GetRight()), requiredHeading)) { //NOTE + 0.1 small inclination of turning right
+		//cout << "turn right" << endl;
+		enVehicleNoDrive->setSteerAngle(2, clamp(1.0 - glm::dot(actualHeading, requiredHeading), 0.0, 1.0)*turnTemper);
+		enVehicleNoDrive->setSteerAngle(3, clamp(1.0 - glm::dot(actualHeading, requiredHeading), 0.0, 1.0)*turnTemper);
+	}
+	else {
+		//cout << "turn left" << endl;
+		enVehicleNoDrive->setSteerAngle(2, -clamp(1.0 - glm::dot(actualHeading, requiredHeading), 0.0, 1.0)*turnTemper);
+		enVehicleNoDrive->setSteerAngle(3, -clamp(1.0 - glm::dot(actualHeading, requiredHeading), 0.0, 1.0)*turnTemper);
+	}
 	enVehicleNoDrive->setDriveTorque(0, maxTorque);
 	enVehicleNoDrive->setDriveTorque(1, maxTorque);
 	//standardMat.diffuseColor = vec3(0.0, glm::dot(actualHeading, requiredHeading), 0.0);
+}
+
+void EnemyComponent::UTurn(vec3 inHeading) {
+	if (glm::dot(inHeading, uTurnHeading) <= 0.90) {
+		enVehicleNoDrive->setSteerAngle(2, clamp(1.0 - glm::dot(inHeading, uTurnHeading), 0.0, 1.0)*turnTemper);
+		enVehicleNoDrive->setSteerAngle(3, clamp(1.0 - glm::dot(inHeading, uTurnHeading), 0.0, 1.0)*turnTemper);
+		enVehicleNoDrive->setDriveTorque(0, maxTorque);
+		enVehicleNoDrive->setDriveTorque(1, maxTorque);
+	}
+	else {
+		cout << selfName << " done UTurn" << endl;
+		performUTurn = false;
+	}
 }

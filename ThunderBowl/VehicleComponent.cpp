@@ -26,20 +26,27 @@ void VehicleComponent::Start()
 	
 	physVehicle = gVehicleNoDrive->getRigidDynamicActor();
 	physVehicle->setGlobalPose(physx::PxTransform(myStartPosition, physx::PxQuat(physx::PxIdentity))); //set global position based on vec created in Game
-	physVehicle->userData = this;
+	PlayerComponent* player = &PlayerComponent();
+	player = (PlayerComponent*)Game::Find(selfName)->GetComponent(player);
+	physVehicle->userData = player;
 
 	physx::PxU32 wheelBufferSize = gVehicleNoDrive->mWheelsSimData.getNbWheels() * sizeof(physx::PxShape*);
 	wheelBuffer = new physx::PxShape*[wheelBufferSize];
 	physVehicle->getShapes(wheelBuffer, wheelBufferSize);
 
-	for (int i = 0; i < 4; i++) {
+	for (int i = 0; i < 4; i++) 
+	{
 		GameObject temp = GameObject();
 		physx::PxTransform currWheel = wheelBuffer[i]->getLocalPose();
 		temp.mesh = GeoGenerator::MakeCylinder(0.5, 0.5, 0.6, 16, false); //change to take in physx values
-		if(i==0)
-			temp.standardMat.diffuseColor = vec3(1, 0, 0);
-		if(i==1)
-			temp.standardMat.diffuseColor = vec3(0, 1, 0);
+		//if(i==0)
+		//	temp.standardMat.diffuseColor = vec3(1, 0, 0);
+		//if(i==1)
+		//	temp.standardMat.diffuseColor = vec3(0, 1, 0);
+		temp.standardMat.diffuseColor = vec3(0);
+		temp.standardMat.roughness = 0.5;
+		temp.standardMat.metalness = 0.2;
+		temp.standardMat.isMetallic = false;
 		wheelVector.push_back(Game::CreateWorldObject(temp));
 	}
 
@@ -59,18 +66,18 @@ void VehicleComponent::Start()
 	ps.name = selfName + "WheelSprayLeft";
 	ps.initialSpeed.min = 3;
 	ps.initialSpeed.max = 4;
-	ps.coneAngle = 20;
+	ps.coneAngle = 0;
 	ps.gravityScale = 2.0;
 	ps.initialColor.alpha = vec4(0.2, 0.1, 0.0, 1);
 	ps.initialColor.bravo = vec4(0.3, 0.15, 0.0, 1);
-	ps.initialRadius.min = 0.6;
-	ps.initialRadius.max = 0.8;
-	ps.lifeSpan.min = 0.7;
-	ps.lifeSpan.max = 0.8;
+	ps.initialRadius.min = 1.1;
+	ps.initialRadius.max = 1.4;
+	ps.lifeSpan.min = 0.4;
+	ps.lifeSpan.max = 0.5;
 	ps.spawnPointVariance = vec3(0.5);
 	ps.monochromatic = false;
 	ps.mainTexture = MAP_SMOKE_PART;
-	ps.spawnRate = 20;
+	ps.spawnRate = 0;
 	ps.destroySystemWhenEmpty = false;
 	ps.useSystemLifespan = false;
 	Game::CreateParticleObject(ps);
@@ -79,7 +86,8 @@ void VehicleComponent::Start()
 	ps.name = selfName + "WheelSprayRight";
 	Game::CreateParticleObject(ps);
 	wheelSprayNameRight = ps.name;
-	UpdateParticleSystems();
+
+	UpdateParticles();
 	//END_IF Wheel Spray particle systems
 
 	Finalize();
@@ -211,7 +219,7 @@ void VehicleComponent::Update()
 	//ENDIF_SPEEDOMETER
 
 	//IF_DEF Wheel Spray Particles
-	UpdateParticleSystems();
+	UpdateParticles();
 	//END_IF Wheel Spray Particles
 
 	Finalize();
@@ -221,29 +229,33 @@ void VehicleComponent::OnCollision(Component::CollisionPair collisionPair, Compo
 {
 	Initialize();
 
-	MachineGunComponent* mgRef = &MachineGunComponent();
-	PlayerComponent* playerRef = &PlayerComponent();
-	switch (collisionPair) 
-	{
-	case(Component::CollisionPair::CP_VEHICLE_POWERUP):
-		Audio::Play2DSound(SFX_Powerup, Random::rangef(0.20, 0.50), 0.0);
-		vehPlayer = (PlayerComponent*)Game::Find(selfName)->GetComponent(playerRef);
-		vehPlayer->playerScore += 10.0;
-		vehPlayer->machineGunAmmo += 50;
-		if (vehPlayer->machineGunAmmo > vehPlayer->MAX_MACHINE_GUN_AMMO)
-			vehPlayer->machineGunAmmo = vehPlayer->MAX_MACHINE_GUN_AMMO;
-		break;
-	case(Component::CollisionPair::CP_VEHICLE_PROJECTILE):
-		//Audio::Play2DSound(SFX_Hit, Random::rangef(0.20, 0.50), 0.0);
-		//vehPlayer = (PlayerComponent*)Game::Find(selfName)->GetComponent(playerRef);
-		//vehPlayer->playerHealth -= 25.0;
-		break;
-	}
+	//Note: Ammo and damage now handled in PlayerComponent OnCollision() to avoid duplicate logic
+
+	//MachineGunComponent* mgRef = &MachineGunComponent();
+	//HealthComponent* playerHealth = &HealthComponent();
+	//PlayerComponent* playerRef = &PlayerComponent();
+	//
+	//switch (collisionPair) 
+	//{
+	//case(Component::CollisionPair::CP_VEHICLE_POWERUP):
+	//	Audio::Play2DSound(SFX_Powerup, Random::rangef(0.20, 0.50), 0.0);
+	//	playerRef = (PlayerComponent*)Game::Find(selfName)->GetComponent(playerRef);
+	//	playerRef->playerScore += 10.0;
+	//	playerRef->machineGunAmmo += 50;
+	//	if (playerRef->machineGunAmmo > playerRef->MAX_MACHINE_GUN_AMMO)
+	//		playerRef->machineGunAmmo = playerRef->MAX_MACHINE_GUN_AMMO;
+	//	break;
+	//case(Component::CollisionPair::CP_VEHICLE_PROJECTILE):
+	//	Audio::Play2DSound(SFX_Hit, Random::rangef(0.20, 0.50), 0.0);
+	//	playerHealth = (HealthComponent*)Game::Find(selfName)->GetComponent(playerHealth);
+	//	playerHealth->currentHealth -= 10.0;
+	//	break;
+	//}
 
 	Finalize();
 }
 
-void VehicleComponent::UpdateParticleSystems()
+void VehicleComponent::UpdateParticles()
 {
 	//Get 'em
 	ParticleSystem* wheelSprayLeft = (ParticleSystem*)Game::Find(wheelSprayNameLeft);
@@ -276,10 +288,13 @@ void VehicleComponent::UpdateParticleSystems()
 	for (int i = 0; i < systems.size(); i++)
 	{
 		systems[i]->spawnRate = speed * 0.5;
-		systems[i]->spawnRate = Mathf::Clamp(systems[i]->spawnRate, 0.0, 30.0);
+		systems[i]->spawnRate = Mathf::Clamp(systems[i]->spawnRate, 0.0, 20.0);
 
 		//systems[i]->initialSpeed.min = speed * 1.0;
 		//systems[i]->initialSpeed.max = speed * 1.3;
+
+		systems[i]->initialRadius.min = 0.4 + speed*0.008;
+		systems[i]->initialRadius.max = 0.7 + speed*0.008;
 
 		if (systems[i]->transform.position.y < 8.0)
 		{
@@ -291,5 +306,38 @@ void VehicleComponent::UpdateParticleSystems()
 			systems[i]->initialColor.alpha = vec4(0.2, 0.1, 0.0, 1);
 			systems[i]->initialColor.bravo = vec4(0.3, 0.15, 0.0, 1);
 		}
+	}
+
+	if (transform.position.y < 8.5 && !enteredWaterPrev)
+	{
+		Audio::Play2DSound(SFX_Splash, Random::rangef(0.4, 0.5), 0.0);
+		ParticleSystem ps = ParticleSystem();
+		ps.name = selfName + "Splash";
+		ps.transform = t;
+		ps.transform.Translate(t.GetForward()*2.0f, false);
+		ps.initialSpeed.min = 50;
+		ps.initialSpeed.max = 50;
+		ps.accelerationScale = 0.91;
+		ps.coneAngle = 360;
+		ps.gravityScale = 68;
+		ps.initialColor.alpha = vec4(0.8, 0.9, 1.0, 1.0);
+		ps.initialColor.bravo = vec4(0.6, 0.7, 0.9, 1.0);
+		ps.initialRadius.min = 1.0;
+		ps.initialRadius.max = 1.4;
+		ps.lifeSpan.min = 0.4;
+		ps.lifeSpan.max = 0.5;
+		ps.spawnPointVariance = vec3(0.5);
+		ps.monochromatic = false;
+		ps.mainTexture = MAP_SMOKE_PART;
+		ps.spawnRate = 0.0;
+		ps.spawnPointVariance = vec3(1.5);
+		ps.destroySystemWhenEmpty = true;
+		ParticleSystem *splashPtr = Game::CreateParticleObject(ps);
+		splashPtr->AddParticleBurst(8, 0.0);
+		enteredWaterPrev = true;
+	}
+	if (transform.position.y > 10.0f)
+	{
+		enteredWaterPrev = false;
 	}
 }

@@ -1,19 +1,49 @@
 #include "PlayerComponent.h"
 #include "VehicleComponent.h"
 #include "Game.h"
+#include "Audio.h"
 
 //VehicleComponent* playerVeh;
 void PlayerComponent::Start() 
 {
 	Initialize();
+
 	playerScore = 0;
 	oldScore = playerScore;
 
 	machineGunAmmo = 40;
-	missileLauncherAmmo = 1000;
-	flamethrowerAmmo = 10.0;
+	missileLauncherAmmo = 2;
+	flamethrowerAmmo = 2.0;
+
+	StartParticles();
 
 	Finalize();
+}
+
+void PlayerComponent::StartParticles()
+{
+	t = transform;
+	t.rotation = t.GetInverseRotation();
+	ParticleSystem ps = ParticleSystem();
+	ps.name = selfName + "DamagedSmoke";
+	ps.transform = t;
+	ps.initialSpeed.min = 0.6;
+	ps.initialSpeed.max = 0.8;
+	ps.gravityScale = -5.0;
+	ps.initialColor.alpha = vec4(vec3(0.5), 1);
+	ps.initialColor.bravo = vec4(vec3(0.7), 1);
+	ps.initialRadius.min = 1.4;
+	ps.initialRadius.max = 1.8;
+	ps.lifeSpan.min = 1.4;
+	ps.lifeSpan.max = 1.8;
+	ps.spawnPointVariance = vec3(0.5);
+	ps.monochromatic = true;
+	ps.mainTexture = MAP_SMOKE_PART;
+	ps.spawnRate = 0.0;
+	ps.destroySystemWhenEmpty = false;
+	ps.useSystemLifespan = false;
+	Game::CreateParticleObject(ps);
+	damagedSmokeName = ps.name;
 }
 
 void PlayerComponent::Update() 
@@ -37,8 +67,11 @@ void PlayerComponent::Update()
 		//driving at high speed
 
 	GameObject* self = Game::Find(selfName);
+	HealthComponent* playerHealth = &HealthComponent();
+	playerHealth = (HealthComponent*)self->GetComponent(playerHealth);
 
 	//Switch Weapon - Human Players
+	GameObject* weaponIcon = Game::Find("WeaponIcon");
 	if (self->tag == TAGS_HUMAN_PLAYER)
 	{
 		if (Input::GetXBoxButton(1, ButtonCode::XBOX_Y) && !switchWeaponPrev)
@@ -47,12 +80,15 @@ void PlayerComponent::Update()
 			{
 			case GW_MACHINE_GUN:
 				currentWeapon = GW_MISSILE_LAUNCHER;
+				weaponIcon->particleOverlayMat.mainTexture = MAP_MISSILE_LAUNCHER_ICON;
 				break;
 			case GW_MISSILE_LAUNCHER:
 				currentWeapon = GW_FLAMETHROWER;
+				weaponIcon->particleOverlayMat.mainTexture = MAP_FLAMETHROWER_ICON;
 				break;
 			case GW_FLAMETHROWER:
 				currentWeapon = GW_MACHINE_GUN;
+				weaponIcon->particleOverlayMat.mainTexture = MAP_MACHINE_GUN_ICON;
 				break;
 			default:
 				cout << "ERROR: Illegal weapon detected at PlayerComponent.Update()" << endl;
@@ -95,7 +131,7 @@ void PlayerComponent::Update()
 	if (self->tag == TAGS_HUMAN_PLAYER)
 	{
 		GameObject* health = Game::Find("HealthMeter");
-		//health->transform.scale.x = playerHealth / 100;
+		health->transform.scale.x = playerHealth->currentHealth / 100;
 
 		GameObject* ammo = Game::Find("AmmoMeter");
 		float ratio;
@@ -145,7 +181,67 @@ void PlayerComponent::Update()
 		}
 	}
 
+	UpdateParticles(playerHealth->currentHealth);
+
 	Finalize();
+}
+
+void PlayerComponent::OnCollision(Component::CollisionPair collisionPair, Component* collider)
+{
+	MachineGunComponent* mgRef = &MachineGunComponent();
+	HealthComponent* playerHealth = &HealthComponent();
+	PowerUpComponent* powerUp = (PowerUpComponent*)collider;
+
+	switch (collisionPair)
+	{
+	case(Component::CollisionPair::CP_VEHICLE_POWERUP):
+		Audio::Play2DSound(SFX_Powerup, Random::rangef(0.20, 0.50), 0.0);
+		playerScore += 10.0;
+		switch (powerUp->type)
+		{
+		case GW_MACHINE_GUN:
+			machineGunAmmo += 50;
+			if (machineGunAmmo > MAX_MACHINE_GUN_AMMO)
+				machineGunAmmo = MAX_MACHINE_GUN_AMMO;
+			break;
+		case GW_MISSILE_LAUNCHER:
+			missileLauncherAmmo += 2;
+			if (missileLauncherAmmo > MAX_MISSILE_LAUNCHER_AMMO)
+				missileLauncherAmmo = MAX_MISSILE_LAUNCHER_AMMO;
+			break;
+		case GW_FLAMETHROWER:
+			flamethrowerAmmo += 5;
+			if (flamethrowerAmmo > MAX_FLAMETHROWER_AMMO)
+				flamethrowerAmmo = MAX_FLAMETHROWER_AMMO;
+			break;
+		default:
+			cout << "ERROR: Can't add ammo to illegal weapon at PlayerComponent OnColllision()!" << endl;
+			break;
+		}
+		break;
+	case(Component::CollisionPair::CP_VEHICLE_PROJECTILE):
+		Audio::Play2DSound(SFX_Hit, Random::rangef(0.20, 0.50), 0.0);
+		playerHealth = (HealthComponent*)Game::Find(selfName)->GetComponent(playerHealth);
+		playerHealth->currentHealth -= 10.0;
+		break;
+	default:
+		break;
+	}
+}
+
+void PlayerComponent::UpdateParticles(float currentHealth)
+{
+	t = transform;
+	t.rotation = t.GetInverseRotation();
+	ParticleSystem* damagedSmoke = (ParticleSystem*)Game::Find(damagedSmokeName);
+	damagedSmoke->transform = t;
+
+
+	damagedSmoke->spawnRate = 5.0 - currentHealth*0.05;
+	damagedSmoke->initialColor.alpha = vec4(vec3(0.5 - currentHealth*0.003), 1.0);
+	damagedSmoke->initialColor.bravo = vec4(vec3(0.7 - currentHealth*0.003), 1.0);
+	damagedSmoke->initialRadius.min = 1.4 - currentHealth*0.014;
+	damagedSmoke->initialRadius.max = 1.8 - currentHealth*0.018;
 }
 
 void PlayerComponent::PlayerStateToConsole() 

@@ -37,11 +37,40 @@ vector<string> Renderer::textureFilePaths =
 	"Textures/paused_TEXT.png",
 	"Textures/gameover_TEXT.png",
 	"Textures/start_TEXT.png",
+	"Textures/health_ICON.png",
+	"Textures/machineGun_ICON.png",
+	"Textures/missileLauncher_ICON.png",
+	"Textures/flamethrower_ICON.png",
 	"Textures/jerry_DIFF.jpg",
 	"Textures/SpiderTex.jpg",
 	"Textures/default_PART.png",
 	"Textures/bubble_PART.png",
 	"Textures/smoke_PART.png",
+	"Textures/flame01_PART.png",
+	"Textures/flame02_PART.png",
+	"Textures/flame03_PART.png",
+	"Textures/flame04_PART.png",
+	"Textures/flame05_PART.png",
+	"Textures/flame06_PART.png",
+	"Textures/flame07_PART.png",
+	"Textures/flame08_PART.png",
+	"Textures/flame09_PART.png",
+	"Textures/flame10_PART.png",
+	"Textures/flame11_PART.png",
+	"Textures/flame12_PART.png",
+	"Textures/flame13_PART.png",
+	"Textures/flame14_PART.png",
+	"Textures/flame15_PART.png",
+	"Textures/flame16_PART.png",
+	"Textures/spark01_PART.png",
+	"Textures/spark02_PART.png",
+	"Textures/spark03_PART.png",
+	"Textures/spark04_PART.png",
+	"Textures/spark05_PART.png",
+	"Textures/spark06_PART.png",
+	"Textures/spark07_PART.png",
+	"Textures/spark08_PART.png",
+	"Textures/flash_PART.png",
 	"Textures/Sun_DIFF.jpg",
 	"Textures/Moon_DIFF.jpg",
 	"Textures/Moon_NORM.jpg",
@@ -148,7 +177,7 @@ void Renderer::LoadTextures(Renderer *renderer)
 			glGenTextures(1, &texID);
 			glActiveTexture(GL_TEXTURE0 + i);
 			glBindTexture(GL_TEXTURE_2D, texID);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 4096, 4096, 0, GL_RED, GL_FLOAT, 0);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, shadowSize, shadowSize, 0, GL_RED, GL_FLOAT, 0);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
@@ -229,6 +258,9 @@ void Renderer::LoadStaticGeo(Renderer *renderer)
 
 	RendererUtility::InitializeGeometry(&renderer->puddleGeo);
 	BufferStaticGeoData(&renderer->puddleGeo, &GeoGenerator::MakePlane(10, 10, 100, 100, false));
+
+	RendererUtility::InitializeGeometry(&renderer->mgbulletGeo);
+	BufferStaticGeoData(&renderer->mgbulletGeo, &GeoGenerator::MakeSphere(0.2, 16, 32, false));
 
 	Loader loader;
 	loader.loadModel("Models/thunderbowl001.obj", vec3(15, 13, 15), true);
@@ -366,7 +398,7 @@ void Renderer::RenderScene(Renderer *renderer)
 {
 //**TURN OVER TO THE SHADOW MAP FRAMEBUFFER TO DEPTH MAP PHYSICAL WORLD OBJECTS**********
 	glBindFramebuffer(GL_FRAMEBUFFER, renderer->shadowBufferID);
-	glViewport(0, 0, 4096, 4096);
+	glViewport(0, 0, shadowSize, shadowSize);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glUseProgram(renderer->depthMapShader.program);
 
@@ -375,15 +407,15 @@ void Renderer::RenderScene(Renderer *renderer)
 	//Create WorldToView Matrix for light
 	Transform lightTransform = Transform();
 	//IMPORTANT: To change light position. Update info in standardFrag and depthMapFrag
-	lightTransform.position = vec3(5, 2, 5)*17.0f;
-	lightTransform.Rotate(Transform::Up(), 135.0*Mathf::PI/180, false);
-	lightTransform.Rotate(lightTransform.GetRight(), -15.0*Mathf::PI/180, false);
+	lightTransform.position = vec3(5, 2, 5)*50.0f;
+	lightTransform.Rotate(Transform::Up(), 135.0*Mathf::PI / 180, false);
+	lightTransform.Rotate(lightTransform.GetRight(), -15.0*Mathf::PI / 180, false);
 	float nearClip = 0.1;
 	float farClip = 1000;
 
 	//Calculate an orthographic worldToView and viewToProjection for light's perspective
 	mat4 lightWorldToView = glm::lookAt(lightTransform.position, vec3(0), Transform::Up());
-	mat4 lightViewToProjection = glm::ortho(-75.0f, 75.0f, -30.0f, 40.0f, nearClip, farClip);
+	mat4 lightViewToProjection = glm::ortho(-250.0f, 250.0f, -80.0f, 160.0f, nearClip, farClip);
 	
 	//Program Uniforms for WorldToView and ViewToProjection
 	glUniformMatrix4fv(renderer->worldToViewDepthMap_uniform, 1, GL_FALSE, value_ptr(lightWorldToView));
@@ -669,6 +701,9 @@ void Renderer::DrawPhysicalObjects(Renderer *renderer, bool programStandardUnifo
 				break;
 			case SG_PUDDLE:
 				geoToUse = renderer->puddleGeo;
+				break;
+			case SG_MG_BULLET:
+				geoToUse = renderer->mgbulletGeo;
 				break;
 			case SG_MAP:
 				geoToUse = renderer->mapGeo;

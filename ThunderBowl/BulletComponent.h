@@ -18,5 +18,6 @@ public:
 	string ownerName;
 
 private:
+	bool splashed = false;
 };
 

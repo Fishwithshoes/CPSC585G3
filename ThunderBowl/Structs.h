@@ -20,6 +20,14 @@ enum GameWeapons
 	GW_FLAMETHROWER
 };
 
+enum NodeTypes {
+	NT_TRANSIT,
+	NT_PLAYER,
+	NT_MG_POWERUP,
+	NT_FT_POWERUP,
+	NT_RK_POWERUP,
+};
+
 //Models
 struct Mesh
 {
@@ -44,9 +52,15 @@ struct Geometry
 
 enum StaticGeos
 {
+	//To add a new one:
+	//Add it here
+	//In Renderer.h
+	//In Renderer::LoadStaticGeo()
+	//In Renderer::DrawPhysicalObjects() "Static Mesh" section
 	SG_OCEAN,
 	SG_OCEAN_DOWN,
 	SG_PUDDLE,
+	SG_MG_BULLET,
 	SG_MAP
 };
 
@@ -68,6 +82,7 @@ enum Tags
 	//World objects
 	TAGS_HUMAN_PLAYER,
 	TAGS_AI_PLAYER,
+	TAGS_AI_NODE,
 	TAGS_PROJECTILE,
 	TAGS_MISSILE,
 	TAGS_DECORATION,
@@ -172,12 +187,41 @@ enum Maps
 	MAP_PAUSED,
 	MAP_GAME_OVER,
 	MAP_START,
+	MAP_HEALTH_ICON,
+	MAP_MACHINE_GUN_ICON,
+	MAP_MISSILE_LAUNCHER_ICON,
+	MAP_FLAMETHROWER_ICON,
 	MAP_JERRY,
 	MAP_SPIDER,
 	//Particles
 	MAP_DEFAULT_PART,
 	MAP_BUBBLE_PART,
 	MAP_SMOKE_PART,
+	MAP_FLAME01_PART,
+	MAP_FLAME02_PART,
+	MAP_FLAME03_PART,
+	MAP_FLAME04_PART,
+	MAP_FLAME05_PART,
+	MAP_FLAME06_PART,
+	MAP_FLAME07_PART,
+	MAP_FLAME08_PART,
+	MAP_FLAME09_PART,
+	MAP_FLAME10_PART,
+	MAP_FLAME11_PART,
+	MAP_FLAME12_PART,
+	MAP_FLAME13_PART,
+	MAP_FLAME14_PART,
+	MAP_FLAME15_PART,
+	MAP_FLAME16_PART,
+	MAP_SPARK01_PART,
+	MAP_SPARK02_PART,
+	MAP_SPARK03_PART,
+	MAP_SPARK04_PART,
+	MAP_SPARK05_PART,
+	MAP_SPARK06_PART,
+	MAP_SPARK07_PART,
+	MAP_SPARK08_PART,
+	MAP_FLASH_PART,
 	//World
 	MAP_SUN_DIFFUSE,
 	MAP_MOON_DIFFUSE,
@@ -241,7 +285,8 @@ struct ParticleSystemDesc
 	RandRangeFloat				initialRadius;
 	RandRangeColor				initialColor;
 	bool						monochromatic;
-	GLuint						mainTexture;
+	GLuint						mainTexture;//Used if length of textures is 0
+	vector<GLuint>				textures;//Used for randomly assigned birth textures
 	RandRangeFloat				initialFogLevel;
 	RandRangeFloat				lifeSpan;
 	vec3						spawnPointVariance;
@@ -263,7 +308,9 @@ enum Sounds
 	SFX_MG,
 	SFX_Powerup,
 	SFX_FireMissile,
-	SFX_ExplodeMissile
+	SFX_ExplodeMissile,
+	SFX_Splish,
+	SFX_Splash
 };
 
 enum Musics

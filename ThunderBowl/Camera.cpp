@@ -91,7 +91,7 @@ void Camera::Update()
 			transform = Transform::Transform(vec3(0, 5, -10), vec4(0, 0, 0, 1), vec3(1));
 
 			//Jump to the light position
-			//transform.position = vec3(5,2,5) * 17.0f;
+			//transform.position = vec3(5,2,5) * 47.0f;
 			//transform.Rotate(Transform::Up(), 135.0*Mathf::PI / 180, false);
 			//transform.Rotate(transform.GetRight(), -15.0*Mathf::PI / 180, false);
 		}
@@ -104,7 +104,7 @@ void Camera::Update()
 		transform.parent = &orbitTransform;
 
 		transform.position = vec3(0.0);
-		transform.Translate(vec3(0, 50, -100), false);
+		transform.Translate(vec3(0, 70, -140), false);
 		transform.rotation = normalize(vec4(-0.2, 0, 0, 1));
 
 		break;

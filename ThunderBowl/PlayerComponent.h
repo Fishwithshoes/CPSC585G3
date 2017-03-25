@@ -22,10 +22,18 @@ public:
 
 	void Start();
 	void Update();
+	void OnCollision(Component::CollisionPair collisionPair, Component* collider);
 	void PlayerStateToConsole();
 	void BurnCheck();
 	void Burning();
+
+	void StartParticles();
+	void UpdateParticles(float currentHealth);
+
 private:
 	bool switchWeaponPrev = false;
+
+	Transform t;
+	string damagedSmokeName;
 };
 

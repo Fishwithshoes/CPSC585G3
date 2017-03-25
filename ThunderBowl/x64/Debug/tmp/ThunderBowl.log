@@ -1,9 +1,6 @@
-﻿  BulletComponent.cpp
+﻿  AIControlComponent1.cpp
 c:\cpsc585g3\thunderbowl\machineguncomponent.h(12): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
-c:\cpsc585g3\thunderbowl\vehiclecomponent.h(22): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\cpsc585g3\thunderbowl\vehiclecomponent.h(23): warning C4305: 'initializing': truncation from 'double' to 'float'
 c:\cpsc585g3\thunderbowl\oceancomponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\bulletcomponent.cpp(107): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\bulletcomponent.cpp(109): warning C4244: '+=': conversion from 'double' to 'int', possible loss of data
-c:\cpsc585g3\thunderbowl\bulletcomponent.cpp(117): warning C4244: '+=': conversion from 'double' to 'int', possible loss of data
   ThunderBowl.vcxproj -> C:\CPSC585G3\ThunderBowl\\x64\Debug\ThunderBowl.exe
   ThunderBowl.vcxproj -> C:\CPSC585G3\ThunderBowl\\x64\Debug\ThunderBowl.pdb (Full PDB)
