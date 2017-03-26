@@ -49,7 +49,7 @@ void Game::BuildWorld()
 	//temp.standardMat.tileUV = vec2(12, 12);
 	//ptr = Game::CreateWorldObject(temp);
 
-	temp = GameObject("Thunderbowl", TAGS_DECORATION);
+	/*temp = GameObject("Thunderbowl", TAGS_DECORATION);
 	temp.staticGeo = SG_MAP;
 	//temp.standardMat.diffuseColor = vec3(1,0,0);
 	//temp.castShadow = false;
@@ -59,7 +59,7 @@ void Game::BuildWorld()
 	temp.standardMat.diffuseMap = MAP_CHASSIS_DIFFUSE;
 	temp.standardMat.normalMap = MAP_CHASSIS_NORMAL;
 	temp.standardMat.tileUV = vec2(4, 4);
-	Game::CreateStaticObject(temp);
+	Game::CreateStaticObject(temp);*/
 
 	//ifndef Car Cacophony
 	/*temp = GameObject();
@@ -68,28 +68,37 @@ void Game::BuildWorld()
 	ptr = Game::CreateWorldObject(temp);
 	ptr->AddComponent(new VehicleComponent());
 	ptr->AddComponent(new MachineGunComponent());*/
+
 	GameObject pathNode1 = GameObject();
 	pathNode1.name = "Node1";
-	pathNode1.transform.position = vec3(0.0, 1.0, 100.0);
-	ptr = Game::CreateAIObject(pathNode1);
+	pathNode1.transform.position = vec3(-150.0, 1.0, 0.0);
+	pathNode1.mesh = GeoGenerator::MakeBox(1, 1, 1, false);
+	pathNode1.tag = TAGS_AI_NODE;
+	ptr = Game::CreateWorldObject(pathNode1);
 	ptr->AddComponent(new AINodeComponent());
 
 	GameObject pathNode2 = GameObject();
 	pathNode2.name = "Node2";
-	pathNode2.transform.position = vec3(0.0, 1.0, -100.0);
-	ptr = Game::CreateAIObject(pathNode2);
+	pathNode2.transform.position = vec3(150.0, 1.0, 0.0);
+	pathNode2.mesh = GeoGenerator::MakeBox(1, 1, 1, false);
+	pathNode2.tag = TAGS_AI_NODE;
+	ptr = Game::CreateWorldObject(pathNode2);
 	ptr->AddComponent(new AINodeComponent());
 
 	GameObject pathNode3 = GameObject();
 	pathNode3.name = "Node3";
-	pathNode3.transform.position = vec3(100.0, 1.0, 0.0);
-	ptr = Game::CreateAIObject(pathNode3);
+	pathNode3.transform.position = vec3(0.0, 1.0, -150.0);
+	pathNode3.mesh = GeoGenerator::MakeBox(1, 1, 1, false);
+	pathNode3.tag = TAGS_AI_NODE;
+	ptr = Game::CreateWorldObject(pathNode3);
 	ptr->AddComponent(new AINodeComponent());
 
 	GameObject pathNode4 = GameObject();
 	pathNode4.name = "Node4";
-	pathNode4.transform.position = vec3(-100.0, 1.0, 0.0);
-	ptr = Game::CreateAIObject(pathNode4);
+	pathNode4.transform.position = vec3(0.0, 1.0, 150.0);
+	pathNode4.mesh = GeoGenerator::MakeBox(1, 1, 1, false);
+	pathNode4.tag = TAGS_AI_NODE;
+	ptr = Game::CreateWorldObject(pathNode4);
 	ptr->AddComponent(new AINodeComponent());
 
 	for (int i = 0; i < Physics::playerVehiclesNum; i++) {								//CREATE PLAYERS
@@ -126,44 +135,89 @@ void Game::BuildWorld()
 	}
 
 	GameObject powerUp1 = GameObject();
+	powerUp1.name = "Node5";
 	powerUp1.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
-	powerUp1.transform.position = vec3(0.0, 10.0, -80.0);
+	powerUp1.transform.position = vec3(0.0, 1.0, -80.0);
+	powerUp1.tag = TAGS_AI_NODE;
 	ptr = Game::CreateWorldObject(powerUp1);
 	ptr->AddComponent(new PowerUpComponent(GW_MACHINE_GUN));
 	ptr->AddComponent(new FloatComponent());
 	ptr->AddComponent(new RotateComponent());
+	ptr->AddComponent(new AINodeComponent(NodeTypes::NT_MG_POWERUP));
 
 	GameObject powerUp2 = GameObject();
+	powerUp2.name = "Node6";
 	powerUp2.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
-	powerUp2.transform.position = vec3(0.0, 10.0, 80.0);
+	powerUp2.transform.position = vec3(0.0, 1.0, 80.0);
+	powerUp2.tag = TAGS_AI_NODE;
 	ptr = Game::CreateWorldObject(powerUp2);
 	ptr->AddComponent(new PowerUpComponent(GW_MACHINE_GUN));
 	ptr->AddComponent(new FloatComponent());
 	ptr->AddComponent(new RotateComponent());
+	ptr->AddComponent(new AINodeComponent(NodeTypes::NT_MG_POWERUP));
 
 	GameObject powerUp3 = GameObject();
+	powerUp3.name = "Node7";
 	powerUp3.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
-	powerUp3.transform.position = vec3(-80.0, 10.0, 0.0);
+	powerUp3.transform.position = vec3(-80.0, 1.0, 0.0);
+	powerUp3.tag = TAGS_AI_NODE;
 	ptr = Game::CreateWorldObject(powerUp3);
 	ptr->AddComponent(new PowerUpComponent(GW_FLAMETHROWER));
 	ptr->AddComponent(new FloatComponent());
 	ptr->AddComponent(new RotateComponent());
+	ptr->AddComponent(new AINodeComponent(NodeTypes::NT_FT_POWERUP));
 
 	GameObject powerUp4 = GameObject();
+	powerUp4.name = "Node8";
 	powerUp4.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
-	powerUp4.transform.position = vec3(80.0, 10.0, 0.0);
+	powerUp4.transform.position = vec3(80.0, 1.0, 0.0);
+	powerUp4.tag = TAGS_AI_NODE;
 	ptr = Game::CreateWorldObject(powerUp4);
 	ptr->AddComponent(new PowerUpComponent(GW_FLAMETHROWER));
 	ptr->AddComponent(new FloatComponent());
 	ptr->AddComponent(new RotateComponent());
+	ptr->AddComponent(new AINodeComponent(NodeTypes::NT_FT_POWERUP));
 
 	GameObject powerUp5 = GameObject();
+	powerUp5.name = "Node9";
 	powerUp5.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
-	powerUp5.transform.position = vec3(0.0, 38.0, 0.0);
+	powerUp5.transform.position = vec3(0.0, 1.0, 0.0);
+	powerUp5.tag = TAGS_AI_NODE;
 	ptr = Game::CreateWorldObject(powerUp5);
 	ptr->AddComponent(new PowerUpComponent(GW_MISSILE_LAUNCHER));
 	ptr->AddComponent(new FloatComponent());
 	ptr->AddComponent(new RotateComponent());
+	ptr->AddComponent(new AINodeComponent(NodeTypes::NT_RK_POWERUP));
+
+	for (int i = 0; i < Physics::playerVehiclesNum; i++) {								//CREATE PLAYERS
+		GameObject player = GameObject();
+		player.mesh = GeoGenerator::MakeBox(3, 1, 3, false);
+		player.transform.position = plVehStartPositions[i];
+		player.name = "Player" + to_string(i);
+		player.tag = TAGS_HUMAN_PLAYER;
+		ptr = Game::CreateWorldObject(player);
+		ptr->AddComponent(new PlayerComponent());
+		ptr->AddComponent(new VehicleComponent());
+		ptr->AddComponent(new MachineGunComponent());
+		ptr->AddComponent(new MissileLauncherComponent());
+		ptr->AddComponent(new FlamethrowerComponent());
+		ptr->AddComponent(new HealthComponent());
+	}
+
+	for (int i = 0; i < Physics::opponentVehiclesNum; i++) {								//CREATE AI
+		GameObject opponent = GameObject();
+		opponent.mesh = GeoGenerator::MakeBox(2, 1, 2, false);
+		opponent.transform.position = aiVehStartPositions[i];
+		opponent.transform.Rotate(Transform::Up(), Mathf::PI, false);
+		opponent.name = "AI" + to_string(i);
+		opponent.tag = TAGS_AI_PLAYER;
+		ptr = Game::CreateWorldObject(opponent);
+		ptr->AddComponent(new PlayerComponent());
+		ptr->AddComponent(new EnemyComponent());
+		ptr->AddComponent(new MachineGunComponent());
+		ptr->AddComponent(new AIControlComponent1());
+		ptr->AddComponent(new HealthComponent());
+	}
 
 	/*GameObject obstacle1 = GameObject();
 	obstacle1.mesh = GeoGenerator::MakeBox(16.0, 40.0, 16.0, false);
@@ -302,7 +356,7 @@ void Game::BuildWorld()
 	temp.standardMat.fogLevel = 0.0;
 	Game::CreateWorldObject(temp);
 
-	temp = GameObject("OceanTop", TAGS_DECORATION);
+	/*temp = GameObject("OceanTop", TAGS_DECORATION);
 	temp.staticGeo = SG_OCEAN;
 	temp.castShadow = false;
 	temp.transform.position.y = 8;
@@ -315,9 +369,9 @@ void Game::BuildWorld()
 	temp.standardMat.tileUV = vec2(10, 10);
 	temp.getGrabPass = true;
 	ptr = Game::CreateStaticObject(temp);
-	ptr->AddComponent(new OceanComponent());
+	ptr->AddComponent(new OceanComponent());*/
 
-	temp = GameObject("OceanBottom", TAGS_DECORATION);
+	/*temp = GameObject("OceanBottom", TAGS_DECORATION);
 	temp.staticGeo = SG_OCEAN_DOWN;
 	temp.castShadow = false;
 	temp.transform.position.y = 8;
@@ -330,7 +384,7 @@ void Game::BuildWorld()
 	temp.standardMat.tileUV = vec2(10, 10);
 	ptr = Game::CreateStaticObject(temp);
 	temp.getGrabPass = true;
-	ptr->AddComponent(new OceanComponent());
+	ptr->AddComponent(new OceanComponent());*/
 
 	/*temp = GameObject("Puddle", TAGS_DECORATION);
 	temp.staticGeo = SG_PUDDLE;
@@ -526,13 +580,13 @@ GameObject* Game::CreateOverlayObject(GameObject object)
 	overlayObjectList.push_back(object);
 	return &overlayObjectList[overlayObjectList.size() - 1];
 }
-GameObject* Game::CreateAIObject(GameObject object)
+/*GameObject* Game::CreateAIObject(GameObject object)
 {
 	object.objectID = aiObjectList.size();
 	object.Start();
 	aiObjectList.push_back(object);
 	return &aiObjectList[aiObjectList.size() - 1];
-}
+}*/
 
 //DESTROYERS
 void Game::DestroyStaticObjectAt(int objectID)
@@ -628,7 +682,8 @@ void Game::DestroyOverlayObjectAt(int objectID)
 			overlayObjectList[i].componentList[j]->SetSelfID(&overlayObjectList[i].objectID);
 	}
 }
-void Game::DestroyAIObjectAt(int objectID)
+
+/*void Game::DestroyAIObjectAt(int objectID)
 {
 	GameObject object = aiObjectList[objectID];
 	aiObjectList.erase(aiObjectList.begin() + object.objectID);
@@ -638,7 +693,7 @@ void Game::DestroyAIObjectAt(int objectID)
 			aiObjectList[i].objectID--;
 	}
 	object.RemoveComponents();
-}
+}*/
 
 //THE FIND ENGINE
 GameObject* Game::Find(string name)
@@ -666,11 +721,11 @@ GameObject* Game::Find(string name)
 		if (name == overlayObjectList[i].name)
 			return &overlayObjectList[i];
 	}
-	for (int i = 0; i < aiObjectList.size(); i++)
+	/*for (int i = 0; i < aiObjectList.size(); i++)
 	{
 		if (name == aiObjectList[i].name)
 			return &aiObjectList[i];
-	}
+	}*/
 
 	cout << "GameObject with name: " << name << " not found! Check thy spelling?" << endl;
 	return nullptr;//Nothing was found

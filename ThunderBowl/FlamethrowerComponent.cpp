@@ -81,7 +81,8 @@ void FlamethrowerComponent::UpdateParticles()
 		}
 		else
 		{
-
+			vertical = 1.0;
+			horizontal = 0.0;
 		}
 	}
 

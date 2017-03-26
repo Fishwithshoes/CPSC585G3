@@ -20,6 +20,14 @@ enum GameWeapons
 	GW_FLAMETHROWER
 };
 
+enum NodeTypes {
+	NT_TRANSIT,
+	NT_PLAYER,
+	NT_MG_POWERUP,
+	NT_FT_POWERUP,
+	NT_RK_POWERUP,
+};
+
 //Models
 struct Mesh
 {
@@ -77,6 +85,7 @@ enum Tags
 	//World objects
 	TAGS_HUMAN_PLAYER,
 	TAGS_AI_PLAYER,
+	TAGS_AI_NODE,
 	TAGS_PROJECTILE,
 	TAGS_MISSILE,
 	TAGS_DECORATION,

@@ -42,6 +42,15 @@ void EnemyComponent::Start()
 		enWheelVector.push_back(Game::CreateWorldObject(temp));
 	}
 
+	AIControlComponent1* tempController = &AIControlComponent1();
+	aiController = (AIControlComponent1*)Game::Find(selfName)->GetComponent(tempController);
+
+	maxTorque = 1000.0;
+	brakeTorque = 3000.0;
+	turnTemper = 0.25;
+
+	performUTurn = false;
+
 	Finalize();
 }
 
@@ -94,7 +103,21 @@ void EnemyComponent::Update()
 		enPhysVehicle->setLinearVelocity(physx::PxVec3(0, 0, 0));
 	}
 
-	MoveOnHeading();
+	vec3 requiredHeading = glm::normalize(aiController->currentHeading);
+	vec3 actualHeading = glm::normalize(-transform.GetForward());
+
+	if (glm::dot(actualHeading, requiredHeading) <= -0.95) {	//
+		uTurnHeading = -actualHeading;
+		performUTurn = true;
+	}
+
+	if (performUTurn) {
+		cout <<selfName << " UTURN" << endl;
+		UTurn(actualHeading);
+	}
+	else {
+		MoveOnHeading();
+	}
 
 	Finalize();
 }
@@ -133,21 +156,39 @@ void EnemyComponent::OnCollision(Component::CollisionPair collisionPair, Compone
 }
 
 void EnemyComponent::MoveOnHeading() {
-	physx::PxReal maxTorque = 1000.0;
-	physx::PxReal brakeTorque = 1000.0;
-	physx::PxReal turnTemper = 0.25;
 	AIControlComponent1* tempController = &AIControlComponent1();
 	aiController = (AIControlComponent1*)Game::Find(selfName)->GetComponent(tempController);
 	vec3 requiredHeading = glm::normalize(aiController->currentHeading);
-	vec3 actualHeading = glm::normalize(transform.GetForward());
-	actualHeading.x = -actualHeading.x;
+	vec3 actualHeading = glm::normalize(-transform.GetForward());
+	//actualHeading.z = -actualHeading.z;
 	//cout << "R: " << requiredHeading.x << " " << requiredHeading.y << " " << requiredHeading.z << endl;
 	//cout << "A: " << actualHeading.x << " " << actualHeading.y << " " << actualHeading.z << endl;
 	//cout << "D: " << glm::dot(actualHeading, requiredHeading) << endl;
-	enVehicleNoDrive->setSteerAngle(2, clamp(1.0 - glm::dot(actualHeading, requiredHeading), 0.0, 1.0)*turnTemper);
-	enVehicleNoDrive->setSteerAngle(3, clamp(1.0 - glm::dot(actualHeading, requiredHeading), 0.0, 1.0)*turnTemper);
-
+	//cout << "dot right: " << glm::dot(glm::normalize(transform.GetRight()), requiredHeading) << " dot left: " << glm::dot(glm::normalize(-transform.GetRight()), requiredHeading) << endl;
+	if (glm::dot(glm::normalize(transform.GetRight()), requiredHeading) >= glm::dot(glm::normalize(-transform.GetRight()), requiredHeading)) { //NOTE + 0.1 small inclination of turning right
+		//cout << "turn right" << endl;
+		enVehicleNoDrive->setSteerAngle(2, clamp(1.0 - glm::dot(actualHeading, requiredHeading), 0.0, 1.0)*turnTemper);
+		enVehicleNoDrive->setSteerAngle(3, clamp(1.0 - glm::dot(actualHeading, requiredHeading), 0.0, 1.0)*turnTemper);
+	}
+	else {
+		//cout << "turn left" << endl;
+		enVehicleNoDrive->setSteerAngle(2, -clamp(1.0 - glm::dot(actualHeading, requiredHeading), 0.0, 1.0)*turnTemper);
+		enVehicleNoDrive->setSteerAngle(3, -clamp(1.0 - glm::dot(actualHeading, requiredHeading), 0.0, 1.0)*turnTemper);
+	}
 	enVehicleNoDrive->setDriveTorque(0, maxTorque);
 	enVehicleNoDrive->setDriveTorque(1, maxTorque);
 	//standardMat.diffuseColor = vec3(0.0, glm::dot(actualHeading, requiredHeading), 0.0);
+}
+
+void EnemyComponent::UTurn(vec3 inHeading) {
+	if (glm::dot(inHeading, uTurnHeading) <= 0.90) {
+		enVehicleNoDrive->setSteerAngle(2, clamp(1.0 - glm::dot(inHeading, uTurnHeading), 0.0, 1.0)*turnTemper);
+		enVehicleNoDrive->setSteerAngle(3, clamp(1.0 - glm::dot(inHeading, uTurnHeading), 0.0, 1.0)*turnTemper);
+		enVehicleNoDrive->setDriveTorque(0, maxTorque);
+		enVehicleNoDrive->setDriveTorque(1, maxTorque);
+	}
+	else {
+		cout << selfName << " done UTurn" << endl;
+		performUTurn = false;
+	}
 }

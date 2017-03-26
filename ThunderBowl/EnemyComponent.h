@@ -31,7 +31,16 @@ public:
 	void Update();
 	void OnCollision(CollisionPair collisionPair, Component* collider);
 	void MoveOnHeading();
+	void UTurn(vec3 inHeading);
+
+	bool performUTurn;
+
+	physx::PxReal maxTorque;
+	physx::PxReal brakeTorque;
+	physx::PxReal turnTemper;
+
 	vec3 enCurrentPosition;
 	vec3 enActualHeading;
+	vec3 uTurnHeading;
 };
 

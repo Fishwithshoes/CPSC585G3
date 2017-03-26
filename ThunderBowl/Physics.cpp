@@ -201,11 +201,11 @@ void Physics::initializePhysX()
 	gFrictionPairs = Physics::createFrictionPairs(gMaterial);
 
 	//Create a plane to drive on.
-	//gGroundPlane = createDrivablePlane(gMaterial, gPhysics);
-	//gScene->addActor(*gGroundPlane);
+	gGroundPlane = createDrivablePlane(gMaterial, gPhysics);
+	gScene->addActor(*gGroundPlane);
 
 	//Create a thunderbowl to drive on
-	gScene->addActor(*CreateDrivableThunderbowl(gMaterial, gPhysics));
+	//gScene->addActor(*CreateDrivableThunderbowl(gMaterial, gPhysics));
 }
 
 void Physics::computeRotation(PxQuat angle) {}
@@ -622,6 +622,7 @@ PxRigidStatic* Physics::createDrivablePlane(PxMaterial* material, PxPhysics* phy
 {
 	//Add a plane to the scene.
 	PxRigidStatic* groundPlane = PxCreatePlane(*physics, PxPlane(0, 1, 0, 0), *material);
+	//groundPlane->setGlobalPose(PxTransform(PxVec3(0.0, 0.0, 0.0), PxIdentity));
 
 	//Get the plane shape so we can set query and simulation filter data.
 	PxShape* shapes[1];
@@ -1051,7 +1052,7 @@ Physics::VehicleDesc Physics::initVehicleDesc()
 	((chassisDims.y*chassisDims.y + chassisDims.z*chassisDims.z)*chassisMass / 10.0f,
 		(chassisDims.x*chassisDims.x + chassisDims.z*chassisDims.z)*0.6f*chassisMass / 10.0f,
 		(chassisDims.x*chassisDims.x + chassisDims.y*chassisDims.y)*chassisMass / 10.0f);
-	const PxVec3 chassisCMOffset(0.0f, -chassisDims.y*0.5f + 0.25f, 0.20f);						//Center of mass
+	const PxVec3 chassisCMOffset(0.0f, -chassisDims.y*0.8f + 0.25f, 0.20f);						//Center of mass
 
 	//Set up the wheel mass, radius, width, moment of inertia, and number of wheels.
 	//Moment of inertia is just the moment of inertia of a cylinder.
