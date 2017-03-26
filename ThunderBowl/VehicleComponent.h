@@ -32,12 +32,18 @@ public:
 
 	physx::PxVec3 myStartPosition;
 
+	int GetPlayerNum();
+	void SetPlayerNum(int playerNumber);
+
 protected:
 
 private:
+	int playerNum = 1;
 	float currentTurn = 0;
 	string wheelSprayNameLeft;
 	string wheelSprayNameRight;
 	bool enteredWaterPrev = false;
+	float engineDelay = 0.0;
+	float nextEngine = 0.0;
 };
 

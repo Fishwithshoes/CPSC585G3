@@ -88,8 +88,11 @@ void MachineGunComponent::FireMG()
 		temp.transform.rotation = temp.transform.GetInverseRotation();
 		if (self->tag == TAGS_HUMAN_PLAYER)
 		{
-			float vertical = Input::GetXBoxAxis(1, ButtonCode::XBOX_JOY_RIGHT_VERTICAL);
-			float horizontal = Input::GetXBoxAxis(1, ButtonCode::XBOX_JOY_RIGHT_HORIZONTAL);
+			VehicleComponent* vehicle = &VehicleComponent();
+			vehicle = (VehicleComponent*)self->GetComponent(vehicle);
+
+			float vertical = Input::GetXBoxAxis(vehicle->GetPlayerNum(), ButtonCode::XBOX_JOY_RIGHT_VERTICAL);
+			float horizontal = Input::GetXBoxAxis(vehicle->GetPlayerNum(), ButtonCode::XBOX_JOY_RIGHT_HORIZONTAL);
 
 			float theta = -Mathf::PI * 0.15 * horizontal;
 			float phi = Mathf::PI * 0.1 * vertical;

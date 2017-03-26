@@ -8,8 +8,6 @@ public:
 	void FireMG();
 
 	float bulletDelay = 0.05f;
-	int ammoCount = 0;
-	int maxAmmo = 200.0;
 
 	int currentBullet;
 	float nextBullet = bulletDelay;

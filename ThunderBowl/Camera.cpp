@@ -8,7 +8,7 @@ Camera::Camera()
 	verticalFOV = Mathf::PI / 180 * 60;
 	nearClipPlane = 0.1;
 	farClipPlane = 10000.0;
-	mode = Modes::MODE_FREE;
+	mode = Modes::MODE_GAME;
 }
 Camera::Camera(Transform transformIn)
 {
@@ -16,7 +16,7 @@ Camera::Camera(Transform transformIn)
 	verticalFOV = Mathf::PI / 180 * 60;
 	nearClipPlane = 0.1;
 	farClipPlane = 10000.0;
-	mode = Modes::MODE_FREE;
+	mode = Modes::MODE_GAME;
 }
 
 Camera::~Camera()
@@ -137,10 +137,10 @@ mat4 Camera::GetWorldToViewMatrix()
 	}	
 }
 
-mat4 Camera::GetViewToProjectionMatrix()
+mat4 Camera::GetViewToProjectionMatrix(vec2 aspect)
 {
 	return mat4(
-		1/((float)Camera::WIDTH/(float)Camera::HEIGHT*tan(verticalFOV*0.5)), 0, 0, 0,
+		1/((float)aspect.x/(float)aspect.y*tan(verticalFOV*0.5)), 0, 0, 0,
 		0, 1/tan(verticalFOV*0.5), 0, 0,
 		0, 0, (-nearClipPlane - farClipPlane) / (nearClipPlane - farClipPlane), (2 * farClipPlane*nearClipPlane) / (nearClipPlane - farClipPlane),
 		0, 0, 1, 0);

@@ -231,10 +231,12 @@ void Physics::stepPhysics()
 	const PxVec3 grav = gScene->getGravity();
 	PxWheelQueryResult wheelQueryResults[PX_MAX_NB_WHEELS];
 	PxVehicleWheelQueryResult vehicleQueryResults[totalVehiclesNum];// = { { wheelQueryResults, gVehicleNoDrive->mWheelsSimData.getNbWheels() },{ wheelQueryResults, opponentVehicleNoDrives[0]->mWheelsSimData.getNbWheels() },{ wheelQueryResults, opponentVehicleNoDrives[1]->mWheelsSimData.getNbWheels() } };
-	for (int i = 0; i < playerVehicleNoDrives.size(); i++) {
+	for (int i = 0; i < playerVehicleNoDrives.size(); i++) 
+	{
 		vehicleQueryResults[i] = {wheelQueryResults, playerVehicleNoDrives[i]->mWheelsSimData.getNbWheels()};
 	}
-	for (int j = 0; j < opponentVehicleNoDrives.size(); j++) {
+	for (int j = 0; j < opponentVehicleNoDrives.size(); j++) 
+	{
 		vehicleQueryResults[playerVehicleNoDrives.size() + j] = { wheelQueryResults, opponentVehicleNoDrives[j]->mWheelsSimData.getNbWheels() };
 	}
 	PxVehicleUpdates(timestep, grav, *gFrictionPairs, totalVehiclesNum, vehicles, vehicleQueryResults);

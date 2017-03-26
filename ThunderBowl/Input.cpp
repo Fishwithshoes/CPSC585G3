@@ -66,21 +66,25 @@ bool Input::GetXBoxButton(int player, int buttonCode)
 		}
 	}
 	int count;
-	const unsigned char* states;
+	const unsigned char* states = NULL;
 
 	switch (player)
 	{
 	case 1:
-		states = glfwGetJoystickButtons(joy1, &count);
+		if (joy1 >= 0)
+			states = glfwGetJoystickButtons(joy1, &count);
 		break;
 	case 2:
-		states = glfwGetJoystickButtons(joy2, &count);
+		if (joy2 >= 0)
+			states = glfwGetJoystickButtons(joy2, &count);
 		break;
 	case 3:
-		states = glfwGetJoystickButtons(joy3, &count);
+		if (joy3 >= 0)
+			states = glfwGetJoystickButtons(joy3, &count);
 		break;
 	case 4:
-		states = glfwGetJoystickButtons(joy4, &count);
+		if (joy4 >= 0)
+			states = glfwGetJoystickButtons(joy4, &count);
 		break;
 	default:
 		cout << "Bad Player Number: only 1-4 supported!" << endl;
@@ -126,21 +130,25 @@ float Input::GetXBoxAxis(int player, int axisCode)
 	}
 
 	int count;
-	const float* states;
+	const float* states = NULL;
 
 	switch (player)
 	{
 	case 1:
-		states = glfwGetJoystickAxes(joy1, &count);
+		if(joy1 >= 0)
+			states = glfwGetJoystickAxes(joy1, &count);
 		break;
 	case 2:
-		states = glfwGetJoystickAxes(joy2, &count);
+		if (joy2 >= 0)
+			states = glfwGetJoystickAxes(joy2, &count);
 		break;
 	case 3:
-		states = glfwGetJoystickAxes(joy3, &count);
+		if (joy3 >= 0)
+			states = glfwGetJoystickAxes(joy3, &count);
 		break;
 	case 4:
-		states = glfwGetJoystickAxes(joy4, &count);
+		if (joy4 >= 0)
+			states = glfwGetJoystickAxes(joy4, &count);
 		break;
 	default:
 		cout << "Bad Player Number: only 1-4 supported!" << endl;

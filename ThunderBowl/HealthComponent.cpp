@@ -1,5 +1,6 @@
 #include "HealthComponent.h"
 #include "Game.h"
+#include "GameManager.h"
 #include "Physics.h"
 #include "BulletComponent.h"
 #include "Audio.h"
@@ -7,8 +8,8 @@
 void HealthComponent::Start()
 {
 	Initialize();
-	currentHealth = 100.0;
-	respawnTime = 20.00;
+	currentHealth = GameManager::MAX_HEALTH;
+	respawnTime = GameManager::RESPAWN_TIME;
 	standardMat.diffuseColor = glm::vec3(0.0, 1.0, 0.0);
 	Finalize();
 }

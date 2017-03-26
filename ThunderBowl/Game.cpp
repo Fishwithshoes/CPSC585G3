@@ -105,6 +105,9 @@ void Game::BuildWorld()
 		ptr->AddComponent(new MissileLauncherComponent());
 		ptr->AddComponent(new FlamethrowerComponent());
 		ptr->AddComponent(new HealthComponent());
+		VehicleComponent* vehicle = &VehicleComponent();
+		vehicle = (VehicleComponent*)ptr->GetComponent(vehicle);
+		vehicle->SetPlayerNum(i + 1);
 	}
 
 	for (int i = 0; i < Physics::opponentVehiclesNum; i++) {								//CREATE AI
@@ -356,150 +359,18 @@ void Game::BuildWorld()
 	Game::CreateOverlayObject(temp);
 	
 //OVERLAY GAMEOBJECTS - HUD
-	//Health meter
-	temp = GameObject("StatusMeterBack", TAGS_HUD);
-	temp.mesh = GeoGenerator::MakeRect(1.25, 0.32, GA_LEFT);
-	temp.transform.Translate(vec3(-0.3725, 0.79, 0.0), false);
-	temp.particleOverlayMat.color = vec4(0, 0, 0, 0.5);
-	Game::CreateOverlayObject(temp);
-
-	temp = GameObject("HealthMeter", TAGS_HUD);
-	temp.mesh = GeoGenerator::MakeRect(1.00, 0.15, GA_LEFT);
-	temp.transform.Translate(vec3(-0.25, 0.85, -0.1), false);
-	temp.particleOverlayMat.color = vec4(0, 0.5, 1, 1);
-	Game::CreateOverlayObject(temp);
-
-	temp = GameObject("HeathIcon", TAGS_HUD);
-	temp.mesh = GeoGenerator::MakeRect(0.15, 0.15, GA_CENTER);
-	temp.transform.Translate(vec3(-0.3175, 0.85, -0.1), false);
-	temp.particleOverlayMat.mainTexture = MAP_HEALTH_ICON;
-	Game::CreateOverlayObject(temp);
-
-	//Ammo meter
-	temp = GameObject("AmmoMeter", TAGS_HUD);
-	temp.mesh = GeoGenerator::MakeRect(1.00, 0.05, GA_LEFT);
-	temp.transform.Translate(vec3(-0.25, 0.70, -0.1), false);
-	temp.particleOverlayMat.color = vec4(0.8, 0.4, 0.0, 1);
-	Game::CreateOverlayObject(temp);
-
-	temp = GameObject("WeaponIcon", TAGS_HUD);
-	temp.mesh = GeoGenerator::MakeRect(0.1, 0.1, GA_CENTER);
-	temp.transform.Translate(vec3(-0.3175, 0.70, -0.1), false);
-	temp.particleOverlayMat.mainTexture = MAP_MACHINE_GUN_ICON;
-	Game::CreateOverlayObject(temp);
-
-	//Speedometer
-	temp = GameObject("SpeedometerBack", TAGS_HUD);
-	temp.mesh = GeoGenerator::MakeRect(0.8, 0.5, GA_CENTER);
-	temp.transform.Translate(vec3(0.73, -0.67, 0.0), false);
-	temp.particleOverlayMat.color = vec4(0, 0, 0, 0.5);
-	Game::CreateOverlayObject(temp);
-
-	temp = GameObject("SpeedometerGauge", TAGS_HUD);
-	temp.mesh = GeoGenerator::MakeRect(0.75, 0.45, GA_CENTER);
-	temp.transform.Translate(vec3(0.73, -0.67, -0.1), false);
-	temp.particleOverlayMat.color = vec4(0.5, 0.5, 0.5, 1.0);
-	Game::CreateOverlayObject(temp);
-
-	temp = GameObject("SpeedometerNeedle", TAGS_HUD);
-	temp.mesh = GeoGenerator::MakeRect(0.35, 0.05, GA_RIGHT);
-	temp.transform.Translate(vec3(0.73, -0.85, -0.2), false);
-	temp.particleOverlayMat.color = vec4(1.0, 0.0, 0.0, 1.0);
-	Game::CreateOverlayObject(temp);
-
-	//Game Timer
-	temp = GameObject("TimerBack", TAGS_HUD);
-	temp.mesh = GeoGenerator::MakeRect(0.442, 0.1, GA_LEFT);
-	temp.transform.Translate(vec3(-0.63, 0.9, 0.0), false);
-	temp.particleOverlayMat.color = vec4(0, 0, 0, 0.5);
-	Game::CreateOverlayObject(temp);
-
-	temp = GameObject("TimerLabel", TAGS_HUD);
-	temp.mesh = GeoGenerator::MakeRect(0.2, 0.2, GA_LEFT);
-	temp.transform.Translate(vec3(-0.63, 0.9, -0.1), false);
-	temp.particleOverlayMat.color = vec4(1.0, 1.0, 1.0, 1.0);
-	temp.particleOverlayMat.mainTexture = MAP_TIME;
-	Game::CreateOverlayObject(temp);
-
-	temp = GameObject("Timer1", TAGS_HUD);
-	temp.mesh = GeoGenerator::MakeRect(0.075, 0.075, GA_LEFT);
-	temp.transform.Translate(vec3(-0.52, 0.9, -0.2), false);
-	temp.particleOverlayMat.color = vec4(1.0, 1.0, 1.0, 1.0);
-	temp.particleOverlayMat.mainTexture = MAP_ZERO;
-	Game::CreateOverlayObject(temp);
-
-	temp = GameObject("Timer2", TAGS_HUD);
-	temp.mesh = GeoGenerator::MakeRect(0.075, 0.075, GA_LEFT);
-	temp.transform.Translate(vec3(-0.48, 0.9, -0.3), false);
-	temp.particleOverlayMat.color = vec4(1.0, 1.0, 1.0, 1.0);
-	temp.particleOverlayMat.mainTexture = MAP_ZERO;
-	Game::CreateOverlayObject(temp);
-
-	temp = GameObject("Timer3", TAGS_HUD);
-	temp.mesh = GeoGenerator::MakeRect(0.075, 0.075, GA_LEFT);
-	temp.transform.Translate(vec3(-0.46, 0.9, -0.4), false);
-	temp.particleOverlayMat.color = vec4(1.0, 1.0, 1.0, 1.0);
-	temp.particleOverlayMat.mainTexture = MAP_ZERO;
-	Game::CreateOverlayObject(temp);
-
-	//Score
-	temp = GameObject("ScoreBack", TAGS_HUD);
-	temp.mesh = GeoGenerator::MakeRect(0.5, 0.1, GA_LEFT);
-	temp.transform.Translate(vec3(0.34, 0.9, 0.0), false);
-	temp.particleOverlayMat.color = vec4(0, 0, 0, 0.5);
-	Game::CreateOverlayObject(temp);
-
-	temp = GameObject("ScoreLabel", TAGS_HUD);
-	temp.mesh = GeoGenerator::MakeRect(0.2, 0.2, GA_LEFT);
-	temp.transform.Translate(vec3(0.36, 0.9, -0.1), false);
-	temp.particleOverlayMat.color = vec4(1.0, 1.0, 1.0, 1.0);
-	temp.particleOverlayMat.mainTexture = MAP_SCORE;
-	Game::CreateOverlayObject(temp);
-
-	temp = GameObject("Score1", TAGS_HUD);
-	temp.mesh = GeoGenerator::MakeRect(0.075, 0.075, GA_LEFT);
-	temp.transform.Translate(vec3(0.48, 0.9, -0.2), false);
-	temp.particleOverlayMat.color = vec4(1.0, 1.0, 1.0, 1.0);
-	temp.particleOverlayMat.mainTexture = MAP_ZERO;
-	Game::CreateOverlayObject(temp);
-
-	temp = GameObject("Score2", TAGS_HUD);
-	temp.mesh = GeoGenerator::MakeRect(0.075, 0.075, GA_LEFT);
-	temp.transform.Translate(vec3(0.50, 0.9, -0.3), false);
-	temp.particleOverlayMat.color = vec4(1.0, 1.0, 1.0, 1.0);
-	temp.particleOverlayMat.mainTexture = MAP_ZERO;
-	Game::CreateOverlayObject(temp);
-
-	temp = GameObject("Score3", TAGS_HUD);
-	temp.mesh = GeoGenerator::MakeRect(0.075, 0.075, GA_LEFT);
-	temp.transform.Translate(vec3(0.52, 0.9, -0.4), false);
-	temp.particleOverlayMat.color = vec4(1.0, 1.0, 1.0, 1.0);
-	temp.particleOverlayMat.mainTexture = MAP_ZERO;
-	Game::CreateOverlayObject(temp);
-
-	temp = GameObject("Score4", TAGS_HUD);
-	temp.mesh = GeoGenerator::MakeRect(0.075, 0.075, GA_LEFT);
-	temp.transform.Translate(vec3(0.54, 0.9, -0.5), false);
-	temp.particleOverlayMat.color = vec4(1.0, 1.0, 1.0, 1.0);
-	temp.particleOverlayMat.mainTexture = MAP_ZERO;
-	Game::CreateOverlayObject(temp);
-
-	//IF_DEF HIDE HUD
-	vector<GameObject*> hudItems = FindGameObjectsWithTag(TAGS_HUD);
-	for (int i = 0; i < hudItems.size(); i++)
-		hudItems[i]->isVisible = false;
-	//END_IF HIDE HUD
+	//NOW CREATED IN GameManager::StartGame() as of v0.3.15
 
 //OVERLAY GAMEOBJECTS - PAUSE
 	temp = GameObject("PauseMenuBack", TAGS_PAUSE);
 	temp.mesh = GeoGenerator::MakeRect(1.0, 0.40, GA_CENTER);
-	temp.transform.Translate(vec3(0.0, 0.0, 0.0), false);
+	temp.transform.Translate(vec3(0.0, 0.0, -0.6), false);
 	temp.particleOverlayMat.color = vec4(0, 0, 0, 0.25);
 	//Game::CreateOverlayObject(temp);
 
 	temp = GameObject("PauseMenuButton", TAGS_PAUSE);
 	temp.mesh = GeoGenerator::MakeRect(0.95, 0.35, GA_CENTER);
-	temp.transform.Translate(vec3(0.0, 0.0, -0.1), false);
+	temp.transform.Translate(vec3(0.0, 0.0, -0.7), false);
 	temp.particleOverlayMat.mainTexture = MAP_PAUSED;
 	temp.particleOverlayMat.color = vec4(1, 1, 1, 1.0);
 	Game::CreateOverlayObject(temp);
@@ -736,14 +607,26 @@ void Game::DestroyParticleObjectAt(int objectID)
 }
 void Game::DestroyOverlayObjectAt(int objectID)
 {
-	GameObject object = overlayObjectList[objectID];
-	overlayObjectList.erase(overlayObjectList.begin() + object.objectID);
+	overlayObjectList[objectID].RemoveComponents();
+	overlayObjectList.erase(overlayObjectList.begin() + objectID);
 	for (int i = 0; i < overlayObjectList.size(); i++)
 	{
-		if (overlayObjectList[i].objectID > object.objectID)
-			overlayObjectList[i].objectID--;
+		overlayObjectList[i].objectID = i;
+
+		for (int j = 0; j < overlayObjectList[i].componentList.size(); j++)
+		{
+			overlayObjectList[i].componentList[j]->SetSelfName(&overlayObjectList[i].name);
+			overlayObjectList[i].componentList[j]->SetMesh(&overlayObjectList[i].mesh);
+			overlayObjectList[i].componentList[j]->SetTransform(&overlayObjectList[i].transform);
+			overlayObjectList[i].componentList[j]->SetStandardMaterial(&overlayObjectList[i].standardMat);
+			overlayObjectList[i].componentList[j]->SetParticleOverlayMaterial(&overlayObjectList[i].particleOverlayMat);
+		}
 	}
-	object.RemoveComponents();
+	for (int i = 0; i < overlayObjectList.size(); i++)
+	{
+		for (int j = 0; j < overlayObjectList[i].componentList.size(); j++)
+			overlayObjectList[i].componentList[j]->SetSelfID(&overlayObjectList[i].objectID);
+	}
 }
 void Game::DestroyAIObjectAt(int objectID)
 {

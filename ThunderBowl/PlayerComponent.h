@@ -16,10 +16,6 @@ public:
 	int missileLauncherAmmo;
 	float flamethrowerAmmo;
 
-	const int MAX_MACHINE_GUN_AMMO = 200;
-	const int MAX_MISSILE_LAUNCHER_AMMO = 4;
-	const float MAX_FLAMETHROWER_AMMO = 10.0;
-
 	void Start();
 	void Update();
 	void OnCollision(Component::CollisionPair collisionPair, Component* collider);
