@@ -291,7 +291,7 @@ void Game::BuildWorld()
 		middleNodeRef->adjacentNodes.push_back(outerNodeRef);
 
 		outerNodeRef->adjacentNodes.push_back(middleNodeRef);
-	}
+	}															//NODES END
 
 	/*GameObject pathNode1 = GameObject();
 	pathNode1.name = "Node1";
@@ -972,7 +972,7 @@ GameObject* Game::Find(string name)
 			return &aiObjectList[i];
 	}*/
 
-	//cout << "GameObject with name: " << name << " not found! Check thy spelling?" << endl;
+	cout << "GameObject with name: " << name << " not found! Check thy spelling?" << endl;
 	return nullptr;//Nothing was found
 }
 

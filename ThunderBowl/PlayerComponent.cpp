@@ -70,13 +70,13 @@ void PlayerComponent::Update()
 	GameObject* self = Game::Find(selfName);
 	HealthComponent* playerHealth = &HealthComponent();
 	playerHealth = (HealthComponent*)self->GetComponent(playerHealth);
-	VehicleComponent* vehicle = &VehicleComponent();
-	vehicle = (VehicleComponent*)self->GetComponent(vehicle);
 
-	//Switch Weapon - Human Players
-	GameObject* weaponIcon = Game::Find("WeaponIcon"+vehicle->GetPlayerNum());
+
 	if (self->tag == TAGS_HUMAN_PLAYER)
 	{
+		VehicleComponent* vehicle = &VehicleComponent();
+		vehicle = (VehicleComponent*)self->GetComponent(vehicle);
+		GameObject* weaponIcon = Game::Find("WeaponIcon" + vehicle->GetPlayerNum());
 		if (Input::GetXBoxButton(vehicle->GetPlayerNum(), ButtonCode::XBOX_Y) && !switchWeaponPrev)
 		{
 			switch (currentWeapon)
@@ -107,6 +107,8 @@ void PlayerComponent::Update()
 	//Fire Weapon - Human Players
 	if (self->tag == TAGS_HUMAN_PLAYER)
 	{
+		VehicleComponent* vehicle = &VehicleComponent();
+		vehicle = (VehicleComponent*)self->GetComponent(vehicle);
 		if (Input::GetXBoxButton(vehicle->GetPlayerNum(), ButtonCode::XBOX_RIGHT_STICK))
 		{
 			MachineGunComponent* mgRef = &MachineGunComponent();
@@ -133,6 +135,8 @@ void PlayerComponent::Update()
 	//HUD display of health, ammo, score - Human Players Only
 	if (self->tag == TAGS_HUMAN_PLAYER)
 	{
+		VehicleComponent* vehicle = &VehicleComponent();
+		vehicle = (VehicleComponent*)self->GetComponent(vehicle);
 		GameObject* health = Game::Find("HealthMeter"+vehicle->GetPlayerNum());
 		health->transform.scale.x = playerHealth->currentHealth / 100;
 

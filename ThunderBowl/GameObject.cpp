@@ -119,8 +119,8 @@ Component* GameObject::GetComponent(Component* type)
 			return componentList[i];
 	}
 	//Simply return a new component of supplied type and throw an error
-	//cout << "No such component exists on this GameObject. Add one to it first!" << endl;
-	//cout << name << endl;
+	cout << "No such component exists on this GameObject. Add one to it first!" << endl;
+	cout << name << endl;
 	return &Component();
 }
 

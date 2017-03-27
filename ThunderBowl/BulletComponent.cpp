@@ -25,10 +25,12 @@ void BulletComponent::Start()
 	EnemyComponent* aiVeh;
 
 	selfGameObject = Game::Find(ownerName);
+
 	if (selfGameObject->tag == TAGS_HUMAN_PLAYER) 
 	{
 		VehicleComponent* temp = &VehicleComponent();
 		thisVeh = (VehicleComponent*)Game::Find(ownerName)->GetComponent(temp);
+
 	}
 	else 
 	{
@@ -73,6 +75,7 @@ void BulletComponent::Update()
 
 	selfGameObject = Game::Find(selfName);
 
+
 	transform.position.x = bullet->getGlobalPose().p.x;
 	transform.position.y = bullet->getGlobalPose().p.y;
 	transform.position.z = bullet->getGlobalPose().p.z;
@@ -115,6 +118,7 @@ void BulletComponent::Update()
 	{	
 		selfGameObject = Game::Find(selfName);
 		//cout << selfGameObject->objectID << " died" << endl;
+
 		worldScene->removeActor(*bullet);
 		bullet->release();
 		Game::DestroyStaticObjectAt(selfGameObject->objectID);
@@ -162,6 +166,7 @@ void BulletComponent::OnCollision(Component::CollisionPair collisionPair, Compon
 
 		Audio::Play2DSound(SFX_Hit, Random::rangef(0.20, 0.50), 0.0);
 		MGShooter = (PlayerComponent*)Game::Find(ownerName)->GetComponent(playerRef);
+
 		MGShooter->playerScore += 10.0;
 		targetHealth = (HealthComponent*)Game::Find(collider->getName())->GetComponent(targetHealthRef);
 		targetHealth->currentHealth -= 10.0;
