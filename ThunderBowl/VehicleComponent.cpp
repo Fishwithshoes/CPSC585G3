@@ -120,7 +120,7 @@ void VehicleComponent::Update()
 
 	}
 
-	physx::PxReal maxTorque = 6000.0;
+	physx::PxReal maxTorque = 2000.0;
 	physx::PxReal brakeTorque = 3000.0;
 	physx::PxReal turnTemper = 0.10;
 

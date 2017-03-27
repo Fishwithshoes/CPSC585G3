@@ -13,15 +13,21 @@ public:
 	void updateHeading();
 
 	void findNearestOfType(NodeTypes inType);
+	AINodeComponent* findNearest();
 	void pathToPU();
 	void trackPlayers();
 
+	void pathToDestination(AINodeComponent* destination);
+
 	vec3 currentHeading;
 	AINodeComponent* currentNode;
+	AINodeComponent* destinationNode;
 	vector<AINodeComponent*> currentAINodes;
 	vector<GameObject*> gameNodes;
 	AINodeComponent* aiNode;
 	GameObject* thisEnemy;
+
+	bool newPath = true;
 
 
 private:

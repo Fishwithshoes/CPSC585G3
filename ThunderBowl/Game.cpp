@@ -11,6 +11,13 @@ vector<GameObject> Game::overlayObjectList = {};
 vector<GameObject> Game::aiObjectList = {};
 vector<vec3> Game::plVehStartPositions = {};
 vector<vec3> Game::aiVehStartPositions = {};
+vector<vec3> Game::innerNodePositions = {}; //For assigning center node positions
+vector<GameObject*> Game::innerNodes = {}; //For assigning center node positions
+vector<vec3> Game::middleNodePositions = {}; //For assigning center node positions
+vector<GameObject*> Game::middleNodes = {}; //For assigning center node positions
+vector<vec3> Game::outerNodePositions = {}; //For assigning center node positions
+vector<GameObject*> Game::outerNodes = {}; //For assigning center node positions
+
 
 void Game::BuildWorld()
 {
@@ -26,9 +33,69 @@ void Game::BuildWorld()
 	plVehStartPositions.push_back(vec3(0.0, 20.0, -120.0));
 	plVehStartPositions.push_back(vec3(0.0, 20.0, 120.0));
 
+	/*aiVehStartPositions.push_back(vec3(120.0, 20.0, 0.0));
 	aiVehStartPositions.push_back(vec3(-120.0, 20.0, 0.0));
-	aiVehStartPositions.push_back(vec3(120.0, 20.0, 0.0));
 	aiVehStartPositions.push_back(vec3(0.0, 20.0, 120.0));
+
+	innerNodePositions.push_back(vec3(60.0, 20.0, 0.0));
+	innerNodePositions.push_back(vec3(42.42, 20.0, 42.42));
+	innerNodePositions.push_back(vec3(0.0, 20.0, 60.0));
+	innerNodePositions.push_back(vec3(42.42, 20.0, -42.42));
+	innerNodePositions.push_back(vec3(0.0, 20.0, -60.0));
+	innerNodePositions.push_back(vec3(-42.42, 20.0, -42.42));
+	innerNodePositions.push_back(vec3(-60.0, 20.0, 0.0));
+	innerNodePositions.push_back(vec3(-42.42, 20.0, 42.42));
+
+	middleNodePositions.push_back(vec3(100.0, 10.0, 0.0));
+	middleNodePositions.push_back(vec3(70.70, 10.0, 70.70));
+	middleNodePositions.push_back(vec3(0.0, 10.0, 100.0));
+	middleNodePositions.push_back(vec3(70.70, 10.0, -70.70));
+	middleNodePositions.push_back(vec3(0.0, 10.0, -100.0));
+	middleNodePositions.push_back(vec3(-70.70, 10.0, -70.70));
+	middleNodePositions.push_back(vec3(-100.0, 10.0, 0.0));
+	middleNodePositions.push_back(vec3(-70.70, 10.0, 70.70));
+
+	outerNodePositions.push_back(vec3(150.0, 35.0, 0.0));
+	outerNodePositions.push_back(vec3(106.0, 35.0, 106.0));
+	outerNodePositions.push_back(vec3(0.0, 35.0, 150.0));
+	outerNodePositions.push_back(vec3(106.0, 35.0, -106.0));
+	outerNodePositions.push_back(vec3(0.0, 35.0, -150.0));
+	outerNodePositions.push_back(vec3(-106.0, 35.0, -106.0));
+	outerNodePositions.push_back(vec3(-150.0, 35.0, 0.0));
+	outerNodePositions.push_back(vec3(-106.0, 35.0, 106.0));*/
+
+	aiVehStartPositions.push_back(vec3(120.0, 1.0, 0.0));
+	aiVehStartPositions.push_back(vec3(-120.0, 1.0, 0.0));
+	aiVehStartPositions.push_back(vec3(0.0, 1.0, 120.0));
+
+	innerNodePositions.push_back(vec3(60.0, 1.0, 0.0));
+	innerNodePositions.push_back(vec3(42.42, 1.0, 42.42));
+	innerNodePositions.push_back(vec3(0.0, 1.0, 60.0));
+	innerNodePositions.push_back(vec3(42.42, 1.0, -42.42));
+	innerNodePositions.push_back(vec3(0.0, 1.0, -60.0));
+	innerNodePositions.push_back(vec3(-42.42, 1.0, -42.42));
+	innerNodePositions.push_back(vec3(-60.0, 1.0, 0.0));
+	innerNodePositions.push_back(vec3(-42.42, 1.0, 42.42));
+
+	middleNodePositions.push_back(vec3(100.0, 1.0, 0.0));
+	middleNodePositions.push_back(vec3(70.70, 1.0, 70.70));
+	middleNodePositions.push_back(vec3(0.0, 1.0, 100.0));
+	middleNodePositions.push_back(vec3(70.70, 1.0, -70.70));
+	middleNodePositions.push_back(vec3(0.0, 1.0, -100.0));
+	middleNodePositions.push_back(vec3(-70.70, 1.0, -70.70));
+	middleNodePositions.push_back(vec3(-100.0, 1.0, 0.0));
+	middleNodePositions.push_back(vec3(-70.70, 1.0, 70.70));
+
+	outerNodePositions.push_back(vec3(150.0, 1.0, 0.0));
+	outerNodePositions.push_back(vec3(106.0, 1.0, 106.0));
+	outerNodePositions.push_back(vec3(0.0, 1.0, 150.0));
+	outerNodePositions.push_back(vec3(106.0, 1.0, -106.0));
+	outerNodePositions.push_back(vec3(0.0, 1.0, -150.0));
+	outerNodePositions.push_back(vec3(-106.0, 1.0, -106.0));
+	outerNodePositions.push_back(vec3(-150.0, 1.0, 0.0));
+	outerNodePositions.push_back(vec3(-106.0, 1.0, 106.0));
+
+
 
 	//Skybox
 	skybox.mesh = GeoGenerator::MakeSphere(5000, 16, 32, true);
@@ -69,92 +136,151 @@ void Game::BuildWorld()
 	ptr->AddComponent(new VehicleComponent());
 	ptr->AddComponent(new MachineGunComponent());*/
 
-	GameObject pathNode1 = GameObject();
-	pathNode1.name = "Node1";
-	pathNode1.transform.position = vec3(-150.0, 1.0, 0.0);
-	pathNode1.mesh = GeoGenerator::MakeBox(1, 1, 1, false);
-	pathNode1.tag = TAGS_AI_NODE;
-	ptr = Game::CreateWorldObject(pathNode1);
-	ptr->AddComponent(new AINodeComponent());
+	for (int i = 0; i < nodesPerRing; i++) {
+		GameObject tempNode = GameObject();
+		tempNode.name = "InnerNode" + to_string(i);
+		tempNode.transform.position = innerNodePositions.at(i);
+		tempNode.mesh = GeoGenerator::MakeBox(1, 1, 1, false);
+		tempNode.tag = TAGS_AI_NODE;
+		ptr = Game::CreateWorldObject(tempNode);
+		ptr->AddComponent(new AINodeComponent());
+		innerNodes.push_back(ptr);
+	}
 
-	GameObject pathNode2 = GameObject();
-	pathNode2.name = "Node2";
-	pathNode2.transform.position = vec3(150.0, 1.0, 0.0);
-	pathNode2.mesh = GeoGenerator::MakeBox(1, 1, 1, false);
-	pathNode2.tag = TAGS_AI_NODE;
-	ptr = Game::CreateWorldObject(pathNode2);
-	ptr->AddComponent(new AINodeComponent());
+	AINodeComponent* nodeRef = &AINodeComponent();
+	AINodeComponent* prevNodeRef = &AINodeComponent();
+	AINodeComponent* nextNodeRef = &AINodeComponent();
+	for (int i = 0; i < nodesPerRing; i++) {
+		if (i == 0) {
+			nodeRef = (AINodeComponent*)innerNodes[i]->GetComponent(nodeRef);
+			prevNodeRef = (AINodeComponent*)innerNodes.at(innerNodes.size() - 1)->GetComponent(nodeRef);
+			nextNodeRef = (AINodeComponent*)innerNodes.at(i+1)->GetComponent(nodeRef);
+		}
+		else if (i == innerNodes.size() - 1) {
+			nodeRef = (AINodeComponent*)innerNodes.at(i)->GetComponent(nodeRef);
+			prevNodeRef = (AINodeComponent*)innerNodes.at(nodesPerRing - 1)->GetComponent(nodeRef);
+			nextNodeRef = (AINodeComponent*)innerNodes.at(0)->GetComponent(nodeRef);
+		}
+		else {
+			nodeRef = (AINodeComponent*)innerNodes.at(i)->GetComponent(nodeRef);
+			prevNodeRef = (AINodeComponent*)innerNodes.at(i - 1)->GetComponent(nodeRef);
+			nextNodeRef = (AINodeComponent*)innerNodes.at(i + 1)->GetComponent(nodeRef);
+		}
+		nodeRef->adjacentNodes.push_back(prevNodeRef);
+		nodeRef->adjacentNodes.push_back(nextNodeRef);
+	}
 
-	GameObject pathNode3 = GameObject();
-	pathNode3.name = "Node3";
-	pathNode3.transform.position = vec3(0.0, 1.0, -150.0);
-	pathNode3.mesh = GeoGenerator::MakeBox(1, 1, 1, false);
-	pathNode3.tag = TAGS_AI_NODE;
-	ptr = Game::CreateWorldObject(pathNode3);
-	ptr->AddComponent(new AINodeComponent());
+	for (int i = 0; i < nodesPerRing; i++) {
+		GameObject tempNode = GameObject();
+		tempNode.name = "MiddleNode" + to_string(i);
+		tempNode.transform.position = middleNodePositions.at(i);
+		tempNode.mesh = GeoGenerator::MakeBox(1, 1, 1, false);
+		tempNode.tag = TAGS_AI_NODE;
+		ptr = Game::CreateWorldObject(tempNode);
+		ptr->AddComponent(new AINodeComponent());
+		if (remainder(i, 4) == 0) {
+			ptr->AddComponent(new PowerUpComponent(GameWeapons::GW_FLAMETHROWER));
+			ptr->AddComponent(new AINodeComponent(NodeTypes::NT_FT_POWERUP));
+		}
+		else if (remainder(i, 2) == 0) {
+			ptr->AddComponent(new PowerUpComponent(GameWeapons::GW_MACHINE_GUN));
+			ptr->AddComponent(new AINodeComponent(NodeTypes::NT_MG_POWERUP));
+		}
+		else {
+			ptr->AddComponent(new AINodeComponent());
+		}
 
-	GameObject pathNode4 = GameObject();
-	pathNode4.name = "Node4";
-	pathNode4.transform.position = vec3(0.0, 1.0, 150.0);
-	pathNode4.mesh = GeoGenerator::MakeBox(1, 1, 1, false);
-	pathNode4.tag = TAGS_AI_NODE;
-	ptr = Game::CreateWorldObject(pathNode4);
-	ptr->AddComponent(new AINodeComponent());
+		middleNodes.push_back(ptr);
+	}
 
-	GameObject powerUp1 = GameObject();
-	powerUp1.name = "Node5";
-	powerUp1.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
-	powerUp1.transform.position = vec3(0.0, 1.0, -80.0);
-	powerUp1.tag = TAGS_AI_NODE;
-	ptr = Game::CreateWorldObject(powerUp1);
-	ptr->AddComponent(new PowerUpComponent(GW_MACHINE_GUN));
-	ptr->AddComponent(new FloatComponent());
-	ptr->AddComponent(new RotateComponent());
-	ptr->AddComponent(new AINodeComponent(NodeTypes::NT_MG_POWERUP));
+	for (int i = 0; i < nodesPerRing; i++) {
+		AINodeComponent* nodeRef = &AINodeComponent();
+		AINodeComponent* prevNodeRef = &AINodeComponent();
+		AINodeComponent* nextNodeRef = &AINodeComponent();
 
-	GameObject powerUp2 = GameObject();
-	powerUp2.name = "Node6";
-	powerUp2.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
-	powerUp2.transform.position = vec3(0.0, 1.0, 80.0);
-	powerUp2.tag = TAGS_AI_NODE;
-	ptr = Game::CreateWorldObject(powerUp2);
-	ptr->AddComponent(new PowerUpComponent(GW_MACHINE_GUN));
-	ptr->AddComponent(new FloatComponent());
-	ptr->AddComponent(new RotateComponent());
-	ptr->AddComponent(new AINodeComponent(NodeTypes::NT_MG_POWERUP));
+		if (i == 0) {
+			nodeRef = (AINodeComponent*)middleNodes.at(i)->GetComponent(nodeRef);
+			prevNodeRef = (AINodeComponent*)middleNodes.at(nodesPerRing - 1)->GetComponent(nodeRef);
+			nextNodeRef = (AINodeComponent*)middleNodes.at(i + 1)->GetComponent(nodeRef);
+		}
+		else if (i == nodesPerRing - 1) {
+			nodeRef = (AINodeComponent*)middleNodes.at(i)->GetComponent(nodeRef);
+			prevNodeRef = (AINodeComponent*)middleNodes.at(i - 1)->GetComponent(nodeRef);
+			nextNodeRef = (AINodeComponent*)middleNodes.at(0)->GetComponent(nodeRef);
+		}
+		else {
+			nodeRef = (AINodeComponent*)middleNodes.at(i)->GetComponent(nodeRef);
+			prevNodeRef = (AINodeComponent*)middleNodes.at(i - 1)->GetComponent(nodeRef);
+			nextNodeRef = (AINodeComponent*)middleNodes.at(i + 1)->GetComponent(nodeRef);
+		}
+		nodeRef->adjacentNodes.push_back(prevNodeRef);
+		nodeRef->adjacentNodes.push_back(nextNodeRef);
+	}
 
-	GameObject powerUp3 = GameObject();
-	powerUp3.name = "Node7";
-	powerUp3.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
-	powerUp3.transform.position = vec3(-80.0, 1.0, 0.0);
-	powerUp3.tag = TAGS_AI_NODE;
-	ptr = Game::CreateWorldObject(powerUp3);
-	ptr->AddComponent(new PowerUpComponent(GW_FLAMETHROWER));
-	ptr->AddComponent(new FloatComponent());
-	ptr->AddComponent(new RotateComponent());
-	ptr->AddComponent(new AINodeComponent(NodeTypes::NT_FT_POWERUP));
+	for (int i = 0; i < nodesPerRing; i++) {
+		GameObject tempNode = GameObject();
+		tempNode.name = "OuterNode" + to_string(i);
+		tempNode.transform.position = outerNodePositions.at(i);
+		tempNode.mesh = GeoGenerator::MakeBox(1, 1, 1, false);
+		tempNode.tag = TAGS_AI_NODE;
+		ptr = Game::CreateWorldObject(tempNode);
+		ptr->AddComponent(new AINodeComponent());
+		outerNodes.push_back(ptr);
+	}
+	for (int i = 0; i < nodesPerRing; i++) {
+		AINodeComponent* nodeRef = &AINodeComponent();
+		AINodeComponent* prevNodeRef = &AINodeComponent();
+		AINodeComponent* nextNodeRef = &AINodeComponent();
 
-	GameObject powerUp4 = GameObject();
-	powerUp4.name = "Node8";
-	powerUp4.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
-	powerUp4.transform.position = vec3(80.0, 1.0, 0.0);
-	powerUp4.tag = TAGS_AI_NODE;
-	ptr = Game::CreateWorldObject(powerUp4);
-	ptr->AddComponent(new PowerUpComponent(GW_FLAMETHROWER));
-	ptr->AddComponent(new FloatComponent());
-	ptr->AddComponent(new RotateComponent());
-	ptr->AddComponent(new AINodeComponent(NodeTypes::NT_FT_POWERUP));
+		if (i == 0) {
+			nodeRef = (AINodeComponent*)outerNodes.at(i)->GetComponent(nodeRef);
+			prevNodeRef = (AINodeComponent*)outerNodes.at(nodesPerRing - 1)->GetComponent(nodeRef);
+			nextNodeRef = (AINodeComponent*)outerNodes.at(i + 1)->GetComponent(nodeRef);
+		}
+		else if (i == nodesPerRing - 1) {
+			nodeRef = (AINodeComponent*)outerNodes.at(i)->GetComponent(nodeRef);
+			prevNodeRef = (AINodeComponent*)outerNodes.at(i - 1)->GetComponent(nodeRef);
+			nextNodeRef = (AINodeComponent*)outerNodes.at(0)->GetComponent(nodeRef);
+		}
+		else {
+			nodeRef = (AINodeComponent*)outerNodes.at(i)->GetComponent(nodeRef);
+			prevNodeRef = (AINodeComponent*)outerNodes.at(i - 1)->GetComponent(nodeRef);
+			nextNodeRef = (AINodeComponent*)outerNodes.at(i + 1)->GetComponent(nodeRef);
+		}
+		nodeRef->adjacentNodes.push_back(prevNodeRef);
+		nodeRef->adjacentNodes.push_back(nextNodeRef);
 
-	GameObject powerUp5 = GameObject();
-	powerUp5.name = "Node9";
-	powerUp5.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
-	powerUp5.transform.position = vec3(0.0, 1.0, 0.0);
-	powerUp5.tag = TAGS_AI_NODE;
-	ptr = Game::CreateWorldObject(powerUp5);
-	ptr->AddComponent(new PowerUpComponent(GW_MISSILE_LAUNCHER));
-	ptr->AddComponent(new FloatComponent());
-	ptr->AddComponent(new RotateComponent());
+	}
+
+	GameObject centerNode = GameObject();
+	centerNode.name = "CenterNode0";
+	centerNode.transform.position = vec3(0.0, 38.0, 0.0);
+	centerNode.mesh = GeoGenerator::MakeBox(1, 1, 1, false);
+	centerNode.tag = TAGS_AI_NODE;
+	ptr = Game::CreateWorldObject(centerNode);
+	ptr->AddComponent(new PowerUpComponent(GameWeapons::GW_MISSILE_LAUNCHER));
 	ptr->AddComponent(new AINodeComponent(NodeTypes::NT_RK_POWERUP));
+
+	AINodeComponent* innerNodeRef = &AINodeComponent();
+	AINodeComponent* middleNodeRef = &AINodeComponent();
+	AINodeComponent* outerNodeRef = &AINodeComponent();
+	AINodeComponent* centerNodeRef = &AINodeComponent();
+
+	for (int i = 0; i < nodesPerRing; i++) {
+		innerNodeRef = (AINodeComponent*)innerNodes.at(i)->GetComponent(innerNodeRef);
+		middleNodeRef = (AINodeComponent*)middleNodes.at(i)->GetComponent(middleNodeRef);
+		outerNodeRef = (AINodeComponent*)outerNodes.at(i)->GetComponent(outerNodeRef);
+		centerNodeRef = (AINodeComponent*)Game::Find("CenterNode0")->GetComponent(centerNodeRef);
+
+		innerNodeRef->adjacentNodes.push_back(middleNodeRef);
+		//innerNodeRef->adjacentNodes.push_back(centerNodeRef);
+		//centerNodeRef->adjacentNodes.push_back(innerNodeRef);
+
+		middleNodeRef->adjacentNodes.push_back(innerNodeRef);
+		middleNodeRef->adjacentNodes.push_back(outerNodeRef);
+
+		outerNodeRef->adjacentNodes.push_back(middleNodeRef);
+	}
 
 	for (int i = 0; i < Physics::playerVehiclesNum; i++) {								//CREATE PLAYERS
 		GameObject player = GameObject();
@@ -175,7 +301,7 @@ void Game::BuildWorld()
 		GameObject opponent = GameObject();
 		opponent.mesh = GeoGenerator::MakeBox(2, 1, 2, false);
 		opponent.transform.position = aiVehStartPositions[i];
-		opponent.transform.Rotate(Transform::Up(), Mathf::PI, false);
+		opponent.transform.Rotate(Transform::Up(), Mathf::PI*((i+1)/2), false);
 		opponent.name = "AI" + to_string(i);
 		opponent.tag = TAGS_AI_PLAYER;
 		ptr = Game::CreateWorldObject(opponent);
@@ -848,3 +974,15 @@ vector<GameObject*> Game::FindGameObjectsWithTag(Tags tag)
 
 	return result;
 }
+
+/*void Game::SetupInnerRing() {
+	for (int i = 0; i < nodesPerRing; i++) {
+		GameObject tempNode = GameObject();
+		tempNode.name = "Node" + to_string(i);
+		tempNode.transform.position = innerNodePositions.at(i);
+		tempNode.mesh = GeoGenerator::MakeBox(1, 1, 1, false);
+		tempNode.tag = TAGS_AI_NODE;
+		ptr = Game::CreateWorldObject(tempNode);
+		ptr->AddComponent(new AINodeComponent());
+	}
+}*/

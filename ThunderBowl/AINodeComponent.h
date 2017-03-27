@@ -12,6 +12,7 @@ public:
 	NodeTypes getNodeType();
 
 	vec3 nodeCurrentPosition;
+	vector<AINodeComponent*> adjacentNodes;
 
 private:
 	NodeTypes thisNodeType;
