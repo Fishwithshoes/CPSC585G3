@@ -9,6 +9,8 @@ public:
 	static void Init(Renderer *renderer);//Setup geometry, shaders and camera(s)
 	static void RenderScene(Renderer *renderer);//Draw those tris
 	static Camera* GetCamera(int index);//Grabs the specified camera for editing props
+	static void SetCameraCount(int count);//Split screen using count cameras (1-4)
+	static int GetCameraCount();
 
 protected:
 
@@ -21,7 +23,10 @@ private:
 	Shader		skyboxShader;
 	Shader		depthMapShader;
 	Shader		fsppShader;
-	Camera		camera;
+	Camera		camera1;
+	Camera		camera2;
+	Camera		camera3;
+	Camera		camera4;
 
 	//STATIC GEOMETRIES - FOR STATIC OBJECT LIST
 	//These are uploaded ONCE during Init(), but can be used by any static world object
@@ -29,6 +34,8 @@ private:
 	Geometry oceanGeoDown;
 	Geometry puddleGeo;
 	Geometry mgbulletGeo;
+	Geometry wheelGeo;
+	Geometry carGeo;
 	Geometry mapGeo;
 	//TODO add any additional high-res items below. Add to the StaticGeos enum too.
 
@@ -127,6 +134,7 @@ private:
 
 	//Misc
 	static vector<Camera*> cameraList;
+	static int cameraCount;
 	static vector<string> textureFilePaths;
 	static vector<string> cubemapTextureFilePaths;
 

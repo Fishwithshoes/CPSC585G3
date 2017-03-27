@@ -54,13 +54,16 @@ enum StaticGeos
 {
 	//To add a new one:
 	//Add it here
-	//In Renderer.h
+	//In Renderer.h (Look for vars named xxGeo)
 	//In Renderer::LoadStaticGeo()
 	//In Renderer::DrawPhysicalObjects() "Static Mesh" section
+	//THE ORDER IS IMPORTANT!!
 	SG_OCEAN,
 	SG_OCEAN_DOWN,
 	SG_PUDDLE,
 	SG_MG_BULLET,
+	SG_WHEEL,
+	SG_CAR,
 	SG_MAP
 };
 
@@ -170,6 +173,7 @@ enum Maps
 	MAP_COLOR_BUFFER,//Store color & alpha for post-process
 	MAP_POSITION_BUFFER,//Store position for post-process
 	MAP_NORMAL_BUFFER,//Store normal for post-process
+	MAP_PREVIOUS_BUFFER,//Store last frame's color buffer for motion blur
 	MAP_GRAB_PASS,//Feed Color Buffer into this when an object requests it (For refraction)
 	//Overlay
 	MAP_ZERO,
@@ -310,7 +314,8 @@ enum Sounds
 	SFX_FireMissile,
 	SFX_ExplodeMissile,
 	SFX_Splish,
-	SFX_Splash
+	SFX_Splash,
+	SFX_Engine
 };
 
 enum Musics

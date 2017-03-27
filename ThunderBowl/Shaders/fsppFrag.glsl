@@ -11,6 +11,7 @@ uniform vec3 cameraPos;
 uniform sampler2D colorBufferMap;
 uniform sampler2D positionBufferMap;
 uniform sampler2D normalBufferMap;
+uniform sampler2D previousBufferMap;
 uniform sampler2D depthBufferMap;
 
 out vec4 FragmentColor;
@@ -20,10 +21,12 @@ const float DOF_SAMPLE_CONTRIB = 1.0/(DOF_SAMPLES*DOF_SAMPLES);
 const float DOF_STRIDE = 0.01;
 const float DOF_FILLER = 1.0/DOF_STRIDE;
 const float DOF_STEP = DOF_STRIDE/DOF_SAMPLES*2;
+const float CURRENT_WEIGHT = 0.67;
+const float PREVIOUS_WEIGHT = 1.0 - CURRENT_WEIGHT;
 
-const int BLOOM_SAMPLES = 16;
+const int BLOOM_SAMPLES = 8;
 const float BLOOM_SAMPLE_CONTRIB = 1.0/(BLOOM_SAMPLES*BLOOM_SAMPLES);
-const float BLOOM_STRIDE = 0.03;
+const float BLOOM_STRIDE = 0.05;
 const float BLOOM_FILLER = 1.0/BLOOM_STRIDE;
 const float BLOOM_STEP = BLOOM_STRIDE/BLOOM_SAMPLES*2;
 
@@ -48,7 +51,7 @@ void main()
 	float blurFarSize = 0.25;
 	
 	float bloomThreshold = 1.8;
-	float bloomStrength = 6.25;
+	float bloomStrength = 9.25;
 	
 	float ambientOcclusionLevel = 0.25;
 	
@@ -57,6 +60,7 @@ void main()
 	vec4 colorSample = texture2D(colorBufferMap, TexCoord);
 	vec4 positionSample = texture2D(positionBufferMap, TexCoord)*2000.0 - vec4(1000.0);
 	vec4 normalSample = texture2D(normalBufferMap, TexCoord)*2.0 - vec4(1.0);
+	vec4 previousSample = texture2D(previousBufferMap, TexCoord);
 	vec4 depthSample = texture(depthBufferMap, TexCoord);
 	float dist = distance(positionSample.xyz, cameraPos);
 	
@@ -81,22 +85,29 @@ void main()
 			
 			// float fade = clamp((DOF_STRIDE - distance(vec2(x,y), TexCoord))*DOF_FILLER, 0, 1);
 			
-			final += texture2D(colorBufferMap, vec2(x, y)) * DOF_SAMPLE_CONTRIB;
+			vec4 current = texture2D(colorBufferMap, vec2(x, y)) * CURRENT_WEIGHT * DOF_SAMPLE_CONTRIB;
+			vec4 previous = texture2D(previousBufferMap, vec2(x, y)) * PREVIOUS_WEIGHT * DOF_SAMPLE_CONTRIB;
+			
+			final += current + previous;
 		}
 	}
 	
 	//PERFORM BLOOM WITH COLOR SAMPLES
 	index = 0;
+	float finalBloomStride = clamp(BLOOM_STRIDE - dist*0.002, 0.02, BLOOM_STRIDE);
+	float finalBloomFiller = 1.0/finalBloomStride;
+	float finalBloomStep = finalBloomStride/BLOOM_SAMPLES*2.0;
+	
 	for(int i = 0; i < BLOOM_SAMPLES; i++)
 	{
 		for(int j = 0; j < BLOOM_SAMPLES; j++)
 		{
-			float x = TexCoord.x -BLOOM_STRIDE + i*BLOOM_STEP;
-			float y = TexCoord.y -BLOOM_STRIDE + j*BLOOM_STEP;
+			float x = TexCoord.x -finalBloomStride + i*finalBloomStep;
+			float y = TexCoord.y -finalBloomStride + j*finalBloomStep;
 			
 			vec4 currentColor = texture2D(colorBufferMap, vec2(x, y));
 			
-			float fade = clamp((BLOOM_STRIDE - distance(vec2(x,y), TexCoord))*BLOOM_FILLER, 0, 1);
+			float fade = clamp((finalBloomStride - distance(vec2(x,y), TexCoord))*finalBloomFiller, 0, 1);
 			
 			//Gotta love dat bloom!
 			if(currentColor.x + currentColor.y + currentColor.z > bloomThreshold)
@@ -173,6 +184,7 @@ void main()
 	
 	// FragmentColor = vec4(screenDims.xy, 0, 1);	
 	// FragmentColor = vec4(colorSample.xyz, 1.0);
+	// FragmentColor = vec4(colorSample.x, previousSample.y, 0.0, 1.0);
 	// FragmentColor = vec4(abs(positionSample.xyz*0.001), 1.0);
 	// FragmentColor = vec4(0.0, positionSample.y, 0.0, 1.0);
 	// FragmentColor = vec4(abs(normalSample.xyz), 1.0);

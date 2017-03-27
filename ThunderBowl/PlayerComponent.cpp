@@ -1,6 +1,7 @@
 #include "PlayerComponent.h"
 #include "VehicleComponent.h"
 #include "Game.h"
+#include "GameManager.h"
 #include "Audio.h"
 
 //VehicleComponent* playerVeh;
@@ -11,9 +12,9 @@ void PlayerComponent::Start()
 	playerScore = 0;
 	oldScore = playerScore;
 
-	machineGunAmmo = 40;
-	missileLauncherAmmo = 2;
-	flamethrowerAmmo = 2.0;
+	machineGunAmmo = 50;// GameManager::START_MG_AMMO;
+	missileLauncherAmmo = 4;// GameManager::START_MISSILE_AMMO;
+	flamethrowerAmmo = 10.0; // GameManager::START_FLAMETHROWER_AMMO;
 
 	StartParticles();
 
@@ -69,12 +70,14 @@ void PlayerComponent::Update()
 	GameObject* self = Game::Find(selfName);
 	HealthComponent* playerHealth = &HealthComponent();
 	playerHealth = (HealthComponent*)self->GetComponent(playerHealth);
+	VehicleComponent* vehicle = &VehicleComponent();
+	vehicle = (VehicleComponent*)self->GetComponent(vehicle);
 
 	//Switch Weapon - Human Players
-	GameObject* weaponIcon = Game::Find("WeaponIcon");
+	GameObject* weaponIcon = Game::Find("WeaponIcon"+vehicle->GetPlayerNum());
 	if (self->tag == TAGS_HUMAN_PLAYER)
 	{
-		if (Input::GetXBoxButton(1, ButtonCode::XBOX_Y) && !switchWeaponPrev)
+		if (Input::GetXBoxButton(vehicle->GetPlayerNum(), ButtonCode::XBOX_Y) && !switchWeaponPrev)
 		{
 			switch (currentWeapon)
 			{
@@ -97,14 +100,14 @@ void PlayerComponent::Update()
 
 			switchWeaponPrev = true;
 		}
-		if (!Input::GetXBoxButton(1, ButtonCode::XBOX_Y))
+		if (!Input::GetXBoxButton(vehicle->GetPlayerNum(), ButtonCode::XBOX_Y))
 			switchWeaponPrev = false;
 	}
 
 	//Fire Weapon - Human Players
 	if (self->tag == TAGS_HUMAN_PLAYER)
 	{
-		if (Input::GetXBoxButton(1, ButtonCode::XBOX_RIGHT_STICK))
+		if (Input::GetXBoxButton(vehicle->GetPlayerNum(), ButtonCode::XBOX_RIGHT_STICK))
 		{
 			MachineGunComponent* mgRef = &MachineGunComponent();
 			MissileLauncherComponent* ml = &MissileLauncherComponent();
@@ -130,21 +133,21 @@ void PlayerComponent::Update()
 	//HUD display of health, ammo, score - Human Players Only
 	if (self->tag == TAGS_HUMAN_PLAYER)
 	{
-		GameObject* health = Game::Find("HealthMeter");
+		GameObject* health = Game::Find("HealthMeter"+vehicle->GetPlayerNum());
 		health->transform.scale.x = playerHealth->currentHealth / 100;
 
-		GameObject* ammo = Game::Find("AmmoMeter");
+		GameObject* ammo = Game::Find("AmmoMeter"+vehicle->GetPlayerNum());
 		float ratio;
 		switch (currentWeapon)
 		{
 		case GW_MACHINE_GUN:
-			ratio = (float)machineGunAmmo / MAX_MACHINE_GUN_AMMO;
+			ratio = (float)machineGunAmmo / 200.0;// GameManager::MAX_MACHINE_GUN_AMMO;
 			break;
 		case GW_MISSILE_LAUNCHER:
-			ratio = (float)missileLauncherAmmo / (float)MAX_MISSILE_LAUNCHER_AMMO;
+			ratio = (float)missileLauncherAmmo / 4.0;// (float)GameManager::MAX_MISSILE_LAUNCHER_AMMO;
 			break;
 		case GW_FLAMETHROWER:
-			ratio = flamethrowerAmmo / MAX_FLAMETHROWER_AMMO;
+			ratio = flamethrowerAmmo / 10.0;// GameManager::MAX_FLAMETHROWER_AMMO;
 			break;
 		default:
 			cout << "ERROR: Illegal weapon detected at PlayerComponent.Update()" << endl;
@@ -153,10 +156,10 @@ void PlayerComponent::Update()
 		ammo->transform.scale.x = ratio;
 
 		string strScore = to_string(playerScore);
-		GameObject* score1 = Game::Find("Score1");
-		GameObject* score2 = Game::Find("Score2");
-		GameObject* score3 = Game::Find("Score3");
-		GameObject* score4 = Game::Find("Score4");
+		GameObject* score1 = Game::Find("Score1"+vehicle->GetPlayerNum());
+		GameObject* score2 = Game::Find("Score2"+vehicle->GetPlayerNum());
+		GameObject* score3 = Game::Find("Score3"+vehicle->GetPlayerNum());
+		GameObject* score4 = Game::Find("Score4"+vehicle->GetPlayerNum());
 
 		for (int i = strScore.length() - 1; i >= 0; i--)
 		{
@@ -201,18 +204,18 @@ void PlayerComponent::OnCollision(Component::CollisionPair collisionPair, Compon
 		{
 		case GW_MACHINE_GUN:
 			machineGunAmmo += 50;
-			if (machineGunAmmo > MAX_MACHINE_GUN_AMMO)
-				machineGunAmmo = MAX_MACHINE_GUN_AMMO;
+			if (machineGunAmmo > 200.00)// GameManager::MAX_MACHINE_GUN_AMMO)
+				machineGunAmmo = 200.00;// GameManager::MAX_MACHINE_GUN_AMMO;
 			break;
 		case GW_MISSILE_LAUNCHER:
 			missileLauncherAmmo += 2;
-			if (missileLauncherAmmo > MAX_MISSILE_LAUNCHER_AMMO)
-				missileLauncherAmmo = MAX_MISSILE_LAUNCHER_AMMO;
+			if (missileLauncherAmmo > 4.0)//GameManager::MAX_MISSILE_LAUNCHER_AMMO)
+				missileLauncherAmmo = 4.0;// GameManager::MAX_MISSILE_LAUNCHER_AMMO;
 			break;
 		case GW_FLAMETHROWER:
 			flamethrowerAmmo += 5;
-			if (flamethrowerAmmo > MAX_FLAMETHROWER_AMMO)
-				flamethrowerAmmo = MAX_FLAMETHROWER_AMMO;
+			if (flamethrowerAmmo > 10.0)//GameManager::MAX_FLAMETHROWER_AMMO)
+			flamethrowerAmmo = 10.0; //GameManager::MAX_FLAMETHROWER_AMMO;
 			break;
 		default:
 			cout << "ERROR: Can't add ammo to illegal weapon at PlayerComponent OnColllision()!" << endl;
@@ -235,8 +238,8 @@ void PlayerComponent::UpdateParticles(float currentHealth)
 	t.rotation = t.GetInverseRotation();
 	ParticleSystem* damagedSmoke = (ParticleSystem*)Game::Find(damagedSmokeName);
 	damagedSmoke->transform = t;
-
-
+	
+	
 	damagedSmoke->spawnRate = 5.0 - currentHealth*0.05;
 	damagedSmoke->initialColor.alpha = vec4(vec3(0.5 - currentHealth*0.003), 1.0);
 	damagedSmoke->initialColor.bravo = vec4(vec3(0.7 - currentHealth*0.003), 1.0);

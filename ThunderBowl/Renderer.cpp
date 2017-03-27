@@ -10,6 +10,7 @@
 #include "stb/stb_image_write.h"
 
 vector<Camera*> Renderer::cameraList = {};
+int Renderer::cameraCount = 1;
 vector<string> Renderer::textureFilePaths = 
 {
 	"Textures/white_DIFF.jpg",
@@ -21,6 +22,7 @@ vector<string> Renderer::textureFilePaths =
 	"GL_TEXTURE_COLOR_BUFFER",
 	"GL_TEXTURE_POSITION_BUFFER",
 	"GL_TEXTURE_NORMAL_BUFFER",
+	"GL_TEXTURE_PREVIOUS_BUFFER",
 	"GL_TEXTURE_GRAB_PASS",
 	"Textures/zero_TEXT.png",
 	"Textures/one_TEXT.png",
@@ -93,8 +95,14 @@ void Renderer::Init(Renderer *renderer)
 {
 	LoadTextures(renderer);
 
-	renderer->camera = Camera(Transform(vec3(0, 5, -10), vec4(0, 0, 0, 1), vec3(1)));
-	cameraList.push_back(&renderer->camera);
+	renderer->camera1 = Camera(Transform(vec3(0, 25, -80), vec4(0, 0, 0, 1), vec3(1)));
+	renderer->camera2 = Camera(Transform(vec3(0, 25, -80), vec4(0, 0, 0, 1), vec3(1)));
+	renderer->camera3 = Camera(Transform(vec3(0, 25, -80), vec4(0, 0, 0, 1), vec3(1)));
+	renderer->camera4 = Camera(Transform(vec3(0, 25, -80), vec4(0, 0, 0, 1), vec3(1)));
+	cameraList.push_back(&renderer->camera1);
+	cameraList.push_back(&renderer->camera2);
+	cameraList.push_back(&renderer->camera3);
+	cameraList.push_back(&renderer->camera4);
 
 	// call functions to load and compile shader programs
 	if (!RendererUtility::InitializeShader(&renderer->standardShader, "Shaders/standardVert.glsl", "Shaders/standardFrag.glsl"))
@@ -150,6 +158,7 @@ void Renderer::LoadTextures(Renderer *renderer)
 			i != MAP_COLOR_BUFFER && 
 			i != MAP_POSITION_BUFFER &&
 			i != MAP_NORMAL_BUFFER &&
+			i != MAP_PREVIOUS_BUFFER &&
 			i != MAP_GRAB_PASS)//Bind images to GL_TEXTURE_2D
 		{
 			stbi_set_flip_vertically_on_load(true);
@@ -188,7 +197,7 @@ void Renderer::LoadTextures(Renderer *renderer)
 
 			cout << "Created shadow mapping image at: " << texID << "!" << endl;
 		}
-		else if (i == MAP_COLOR_BUFFER || i == MAP_POSITION_BUFFER || i == MAP_NORMAL_BUFFER)//These are for the Post Process Effects
+		else if (i == MAP_COLOR_BUFFER || i == MAP_POSITION_BUFFER || i == MAP_NORMAL_BUFFER || i == MAP_PREVIOUS_BUFFER)//These are for the Post Process Effects
 		{
 			glGenTextures(1, &texID);
 			glActiveTexture(GL_TEXTURE0 + i);
@@ -262,6 +271,14 @@ void Renderer::LoadStaticGeo(Renderer *renderer)
 	RendererUtility::InitializeGeometry(&renderer->mgbulletGeo);
 	BufferStaticGeoData(&renderer->mgbulletGeo, &GeoGenerator::MakeSphere(0.2, 16, 32, false));
 
+	//TODO Replace with actual loaded geometry
+	RendererUtility::InitializeGeometry(&renderer->wheelGeo);
+	BufferStaticGeoData(&renderer->wheelGeo, &GeoGenerator::MakeCylinder(0.4, 0.4, 0.3, 32, false));
+
+	RendererUtility::InitializeGeometry(&renderer->carGeo);
+	BufferStaticGeoData(&renderer->carGeo, &GeoGenerator::MakeBox(2.0, 0.5, 3.0, false));
+
+	//TODO Possible redo of map model to include platform and rigging
 	Loader loader;
 	loader.loadModel("Models/thunderbowl001.obj", vec3(15, 13, 15), true);
 	RendererUtility::InitializeGeometry(&renderer->mapGeo);
@@ -427,139 +444,187 @@ void Renderer::RenderScene(Renderer *renderer)
 
 //**TURN OVER TO THE DEFERRED FRAMEBUFFER TO DRAW WORLD AND PARTICLES**********
 	glBindFramebuffer(GL_FRAMEBUFFER, renderer->framebufferID);
-	glViewport(0, 0, Camera::WIDTH, Camera::HEIGHT);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-//**DRAW SKYBOX FIRST AS BACKGROUND**********
-	glUseProgram(renderer->skyboxShader.program);
-	if(Game::skybox.isVisible)
+	vec3 realCameraPos;
+	vec2 aspect = vec2(Camera::WIDTH, Camera::HEIGHT);
+	Camera* currentCamera;
+	//Set camera rendering zone
+	for (int i = 0; i < cameraCount; i++)
 	{
-		//Get skybox
-		Mesh mesh = Game::skybox.mesh;
-		ParticleOverlayMaterial skyBoxMat = Game::skybox.particleOverlayMat;
-		renderer->geometry.elementCount = mesh.indices.size();
-
-		//Program uniforms
-		glUniform4fv(renderer->colorSkybox_uniform, 1, value_ptr(skyBoxMat.color));
-		glUniform1i(renderer->envMapSkybox_uniform, skyBoxMat.mainTexture);
-
-		glUniformMatrix4fv(renderer->modelToWorldSkybox_uniform, 1, GL_TRUE, value_ptr(Game::skybox.transform.GetModelToWorld()));
-		glUniformMatrix4fv(renderer->normalToWorldSkybox_uniform, 1, GL_TRUE, value_ptr(Game::skybox.transform.GetNormalToWorld()));
-		//TODO strip out position from camera's WorldToView so the skybox appears at an 'infinite distance'
-		glUniformMatrix4fv(renderer->worldToViewSkybox_uniform, 1, GL_TRUE, value_ptr(renderer->camera.GetWorldToViewMatrix()));
-		glUniformMatrix4fv(renderer->viewToProjectionSkybox_uniform, 1, GL_TRUE, value_ptr(renderer->camera.GetViewToProjectionMatrix()));
-		glUniform3fv(renderer->cameraPosSkybox_uniform, 1, value_ptr(renderer->camera.transform.position));
-		glUniform3fv(renderer->cameraForwardSkybox_uniform, 1, value_ptr(renderer->camera.transform.GetForward()));
-
-		BufferGeoData(renderer, &mesh);
-		glDrawElements(GL_TRIANGLES, renderer->geometry.elementCount, GL_UNSIGNED_INT, nullptr);
-	}
-
-//**PREPARE TO DRAW ALL WORLD OBJECTS**********
-	glUseProgram(renderer->standardShader.program);
-
-	//Program Uniforms for WorldToView and ViewToProjection
-	glUniformMatrix4fv(renderer->worldToViewStandard_uniform, 1, GL_TRUE, value_ptr(renderer->camera.GetWorldToViewMatrix()));
-	glUniformMatrix4fv(renderer->viewToProjectionStandard_uniform, 1, GL_TRUE, value_ptr(renderer->camera.GetViewToProjectionMatrix()));
-
-	//Program Other Program Scope Uniforms
-	vec3 realCameraPos = renderer->camera.transform.position;
-	if (renderer->camera.transform.parent != nullptr)
-		realCameraPos = renderer->camera.transform.parent->GetModelToWorld() * vec4(realCameraPos, 1.0);
-	glUniform3fv(renderer->cameraPosStandard_uniform, 1, value_ptr(realCameraPos));
-	glUniform3fv(renderer->cameraForwardStandard_uniform, 1, value_ptr(renderer->camera.transform.GetForward()));
-	glUniform4fv(renderer->lightPosStandard_uniform, 1, value_ptr(vec4(7, 10, -7, 1)));
-	glUniform4fv(renderer->lightColorStandard_uniform, 1, value_ptr(vec4(1, 1, 1, 1)));
-
-	//Uniforms for shadow mapping
-	GLint shadowMap_uniform = glGetUniformLocation(renderer->standardShader.program, "shadowMap");
-	glUniform1i(shadowMap_uniform, MAP_DEPTH_BUFFER);
-	GLint worldToLight_uniform = glGetUniformLocation(renderer->standardShader.program, "WorldToLight");
-	glUniformMatrix4fv(worldToLight_uniform, 1, GL_FALSE, value_ptr(lightWorldToView));
-	GLint lightToProjection_uniform = glGetUniformLocation(renderer->standardShader.program, "LightToProjection");
-	glUniformMatrix4fv(lightToProjection_uniform, 1, GL_FALSE, value_ptr(lightViewToProjection));
-
-	DrawPhysicalObjects(renderer, true);
-
-//**RETAIN DEPTH BUFFER AND DRAW PARTICLE SYSTEM OBJECTS**********
-	glUseProgram(renderer->particleShader.program);
-
-	//Program Uniforms for WorldToView and ViewToProjection
-	glUniformMatrix4fv(renderer->worldToViewParticle_uniform, 1, GL_TRUE, value_ptr(renderer->camera.GetWorldToViewMatrix()));
-	glUniformMatrix4fv(renderer->viewToProjectionParticle_uniform, 1, GL_TRUE, value_ptr(renderer->camera.GetViewToProjectionMatrix()));
-	
-	//Program Other Program Scope Uniforms
-	glUniform3fv(renderer->cameraPosParticle_uniform, 1, value_ptr(realCameraPos));
-	glUniform3fv(renderer->cameraForwardParticle_uniform, 1, value_ptr(renderer->camera.transform.GetForward()));
-
-	//Load bilboard mesh into GPU to draw particles with
-	{
-		Mesh mesh = GeoGenerator::MakeParticle();
-		renderer->geometry.elementCount = mesh.indices.size();
-		BufferGeoData(renderer, &mesh);
-	}
-	//For each ParticleSystem GameObject collect the particles into a single vector
-	vector<Particle> particleRenderQueue = {};
-	for (int i = 0; i < Game::particleObjectList.size(); i++)
-	{
-		ParticleSystem ps = Game::particleObjectList[i];
-
-		if (ps.isVisible)//Only add to sort queue if the system is visible
+		if (cameraCount == 1)
 		{
-			for (int j = 0; j < ps.GetParticleCount(); j++)
+			glViewport(0, 0, Camera::WIDTH, Camera::HEIGHT);
+		}
+		else if (cameraCount == 2)
+		{
+			switch (i)
 			{
-				particleRenderQueue.push_back(ps.GetParticles()[j]);
+			case 0:
+				glViewport(Camera::WIDTH*0.125, Camera::HEIGHT*0.5, Camera::WIDTH*0.75, Camera::HEIGHT*0.5);
+				break;
+			case 1:
+				glViewport(Camera::WIDTH*0.125, 0, Camera::WIDTH*0.75, Camera::HEIGHT*0.5);
+				break;
+			default:
+				cout << "ERROR: Can't render camera 3 when camera count is 2!" << endl;
+				break;
+			}
+			aspect = vec2(Camera::WIDTH*0.75, Camera::HEIGHT*0.5);
+		}
+		else
+		{
+			switch (i)
+			{
+			case 0:
+				glViewport(0, Camera::HEIGHT*0.5, Camera::WIDTH*0.5, Camera::HEIGHT*0.5);
+				break;
+			case 1:
+				glViewport(0, 0, Camera::WIDTH*0.5, Camera::HEIGHT*0.5);
+				break;
+			case 2:
+				glViewport(Camera::WIDTH*0.5, Camera::HEIGHT*0.5, Camera::WIDTH*0.5, Camera::HEIGHT*0.5);
+				break;
+			case 3:
+				glViewport(Camera::WIDTH*0.5, 0, Camera::WIDTH*0.5, Camera::HEIGHT*0.5);
+				break;
+			default:
+				cout << "ERROR: Can't render camera 5!" << endl;
+				break;
 			}
 		}
-	}
-	//Sort particles in queue by depth
-	for (int i = 1; i < particleRenderQueue.size(); i++)
-	{
-		for (int j = 1; j < particleRenderQueue.size(); j++)
+		currentCamera = Renderer::GetCamera(i);
+		//glViewport(0, 0, Camera::WIDTH, Camera::HEIGHT);
+
+		//**DRAW SKYBOX FIRST AS BACKGROUND**********
+		glUseProgram(renderer->skyboxShader.program);
+		if (Game::skybox.isVisible)
 		{
-			Particle p = particleRenderQueue[j];
-			vec3 lengthVec = p.position - renderer->camera.transform.position;
-			float dist = dot(lengthVec, lengthVec);
+			//Get skybox
+			Mesh mesh = Game::skybox.mesh;
+			ParticleOverlayMaterial skyBoxMat = Game::skybox.particleOverlayMat;
+			renderer->geometry.elementCount = mesh.indices.size();
 
-			Particle pp = particleRenderQueue[j - 1];
-			lengthVec = pp.position - renderer->camera.transform.position;
-			float dist2 = dot(lengthVec, lengthVec);
+			//Program uniforms
+			glUniform4fv(renderer->colorSkybox_uniform, 1, value_ptr(skyBoxMat.color));
+			glUniform1i(renderer->envMapSkybox_uniform, skyBoxMat.mainTexture);
 
-			if (dist2 < dist)//swap the particles
+			glUniformMatrix4fv(renderer->modelToWorldSkybox_uniform, 1, GL_TRUE, value_ptr(Game::skybox.transform.GetModelToWorld()));
+			glUniformMatrix4fv(renderer->normalToWorldSkybox_uniform, 1, GL_TRUE, value_ptr(Game::skybox.transform.GetNormalToWorld()));
+			//TODO strip out position from camera's WorldToView so the skybox appears at an 'infinite distance'
+			glUniformMatrix4fv(renderer->worldToViewSkybox_uniform, 1, GL_TRUE, value_ptr(currentCamera->GetWorldToViewMatrix()));
+			glUniformMatrix4fv(renderer->viewToProjectionSkybox_uniform, 1, GL_TRUE, value_ptr(currentCamera->GetViewToProjectionMatrix(aspect)));
+			glUniform3fv(renderer->cameraPosSkybox_uniform, 1, value_ptr(currentCamera->transform.position));
+			glUniform3fv(renderer->cameraForwardSkybox_uniform, 1, value_ptr(currentCamera->transform.GetForward()));
+
+			BufferGeoData(renderer, &mesh);
+			glDrawElements(GL_TRIANGLES, renderer->geometry.elementCount, GL_UNSIGNED_INT, nullptr);
+		}
+
+		//**PREPARE TO DRAW ALL WORLD OBJECTS**********
+		glUseProgram(renderer->standardShader.program);
+
+		//Program Uniforms for WorldToView and ViewToProjection
+		glUniformMatrix4fv(renderer->worldToViewStandard_uniform, 1, GL_TRUE, value_ptr(currentCamera->GetWorldToViewMatrix()));
+		glUniformMatrix4fv(renderer->viewToProjectionStandard_uniform, 1, GL_TRUE, value_ptr(currentCamera->GetViewToProjectionMatrix(aspect)));
+
+		//Program Other Program Scope Uniforms
+		realCameraPos = currentCamera->transform.position;
+		if (currentCamera->transform.parent != nullptr)
+			realCameraPos = currentCamera->transform.parent->GetModelToWorld() * vec4(realCameraPos, 1.0);
+		glUniform3fv(renderer->cameraPosStandard_uniform, 1, value_ptr(realCameraPos));
+		glUniform3fv(renderer->cameraForwardStandard_uniform, 1, value_ptr(currentCamera->transform.GetForward()));
+		glUniform4fv(renderer->lightPosStandard_uniform, 1, value_ptr(vec4(7, 10, -7, 1)));
+		glUniform4fv(renderer->lightColorStandard_uniform, 1, value_ptr(vec4(1, 1, 1, 1)));
+
+		//Uniforms for shadow mapping
+		GLint shadowMap_uniform = glGetUniformLocation(renderer->standardShader.program, "shadowMap");
+		glUniform1i(shadowMap_uniform, MAP_DEPTH_BUFFER);
+		GLint worldToLight_uniform = glGetUniformLocation(renderer->standardShader.program, "WorldToLight");
+		glUniformMatrix4fv(worldToLight_uniform, 1, GL_FALSE, value_ptr(lightWorldToView));
+		GLint lightToProjection_uniform = glGetUniformLocation(renderer->standardShader.program, "LightToProjection");
+		glUniformMatrix4fv(lightToProjection_uniform, 1, GL_FALSE, value_ptr(lightViewToProjection));
+
+		DrawPhysicalObjects(renderer, true);
+
+		//**RETAIN DEPTH BUFFER AND DRAW PARTICLE SYSTEM OBJECTS**********
+		glUseProgram(renderer->particleShader.program);
+
+		//Program Uniforms for WorldToView and ViewToProjection
+		glUniformMatrix4fv(renderer->worldToViewParticle_uniform, 1, GL_TRUE, value_ptr(currentCamera->GetWorldToViewMatrix()));
+		glUniformMatrix4fv(renderer->viewToProjectionParticle_uniform, 1, GL_TRUE, value_ptr(currentCamera->GetViewToProjectionMatrix(aspect)));
+
+		//Program Other Program Scope Uniforms
+		glUniform3fv(renderer->cameraPosParticle_uniform, 1, value_ptr(realCameraPos));
+		glUniform3fv(renderer->cameraForwardParticle_uniform, 1, value_ptr(currentCamera->transform.GetForward()));
+
+		//Load bilboard mesh into GPU to draw particles with
+		{
+			Mesh mesh = GeoGenerator::MakeParticle();
+			renderer->geometry.elementCount = mesh.indices.size();
+			BufferGeoData(renderer, &mesh);
+		}
+		//For each ParticleSystem GameObject collect the particles into a single vector
+		vector<Particle> particleRenderQueue = {};
+		for (int i = 0; i < Game::particleObjectList.size(); i++)
+		{
+			ParticleSystem ps = Game::particleObjectList[i];
+
+			if (ps.isVisible)//Only add to sort queue if the system is visible
 			{
-				particleRenderQueue[j] = pp;
-				particleRenderQueue[j - 1] = p;
+				for (int j = 0; j < ps.GetParticleCount(); j++)
+				{
+					particleRenderQueue.push_back(ps.GetParticles()[j]);
+				}
 			}
 		}
+		//Sort particles in queue by depth
+		for (int i = 1; i < particleRenderQueue.size(); i++)
+		{
+			for (int j = 1; j < particleRenderQueue.size(); j++)
+			{
+				Particle p = particleRenderQueue[j];
+				vec3 lengthVec = p.position - currentCamera->transform.position;
+				float dist = dot(lengthVec, lengthVec);
+
+				Particle pp = particleRenderQueue[j - 1];
+				lengthVec = pp.position - currentCamera->transform.position;
+				float dist2 = dot(lengthVec, lengthVec);
+
+				if (dist2 < dist)//swap the particles
+				{
+					particleRenderQueue[j] = pp;
+					particleRenderQueue[j - 1] = p;
+				}
+			}
+		}
+		//For each particle in the queue, pass uniforms and draw
+		for (int i = 0; i < particleRenderQueue.size(); i++)
+		{
+			Particle p = particleRenderQueue[i];
+			ParticleOverlayMaterial particleOverlayMat = p.material;
+
+			//PROGRAM UNIFORMS - PRIMARY
+			glUniform4fv(renderer->colorParticle_uniform, 1, value_ptr(particleOverlayMat.color));
+			glUniform1i(renderer->mainTextureParticle_uniform, particleOverlayMat.mainTexture);
+			glUniform1f(renderer->fogLevelParticle_uniform, particleOverlayMat.fogLevel);
+
+			//PROGRAM UNIFORMS - WORLD INFO
+			Transform transform = Transform::identity();
+			transform.position = p.position;
+			transform.LookAt(realCameraPos, false, currentCamera->transform.GetUp());
+			transform.scale = p.scale;
+			mat4 modelToWorld = transform.GetModelToWorld();
+			mat4 normalToWorld = transform.GetNormalToWorld();
+			glUniformMatrix4fv(renderer->modelToWorldParticle_uniform, 1, GL_TRUE, value_ptr(modelToWorld));
+			glUniformMatrix4fv(renderer->normalToWorldParticle_uniform, 1, GL_TRUE, value_ptr(normalToWorld));
+
+			glDrawElements(GL_TRIANGLES, renderer->geometry.elementCount, GL_UNSIGNED_INT, nullptr);
+			//glDrawElements(GL_LINE_LOOP, renderer->geometry.elementCount, GL_UNSIGNED_INT, nullptr);
+		}
 	}
-	//For each particle in the queue, pass uniforms and draw
-	for (int i = 0; i < particleRenderQueue.size(); i++)
-	{
-		Particle p = particleRenderQueue[i];
-		ParticleOverlayMaterial particleOverlayMat = p.material;
-
-		//PROGRAM UNIFORMS - PRIMARY
-		glUniform4fv(renderer->colorParticle_uniform, 1, value_ptr(particleOverlayMat.color));
-		glUniform1i(renderer->mainTextureParticle_uniform, particleOverlayMat.mainTexture);
-		glUniform1f(renderer->fogLevelParticle_uniform, particleOverlayMat.fogLevel);
-
-		//PROGRAM UNIFORMS - WORLD INFO
-		Transform transform = Transform::identity();
-		transform.position = p.position;
-		transform.LookAt(renderer->camera.transform.position, false, renderer->camera.transform.GetUp());
-		transform.scale = p.scale;
-		mat4 modelToWorld = transform.GetModelToWorld();
-		mat4 normalToWorld = transform.GetNormalToWorld();
-		glUniformMatrix4fv(renderer->modelToWorldParticle_uniform, 1, GL_TRUE, value_ptr(modelToWorld));
-		glUniformMatrix4fv(renderer->normalToWorldParticle_uniform, 1, GL_TRUE, value_ptr(normalToWorld));
-
-		glDrawElements(GL_TRIANGLES, renderer->geometry.elementCount, GL_UNSIGNED_INT, nullptr);
-		//glDrawElements(GL_LINE_LOOP, renderer->geometry.elementCount, GL_UNSIGNED_INT, nullptr);
-	}
-
 //**TURN OVER TO THE DEFAULT FRAMEBUFFER TO DRAW POST-PROCESS AND OVERLAY**********
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	//glViewport(0, 0, Camera::WIDTH, Camera::HEIGHT);
+	glViewport(0, 0, Camera::WIDTH, Camera::HEIGHT);
 
 //**CLEAR DEPTH BUFFER AND DRAW POST-PROCESS RECT**********
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -570,6 +635,7 @@ void Renderer::RenderScene(Renderer *renderer)
 	GLint colorBuffer_uniform = glGetUniformLocation(renderer->fsppShader.program, "colorBufferMap");
 	GLint positionBuffer_uniform = glGetUniformLocation(renderer->fsppShader.program, "positionBufferMap");
 	GLint normalBuffer_uniform = glGetUniformLocation(renderer->fsppShader.program, "normalBufferMap");
+	GLint previousBuffer_uniform = glGetUniformLocation(renderer->fsppShader.program, "previousBufferMap");
 	GLint depthBuffer_uniform = glGetUniformLocation(renderer->fsppShader.program, "depthBufferMap");
 
 	glUniform2f(screenDims_uniform, (float)Camera::WIDTH, (float)Camera::HEIGHT);
@@ -577,6 +643,7 @@ void Renderer::RenderScene(Renderer *renderer)
 	glUniform1i(colorBuffer_uniform, MAP_COLOR_BUFFER);
 	glUniform1i(positionBuffer_uniform, MAP_POSITION_BUFFER);
 	glUniform1i(normalBuffer_uniform, MAP_NORMAL_BUFFER);
+	glUniform1i(previousBuffer_uniform, MAP_PREVIOUS_BUFFER);
 	glUniform1i(depthBuffer_uniform, MAP_DEPTH_BUFFER);
 	{
 		Mesh mesh = GeoGenerator::MakeRect(2.0, 2.0, GA_CENTER);
@@ -586,6 +653,7 @@ void Renderer::RenderScene(Renderer *renderer)
 	}
 
 //**CLEAR DEPTH BUFFER AND DRAW OVERLAY OBJECTS**********
+	glViewport(0, 0, Camera::WIDTH, Camera::HEIGHT);
 	glClear(GL_DEPTH_BUFFER_BIT);
 	glUseProgram(renderer->overlayShader.program);
 	glUniform1f(renderer->aspectRatio_uniform, (float)Camera::WIDTH / (float)Camera::HEIGHT);
@@ -614,6 +682,9 @@ void Renderer::RenderScene(Renderer *renderer)
 		}
 	}
 
+	//Store this frame's color buffer for next frame
+	glCopyImageSubData(MAP_COLOR_BUFFER + 1, GL_TEXTURE_2D, 0, 0, 0, 0, MAP_PREVIOUS_BUFFER + 1, GL_TEXTURE_2D, 0, 0, 0, 0, Camera::WIDTH, Camera::HEIGHT, 1);
+
 	//Unbind geometry and shader
 	glBindVertexArray(0);
 	glUseProgram(0);
@@ -625,6 +696,20 @@ void Renderer::RenderScene(Renderer *renderer)
 Camera* Renderer::GetCamera(int index)
 {
 	return cameraList[index];
+}
+
+void Renderer::SetCameraCount(int count)
+{
+	cameraCount = count;
+	if (cameraCount > 4)
+		cameraCount = 4;
+	if (cameraCount < 1)
+		cameraCount = 1;
+}
+
+int Renderer::GetCameraCount()
+{
+	return cameraCount;
 }
 
 void Renderer::DrawPhysicalObjects(Renderer *renderer, bool programStandardUniforms)
@@ -690,7 +775,7 @@ void Renderer::DrawPhysicalObjects(Renderer *renderer, bool programStandardUnifo
 			else
 				glUniformMatrix4fv(renderer->modelToWorldDepthMap_uniform, 1, GL_TRUE, value_ptr(modelToWorld));
 
-			Geometry geoToUse;
+			Geometry geoToUse = renderer->mgbulletGeo;
 			switch (gameObject.staticGeo)
 			{
 			case SG_OCEAN:
@@ -704,6 +789,12 @@ void Renderer::DrawPhysicalObjects(Renderer *renderer, bool programStandardUnifo
 				break;
 			case SG_MG_BULLET:
 				geoToUse = renderer->mgbulletGeo;
+				break;
+			case SG_WHEEL:
+				geoToUse = renderer->wheelGeo;
+				break;
+			case SG_CAR:
+				geoToUse = renderer->carGeo;
 				break;
 			case SG_MAP:
 				geoToUse = renderer->mapGeo;

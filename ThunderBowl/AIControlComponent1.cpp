@@ -20,12 +20,13 @@ void AIControlComponent1::Start() {
 	AINodeComponent* tempNode = &AINodeComponent();
 	for (int i = 0; i < gameNodes.size(); i++) {
 		currentAINodes.push_back((AINodeComponent*)gameNodes[i]->GetComponent(tempNode));
+		cout << "got the node here" << endl;
 	}
 	cout << "total nodes: " << currentAINodes.size() << endl;
 	startPath();
-	AINodeComponent* outerNode7 = &AINodeComponent();
-	outerNode7 = (AINodeComponent*)Game::Find("OuterNode7")->GetComponent(outerNode7);
-	pathToDestination(outerNode7);
+	//AINodeComponent* outerNode7 = &AINodeComponent();
+	//outerNode7 = (AINodeComponent*)Game::Find("OuterNode7")->GetComponent(outerNode7);
+	//pathToDestination(outerNode7);
 
 	Finalize();
 }
@@ -33,14 +34,14 @@ void AIControlComponent1::Start() {
 void AIControlComponent1::Update() {
 	Initialize();
 
-	AINodeComponent* outerNode7 = &AINodeComponent();
-	outerNode7 = (AINodeComponent*)Game::Find("OuterNode7")->GetComponent(outerNode7);
+	//AINodeComponent* outerNode7 = &AINodeComponent();
+	//outerNode7 = (AINodeComponent*)Game::Find("OuterNode7")->GetComponent(outerNode7);
 	//pathToDestination(outerNode7);
 
 		float currentDistance = glm::length((currentNode->nodeCurrentPosition - transform.position));
 		if (currentDistance <= 10.0) {
-			AINodeComponent* innerNode3 = &AINodeComponent();
-			innerNode3 = (AINodeComponent*)Game::Find("InnerNode3")->GetComponent(innerNode3);
+			//AINodeComponent* innerNode3 = &AINodeComponent();
+			//innerNode3 = (AINodeComponent*)Game::Find("InnerNode3")->GetComponent(innerNode3);
 			//pathToDestination(innerNode3);
 			//current Node arrived at, repath
 		}
@@ -193,7 +194,7 @@ void AIControlComponent1::startPath() {
 			currentNode = currentAINodes.at(i);
 		}
 	}
-	cout << "start Node: " << currentNode->getName() << endl;
+	//cout << "start Node: " << currentNode->getName() << endl;
 }
 
 void AIControlComponent1::updateHeading() 

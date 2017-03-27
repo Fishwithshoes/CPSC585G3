@@ -13,7 +13,8 @@ vector<string> Audio::soundFilePaths =
 	"Sounds/fireMissile_SFX.wav",
 	"Sounds/explodeMissile_SFX.wav",
 	"Sounds/splish_SFX.wav",
-	"Sounds/splash_SFX.wav"
+	"Sounds/splash_SFX.wav",
+	"Sounds/engine_SFX.wav"
 };
 
 vector<string> Audio::musicFilePaths =

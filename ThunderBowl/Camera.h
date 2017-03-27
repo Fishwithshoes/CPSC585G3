@@ -28,7 +28,7 @@ public:
 	void Update();
 
 	mat4 GetWorldToViewMatrix();
-	mat4 GetViewToProjectionMatrix();
+	mat4 GetViewToProjectionMatrix(vec2 aspect);
 	RenderTypes rendertype = RenderTypes::RT_EULER;
 
 	void SetVerticalFOV(float degrees);

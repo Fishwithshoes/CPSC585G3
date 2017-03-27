@@ -5,11 +5,10 @@
 #include "Game.h"
 #include "Audio.h"
 
-
 void VehicleComponent::Start()
 {
 	Initialize();
-	cout << "I am a Vehicle Component!" << endl;
+	cout << "I am a Vehicle Component! My controller is " << playerNum << endl;
 	//transform.rendertype = RenderTypes::RT_QUAT;
 	physx::PxPhysics* worldPhys = Physics::getGPhysics();
 	physx::PxCooking* worldCook = Physics::getGCooking();
@@ -50,7 +49,7 @@ void VehicleComponent::Start()
 		wheelVector.push_back(Game::CreateWorldObject(temp));
 	}
 
-	followCam = Renderer::GetCamera(0);
+	followCam = Renderer::GetCamera(playerNum-1);
 	//followCam->transform.rendertype = RenderTypes::RT_QUAT;
 	followCam->mode = Camera::Modes::MODE_GAME;
 	transform.position.x = physVehicle->getGlobalPose().p.x;
@@ -97,6 +96,7 @@ void VehicleComponent::Update()
 {
 	Initialize();
 
+	followCam = Renderer::GetCamera(playerNum - 1);
 	for (int i = 0; i < 4; i++) {
 		physx::PxTransform currWheel = wheelBuffer[i]->getLocalPose();
 
@@ -130,26 +130,26 @@ void VehicleComponent::Update()
 		gVehicleNoDrive->setDriveTorque(1, 0.0);
 	}
 	else {
-		gVehicleNoDrive->setDriveTorque(0, Input::GetXBoxAxis(1, ButtonCode::XBOX_RIGHT_TRIGGER)*maxTorque);
-		gVehicleNoDrive->setDriveTorque(1, Input::GetXBoxAxis(1, ButtonCode::XBOX_RIGHT_TRIGGER)*maxTorque);
+		gVehicleNoDrive->setDriveTorque(0, Input::GetXBoxAxis(playerNum, ButtonCode::XBOX_RIGHT_TRIGGER)*maxTorque);
+		gVehicleNoDrive->setDriveTorque(1, Input::GetXBoxAxis(playerNum, ButtonCode::XBOX_RIGHT_TRIGGER)*maxTorque);
 	}
 	
 	//Steering
-	gVehicleNoDrive->setSteerAngle(2, Input::GetXBoxAxis(1, ButtonCode::XBOX_JOY_LEFT_HORIZONTAL)*turnTemper);
-	gVehicleNoDrive->setSteerAngle(3, Input::GetXBoxAxis(1, ButtonCode::XBOX_JOY_LEFT_HORIZONTAL)*turnTemper);
+	gVehicleNoDrive->setSteerAngle(2, Input::GetXBoxAxis(playerNum, ButtonCode::XBOX_JOY_LEFT_HORIZONTAL)*turnTemper);
+	gVehicleNoDrive->setSteerAngle(3, Input::GetXBoxAxis(playerNum, ButtonCode::XBOX_JOY_LEFT_HORIZONTAL)*turnTemper);
 
 	//Brake
-	//gVehicleNoDrive->setBrakeTorque(0, Input::GetXBoxAxis(1, ButtonCode::XBOX_LEFT_TRIGGER)*brakeTorque);
-	//gVehicleNoDrive->setBrakeTorque(1, Input::GetXBoxAxis(1, ButtonCode::XBOX_LEFT_TRIGGER)*brakeTorque);
+	//gVehicleNoDrive->setBrakeTorque(0, Input::GetXBoxAxis(playerNum, ButtonCode::XBOX_LEFT_TRIGGER)*brakeTorque);
+	//gVehicleNoDrive->setBrakeTorque(1, Input::GetXBoxAxis(playerNum, ButtonCode::XBOX_LEFT_TRIGGER)*brakeTorque);
 
 	//Alt-Brake
-	if (Input::GetXBoxAxis(1, ButtonCode::XBOX_LEFT_TRIGGER) > 0.0f)
+	if (Input::GetXBoxAxis(playerNum, ButtonCode::XBOX_LEFT_TRIGGER) > 0.0f)
 	{
-		gVehicleNoDrive->setDriveTorque(0, -Input::GetXBoxAxis(1, ButtonCode::XBOX_LEFT_TRIGGER)*brakeTorque);
-		gVehicleNoDrive->setDriveTorque(1, -Input::GetXBoxAxis(1, ButtonCode::XBOX_LEFT_TRIGGER)*brakeTorque);
+		gVehicleNoDrive->setDriveTorque(0, -Input::GetXBoxAxis(playerNum, ButtonCode::XBOX_LEFT_TRIGGER)*brakeTorque);
+		gVehicleNoDrive->setDriveTorque(1, -Input::GetXBoxAxis(playerNum, ButtonCode::XBOX_LEFT_TRIGGER)*brakeTorque);
 	}
 
-	if (Input::GetXBoxButton(1, ButtonCode::XBOX_A))
+	if (Input::GetXBoxButton(playerNum, ButtonCode::XBOX_A))
 	{
 		physVehicle->setLinearVelocity(physx::PxVec3(0.0, 0.0, 0.0));
 		physVehicle->setAngularVelocity(physx::PxVec3(0.0, 0.0, 0.0));
@@ -211,16 +211,25 @@ void VehicleComponent::Update()
 	}
 
 	//IFNDEF_SPEEDOMETER
-	GameObject* speedNeedle = Game::Find("SpeedometerNeedle");
+	/*GameObject* speedNeedle = Game::Find("SpeedometerNeedle"+playerNum);
 	speedNeedle->transform.rotation = vec4(0, 0, 0, 1);
 	float speed = physVehicle->getLinearVelocity().magnitude() * 3.6;
 	float angle = -0.002 * Mathf::PI * speed; //At full the needle points to 500 km/h
-	speedNeedle->transform.Rotate(Transform::Forward(), angle, false);
+	speedNeedle->transform.Rotate(Transform::Forward(), angle, false);*/
 	//ENDIF_SPEEDOMETER
 
 	//IF_DEF Wheel Spray Particles
 	UpdateParticles();
 	//END_IF Wheel Spray Particles
+
+	//IF_DEF ENGINE LOOP SOUND
+	nextEngine -= Time::getDeltaTime();
+	//if (nextEngine <= 0.0f)
+	//{
+		//Audio::Play2DSound(SFX_Engine, speed*0.001, 0.0);
+		//nextEngine = engineDelay;
+	//}
+	//END_IF ENGINE LOOP SOUND
 
 	Finalize();
 }
@@ -340,4 +349,16 @@ void VehicleComponent::UpdateParticles()
 	{
 		enteredWaterPrev = false;
 	}
+}
+
+//Get controller number of this vehicle for firing weapons
+int VehicleComponent::GetPlayerNum()
+{
+	return playerNum;
+}
+
+//Set the controller number 1-4 for this vehicle
+void VehicleComponent::SetPlayerNum(int playerNumber)
+{
+	playerNum = playerNumber;
 }

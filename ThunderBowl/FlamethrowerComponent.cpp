@@ -1,5 +1,6 @@
 #include "FlamethrowerComponent.h"
 #include "Game.h"
+//#include "GameManager.h"
 #include "GeoGenerator.h"
 #include "ParticleSystem.h"
 #include "Audio.h"
@@ -9,7 +10,6 @@ void FlamethrowerComponent::Start()
 	Initialize();
 
 	cout << "I am a Flamethrower Component!" << endl;
-
 	ParticleSystem ps = ParticleSystem();
 	ps.name = selfName + "FireStream";
 	ps.coneAngle = 0;
@@ -70,8 +70,11 @@ void FlamethrowerComponent::UpdateParticles()
 	{
 		if (self->tag == TAGS_HUMAN_PLAYER)
 		{
-			vertical = Input::GetXBoxAxis(1, ButtonCode::XBOX_JOY_RIGHT_VERTICAL);
-			horizontal = Input::GetXBoxAxis(1, ButtonCode::XBOX_JOY_RIGHT_HORIZONTAL);
+			VehicleComponent* vehicle = &VehicleComponent();
+			vehicle = (VehicleComponent*)self->GetComponent(vehicle);
+			int controllerNum = vehicle->GetPlayerNum();
+			vertical = Input::GetXBoxAxis(controllerNum, ButtonCode::XBOX_JOY_RIGHT_VERTICAL);
+			horizontal = Input::GetXBoxAxis(controllerNum, ButtonCode::XBOX_JOY_RIGHT_HORIZONTAL);
 		}
 		else
 		{
@@ -86,9 +89,18 @@ void FlamethrowerComponent::UpdateParticles()
 	float theta = -Mathf::PI * 0.3 * horizontal;
 	fireStream->transform.Rotate(t.GetUp(), theta, false);
 
-	VehicleComponent* vehicle = &VehicleComponent();
-	vehicle = (VehicleComponent*)self->GetComponent(vehicle);
-	inheritedVelocity = vehicle->physVehicle->getLinearVelocity().magnitude();
+	if (self->tag == TAGS_HUMAN_PLAYER)
+	{
+		VehicleComponent* vehicle = &VehicleComponent();
+		vehicle = (VehicleComponent*)self->GetComponent(vehicle);
+		inheritedVelocity = vehicle->physVehicle->getLinearVelocity().magnitude();
+	}
+	else
+	{
+		EnemyComponent* enemy = &EnemyComponent();
+		enemy = (EnemyComponent*)self->GetComponent(enemy);
+		inheritedVelocity = enemy->enPhysVehicle->getLinearVelocity().magnitude();
+	}
 
 	fireStream->initialSpeed.min = streamPower * 60 + inheritedVelocity;
 	fireStream->initialSpeed.max = streamPower * 68 + inheritedVelocity;

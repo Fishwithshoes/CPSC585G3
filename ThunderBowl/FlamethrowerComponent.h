@@ -8,12 +8,9 @@ public:
 	void Update();
 	void UpdateParticles();
 
-	float maxFuel = 100.0;
-
 protected:
 
 private:
 	Transform t;
 	string fireStreamName;
-	float fuelRemaining = maxFuel;
 };
