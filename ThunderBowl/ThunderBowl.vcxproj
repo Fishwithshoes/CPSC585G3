@@ -195,6 +195,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(ProjectDir)..\middleware\PhysX-3.3-master\PhysXSDK\Include\pxtask;$(ProjectDir)..\middleware\PhysX-3.3-master\PhysXSDK\Include\extensions;$(ProjectDir)..\middleware\PhysX-3.3-master\PhysXSDK\Include\foundation;$(ProjectDir)..\middleware\PhysX-3.3-master\PhysXSDK\Include\common;$(ProjectDir)..\middleware\PhysX-3.3-master\PhysXSDK\Include;$(ProjectDir)..\middleware\assimp-3.1.1-win-binaries\assimp-3.1.1-win-binaries\include;$(ProjectDir)..\middleware\SDL\2.0.5\include;$(ProjectDir)..\middleware;$(ProjectDir)..\middleware\glfw-3.2.1x64\include;$(ProjectDir)..\middleware\glew-2.0.0\include;$(ProjectDir)..\middleware\SDL2_mixer-2.0.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -230,6 +231,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(ProjectDir)..\middleware\PhysX-3.3-master\PhysXSDK\Include;$(ProjectDir)..\middleware\SDL\2.0.5\include;$(ProjectDir)..\middleware;$(ProjectDir)..\middleware\glfw-3.2.1x64\include;$(ProjectDir)..\middleware\assimp-3.1.1-win-binaries\assimp-3.1.1-win-binaries\include;$(ProjectDir)..\middleware\glew-2.0.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

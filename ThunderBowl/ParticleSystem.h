@@ -31,6 +31,7 @@ public:
 	vec3 spawnPointVariance;
 	float gravityScale;
 	float accelerationScale;
+	float scaleScale;
 
 	bool useSystemLifespan;
 	float systemLifespan;

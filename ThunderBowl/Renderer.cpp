@@ -23,6 +23,7 @@ vector<string> Renderer::textureFilePaths =
 	"GL_TEXTURE_POSITION_BUFFER",
 	"GL_TEXTURE_NORMAL_BUFFER",
 	"GL_TEXTURE_PREVIOUS_BUFFER",
+	"GL_TEXTURE_PARTICLE_FADE",
 	"GL_TEXTURE_GRAB_PASS",
 	"Textures/zero_TEXT.png",
 	"Textures/one_TEXT.png",
@@ -36,9 +37,11 @@ vector<string> Renderer::textureFilePaths =
 	"Textures/nine_TEXT.png",
 	"Textures/score_TEXT.png",
 	"Textures/time_TEXT.png",
+	"Textures/players_TEXT.png",
 	"Textures/paused_TEXT.png",
 	"Textures/gameover_TEXT.png",
 	"Textures/start_TEXT.png",
+	"Textures/arrow_ICON.png",
 	"Textures/health_ICON.png",
 	"Textures/machineGun_ICON.png",
 	"Textures/missileLauncher_ICON.png",
@@ -159,6 +162,7 @@ void Renderer::LoadTextures(Renderer *renderer)
 			i != MAP_POSITION_BUFFER &&
 			i != MAP_NORMAL_BUFFER &&
 			i != MAP_PREVIOUS_BUFFER &&
+			i != MAP_PARTICLE_FADE &&
 			i != MAP_GRAB_PASS)//Bind images to GL_TEXTURE_2D
 		{
 			stbi_set_flip_vertically_on_load(true);
@@ -197,7 +201,7 @@ void Renderer::LoadTextures(Renderer *renderer)
 
 			cout << "Created shadow mapping image at: " << texID << "!" << endl;
 		}
-		else if (i == MAP_COLOR_BUFFER || i == MAP_POSITION_BUFFER || i == MAP_NORMAL_BUFFER || i == MAP_PREVIOUS_BUFFER)//These are for the Post Process Effects
+		else if (i == MAP_COLOR_BUFFER || i == MAP_POSITION_BUFFER || i == MAP_NORMAL_BUFFER || i == MAP_PARTICLE_FADE || i == MAP_PREVIOUS_BUFFER)//These are for the Post Process Effects
 		{
 			glGenTextures(1, &texID);
 			glActiveTexture(GL_TEXTURE0 + i);
@@ -445,12 +449,17 @@ void Renderer::RenderScene(Renderer *renderer)
 //**TURN OVER TO THE DEFERRED FRAMEBUFFER TO DRAW WORLD AND PARTICLES**********
 	glBindFramebuffer(GL_FRAMEBUFFER, renderer->framebufferID);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	vec3 realCameraPos;
-	vec2 aspect = vec2(Camera::WIDTH, Camera::HEIGHT);
-	Camera* currentCamera;
-	//Set camera rendering zone
+
+	vec3 finalCameraPos;
+
+#pragma parallel for
 	for (int i = 0; i < cameraCount; i++)
 	{
+		vec3 realCameraPos;
+		vec2 aspect = vec2(Camera::WIDTH, Camera::HEIGHT);
+		Camera* currentCamera;
+
+		//Set camera rendering zone
 		if (cameraCount == 1)
 		{
 			glViewport(0, 0, Camera::WIDTH, Camera::HEIGHT);
@@ -531,6 +540,7 @@ void Renderer::RenderScene(Renderer *renderer)
 		realCameraPos = currentCamera->transform.position;
 		if (currentCamera->transform.parent != nullptr)
 			realCameraPos = currentCamera->transform.parent->GetModelToWorld() * vec4(realCameraPos, 1.0);
+		finalCameraPos = realCameraPos;
 		glUniform3fv(renderer->cameraPosStandard_uniform, 1, value_ptr(realCameraPos));
 		glUniform3fv(renderer->cameraForwardStandard_uniform, 1, value_ptr(currentCamera->transform.GetForward()));
 		glUniform4fv(renderer->lightPosStandard_uniform, 1, value_ptr(vec4(7, 10, -7, 1)));
@@ -548,6 +558,7 @@ void Renderer::RenderScene(Renderer *renderer)
 
 		//**RETAIN DEPTH BUFFER AND DRAW PARTICLE SYSTEM OBJECTS**********
 		glUseProgram(renderer->particleShader.program);
+		glCopyImageSubData(MAP_POSITION_BUFFER + 1, GL_TEXTURE_2D, 0, 0, 0, 0, MAP_PARTICLE_FADE + 1, GL_TEXTURE_2D, 0, 0, 0, 0, Camera::WIDTH, Camera::HEIGHT, 1);
 
 		//Program Uniforms for WorldToView and ViewToProjection
 		glUniformMatrix4fv(renderer->worldToViewParticle_uniform, 1, GL_TRUE, value_ptr(currentCamera->GetWorldToViewMatrix()));
@@ -556,6 +567,10 @@ void Renderer::RenderScene(Renderer *renderer)
 		//Program Other Program Scope Uniforms
 		glUniform3fv(renderer->cameraPosParticle_uniform, 1, value_ptr(realCameraPos));
 		glUniform3fv(renderer->cameraForwardParticle_uniform, 1, value_ptr(currentCamera->transform.GetForward()));
+		GLint positionBuffPart_uniform = glGetUniformLocation(renderer->particleShader.program, "particleFadeMap");
+		glUniform1i(positionBuffPart_uniform, MAP_PARTICLE_FADE);
+		GLint screenDimsPart_uniform = glGetUniformLocation(renderer->particleShader.program, "screenDims");
+		glUniform2f(screenDimsPart_uniform, Camera::WIDTH, Camera::HEIGHT);
 
 		//Load bilboard mesh into GPU to draw particles with
 		{
@@ -565,6 +580,7 @@ void Renderer::RenderScene(Renderer *renderer)
 		}
 		//For each ParticleSystem GameObject collect the particles into a single vector
 		vector<Particle> particleRenderQueue = {};
+#pragma parallel for
 		for (int i = 0; i < Game::particleObjectList.size(); i++)
 		{
 			ParticleSystem ps = Game::particleObjectList[i];
@@ -577,7 +593,8 @@ void Renderer::RenderScene(Renderer *renderer)
 				}
 			}
 		}
-		//Sort particles in queue by depth
+#pragma parallel for
+		//Sort particles in queue by depth from current camera
 		for (int i = 1; i < particleRenderQueue.size(); i++)
 		{
 			for (int j = 1; j < particleRenderQueue.size(); j++)
@@ -598,6 +615,7 @@ void Renderer::RenderScene(Renderer *renderer)
 			}
 		}
 		//For each particle in the queue, pass uniforms and draw
+#pragma parallel for
 		for (int i = 0; i < particleRenderQueue.size(); i++)
 		{
 			Particle p = particleRenderQueue[i];
@@ -619,9 +637,9 @@ void Renderer::RenderScene(Renderer *renderer)
 			glUniformMatrix4fv(renderer->normalToWorldParticle_uniform, 1, GL_TRUE, value_ptr(normalToWorld));
 
 			glDrawElements(GL_TRIANGLES, renderer->geometry.elementCount, GL_UNSIGNED_INT, nullptr);
-			//glDrawElements(GL_LINE_LOOP, renderer->geometry.elementCount, GL_UNSIGNED_INT, nullptr);
 		}
 	}
+//#pragma omp barrier
 //**TURN OVER TO THE DEFAULT FRAMEBUFFER TO DRAW POST-PROCESS AND OVERLAY**********
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(0, 0, Camera::WIDTH, Camera::HEIGHT);
@@ -639,7 +657,7 @@ void Renderer::RenderScene(Renderer *renderer)
 	GLint depthBuffer_uniform = glGetUniformLocation(renderer->fsppShader.program, "depthBufferMap");
 
 	glUniform2f(screenDims_uniform, (float)Camera::WIDTH, (float)Camera::HEIGHT);
-	glUniform3fv(cameraPosPost_uniform, 1, value_ptr(realCameraPos));
+	glUniform3fv(cameraPosPost_uniform, 1, value_ptr(finalCameraPos));
 	glUniform1i(colorBuffer_uniform, MAP_COLOR_BUFFER);
 	glUniform1i(positionBuffer_uniform, MAP_POSITION_BUFFER);
 	glUniform1i(normalBuffer_uniform, MAP_NORMAL_BUFFER);
@@ -659,6 +677,7 @@ void Renderer::RenderScene(Renderer *renderer)
 	glUniform1f(renderer->aspectRatio_uniform, (float)Camera::WIDTH / (float)Camera::HEIGHT);
 
 	//For each Overlay GameObject, Load geometry, bind and draw
+#pragma parallel for
 	for (int i = 0; i < Game::overlayObjectList.size(); i++)
 	{
 		//Setup drawing configs
@@ -681,6 +700,7 @@ void Renderer::RenderScene(Renderer *renderer)
 			glDrawElements(GL_TRIANGLES, renderer->geometry.elementCount, GL_UNSIGNED_INT, nullptr);
 		}
 	}
+//#pragma omp barrier
 
 	//Store this frame's color buffer for next frame
 	glCopyImageSubData(MAP_COLOR_BUFFER + 1, GL_TEXTURE_2D, 0, 0, 0, 0, MAP_PREVIOUS_BUFFER + 1, GL_TEXTURE_2D, 0, 0, 0, 0, Camera::WIDTH, Camera::HEIGHT, 1);
@@ -716,6 +736,7 @@ void Renderer::DrawPhysicalObjects(Renderer *renderer, bool programStandardUnifo
 {
 	//DRAW DYNAMIC MESH WORLD OBJECTS
 	//For each World GameObject Load geometry into GPU, bind and draw it
+#pragma parallel for
 	for (int i = 0; i < Game::worldObjectList.size(); i++)
 	{
 		//Setup drawing configs
@@ -751,6 +772,7 @@ void Renderer::DrawPhysicalObjects(Renderer *renderer, bool programStandardUnifo
 
 	//DRAW STATIC MESH WORLD OBJECTS
 	//For each Static World GameObject point to appropriate mesh on GPU and draw
+#pragma parallel for
 	for (int i = 0; i < Game::staticObjectList.size(); i++)
 	{
 		GameObject gameObject = Game::staticObjectList[i];
@@ -775,7 +797,7 @@ void Renderer::DrawPhysicalObjects(Renderer *renderer, bool programStandardUnifo
 			else
 				glUniformMatrix4fv(renderer->modelToWorldDepthMap_uniform, 1, GL_TRUE, value_ptr(modelToWorld));
 
-			Geometry geoToUse;
+			Geometry geoToUse = renderer->mgbulletGeo;
 			switch (gameObject.staticGeo)
 			{
 			case SG_OCEAN:

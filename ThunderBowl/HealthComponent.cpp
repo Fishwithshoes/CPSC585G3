@@ -8,8 +8,10 @@
 void HealthComponent::Start()
 {
 	Initialize();
-	currentHealth = GameManager::MAX_HEALTH;
-	respawnTime = GameManager::RESPAWN_TIME;
+	//currentHealth = GameManager::MAX_HEALTH;
+	//respawnTime = GameManager::RESPAWN_TIME;
+	currentHealth = 100.0;
+	respawnTime = 20.0;
 	standardMat.diffuseColor = glm::vec3(0.0, 1.0, 0.0);
 	Finalize();
 }

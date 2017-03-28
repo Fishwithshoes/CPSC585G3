@@ -12,8 +12,6 @@ public:
 	static void EndGame();
 	static void GotoMainMenu();
 
-	static float initialGameTime;//In seconds
-
 	static GameStates GetGameState();
 	static float GetGameTime();
 
@@ -28,12 +26,22 @@ public:
 	static const int MAX_MISSILE_LAUNCHER_AMMO;
 	static const float MAX_FLAMETHROWER_AMMO;
 
+	enum ActiveMenuItems
+	{
+		AMI_PLAYER_COUNT,
+		AMI_GAME_TIME
+	};
+
 private:
+	static void HandleMenu();
 	static void RedrawTimers();
 	static void CreateHUD();
 	static void DestroyHUD();
 
 	static GameStates gameState;
+	static int humanPlayerCount;
+	static int timeMinuteCount;
+	static float initialGameTime;//In seconds
 
 	static float gameTimeRemaining;
 
@@ -44,5 +52,8 @@ private:
 	static string strSeconds;
 
 	static bool startButtonPrev;
+	static bool menuChangePrev;
+
+	static ActiveMenuItems activeMenuItem;
 };
 

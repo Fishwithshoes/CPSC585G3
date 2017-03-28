@@ -90,6 +90,7 @@ enum Tags
 	TAGS_MISSILE,
 	TAGS_DECORATION,
 	TAGS_PARTICLE_SYSTEM,
+	TAGS_VEHICLE_WHEEL,
 	//Overlay objects
 	TAGS_MENU,
 	TAGS_HUD,
@@ -174,6 +175,7 @@ enum Maps
 	MAP_POSITION_BUFFER,//Store position for post-process
 	MAP_NORMAL_BUFFER,//Store normal for post-process
 	MAP_PREVIOUS_BUFFER,//Store last frame's color buffer for motion blur
+	MAP_PARTICLE_FADE,//Store copy of position buffer to depth test particles
 	MAP_GRAB_PASS,//Feed Color Buffer into this when an object requests it (For refraction)
 	//Overlay
 	MAP_ZERO,
@@ -188,9 +190,11 @@ enum Maps
 	MAP_NINE,
 	MAP_SCORE,
 	MAP_TIME,
+	MAP_PLAYERS,
 	MAP_PAUSED,
 	MAP_GAME_OVER,
 	MAP_START,
+	MAP_ARROW_ICON,
 	MAP_HEALTH_ICON,
 	MAP_MACHINE_GUN_ICON,
 	MAP_MISSILE_LAUNCHER_ICON,
@@ -296,6 +300,7 @@ struct ParticleSystemDesc
 	vec3						spawnPointVariance;
 	float						gravityScale;
 	float						accelerationScale;
+	float						scaleScale;
 	vector<ParticleBurst>		burstList;
 	vector<ParticleTimeStop>	timeStopList;
 	bool						useSystemLifespan;

@@ -42,6 +42,7 @@ void VehicleComponent::Start()
 		//	temp.standardMat.diffuseColor = vec3(1, 0, 0);
 		//if(i==1)
 		//	temp.standardMat.diffuseColor = vec3(0, 1, 0);
+		temp.tag = TAGS_VEHICLE_WHEEL;
 		temp.standardMat.diffuseColor = vec3(0);
 		temp.standardMat.roughness = 0.5;
 		temp.standardMat.metalness = 0.2;
@@ -120,7 +121,7 @@ void VehicleComponent::Update()
 
 	}
 
-	physx::PxReal maxTorque = 6000.0;
+	physx::PxReal maxTorque = 2000.0;
 	physx::PxReal brakeTorque = 3000.0;
 	physx::PxReal turnTemper = 0.10;
 

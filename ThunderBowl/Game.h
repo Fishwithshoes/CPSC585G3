@@ -30,6 +30,19 @@ public:
 	static vector<GameObject> aiObjectList; //For quick access to all AI nodes
 	static vector<glm::vec3> plVehStartPositions; //For assigning player vehicle start positions
 	static vector<glm::vec3> aiVehStartPositions; //For assigning AI vehicle start positions
+	static vector<glm::vec3> innerNodePositions; //For assigning center node positions
+	static vector<GameObject*> innerNodes; //For assigning center node positions
+	static vector<glm::vec3> middleNodePositions; //For assigning center node positions
+	static vector<GameObject*> middleNodes; //For assigning center node positions
+	static vector<glm::vec3> outerNodePositions; //For assigning center node positions
+	static vector<GameObject*> outerNodes; //For assigning center node positions
+
+	static const int nodesPerRing = 8;
+
+	//static void SetupInnerRing();
+	//static void SetupMiddleRing();
+	//static void SetupOuterRing();
+	//static void ConnectRings();
 
 
 	static void BuildWorld();//Reserves space in vectors and adds initial objects

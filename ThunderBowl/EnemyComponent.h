@@ -33,6 +33,8 @@ public:
 	void MoveOnHeading();
 	void UTurn(vec3 inHeading);
 
+	void maintainUpright();
+
 	bool performUTurn;
 
 	physx::PxReal maxTorque;

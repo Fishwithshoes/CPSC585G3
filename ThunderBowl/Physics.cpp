@@ -22,8 +22,8 @@ PxVehicleDrivableSurfaceToTireFrictionPairs* gFrictionPairs = NULL;
 
 PxRigidStatic*			gGroundPlane = NULL;
 PxVehicleNoDrive*		gVehicleNoDrive = NULL;
-vector<PxVehicleNoDrive*> playerVehicleNoDrives;
-vector<PxVehicleNoDrive*> opponentVehicleNoDrives;
+vector<PxVehicleNoDrive*> Physics::playerVehicleNoDrives = {};
+vector<PxVehicleNoDrive*> Physics::opponentVehicleNoDrives = {};
 
 
 
@@ -201,11 +201,11 @@ void Physics::initializePhysX()
 	gFrictionPairs = Physics::createFrictionPairs(gMaterial);
 
 	//Create a plane to drive on.
-	gGroundPlane = createDrivablePlane(gMaterial, gPhysics);
-	gScene->addActor(*gGroundPlane);
+	//gGroundPlane = createDrivablePlane(gMaterial, gPhysics);
+	//gScene->addActor(*gGroundPlane);
 
 	//Create a thunderbowl to drive on
-	//gScene->addActor(*CreateDrivableThunderbowl(gMaterial, gPhysics));
+	gScene->addActor(*CreateDrivableThunderbowl(gMaterial, gPhysics));
 }
 
 void Physics::computeRotation(PxQuat angle) {}
@@ -259,11 +259,13 @@ void Physics::stepPhysics()
 
 void Physics::cleanupPhysics()
 {
-	for (int i = 0; i < playerVehicleNoDrives.size(); i++) {
+	for (int i = 0; i < playerVehicleNoDrives.size(); i++) 
+	{
 		playerVehicleNoDrives[i]->getRigidDynamicActor()->release();
 		playerVehicleNoDrives[i]->free();
 	}
-	for (int i = 0; i < opponentVehicleNoDrives.size(); i++) {
+	for (int i = 0; i < opponentVehicleNoDrives.size(); i++) 
+	{
 		opponentVehicleNoDrives[i]->getRigidDynamicActor()->release();
 		opponentVehicleNoDrives[i]->free();
 	}
@@ -1052,7 +1054,7 @@ Physics::VehicleDesc Physics::initVehicleDesc()
 	((chassisDims.y*chassisDims.y + chassisDims.z*chassisDims.z)*chassisMass / 10.0f,
 		(chassisDims.x*chassisDims.x + chassisDims.z*chassisDims.z)*0.6f*chassisMass / 10.0f,
 		(chassisDims.x*chassisDims.x + chassisDims.y*chassisDims.y)*chassisMass / 10.0f);
-	const PxVec3 chassisCMOffset(0.0f, -chassisDims.y*0.8f + 0.25f, 0.20f);						//Center of mass
+	const PxVec3 chassisCMOffset(0.0f, -chassisDims.y*1.0f + 0.25f, 0.20f);						//Center of mass
 
 	//Set up the wheel mass, radius, width, moment of inertia, and number of wheels.
 	//Moment of inertia is just the moment of inertia of a cylinder.

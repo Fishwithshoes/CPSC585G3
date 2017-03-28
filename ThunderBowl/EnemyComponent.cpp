@@ -37,6 +37,7 @@ void EnemyComponent::Start()
 
 	for (int i = 0; i < 4; i++) {
 		GameObject temp = GameObject();
+		temp.tag = TAGS_VEHICLE_WHEEL;
 		physx::PxTransform currWheel = enWheelBuffer[i]->getLocalPose();
 		temp.mesh = GeoGenerator::MakeCylinder(0.5, 0.5, 0.4, 8, false); //change to take in physx values
 		enWheelVector.push_back(Game::CreateWorldObject(temp));
@@ -45,7 +46,7 @@ void EnemyComponent::Start()
 	AIControlComponent1* tempController = &AIControlComponent1();
 	aiController = (AIControlComponent1*)Game::Find(selfName)->GetComponent(tempController);
 
-	maxTorque = 1000.0;
+	maxTorque = 5500.0;
 	brakeTorque = 3000.0;
 	turnTemper = 0.25;
 
@@ -112,12 +113,13 @@ void EnemyComponent::Update()
 	}
 
 	if (performUTurn) {
-		cout <<selfName << " UTURN" << endl;
 		UTurn(actualHeading);
 	}
 	else {
 		MoveOnHeading();
 	}
+
+	//maintainUpright();
 
 	Finalize();
 }
@@ -191,4 +193,22 @@ void EnemyComponent::UTurn(vec3 inHeading) {
 		cout << selfName << " done UTurn" << endl;
 		performUTurn = false;
 	}
+}
+
+void EnemyComponent::maintainUpright()
+{
+	vec3 currentUp = glm::normalize(transform.GetUp());
+	physx::PxVec3 currentDown = physx::PxVec3(-currentUp.x, -currentUp.y, -currentUp.y);
+	physx::PxVec3 currentRight = physx::PxVec3(transform.GetRight().x, transform.GetRight().y, transform.GetRight().z);
+	vec3 worldUp = glm::normalize(Transform::Up());
+	float tiltValue = (1.0 - glm::dot(currentUp, worldUp));
+	if (tiltValue >= 0.0 && tiltValue <= 1.0) {
+		//enPhysVehicle->setCMassLocalPose(physx::PxTransform(enPhysVehicle->getCMassLocalPose().p * tiltValue, enPhysVehicle->getCMassLocalPose().q));
+		enPhysVehicle->addTorque(currentRight*tiltValue);
+	}
+	else if (tiltValue > 1.0) {
+		cout << "going over" << endl;
+		enPhysVehicle->addTorque(currentRight*tiltValue* 10.0);
+	}
+
 }

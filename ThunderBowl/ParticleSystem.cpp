@@ -29,6 +29,7 @@ void ParticleSystem::InitParticleSystem(ParticleSystemDesc desc)
 	
 	gravityScale = desc.gravityScale;
 	accelerationScale = desc.accelerationScale;
+	scaleScale = desc.scaleScale;
 
 	burstList = desc.burstList;
 	//Ensure all bursts are ready to fire
@@ -61,6 +62,7 @@ ParticleSystemDesc ParticleSystem::descriptionIdentity()
 	result.spawnPointVariance = vec3(0.0, 0.0, 0.0);
 	result.gravityScale = 1.0;
 	result.accelerationScale = 1.0;
+	result.scaleScale = 1.0;
 	result.burstList = vector<ParticleBurst>();
 	result.timeStopList = vector<ParticleTimeStop>();
 	result.useSystemLifespan = true;
@@ -128,6 +130,7 @@ void ParticleSystem::Update()
 	
 		p->velocity -= Transform::Up() * gravityScale * Time::timeScale * Time::getDeltaTime();
 		p->velocity *= accelerationScale;
+		p->scale *= scaleScale;
 		p->position += p->velocity * Time::timeScale * Time::getDeltaTime();
 	
 		//if (p->position.y < p->scale.x*0.5)

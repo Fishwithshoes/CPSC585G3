@@ -1,6 +1,6 @@
 #include "FlamethrowerComponent.h"
 #include "Game.h"
-#include "GameManager.h"
+//#include "GameManager.h"
 #include "GeoGenerator.h"
 #include "ParticleSystem.h"
 #include "Audio.h"
@@ -55,11 +55,6 @@ void FlamethrowerComponent::UpdateParticles()
 	PlayerComponent* ownerPlayer = &PlayerComponent();
 	ownerPlayer = (PlayerComponent*)self->GetComponent(ownerPlayer);
 
-	VehicleComponent* vehicle = &VehicleComponent();
-	vehicle = (VehicleComponent*)self->GetComponent(vehicle);
-	EnemyComponent* enemy = &EnemyComponent();
-	enemy = (EnemyComponent*)self->GetComponent(enemy);
-
 	fireStream->transform = t;
 	fireStream->transform.Translate(t.GetForward() * 3.0f, false);
 	fireStream->transform.Translate(t.GetUp() * 0.5f, false);
@@ -75,6 +70,8 @@ void FlamethrowerComponent::UpdateParticles()
 	{
 		if (self->tag == TAGS_HUMAN_PLAYER)
 		{
+			VehicleComponent* vehicle = &VehicleComponent();
+			vehicle = (VehicleComponent*)self->GetComponent(vehicle);
 			int controllerNum = vehicle->GetPlayerNum();
 			vertical = Input::GetXBoxAxis(controllerNum, ButtonCode::XBOX_JOY_RIGHT_VERTICAL);
 			horizontal = Input::GetXBoxAxis(controllerNum, ButtonCode::XBOX_JOY_RIGHT_HORIZONTAL);
@@ -92,16 +89,25 @@ void FlamethrowerComponent::UpdateParticles()
 	float theta = -Mathf::PI * 0.3 * horizontal;
 	fireStream->transform.Rotate(t.GetUp(), theta, false);
 
-	if(self->tag == TAGS_HUMAN_PLAYER)
+	if (self->tag == TAGS_HUMAN_PLAYER)
+	{
+		VehicleComponent* vehicle = &VehicleComponent();
+		vehicle = (VehicleComponent*)self->GetComponent(vehicle);
 		inheritedVelocity = vehicle->physVehicle->getLinearVelocity().magnitude();
+	}
 	else
+	{
+		EnemyComponent* enemy = &EnemyComponent();
+		enemy = (EnemyComponent*)self->GetComponent(enemy);
 		inheritedVelocity = enemy->enPhysVehicle->getLinearVelocity().magnitude();
+	}
 
 	fireStream->initialSpeed.min = streamPower * 60 + inheritedVelocity;
 	fireStream->initialSpeed.max = streamPower * 68 + inheritedVelocity;
 	fireStream->spawnRate = streamPower * 60;
-	fireStream->initialRadius.min = streamPower * 1.2;
-	fireStream->initialRadius.max = streamPower * 2.0;
+	fireStream->initialRadius.min = streamPower * 0.7;
+	fireStream->initialRadius.max = streamPower * 1.2;
+	fireStream->scaleScale = 1.0 + streamPower*0.3;
 
 	vector<GameObject*> players = Game::FindGameObjectsWithTag(TAGS_AI_PLAYER);
 	vector<GameObject*> playeri = Game::FindGameObjectsWithTag(TAGS_HUMAN_PLAYER);

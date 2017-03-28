@@ -3,8 +3,11 @@
 #include "GeoGenerator.h"
 #include "Renderer.h"
 #include "Audio.h"
+#include "Physics.h"
 
 float		GameManager::initialGameTime = 300.0;
+int			GameManager::humanPlayerCount = 1;
+int			GameManager::timeMinuteCount = 5;
 GameStates	GameManager::gameState = GS_FRONT_MENU;
 float		GameManager::gameTimeRemaining = 0.0;
 int			GameManager::timerSeconds = 0;
@@ -23,7 +26,9 @@ const int		GameManager::MAX_MACHINE_GUN_AMMO = 200;
 const float		GameManager::MAX_FLAMETHROWER_AMMO = 10.0;
 const int		GameManager::MAX_MISSILE_LAUNCHER_AMMO = 4;
 
-bool		GameManager::startButtonPrev = false;
+bool							GameManager::startButtonPrev = false;
+bool							GameManager::menuChangePrev = false;
+GameManager::ActiveMenuItems	GameManager::activeMenuItem = AMI_PLAYER_COUNT;
 
 void GameManager::Update()//Check stuff as game runs
 {
@@ -33,6 +38,7 @@ void GameManager::Update()//Check stuff as game runs
 	switch (gameState)
 	{
 	case GS_FRONT_MENU:
+		HandleMenu();
 		if (Input::GetXBoxButton(1, ButtonCode::XBOX_START) && !startButtonPrev)
 		{
 			StartGame();
@@ -72,6 +78,12 @@ void GameManager::Update()//Check stuff as game runs
 			ToggleGamePause();
 			startButtonPrev = true;
 		}
+		if (Input::GetXBoxButton(1, ButtonCode::XBOX_BACK))
+		{
+			ToggleGamePause();
+			EndGame();
+			GotoMainMenu();
+		}
 		break;
 	case GS_GAME_OVER:
 		if (Input::GetXBoxButton(1, ButtonCode::XBOX_START) && !startButtonPrev)
@@ -93,10 +105,45 @@ void GameManager::StartGame()
 	gameState = GS_IN_GAME;
 	Time::timeScale = 1.0;
 
+	for (int i = 0; i < humanPlayerCount; i++) //CREATE PLAYERS
+	{
+		GameObject player = GameObject();
+		player.mesh = GeoGenerator::MakeBox(3, 1, 3, false);
+		player.transform.position = Game::plVehStartPositions[i];
+		player.name = "Player" + to_string(i);
+		player.tag = TAGS_HUMAN_PLAYER;
+		GameObject* ptr = Game::CreateWorldObject(player);
+		ptr->AddComponent(new PlayerComponent());
+		ptr->AddComponent(new VehicleComponent());
+		ptr->AddComponent(new MachineGunComponent());
+		ptr->AddComponent(new MissileLauncherComponent());
+		ptr->AddComponent(new FlamethrowerComponent());
+		ptr->AddComponent(new HealthComponent());
+		VehicleComponent* vehicle = &VehicleComponent();
+		vehicle = (VehicleComponent*)ptr->GetComponent(vehicle);
+		vehicle->SetPlayerNum(i + 1);
+	}
+
+	for (int i = 0; i < (4 - humanPlayerCount); i++) //CREATE AI
+	{
+		GameObject opponent = GameObject();
+		opponent.mesh = GeoGenerator::MakeBox(2, 1, 2, false);
+		opponent.transform.position = Game::aiVehStartPositions[i];
+		opponent.transform.Rotate(Transform::Up(), Mathf::PI, false);
+		opponent.name = "AI" + to_string(i);
+		opponent.tag = TAGS_AI_PLAYER;
+		GameObject* ptr = Game::CreateWorldObject(opponent);
+		ptr->AddComponent(new PlayerComponent());
+		ptr->AddComponent(new EnemyComponent());
+		ptr->AddComponent(new MachineGunComponent());
+		ptr->AddComponent(new AIControlComponent1());
+		ptr->AddComponent(new HealthComponent());
+	}
+
 	Renderer::GetCamera(0)->mode = Camera::Modes::MODE_GAME;
 	Renderer::GetCamera(0)->transform.parent = nullptr;
 
-	Renderer::SetCameraCount(1);
+	Renderer::SetCameraCount(humanPlayerCount);
 
 	CreateHUD();
 
@@ -192,46 +239,38 @@ void GameManager::EndGame()
 void GameManager::GotoMainMenu()
 {
 	gameState = GS_FRONT_MENU;
+	activeMenuItem = AMI_PLAYER_COUNT;
 	Time::timeScale = 1.0;
 
-	//Return all players back to normal
+	//Destroy all human and bot duplicants so they can be reprinted by StartGame()
 	vector<GameObject*> players = Game::FindGameObjectsWithTag(TAGS_HUMAN_PLAYER);
 	vector<GameObject*> playeri = Game::FindGameObjectsWithTag(TAGS_AI_PLAYER);
 	players.insert(players.end(), playeri.begin(), playeri.end());
-
-	for (int i = 0; i < players.size(); i++)
-	{
-		PlayerComponent* player = &PlayerComponent();
-		player = (PlayerComponent*)players[i]->GetComponent(player);
-		player->currentWeapon = GW_MACHINE_GUN;
-		player->machineGunAmmo = START_MG_AMMO;
-		player->flamethrowerAmmo = START_FLAMETHROWER_AMMO;
-		player->missileLauncherAmmo = START_MISSILE_AMMO;
-		player->playerScore = 0;
-
-		HealthComponent* health = &HealthComponent();
-		health = (HealthComponent*)players[i]->GetComponent(health);
-		health->currentHealth = MAX_HEALTH;
-
-		if (players[i]->tag == TAGS_HUMAN_PLAYER)
-		{
-			VehicleComponent* vehicle = &VehicleComponent();
-			vehicle = (VehicleComponent*)players[i]->GetComponent(vehicle);
-
-			vehicle->physVehicle->setGlobalPose(physx::PxTransform(vehicle->myStartPosition, physx::PxQuat(physx::PxIdentity)));
-			vehicle->physVehicle->setAngularVelocity(physx::PxVec3(0, 0, 0));
-			vehicle->physVehicle->setLinearVelocity(physx::PxVec3(0, 0, 0));
-		}
-		else
-		{
-			EnemyComponent* enemy = &EnemyComponent();
-			enemy = (EnemyComponent*)players[i]->GetComponent(enemy);
-
-			enemy->enPhysVehicle->setGlobalPose(physx::PxTransform(enemy->startPosition, enemy->startRotation));
-			enemy->enPhysVehicle->setAngularVelocity(physx::PxVec3(0, 0, 0));
-			enemy->enPhysVehicle->setLinearVelocity(physx::PxVec3(0, 0, 0));
-		}
+	for (int i = players.size()-1; i >= 0; i--)//Chassis objects
+	{	
+		Game::DestroyWorldObjectAt(players[i]->objectID);
 	}
+	vector<GameObject*> wheels = Game::FindGameObjectsWithTag(TAGS_VEHICLE_WHEEL);
+	for (int i = wheels.size() - 1; i >= 0; i--)//Chassis objects
+	{
+		Game::DestroyWorldObjectAt(wheels[i]->objectID);
+	}
+
+	//Get rid of the physics representations
+	for (int i = 0; i < Physics::playerVehicleNoDrives.size(); i++)
+	{
+		Physics::playerVehicleNoDrives[i]->getRigidDynamicActor()->release();
+		Physics::playerVehicleNoDrives[i]->free();
+	}
+	for (int i = 0; i < Physics::opponentVehicleNoDrives.size(); i++)
+	{
+		Physics::opponentVehicleNoDrives[i]->getRigidDynamicActor()->release();
+		Physics::opponentVehicleNoDrives[i]->free();
+	}
+	Physics::playerVehicleNoDrives = {};
+	Physics::opponentVehicleNoDrives = {};
+
+	Game::KillAllParticles();
 
 	vector<GameObject*> gameOverItems = Game::FindGameObjectsWithTag(TAGS_GAME_OVER);
 	for (int i = 0; i < gameOverItems.size(); i++)
@@ -253,6 +292,92 @@ float GameManager::GetGameTime()
 	return gameTimeRemaining;
 }
 
+void GameManager::HandleMenu()
+{
+	vector<GameObject*> menuItems = Game::FindGameObjectsWithTag(TAGS_MENU);
+	vector<GameObject*> playerMenu = {};
+	vector<GameObject*> timeMenu = {};
+	for (int i = 0; i < menuItems.size(); i++)
+	{
+		if (menuItems[i]->name.find("Players") != string::npos)			
+			playerMenu.push_back(menuItems[i]);
+		if (menuItems[i]->name.find("Time") != string::npos)
+			timeMenu.push_back(menuItems[i]);
+	}
+
+	switch (activeMenuItem)
+	{
+	case AMI_PLAYER_COUNT:
+		if (Input::GetXBoxAxis(1, ButtonCode::XBOX_JOY_LEFT_VERTICAL) < -0.5 && !menuChangePrev)
+		{
+			menuChangePrev = true;
+			activeMenuItem = AMI_GAME_TIME;
+		}
+		for (int i = 0; i < playerMenu.size(); i++)
+		{
+			playerMenu[i]->transform.scale = vec3(1.3);
+			playerMenu[i]->particleOverlayMat.color = vec4(vec3(0.8), 1.0);
+		}
+		for (int i = 0; i < timeMenu.size(); i++)
+		{
+			timeMenu[i]->transform.scale = vec3(1.0);
+			timeMenu[i]->particleOverlayMat.color = vec4(vec3(0.5), 1.0);
+		}
+		if (Input::GetXBoxAxis(1, ButtonCode::XBOX_JOY_LEFT_HORIZONTAL) < -0.5 && !menuChangePrev)
+		{
+			menuChangePrev = true;
+			humanPlayerCount--;
+			if (humanPlayerCount < 1)
+				humanPlayerCount = 1;			
+		}
+		if (Input::GetXBoxAxis(1, ButtonCode::XBOX_JOY_LEFT_HORIZONTAL) > 0.5 && !menuChangePrev)
+		{
+			menuChangePrev = true;
+			humanPlayerCount++;
+			if (humanPlayerCount > 4)
+				humanPlayerCount = 4;
+		}
+		Game::Find("PlayersCount")->particleOverlayMat.mainTexture = MAP_ZERO + humanPlayerCount;
+		break;
+	case AMI_GAME_TIME:
+		if (Input::GetXBoxAxis(1, ButtonCode::XBOX_JOY_LEFT_VERTICAL) > 0.5 && !menuChangePrev)
+		{
+			menuChangePrev = true;
+			activeMenuItem = AMI_PLAYER_COUNT;
+		}
+		for (int i = 0; i < playerMenu.size(); i++)
+		{
+			playerMenu[i]->transform.scale = vec3(1.0);
+			playerMenu[i]->particleOverlayMat.color = vec4(vec3(0.5), 1.0);
+		}
+		for (int i = 0; i < timeMenu.size(); i++)
+		{
+			timeMenu[i]->transform.scale = vec3(1.3);
+			timeMenu[i]->particleOverlayMat.color = vec4(vec3(0.8), 1.0);
+		}
+		if (Input::GetXBoxAxis(1, ButtonCode::XBOX_JOY_LEFT_HORIZONTAL) < -0.5 && !menuChangePrev)
+		{
+			menuChangePrev = true;
+			timeMinuteCount--;
+			if (timeMinuteCount < 3)
+				timeMinuteCount = 3;
+		}
+		if (Input::GetXBoxAxis(1, ButtonCode::XBOX_JOY_LEFT_HORIZONTAL) > 0.5 && !menuChangePrev)
+		{
+			menuChangePrev = true;
+			timeMinuteCount++;
+			if (timeMinuteCount > 8)
+				timeMinuteCount = 8;
+		}
+		Game::Find("TimeCount")->particleOverlayMat.mainTexture = MAP_ZERO + timeMinuteCount;
+		initialGameTime = timeMinuteCount * 60;
+		break;
+	}
+
+	if ((abs(Input::GetXBoxAxis(1, ButtonCode::XBOX_JOY_LEFT_HORIZONTAL)) +
+		abs(Input::GetXBoxAxis(1, ButtonCode::XBOX_JOY_LEFT_VERTICAL))) < 0.5)
+		menuChangePrev = false;
+}
 void GameManager::RedrawTimers()
 {
 	for (int i = 0; i < Renderer::GetCameraCount(); i++)
