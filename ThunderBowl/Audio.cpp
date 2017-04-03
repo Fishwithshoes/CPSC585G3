@@ -17,7 +17,8 @@ vector<string> Audio::soundFilePaths =
 	"Sounds/flamethrower_SFX.wav",
 	"Sounds/splish_SFX.wav",
 	"Sounds/splash_SFX.wav",
-	"Sounds/engine_SFX.wav"
+	"Sounds/engine_SFX.wav",
+	"Sounds/horn_SFX.wav"
 };
 
 vector<string> Audio::musicFilePaths =

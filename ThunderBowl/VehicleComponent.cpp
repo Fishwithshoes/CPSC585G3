@@ -264,6 +264,14 @@ void VehicleComponent::Update()
 	//}
 	//END_IF ENGINE LOOP SOUND
 
+	if (Input::GetXBoxButton(playerNum, ButtonCode::XBOX_LEFT_STICK) && hornReady)
+	{
+		Audio::Play2DSound(SFX_Horn, Random::rangef(0.2, 0.3), 0.0);
+		hornReady = false;
+	}
+	if (!Input::GetXBoxButton(playerNum, ButtonCode::XBOX_LEFT_STICK) && !hornReady)
+		hornReady = true;
+
 	Finalize();
 }
 

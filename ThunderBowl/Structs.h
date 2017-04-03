@@ -338,7 +338,8 @@ enum Sounds
 	SFX_Flamethrower,
 	SFX_Splish,
 	SFX_Splash,
-	SFX_Engine
+	SFX_Engine,
+	SFX_Horn
 };
 
 enum Musics
