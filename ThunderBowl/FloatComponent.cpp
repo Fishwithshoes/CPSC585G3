@@ -15,7 +15,7 @@ void FloatComponent::Update()
 	Initialize();
 	
 	current += speed * Time::getDeltaTime();
-	transform.Translate(vec3(sin(current) * range) * transform.Up());
+	transform.Translate(vec3(sin(current) * range) * transform.Up(), true);
 
 	//standardMat.roughness = pow(sin(current*0.5),2);
 

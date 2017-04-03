@@ -1,4 +1,8 @@
 #include "Physics.h"
+#include "Component.h"
+#include "GeoGenerator.h"
+#include "Loader.h"
+#include "PlayerComponent.h"
 
 using namespace physx;
 
@@ -18,6 +22,10 @@ PxVehicleDrivableSurfaceToTireFrictionPairs* gFrictionPairs = NULL;
 
 PxRigidStatic*			gGroundPlane = NULL;
 PxVehicleNoDrive*		gVehicleNoDrive = NULL;
+vector<PxVehicleNoDrive*> Physics::playerVehicleNoDrives = {};
+vector<PxVehicleNoDrive*> Physics::opponentVehicleNoDrives = {};
+
+
 
 //PxTransform* gBaseTrans = NULL;
 //PxVisualDebuggerConnection* gVDebugConnection = NULL;
@@ -31,25 +39,129 @@ Physics::~Physics()
 {
 }*/
 
-PxFilterFlags VehicleFilterShader
-(PxFilterObjectAttributes attributes0, PxFilterData filterData0,
-	PxFilterObjectAttributes attributes1, PxFilterData filterData1,
-	PxPairFlags& pairFlags, const void* constantBlock, PxU32 constantBlockSize)
+class ContactReportCallback : public PxSimulationEventCallback
 {
-	PX_UNUSED(attributes0);
-	PX_UNUSED(attributes1);
-	PX_UNUSED(constantBlock);
-	PX_UNUSED(constantBlockSize);
+	void onConstraintBreak(PxConstraintInfo* constraints, PxU32 count) { PX_UNUSED(constraints); PX_UNUSED(count); }
+	void onWake(PxActor** actors, PxU32 count) { PX_UNUSED(actors); PX_UNUSED(count); }
+	void onSleep(PxActor** actors, PxU32 count) { PX_UNUSED(actors); PX_UNUSED(count); }
+	void onTrigger(PxTriggerPair* pairs, PxU32 count)
+	{
+		for (PxU32 i = 0; i < count; i++)
+		{
+			if (pairs[i].triggerShape->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_POWERUP) {
+				if (pairs[i].otherShape->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_CHASSIS) {
+					Component* triggerComp = reinterpret_cast<Component*>(pairs[i].triggerActor->userData);
+					if (triggerComp->CheckCollide()) 
+					{
+						Component* colliderComp = reinterpret_cast<Component*>(pairs[i].otherActor->userData);
+						triggerComp->OnCollision(Component::CollisionPair::CP_VEHICLE_POWERUP, colliderComp);
+						colliderComp->OnCollision(Component::CollisionPair::CP_VEHICLE_POWERUP, triggerComp);
+					}
+				}
+			}
+		}
+	}
+			void onContact(const PxContactPairHeader& pairHeader, const PxContactPair* pairs, PxU32 nbPairs)
+			{
+				PxU32 shapeBuffer1Size = pairHeader.actors[0]->getNbShapes() * sizeof(PxShape*);	//get first actor's shape
+				PxU32 shapeBuffer2Size = pairHeader.actors[1]->getNbShapes() * sizeof(PxShape*);	//get second actor's shape
+				PxShape** shapeBuffer1 = new PxShape*[shapeBuffer1Size];
+				PxShape** shapeBuffer2 = new PxShape*[shapeBuffer2Size];
+				pairHeader.actors[0]->getShapes(shapeBuffer1, shapeBuffer1Size);
+				pairHeader.actors[1]->getShapes(shapeBuffer2, shapeBuffer2Size);
+				Component* firstCollider = reinterpret_cast<Component*>(pairHeader.actors[0]->userData);	//get Component rep for each collider
+				Component* secondCollider = reinterpret_cast<Component*>(pairHeader.actors[1]->userData);
 
-	if ((0 == (filterData0.word0 & filterData1.word1)) && (0 == (filterData1.word0 & filterData0.word1)))
-		return PxFilterFlag::eSUPPRESS;
+				if (shapeBuffer1[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_PROJECTILE &&
+					shapeBuffer2[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_OBSTACLE)
+				{
+					firstCollider->OnCollision(Component::CollisionPair::CP_STATIC_PROJECTILE, secondCollider);
+					secondCollider->OnCollision(Component::CollisionPair::CP_STATIC_PROJECTILE, firstCollider);
+				}
+				else if (shapeBuffer1[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_WHEEL &&
+					shapeBuffer2[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_WHEEL)
+				{
+					firstCollider->OnCollision(Component::CollisionPair::CP_VEHICLE_VEHICLE, secondCollider);
+					secondCollider->OnCollision(Component::CollisionPair::CP_VEHICLE_VEHICLE, firstCollider);
+				}
+				else if (shapeBuffer1[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_PROJECTILE &&
+					shapeBuffer2[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_WHEEL)
+				{
+					firstCollider->OnCollision(Component::CollisionPair::CP_VEHICLE_PROJECTILE, secondCollider);
+					secondCollider->OnCollision(Component::CollisionPair::CP_VEHICLE_PROJECTILE, firstCollider);
+				}
+				else if (shapeBuffer1[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_PROJECTILE &&
+					shapeBuffer2[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_CHASSIS)
+				{
+					firstCollider->OnCollision(Component::CollisionPair::CP_VEHICLE_PROJECTILE, secondCollider);
+					secondCollider->OnCollision(Component::CollisionPair::CP_VEHICLE_PROJECTILE, firstCollider);
+				}
+				/*else if (shapeBuffer1[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_WHEEL &&
+					shapeBuffer2[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_OBSTACLE)
+				{
+					//firstCollider->OnCollision(Component::CollisionPair::CP_VEHICLE_STATIC);
+					//secondCollider->OnCollision(Component::CollisionPair::CP_VEHICLE_STATIC);
+				}*/
+				else if (shapeBuffer1[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_MISSILE &&
+					(shapeBuffer2[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_WHEEL ||
+					shapeBuffer2[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_CHASSIS))
+				{
+					firstCollider->OnCollision(Component::CollisionPair::CP_VEHICLE_MISSILE, secondCollider);
+					secondCollider->OnCollision(Component::CollisionPair::CP_VEHICLE_MISSILE, firstCollider);
+				}
+				else if (shapeBuffer1[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_MISSILE &&
+					shapeBuffer2[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_OBSTACLE)
+				{
+					//firstCollider->OnCollision(Component::CollisionPair::CP_STATIC_MISSILE);
+					//secondCollider->OnCollision(Component::CollisionPair::CP_STATIC_MISSILE);
+				}
+				/*else if (shapeBuffer1[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_MISSILE &&
+					shapeBuffer2[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_GROUND)
+				{
+					firstCollider->OnCollision(Component::CollisionPair::CP_STATIC_MISSILE);
+					secondCollider->OnCollision(Component::CollisionPair::CP_STATIC_MISSILE);
+				}*/
+				else 
+				{
+					//cout << "collision not caught" << endl;
+					//cout << shapeBuffer1[0]->getSimulationFilterData().word0 << endl;
+					//cout << shapeBuffer2[0]->getSimulationFilterData().word0 << endl;
+				}
+				/*
+				if (shapeBuffer[0]->getSimulationFilterData().word0 == Physics::CollisionTypes::COLLISION_FLAG_OBSTACLE) 
+				{
+					Component* owner = reinterpret_cast<Component*>(pairHeader.actors[0]->userData);
+					owner->OnCollision();
+				}*/
+				/*shape->getSimulationFilterData();
 
-	pairFlags = PxPairFlag::eCONTACT_DEFAULT;
+				PX_UNUSED((pairHeader));
+				std::vector<PxContactPairPoint> contactPoints;
 
-	return PxFilterFlags();
-}
+				for (PxU32 i = 0; i<nbPairs; i++)
+				{
+					PxU32 contactCount = pairs[i].contactCount;
+					if (contactCount)
+					{
+						contactPoints.resize(contactCount);
+						pairs[i].extractContacts(&contactPoints[0], contactCount);
 
-void Physics::initializePhysX() {
+						for (PxU32 j = 0; j<contactCount; j++)
+						{
+							gContactPositions.push_back(contactPoints[j].position);
+							gContactImpulses.push_back(contactPoints[j].impulse);
+						}
+					}
+				}*/
+				//delete[] shapeBuffer;
+
+			}
+};
+
+ContactReportCallback gContactReportCallback;
+
+void Physics::initializePhysX() 
+{
 	gFoundation = PxCreateFoundation(PX_PHYSICS_VERSION, gDefaultAllocator, gDefaultErrorCallback);
 	PxProfileZoneManager* profileZoneManager = &PxProfileZoneManager::createProfileZoneManager(gFoundation);
 	gPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *gFoundation, PxTolerancesScale(), true, profileZoneManager);
@@ -63,13 +175,14 @@ void Physics::initializePhysX() {
 	}*/
 
 	PxSceneDesc sceneDesc(gPhysics->getTolerancesScale());
-	sceneDesc.gravity = PxVec3(0.0f, -9.81f, 0.0f);
+	sceneDesc.gravity = PxVec3(0.0f, 8*-9.81f, 0.0f);
 	gDispatcher = PxDefaultCpuDispatcherCreate(2);
 	sceneDesc.cpuDispatcher = gDispatcher;
 	sceneDesc.filterShader = VehicleFilterShader;//PxFilterFlag::eSUPPRESS;
+	sceneDesc.simulationEventCallback = &gContactReportCallback;
 	gScene = gPhysics->createScene(sceneDesc);
 
-	gMaterial = gPhysics->createMaterial(0.5f, 0.5f, 0.6f);
+	gMaterial = gPhysics->createMaterial(0.2f, 0.2f, 0.3f);
 
 	gCooking = PxCreateCooking(PX_PHYSICS_VERSION, *gFoundation, PxCookingParams(PxTolerancesScale()));
 
@@ -88,37 +201,56 @@ void Physics::initializePhysX() {
 	gFrictionPairs = Physics::createFrictionPairs(gMaterial);
 
 	//Create a plane to drive on.
-	gGroundPlane = createDrivablePlane(gMaterial, gPhysics);
-	gScene->addActor(*gGroundPlane);
+	//gGroundPlane = createDrivablePlane(gMaterial, gPhysics);
+	//gScene->addActor(*gGroundPlane);
+
+	//Create a thunderbowl to drive on
+	gScene->addActor(*CreateDrivableThunderbowl(gMaterial, gPhysics));
 }
 
 void Physics::computeRotation(PxQuat angle) {}
-
-PxRigidDynamic* Physics::createTestBox(PxReal sideLength)
-{
-	PxShape* shape = gPhysics->createShape(PxBoxGeometry(sideLength, sideLength, sideLength), *gMaterial);
-	PxRigidDynamic* body = gPhysics->createRigidDynamic(PxTransform(PxVec3(0, 0, 0)));
-	body->attachShape(*shape);
-	PxRigidBodyExt::updateMassAndInertia(*body, 1.0f);
-	gScene->addActor(*body);
-	return body;
-}
 
 void Physics::stepPhysics()
 {
 	const PxF32 timestep = 1.0f / 60.0f;
 
 	//Raycasts.
-	PxVehicleWheels* vehicles[1] = { gVehicleNoDrive };
+	PxVehicleWheels* vehicles[totalVehiclesNum];
+	for (int i = 0; i < playerVehicleNoDrives.size(); i++) {
+		vehicles[i] = playerVehicleNoDrives[i];
+	}
+	for (int j=0; j < opponentVehicleNoDrives.size(); j++) {
+		vehicles[playerVehicleNoDrives.size()+j] = opponentVehicleNoDrives[j];
+	}
+
 	PxRaycastQueryResult* raycastResults = gVehicleSceneQueryData->getRaycastQueryResultBuffer(0);
 	const PxU32 raycastResultsSize = gVehicleSceneQueryData->getRaycastQueryResultBufferSize();
-	PxVehicleSuspensionRaycasts(gBatchQuery, 1, vehicles, raycastResultsSize, raycastResults);
+	PxVehicleSuspensionRaycasts(gBatchQuery, totalVehiclesNum, vehicles, raycastResultsSize, raycastResults);
 
 	//Vehicle update.
 	const PxVec3 grav = gScene->getGravity();
 	PxWheelQueryResult wheelQueryResults[PX_MAX_NB_WHEELS];
-	PxVehicleWheelQueryResult vehicleQueryResults[1] = { { wheelQueryResults, gVehicleNoDrive->mWheelsSimData.getNbWheels() } };
-	PxVehicleUpdates(timestep, grav, *gFrictionPairs, 1, vehicles, vehicleQueryResults);
+	PxVehicleWheelQueryResult vehicleQueryResults[totalVehiclesNum];// = { { wheelQueryResults, gVehicleNoDrive->mWheelsSimData.getNbWheels() },{ wheelQueryResults, opponentVehicleNoDrives[0]->mWheelsSimData.getNbWheels() },{ wheelQueryResults, opponentVehicleNoDrives[1]->mWheelsSimData.getNbWheels() } };
+	for (int i = 0; i < playerVehicleNoDrives.size(); i++) 
+	{
+		vehicleQueryResults[i] = {wheelQueryResults, playerVehicleNoDrives[i]->mWheelsSimData.getNbWheels()};
+	}
+	for (int j = 0; j < opponentVehicleNoDrives.size(); j++) 
+	{
+		vehicleQueryResults[playerVehicleNoDrives.size() + j] = { wheelQueryResults, opponentVehicleNoDrives[j]->mWheelsSimData.getNbWheels() };
+	}
+	PxVehicleUpdates(timestep, grav, *gFrictionPairs, totalVehiclesNum, vehicles, vehicleQueryResults);
+
+	/*PxVehicleWheels* vehicles[2] = { gVehicleNoDrive, enVehicleNoDrive };
+	PxRaycastQueryResult* raycastResults = gVehicleSceneQueryData->getRaycastQueryResultBuffer(0);
+	const PxU32 raycastResultsSize = gVehicleSceneQueryData->getRaycastQueryResultBufferSize();
+	PxVehicleSuspensionRaycasts(gBatchQuery, 2, vehicles, raycastResultsSize, raycastResults);
+
+	//Vehicle update.
+	const PxVec3 grav = gScene->getGravity();
+	PxWheelQueryResult wheelQueryResults[PX_MAX_NB_WHEELS];
+	PxVehicleWheelQueryResult vehicleQueryResults[2] = { { wheelQueryResults, gVehicleNoDrive->mWheelsSimData.getNbWheels() },{ wheelQueryResults, enVehicleNoDrive->mWheelsSimData.getNbWheels() } };
+	PxVehicleUpdates(timestep, grav, *gFrictionPairs, 2, vehicles, vehicleQueryResults);*/
 
 	//Scene update.
 	gScene->simulate(1.0f / 60.0f);
@@ -127,10 +259,17 @@ void Physics::stepPhysics()
 
 void Physics::cleanupPhysics()
 {
+	for (int i = 0; i < playerVehicleNoDrives.size(); i++) 
+	{
+		playerVehicleNoDrives[i]->getRigidDynamicActor()->release();
+		playerVehicleNoDrives[i]->free();
+	}
+	for (int i = 0; i < opponentVehicleNoDrives.size(); i++) 
+	{
+		opponentVehicleNoDrives[i]->getRigidDynamicActor()->release();
+		opponentVehicleNoDrives[i]->free();
+	}
 
-	gVehicleNoDrive->getRigidDynamicActor()->release();
-	gVehicleNoDrive->free();
-	gGroundPlane->release();
 	gBatchQuery->release();
 	gVehicleSceneQueryData->free(gDefaultAllocator);
 	gFrictionPairs->release();
@@ -145,7 +284,7 @@ void Physics::cleanupPhysics()
 	profileZoneManager->release();
 	gFoundation->release();
 
-	printf("ThnderBowl done.\n");
+	printf("ThunderBowl done.\n");
 }
 
 //getters
@@ -164,12 +303,15 @@ physx::PxScene* Physics::getGScene()
 	return gScene;
 }
 
-//setters
-void Physics::setGVehicleNoDrive(physx::PxVehicleNoDrive* in)
+void Physics::addPlVehicleNoDrive(physx::PxVehicleNoDrive* in)
 {
-	gVehicleNoDrive = in;
+	playerVehicleNoDrives.push_back(in);
 }
 
+void Physics::addEnVehicleNoDrive(physx::PxVehicleNoDrive* in)
+{
+	opponentVehicleNoDrives.push_back(in);
+}
 
 //PxVehicleFunctions
 void Physics::computeWheelCenterActorOffsets
@@ -231,10 +373,10 @@ void Physics::setupWheelsSimulationData
 		//Set the suspension data.
 		for (PxU32 i = 0; i < numWheels; i++)
 		{
-			suspensions[i].mMaxCompression = 0.3f;
-			suspensions[i].mMaxDroop = 0.1f;
-			suspensions[i].mSpringStrength = 35000.0f;
-			suspensions[i].mSpringDamperRate = 4500.0f;
+			suspensions[i].mMaxCompression = 0.4f;	//Original 0.3
+			suspensions[i].mMaxDroop = 0.5f;		//Original 0.1
+			suspensions[i].mSpringStrength = 55000.0f;	//Original 35000
+			suspensions[i].mSpringDamperRate = 5000.0f;	//Originial 4500
 			suspensions[i].mSprungMass = suspSprungMasses[i];
 		}
 
@@ -345,9 +487,10 @@ PxVehicleNoDrive* Physics::createVehicleNoDrive(const Physics::VehicleDesc& vehi
 	{
 		//Compute the wheel center offsets from the origin.
 		PxVec3 wheelCentreActorOffsets[PX_MAX_NB_WHEELS];
-		const PxF32 frontZ = chassisDims.z*0.3f;
-		const PxF32 rearZ = -chassisDims.z*0.3f;
-		computeWheelCenterActorOffsets(frontZ, rearZ, chassisDims, wheelWidth, wheelRadius, numWheels, wheelCentreActorOffsets);
+		const PxF32 frontZ = chassisDims.z*0.32f;
+		const PxF32 rearZ = -chassisDims.z*0.28f;
+		computeWheelCenterActorOffsets(frontZ, rearZ, physx::PxVec3(chassisDims.x, chassisDims.y*0.75, chassisDims.z), 
+			wheelWidth, wheelRadius, numWheels, wheelCentreActorOffsets);
 
 		setupWheelsSimulationData
 		(vehicleDesc.wheelMass, vehicleDesc.wheelMOI, wheelRadius, wheelWidth,
@@ -367,10 +510,122 @@ PxVehicleNoDrive* Physics::createVehicleNoDrive(const Physics::VehicleDesc& vehi
 	return vehDriveNoDrive;
 }
 
+PxFilterFlags VehicleFilterShader
+(PxFilterObjectAttributes attributes0, PxFilterData filterData0,
+	PxFilterObjectAttributes attributes1, PxFilterData filterData1,
+	PxPairFlags& pairFlags, const void* constantBlock, PxU32 constantBlockSize)
+{
+	PX_UNUSED(attributes0);
+	PX_UNUSED(attributes1);
+	PX_UNUSED(constantBlock);
+	PX_UNUSED(constantBlockSize);
+	// let triggers through
+	if (PxFilterObjectIsTrigger(attributes0) || PxFilterObjectIsTrigger(attributes1))
+	{
+		pairFlags = PxPairFlag::eTRIGGER_DEFAULT;
+		return PxFilterFlag::eDEFAULT;
+	}
+
+	// generate contacts for all that were not filtered above
+	pairFlags = PxPairFlag::eCONTACT_DEFAULT;
+
+	if ((0 == (filterData0.word0 & filterData1.word1)) && (0 == (filterData1.word0 & filterData0.word1)))
+		return PxFilterFlag::eSUPPRESS;
+
+	pairFlags = PxPairFlag::eCONTACT_DEFAULT;
+
+	// trigger the contact callback for pairs (A,B) where
+	// the filtermask of A contains the ID of B and vice versa.
+	if ((filterData0.word0 & filterData1.word1) && (filterData1.word0 & filterData0.word1))
+		pairFlags |= PxPairFlag::eNOTIFY_TOUCH_FOUND;
+
+	return PxFilterFlags();
+}
+
+/*void setupFiltering(PxRigidActor* actor, PxU32 filterGroup, PxU32 filterMask)
+{
+	PxFilterData filterData;
+	filterData.word0 = filterGroup; // word0 = own ID
+	filterData.word1 = filterMask;  // word1 = ID mask to filter pairs that trigger a
+									// contact callback;
+	const PxU32 numShapes = actor->getNbShapes();
+	PxShape** shapes = (PxShape**)SAMPLE_ALLOC(sizeof(PxShape*)*numShapes);
+	actor->getShapes(shapes, numShapes);
+	for (PxU32 i = 0; i < numShapes; i++)
+	{
+		PxShape* shape = shapes[i];
+		shape->setSimulationFilterData(filterData);
+	}
+	SAMPLE_FREE(shapes);
+}
+
+void setFilters()
+{
+	setupFiltering(gVehicleNoDrive->getRigidDynamicActor, Physics::CollisionTypes::COLLISION_FLAG_CHASSIS, Physics::CollisionTypes::CH);
+	setupFiltering(link, FilterGroup::eMINE_LINK, FilterGroup::eSUBMARINE);
+	setupFiltering(mineHead, FilterGroup::eMINE_HEAD, FilterGroup::eSUBMARINE);
+}*/
+
+
+PxRigidDynamic* Physics::createVehicleActor
+(const PxVehicleChassisData& chassisData,
+	PxMaterial** wheelMaterials, PxConvexMesh** wheelConvexMeshes, const PxU32 numWheels,
+	PxMaterial** chassisMaterials, PxConvexMesh** chassisConvexMeshes, const PxU32 numChassisMeshes,
+	PxPhysics& physics)
+{
+	//We need a rigid body actor for the vehicle.
+	//Don't forget to add the actor to the scene after setting up the associated vehicle.
+	PxRigidDynamic* vehActor = physics.createRigidDynamic(PxTransform(PxIdentity));
+
+	//Wheel and chassis simulation filter data.
+	PxFilterData wheelSimFilterData;
+	wheelSimFilterData.word0 = Physics::CollisionTypes::COLLISION_FLAG_WHEEL;
+	wheelSimFilterData.word1 = Physics::CollisionTypes::COLLISION_FLAG_WHEEL_AGAINST;
+	PxFilterData chassisSimFilterData;
+	chassisSimFilterData.word0 = Physics::CollisionTypes::COLLISION_FLAG_CHASSIS;
+	chassisSimFilterData.word1 = Physics::CollisionTypes::COLLISION_FLAG_CHASSIS_AGAINST;
+
+	//Wheel and chassis query filter data.
+	//Optional: cars don't drive on other cars.
+	PxFilterData wheelQryFilterData;
+	setupNonDrivableSurface(wheelQryFilterData);
+	PxFilterData chassisQryFilterData;
+	setupNonDrivableSurface(chassisQryFilterData);
+
+	//Add all the wheel shapes to the actor.
+	for (PxU32 i = 0; i < numWheels; i++)
+	{
+		PxConvexMeshGeometry geom(wheelConvexMeshes[i]);
+		PxShape* wheelShape = vehActor->createShape(geom, *wheelMaterials[i]);
+		wheelShape->setQueryFilterData(wheelQryFilterData);
+		wheelShape->setSimulationFilterData(wheelSimFilterData);
+		wheelShape->setLocalPose(PxTransform(PxIdentity));
+	}
+
+	//Add the chassis shapes to the actor.
+	for (PxU32 i = 0; i < numChassisMeshes; i++)
+	{
+		PxShape* chassisShape = vehActor->createShape
+		(PxConvexMeshGeometry(chassisConvexMeshes[i]), *chassisMaterials[i]);
+		chassisShape->setQueryFilterData(chassisQryFilterData);
+		chassisShape->setSimulationFilterData(chassisSimFilterData);
+		chassisShape->setLocalPose(PxTransform(PxIdentity));
+	}
+
+
+
+	vehActor->setMass(chassisData.mMass);
+	vehActor->setMassSpaceInertiaTensor(chassisData.mMOI);
+	vehActor->setCMassLocalPose(PxTransform(chassisData.mCMOffset, PxQuat(PxIdentity)));
+
+	return vehActor;
+}
+
 PxRigidStatic* Physics::createDrivablePlane(PxMaterial* material, PxPhysics* physics)
 {
 	//Add a plane to the scene.
 	PxRigidStatic* groundPlane = PxCreatePlane(*physics, PxPlane(0, 1, 0, 0), *material);
+	//groundPlane->setGlobalPose(PxTransform(PxVec3(0.0, 0.0, 0.0), PxIdentity));
 
 	//Get the plane shape so we can set query and simulation filter data.
 	PxShape* shapes[1];
@@ -388,6 +643,162 @@ PxRigidStatic* Physics::createDrivablePlane(PxMaterial* material, PxPhysics* phy
 	shapes[0]->setSimulationFilterData(simFilterData);
 
 	return groundPlane;
+}
+physx::PxRigidStatic* Physics::CreateDrivableThunderbowl(physx::PxMaterial* material, physx::PxPhysics* physics)
+{
+	//Create Mesh
+	//Mesh mesh = GeoGenerator::MakeBox(100, 2, 100, true);
+	Loader loader;
+	loader.loadModel("Models/thunderbowl001.obj", vec3(15, 13, 15), false);
+	Mesh mesh = loader.getMeshes()[0];
+
+	//Create Triangle Mesh Desc
+	PxTriangleMeshDesc meshDesc;
+	meshDesc.points.count = mesh.positions.size();
+	meshDesc.points.stride = sizeof(PxVec3);
+	meshDesc.points.data = mesh.positions.data();
+
+	meshDesc.triangles.count = (int)mesh.indices.size() / 3;
+	meshDesc.triangles.stride = 3 * sizeof(PxU32);
+	meshDesc.triangles.data = mesh.indices.data();
+
+	//Cook 'em. Clean 'em.
+	PxDefaultMemoryOutputStream writeBuffer;
+	bool status = gCooking->cookTriangleMesh(meshDesc, writeBuffer);
+	if (!status)
+		cout << "Flumpty failed to cook a Thunderbowl!" << endl;
+	else
+		cout << "Flumpty created a Thunderbowl!" << endl;
+
+	PxDefaultMemoryInputData readBuffer(writeBuffer.getData(), writeBuffer.getSize());
+	PxTriangleMesh* thunderbowlTris = gPhysics->createTriangleMesh(readBuffer);
+
+	PxTriangleMeshGeometry thunderbowlGeo;
+	thunderbowlGeo.triangleMesh = thunderbowlTris;
+
+	//Create shape from custom triagle geo
+	//PxShape* thunderbowlShape = gPhysics->createShape(PxBoxGeometry(50, 1, 50), *material);
+	PxShape* thunderbowlShape = gPhysics->createShape(thunderbowlGeo, *material);
+
+	//Create an empty rigid static body
+	PxRigidStatic* thunderbowlBody = gPhysics->createRigidStatic(PxTransform(PxIdentity));
+
+	//Set query data of thunderbowl shape for wheel raycasting
+	PxFilterData queryFilterData;
+	setupDrivableSurface(queryFilterData);
+	thunderbowlShape->setQueryFilterData(queryFilterData);
+
+	//Set sim filter data of thunderbowl shape for chassis collisions, but NOT wheels
+	PxFilterData simFilterData;
+	simFilterData.word0 = Physics::CollisionTypes::COLLISION_FLAG_GROUND;
+	simFilterData.word1 = Physics::CollisionTypes::COLLISION_FLAG_GROUND_AGAINST;
+	thunderbowlShape->setSimulationFilterData(simFilterData);
+
+	//Attach thunderbowl shape to the rigidbody
+	thunderbowlBody->attachShape(*thunderbowlShape);
+
+	return thunderbowlBody;
+}
+
+/*PxRigidDynamic* Physics::createTestBox(PxReal sideLength)
+{
+	PxShape* shape = gPhysics->createShape(PxBoxGeometry(sideLength, sideLength, sideLength), *gMaterial);
+	PxRigidDynamic* body = gPhysics->createRigidDynamic(PxTransform(PxIdentity));
+
+	PxFilterData boxSimFilterData;
+	boxSimFilterData.word0 = Physics::CollisionTypes::COLLISION_FLAG_OBSTACLE;
+	boxSimFilterData.word1 = Physics::CollisionTypes::COLLISION_FLAG_OBSTACLE_AGAINST;
+	shape->setSimulationFilterData(boxSimFilterData);
+	body->attachShape(*shape);
+	//PxRigidBodyExt::updateMassAndInertia(*body, 1.0f);
+	gScene->addActor(*body);
+	return body;
+}*/
+
+PxRigidStatic* Physics::CreateStaticBox(PxReal length, PxReal height, PxReal width)
+{
+	PxShape* shape = gPhysics->createShape(PxBoxGeometry(length, height, width), *gMaterial);
+	PxRigidStatic* body = gPhysics->createRigidStatic(PxTransform(PxIdentity));
+
+	PxFilterData boxSimFilterData;
+	boxSimFilterData.word0 = Physics::CollisionTypes::COLLISION_FLAG_OBSTACLE;
+	boxSimFilterData.word1 = Physics::CollisionTypes::COLLISION_FLAG_OBSTACLE_AGAINST;
+	shape->setSimulationFilterData(boxSimFilterData);
+	body->attachShape(*shape);
+	gScene->addActor(*body);
+	return body;
+}
+PxRigidStatic* Physics::CreateStaticSphere(PxReal radius)
+{
+	PxShape* shape = gPhysics->createShape(PxSphereGeometry(radius), *gMaterial);
+	PxRigidStatic* body = gPhysics->createRigidStatic(PxTransform(PxIdentity));
+
+	PxFilterData boxSimFilterData;
+	boxSimFilterData.word0 = Physics::CollisionTypes::COLLISION_FLAG_OBSTACLE;
+	boxSimFilterData.word1 = Physics::CollisionTypes::COLLISION_FLAG_OBSTACLE_AGAINST;
+	shape->setSimulationFilterData(boxSimFilterData);
+	body->attachShape(*shape);
+	gScene->addActor(*body);
+	return body;
+}
+PxRigidStatic* Physics::CreateStaticCapsule(PxReal radius, PxReal height)
+{
+	PxShape* shape = gPhysics->createShape(PxCapsuleGeometry(radius, height*0.5), *gMaterial);
+	PxRigidStatic* body = gPhysics->createRigidStatic(PxTransform(PxIdentity));
+
+	PxFilterData boxSimFilterData;
+	boxSimFilterData.word0 = Physics::CollisionTypes::COLLISION_FLAG_OBSTACLE;
+	boxSimFilterData.word1 = Physics::CollisionTypes::COLLISION_FLAG_OBSTACLE_AGAINST;
+	shape->setSimulationFilterData(boxSimFilterData);
+	body->attachShape(*shape);
+	gScene->addActor(*body);
+	return body;
+}
+
+PxRigidStatic* Physics::createPowerUp(PxReal sideLength)
+{
+	PxShape* powerUpShape = gPhysics->createShape(PxBoxGeometry(sideLength, sideLength, sideLength), *gMaterial);
+	PxRigidStatic* powerUpActor = gPhysics->createRigidStatic(PxTransform(PxIdentity));
+	powerUpShape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, false);
+	powerUpShape->setFlag(PxShapeFlag::eTRIGGER_SHAPE, true);
+
+	PxFilterData powerUpSimFilterData;
+	powerUpSimFilterData.word0 = Physics::CollisionTypes::COLLISION_FLAG_POWERUP;
+	powerUpSimFilterData.word1 = Physics::CollisionTypes::COLLISION_FLAG_POWERUP_AGAINST;
+	powerUpShape->setSimulationFilterData(powerUpSimFilterData);
+	powerUpActor->attachShape(*powerUpShape);
+	gScene->addActor(*powerUpActor);
+	return powerUpActor;
+}
+
+PxRigidDynamic* Physics::createTestProjectile()
+{
+	PxShape* shape = gPhysics->createShape(PxSphereGeometry(0.1), *gMaterial);
+	PxRigidDynamic* body = gPhysics->createRigidDynamic(PxTransform(PxIdentity));
+
+	PxFilterData projSimFilterData;
+	projSimFilterData.word0 = Physics::CollisionTypes::COLLISION_FLAG_PROJECTILE;
+	projSimFilterData.word1 = Physics::CollisionTypes::COLLISION_FLAG_PROJECTILE_AGAINST;
+	shape->setSimulationFilterData(projSimFilterData);
+	body->attachShape(*shape);
+	//PxRigidBodyExt::updateMassAndInertia(*body, 1.0f);
+	gScene->addActor(*body);
+	return body;
+}
+
+PxRigidDynamic* Physics::CreateMissile(vec3 size)
+{
+	size = size*0.5f;
+	PxShape* shape = gPhysics->createShape(PxBoxGeometry(size.x, size.y, size.z), *gMaterial);
+	PxRigidDynamic* body = gPhysics->createRigidDynamic(PxTransform(PxIdentity));
+
+	PxFilterData projSimFilterData;
+	projSimFilterData.word0 = Physics::CollisionTypes::COLLISION_FLAG_MISSILE;
+	projSimFilterData.word1 = Physics::CollisionTypes::COLLISION_FLAG_MISSILE_AGAINST;
+	shape->setSimulationFilterData(projSimFilterData);
+	body->attachShape(*shape);
+	gScene->addActor(*body);
+	return body;
 }
 
 static PxConvexMesh* createConvexMesh(const PxVec3* verts, const PxU32 numVerts, PxPhysics& physics, PxCooking& cooking)
@@ -446,58 +857,6 @@ PxConvexMesh* Physics::createWheelMesh(const PxF32 width, const PxF32 radius, Px
 	return createConvexMesh(points, 32, physics, cooking);
 }
 
-PxRigidDynamic* Physics::createVehicleActor
-(const PxVehicleChassisData& chassisData,
-	PxMaterial** wheelMaterials, PxConvexMesh** wheelConvexMeshes, const PxU32 numWheels,
-	PxMaterial** chassisMaterials, PxConvexMesh** chassisConvexMeshes, const PxU32 numChassisMeshes,
-	PxPhysics& physics)
-{
-	//We need a rigid body actor for the vehicle.
-	//Don't forget to add the actor to the scene after setting up the associated vehicle.
-	PxRigidDynamic* vehActor = physics.createRigidDynamic(PxTransform(PxIdentity));
-
-	//Wheel and chassis simulation filter data.
-	PxFilterData wheelSimFilterData;
-	wheelSimFilterData.word0 = Physics::CollisionTypes::COLLISION_FLAG_WHEEL;
-	wheelSimFilterData.word1 = Physics::CollisionTypes::COLLISION_FLAG_WHEEL_AGAINST;
-	PxFilterData chassisSimFilterData;
-	chassisSimFilterData.word0 = Physics::CollisionTypes::COLLISION_FLAG_CHASSIS;
-	chassisSimFilterData.word1 = Physics::CollisionTypes::COLLISION_FLAG_CHASSIS_AGAINST;
-
-	//Wheel and chassis query filter data.
-	//Optional: cars don't drive on other cars.
-	PxFilterData wheelQryFilterData;
-	setupNonDrivableSurface(wheelQryFilterData);
-	PxFilterData chassisQryFilterData;
-	setupNonDrivableSurface(chassisQryFilterData);
-
-	//Add all the wheel shapes to the actor.
-	for (PxU32 i = 0; i < numWheels; i++)
-	{
-		PxConvexMeshGeometry geom(wheelConvexMeshes[i]);
-		PxShape* wheelShape = vehActor->createShape(geom, *wheelMaterials[i]);
-		wheelShape->setQueryFilterData(wheelQryFilterData);
-		wheelShape->setSimulationFilterData(wheelSimFilterData);
-		wheelShape->setLocalPose(PxTransform(PxIdentity));
-	}
-
-	//Add the chassis shapes to the actor.
-	for (PxU32 i = 0; i < numChassisMeshes; i++)
-	{
-		PxShape* chassisShape = vehActor->createShape
-		(PxConvexMeshGeometry(chassisConvexMeshes[i]), *chassisMaterials[i]);
-		chassisShape->setQueryFilterData(chassisQryFilterData);
-		chassisShape->setSimulationFilterData(chassisSimFilterData);
-		chassisShape->setLocalPose(PxTransform(PxIdentity));
-	}
-
-	vehActor->setMass(chassisData.mMass);
-	vehActor->setMassSpaceInertiaTensor(chassisData.mMOI);
-	vehActor->setCMassLocalPose(PxTransform(chassisData.mCMOffset, PxQuat(PxIdentity)));
-
-	return vehActor;
-}
-
 void Physics::customizeVehicleToLengthScale(const PxReal lengthScale, PxRigidDynamic* rigidDynamic, PxVehicleWheelsSimData* wheelsSimData, PxVehicleDriveSimData* driveSimData)
 {
 	//Rigid body center of mass and moment of inertia.
@@ -518,7 +877,7 @@ void Physics::customizeVehicleToLengthScale(const PxReal lengthScale, PxRigidDyn
 			PxVehicleWheelData wheelData = wheelsSimData->getWheelData(i);
 			wheelData.mRadius *= lengthScale;
 			wheelData.mWidth *= lengthScale;
-			wheelData.mDampingRate *= lengthScale*lengthScale;
+			wheelData.mDampingRate *= lengthScale*lengthScale;//WHEEL_DAMPING_RATE
 			wheelData.mMaxBrakeTorque *= lengthScale*lengthScale;
 			wheelData.mMaxHandBrakeTorque *= lengthScale*lengthScale;
 			wheelData.mMOI *= lengthScale*lengthScale;
@@ -658,7 +1017,7 @@ void Physics::customizeVehicleToLengthScale(const PxReal lengthScale, PxRigidDyn
 static PxF32 gTireFrictionMultipliers[Physics::SurfaceTypes::MAX_NUM_SURFACE_TYPES][Physics::TireTypes::MAX_NUM_TIRE_TYPES] =
 {
 	//NORMAL,	WORN
-	{ 1.00f,		0.1f }//TARMAC
+	{ 7.50f,		0.1f }//TARMAC FRICTION VALUE FOR TIRE
 };
 
 PxVehicleDrivableSurfaceToTireFrictionPairs* Physics::createFrictionPairs(const PxMaterial* defaultMaterial)
@@ -684,28 +1043,26 @@ PxVehicleDrivableSurfaceToTireFrictionPairs* Physics::createFrictionPairs(const 
 	return surfaceTirePairs;
 }
 
-
-
 //Vehicle initialization code
 Physics::VehicleDesc Physics::initVehicleDesc()
 {
 	//Set up the chassis mass, dimensions, moment of inertia, and center of mass offset.
 	//The moment of inertia is just the moment of inertia of a cuboid but modified for easier steering.
 	//Center of mass offset is 0.65m above the base of the chassis and 0.25m towards the front.
-	const PxF32 chassisMass = 500.0f;
-	const PxVec3 chassisDims(2.0f, 2.0f, 2.0f);
+	const PxF32 chassisMass = 1500.0f;
+	const PxVec3 chassisDims(3.3f, 1.5f, 8.0f);	//CHASDIM
 	const PxVec3 chassisMOI
-	((chassisDims.y*chassisDims.y + chassisDims.z*chassisDims.z)*chassisMass / 12.0f,
-		(chassisDims.x*chassisDims.x + chassisDims.z*chassisDims.z)*0.8f*chassisMass / 12.0f,
-		(chassisDims.x*chassisDims.x + chassisDims.y*chassisDims.y)*chassisMass / 12.0f);
-	const PxVec3 chassisCMOffset(0.0f, -chassisDims.y*0.5f + 0.65f, 0.25f);
+	((chassisDims.y*chassisDims.y + chassisDims.z*chassisDims.z)*chassisMass / 10.0f,
+		(chassisDims.x*chassisDims.x + chassisDims.z*chassisDims.z)*0.6f*chassisMass / 10.0f,
+		(chassisDims.x*chassisDims.x + chassisDims.y*chassisDims.y)*chassisMass / 10.0f);
+	const PxVec3 chassisCMOffset(0.0f, -chassisDims.y*1.0f + 0.25f, 0.20f);						//Center of mass
 
 	//Set up the wheel mass, radius, width, moment of inertia, and number of wheels.
 	//Moment of inertia is just the moment of inertia of a cylinder.
-	const PxF32 wheelMass = 20.0f;
-	const PxF32 wheelRadius = 0.5f;
-	const PxF32 wheelWidth = 0.4f;
-	const PxF32 wheelMOI = 0.5f*wheelMass*wheelRadius*wheelRadius;
+	const PxF32 wheelMass = 100.0f;
+	const PxF32 wheelRadius = 0.8f;
+	const PxF32 wheelWidth = 0.6f;
+	const PxF32 wheelMOI = 0.30f*wheelMass*wheelRadius*wheelRadius;
 	const PxU32 nbWheels = 4;
 
 	Physics::VehicleDesc vehicleDesc;

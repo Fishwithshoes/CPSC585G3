@@ -6,7 +6,7 @@ public:
 	void Start();
 	void Update();
 
-	float speed = 5;
+	float speed = 3;
 
 protected:
 

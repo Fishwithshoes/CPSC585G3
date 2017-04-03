@@ -2,11 +2,7 @@
 #include <PxPhysicsAPI.h>
 #include <PxTransform.h>
 #include <PxRigidBodyExt.h>
-
-//#include <PhysX-3.3-master\PhysXSDK\Snippets\SnippetVehicleCommon\SnippetVehicleRaycast.h>
-//#include <PhysX-3.3-master\PhysXSDK\Snippets\SnippetVehicleCommon\SnippetVehicleRaycast.cpp>
 #include "VehicleRaycast.h"
-
 
 physx::PxFilterFlags VehicleFilterShader
 (physx::PxFilterObjectAttributes attributes0, physx::PxFilterData filterData0,
@@ -38,14 +34,19 @@ public:
 		COLLISION_FLAG_CHASSIS = 1 << 2,
 		COLLISION_FLAG_OBSTACLE = 1 << 3,
 		COLLISION_FLAG_DRIVABLE_OBSTACLE = 1 << 4,
+		COLLISION_FLAG_PROJECTILE = 1 << 5,
+		COLLISION_FLAG_MISSILE = 1 << 6,
+		COLLISION_FLAG_POWERUP = 1 << 7,
 
-		COLLISION_FLAG_GROUND_AGAINST = COLLISION_FLAG_CHASSIS | COLLISION_FLAG_OBSTACLE | COLLISION_FLAG_DRIVABLE_OBSTACLE,
-		COLLISION_FLAG_WHEEL_AGAINST = COLLISION_FLAG_WHEEL | COLLISION_FLAG_CHASSIS | COLLISION_FLAG_OBSTACLE,
-		COLLISION_FLAG_CHASSIS_AGAINST = COLLISION_FLAG_GROUND | COLLISION_FLAG_WHEEL | COLLISION_FLAG_CHASSIS | COLLISION_FLAG_OBSTACLE | COLLISION_FLAG_DRIVABLE_OBSTACLE,
-		COLLISION_FLAG_OBSTACLE_AGAINST = COLLISION_FLAG_GROUND | COLLISION_FLAG_WHEEL | COLLISION_FLAG_CHASSIS | COLLISION_FLAG_OBSTACLE | COLLISION_FLAG_DRIVABLE_OBSTACLE,
-		COLLISION_FLAG_DRIVABLE_OBSTACLE_AGAINST = COLLISION_FLAG_GROUND | COLLISION_FLAG_CHASSIS | COLLISION_FLAG_OBSTACLE | COLLISION_FLAG_DRIVABLE_OBSTACLE,
+		COLLISION_FLAG_GROUND_AGAINST = COLLISION_FLAG_CHASSIS | COLLISION_FLAG_OBSTACLE | COLLISION_FLAG_DRIVABLE_OBSTACLE | COLLISION_FLAG_PROJECTILE | COLLISION_FLAG_MISSILE,
+		COLLISION_FLAG_WHEEL_AGAINST = COLLISION_FLAG_WHEEL | COLLISION_FLAG_CHASSIS | COLLISION_FLAG_OBSTACLE | COLLISION_FLAG_PROJECTILE | COLLISION_FLAG_MISSILE | COLLISION_FLAG_POWERUP,
+		COLLISION_FLAG_CHASSIS_AGAINST = COLLISION_FLAG_GROUND | COLLISION_FLAG_WHEEL | COLLISION_FLAG_CHASSIS | COLLISION_FLAG_OBSTACLE | COLLISION_FLAG_DRIVABLE_OBSTACLE | COLLISION_FLAG_PROJECTILE | COLLISION_FLAG_MISSILE | COLLISION_FLAG_POWERUP,
+		COLLISION_FLAG_OBSTACLE_AGAINST = COLLISION_FLAG_GROUND | COLLISION_FLAG_WHEEL | COLLISION_FLAG_CHASSIS | COLLISION_FLAG_OBSTACLE | COLLISION_FLAG_DRIVABLE_OBSTACLE | COLLISION_FLAG_PROJECTILE,
+		COLLISION_FLAG_DRIVABLE_OBSTACLE_AGAINST = COLLISION_FLAG_GROUND | COLLISION_FLAG_CHASSIS | COLLISION_FLAG_OBSTACLE | COLLISION_FLAG_DRIVABLE_OBSTACLE | COLLISION_FLAG_PROJECTILE,
+		COLLISION_FLAG_PROJECTILE_AGAINST = COLLISION_FLAG_GROUND | COLLISION_FLAG_WHEEL | COLLISION_FLAG_CHASSIS | COLLISION_FLAG_OBSTACLE | COLLISION_FLAG_DRIVABLE_OBSTACLE,
+		COLLISION_FLAG_MISSILE_AGAINST = COLLISION_FLAG_GROUND | COLLISION_FLAG_WHEEL | COLLISION_FLAG_CHASSIS | COLLISION_FLAG_OBSTACLE | COLLISION_FLAG_DRIVABLE_OBSTACLE,
+		COLLISION_FLAG_POWERUP_AGAINST = COLLISION_FLAG_CHASSIS | COLLISION_FLAG_WHEEL,
 	};
-
 
 	enum DriveMode
 	{
@@ -59,11 +60,25 @@ public:
 		eDRIVE_MODE_NONE
 	};
 
+	//Begin These are now obsolete
+	static const int playerVehiclesNum = 1;
+	static const int opponentVehiclesNum = 3;
+	static const int totalVehiclesNum = playerVehiclesNum + opponentVehiclesNum;
+	//End These are now obsolete
 
-	//Physics();
-	//~Physics();
+	static vector <physx::PxVehicleNoDrive*> playerVehicleNoDrives;
+	static vector <physx::PxVehicleNoDrive*> opponentVehicleNoDrives;
+	
 	static void initializePhysX();
 	static physx::PxRigidDynamic* createTestBox(physx::PxReal sideLength);
+	static physx::PxRigidStatic* createPowerUp(physx::PxReal sideLength);
+	static physx::PxRigidDynamic* createTestProjectile();
+	static physx::PxRigidDynamic* CreateMissile(vec3 size);
+
+	static physx::PxRigidStatic* CreateStaticBox(physx::PxReal length, physx::PxReal width, physx::PxReal height);
+	static physx::PxRigidStatic* CreateStaticSphere(physx::PxReal radius);
+	static physx::PxRigidStatic* CreateStaticCapsule(physx::PxReal radius, physx::PxReal height);
+
 	static void computeRotation(physx::PxQuat angle);
 	static void stepPhysics();
 	static void cleanupPhysics();
@@ -74,11 +89,14 @@ public:
 	static physx::PxScene* getGScene();
 
 	//setter
-	static void setGVehicleNoDrive(physx::PxVehicleNoDrive* in);
+	//static void setGVehicleNoDrive(physx::PxVehicleNoDrive* in);
+	static void addPlVehicleNoDrive(physx::PxVehicleNoDrive* in);
+	static void addEnVehicleNoDrive(physx::PxVehicleNoDrive* in);
 
 	//PxVehicleSetup
 	static void computeWheelCenterActorOffsets(const physx::PxF32 wheelFrontZ, const physx::PxF32 wheelRearZ, const physx::PxVec3& chassisDims, const physx::PxF32 wheelWidth, const physx::PxF32 wheelRadius, const physx::PxU32 numWheels, physx::PxVec3* wheelCentreOffsets);
 	static physx::PxRigidStatic* createDrivablePlane(physx::PxMaterial* material, physx::PxPhysics* physics);
+	static physx::PxRigidStatic* CreateDrivableThunderbowl(physx::PxMaterial* material, physx::PxPhysics* physics);
 
 	static void Physics::setupWheelsSimulationData
 	(const physx::PxF32 wheelMass, const physx::PxF32 wheelMOI, const physx::PxF32 wheelRadius, const physx::PxF32 wheelWidth,

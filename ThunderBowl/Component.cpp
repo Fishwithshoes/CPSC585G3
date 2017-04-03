@@ -11,6 +11,31 @@ void Component::Update()
 	cout << "Tum de dum da doo! You should not be seeing me!!" << endl;
 }
 
+string Component::getName() {
+	return selfName;
+}
+
+void Component::SetSelfID(int *selfIDIn)
+{
+	selfIDPtr = selfIDIn;
+	selfID = *selfIDPtr;
+}
+
+void Component::SetSelfName(string *selfNameIn)
+{
+	selfNamePtr = selfNameIn;
+	selfName = *selfNamePtr;
+}
+
+void Component::OnCollision(Component::CollisionPair collisionPair, Component* collider) 
+{
+}
+
+bool Component::CheckCollide()
+{
+	return true;
+}
+
 void Component::SetMesh(Mesh *mesh)
 {
 	meshPtr = mesh;
@@ -32,8 +57,11 @@ void Component::SetParticleOverlayMaterial(ParticleOverlayMaterial *particleOver
 }
 
 //Call this at start of Start() and Update() to get GameObject info
+//If selfID and selfName have changed this will update their values
 void Component::Initialize()
 {
+	selfID = *selfIDPtr;
+	selfName = *selfNamePtr;
 	mesh = *meshPtr;
 	transform = *transformPtr;
 	standardMat = *standardMatPtr;
@@ -41,6 +69,7 @@ void Component::Initialize()
 }
 
 //Call this at the end of Start() and Update() to pass changes to GameObject
+//DO NOT allow any changes to selfID or selfName
 void Component::Finalize()
 {
 	*meshPtr = mesh;

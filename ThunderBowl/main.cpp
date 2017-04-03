@@ -1,4 +1,5 @@
 #include "CommonIncludes.h"
+#include "GameManager.h"
 #include "Game.h"
 #include "GameObject.h"
 #include "Renderer.h"
@@ -75,7 +76,7 @@ int main(int argc, char *argv[])
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	GLFWmonitor *monitor = glfwGetPrimaryMonitor();
-	window = glfwCreateWindow(Camera::WIDTH, Camera::HEIGHT, "ThunderBowl", 0, 0);
+	window = glfwCreateWindow(Camera::WIDTH, Camera::HEIGHT, "Thunderbowl", 0, 0);
 	if (!window) {
 		cout << "Program failed to create GLFW window, TERMINATING" << endl;
 		glfwTerminate();
@@ -100,21 +101,23 @@ int main(int argc, char *argv[])
 	RendererUtility::CheckGLErrors();
 #endif
 
+//#pragma omp parallel
+//	{
+//	printf("Running on multiple threads\n");
+//	}
+
 	RendererUtility::QueryGLVersion();
 
 	Time::Init();
 	Audio::Init();
-	Physics::initializePhysX();
-
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_CULL_FACE);
-
 	Renderer renderer;
 	Renderer::Init(&renderer);
-	Renderer::GetShaderUniforms(&renderer);
-	Renderer::LoadTextures(&renderer);
+	Physics::initializePhysX();
 
 	Game::BuildWorld();
+	Renderer::GetCamera(0)->Start();
+
+	//Audio::PlayMusic(MUS_Automation, 0.25);
 
 	//MAIN LOOP
 	while (!glfwWindowShouldClose(window))
@@ -124,27 +127,56 @@ int main(int argc, char *argv[])
 
 		//Collect Input
 		glfwPollEvents();
-		//cout << Input::GetXBoxAxis(2, ButtonCode::XBOX_RIGHT_TRIGGER) << endl;
-		if (Input::GetButtonDown(ButtonCode::Q))
-			Audio::Play2DSound(Sounds::SFX_Hit, Random::rangef(0,1), Random::rangef(-1,1));
+
+		if (Input::GetButtonDown(ButtonCode::SPACE))
+		{
+			if (GameManager::GetGameState() == GS_IN_GAME || GameManager::GetGameState() == GS_PAUSED)
+			{
+				if (Renderer::GetCamera(0)->mode == Camera::Modes::MODE_GAME)
+					Renderer::GetCamera(0)->mode = Camera::Modes::MODE_FREE;
+				else
+					Renderer::GetCamera(0)->mode = Camera::Modes::MODE_GAME;
+			}
+		}
+		if (GameManager::GetGameState() == GS_FRONT_MENU || GameManager::GetGameState() == GS_GAME_OVER)
+		{
+			Renderer::GetCamera(0)->mode = Camera::Modes::MODE_PRESENTATION;
+		}
 
 		//Game Logic
-		for (int i = Game::worldObjectList.size()-1; i >= 0; i--)
+		if (GameManager::GetGameState() == GS_IN_GAME)
 		{
-			Game::worldObjectList[i].Update();
-		}
-		for (int i = Game::particleObjectList.size() - 1; i >= 0; i--)
-		{
-			Game::particleObjectList[i].Update();
-		}
-		for (int i = Game::overlayObjectList.size() - 1; i >= 0; i--)
-		{
-			Game::overlayObjectList[i].Update();
+#pragma parallel for
+			for (int i = Game::staticObjectList.size() - 1; i >= 0; i--)
+			{
+				Game::staticObjectList[i].Update();
+			}
+#pragma parallel for
+			for (int i = Game::worldObjectList.size() - 1; i >= 0; i--)
+			{
+				Game::worldObjectList[i].Update();
+			}
+#pragma parallel for
+			for (int i = Game::particleObjectList.size() - 1; i >= 0; i--)
+			{
+				Game::particleObjectList[i].Update();
+			}
+#pragma parallel for
+			for (int i = Game::overlayObjectList.size() - 1; i >= 0; i--)
+			{
+				Game::overlayObjectList[i].Update();
+			}
+#pragma parallel for
+			for (int i = Game::aiObjectList.size() - 1; i >= 0; i--)
+			{
+				Game::aiObjectList[i].Update();
+			}
+			Physics::stepPhysics();	//TODO SUBJECT TO CHANGE
 		}
 
-		Physics::stepPhysics();	//SUBJECT TO CHANGE
+		Renderer::GetCamera(0)->Update();
 
-		renderer.camera.Update();
+		GameManager::Update(); //TODO should this go elsewhere?
 
 		//Render Scene
 		Renderer::RenderScene(&renderer);
@@ -160,9 +192,10 @@ int main(int argc, char *argv[])
 
 	// clean up allocated resources before exit
 	Physics::cleanupPhysics();
+	Game::DestroyWorld();
 	glfwDestroyWindow(window);
 	glfwTerminate();
 
-	cout << "Program Terminated by User!" << endl;
+	cout << "ThunderBowl out!" << endl;
 	return 0;
 }

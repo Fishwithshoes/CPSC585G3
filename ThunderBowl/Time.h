@@ -18,7 +18,7 @@ public:
 	static double getFrameRate();
 
 	static void resetGameTime();
-	static double timeScale;
+	static float timeScale;
 
 private:
 	static LARGE_INTEGER clockFrequency;

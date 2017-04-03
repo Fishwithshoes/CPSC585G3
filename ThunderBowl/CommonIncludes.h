@@ -9,6 +9,7 @@
 #include <iterator>
 #include <algorithm>
 #include <math.h>
+#include <omp.h>
 
 //For Windows (glew) or UNIX (direct to gl)?
 #ifdef _WIN32
@@ -23,6 +24,7 @@
 #ifdef _WIN32 //Only For - Seulement Pour VS 2015. Get from middleware directory
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #else //UNIX. Get from local directory
 #include "glm/glm.hpp"
 #include "glm/gtc/type_ptr.hpp"

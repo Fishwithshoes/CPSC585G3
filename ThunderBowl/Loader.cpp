@@ -5,10 +5,12 @@ vector<Mesh>& Loader::getMeshes() {
 }
 
 
-void Loader::loadModel(string path)
+void Loader::loadModel(string path, vec3 scale, bool insideOut)
 {
 	Assimp::Importer import;
-	const aiScene* scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
+	const aiScene* scene = import.ReadFile(path, aiProcess_Triangulate);
+	if (insideOut)
+		scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipWindingOrder);
 
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 	{
@@ -16,6 +18,9 @@ void Loader::loadModel(string path)
 		return;
 	}
 	//directory = path.substr(0, path.find_last_of('/'));
+
+	scalar = scale;
+	flipMesh = insideOut;
 
 	processNode(scene->mRootNode, scene);
 }
@@ -39,6 +44,7 @@ void Loader::processNode(aiNode* node, const aiScene* scene)
 Mesh Loader::processMesh(aiMesh* mesh, const aiScene* scene)
 {
 	Mesh loadedMesh;
+	float flip = flipMesh ? -1.0 : 1.0;
 
 	for (GLuint i = 0; i < mesh->mNumVertices; i++)
 	{
@@ -46,13 +52,13 @@ Mesh Loader::processMesh(aiMesh* mesh, const aiScene* scene)
 		posVec.x = mesh->mVertices[i].z;
 		posVec.y = mesh->mVertices[i].y;
 		posVec.z = mesh->mVertices[i].x;
-		loadedMesh.positions.push_back(posVec);
+		loadedMesh.positions.push_back(posVec * scalar);
 
 		glm::vec3 norVec;
 		norVec.x = mesh->mNormals[i].z;
 		norVec.y = mesh->mNormals[i].y;
 		norVec.z = mesh->mNormals[i].x;
-		loadedMesh.normals.push_back(norVec);
+		loadedMesh.normals.push_back(norVec * flip);
 
 		glm::vec2 texVec = glm::vec2(0.0f, 0.0f);
 		if (mesh->mTextureCoords[0]) // Does the mesh contain texture coordinates?

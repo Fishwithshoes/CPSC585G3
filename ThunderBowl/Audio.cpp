@@ -5,12 +5,24 @@ Transform Audio::listenerTransform = Transform::identity();
 
 vector<string> Audio::soundFilePaths =
 {
-	"Sounds/Hit_SFX.wav"
+	"Sounds/hit_SFX.wav",
+	"Sounds/pause_SFX.wav",
+	"Sounds/select_SFX.wav",
+	"Sounds/switchWeapon_SFX.wav",
+	"Sounds/machinefire_SFX.wav",
+	"Sounds/powerup_SFX.wav",
+	"Sounds/fireMissile_SFX.wav",
+	"Sounds/explodeMissile_SFX.wav",
+	"Sounds/explodeCar_SFX.wav",
+	"Sounds/flamethrower_SFX.wav",
+	"Sounds/splish_SFX.wav",
+	"Sounds/splash_SFX.wav",
+	"Sounds/engine_SFX.wav"
 };
 
 vector<string> Audio::musicFilePaths =
 {
-	"Sounds/Jerry_MUS.wav"
+	"Sounds/Automation.wav"
 };
 
 vector<Mix_Chunk*> Audio::sounds = {};
@@ -153,7 +165,11 @@ void Audio::LoadSounds()
 		{
 			cout << "Flumpty can't load sound at: " << soundFilePaths[i] << " !" << endl;
 		}
-		sounds.push_back(sound);
+		else {
+			sounds.push_back(sound);
+			cout << "sound loaded " << soundFilePaths[i] << endl;
+			cout << sounds.size() << endl;
+		}
 	}
 
 	for (int i = 0; i < musicFilePaths.size(); i++)

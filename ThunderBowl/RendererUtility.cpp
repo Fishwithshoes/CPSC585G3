@@ -66,7 +66,8 @@ bool RendererUtility::InitializeShader(Shader *shader, const string &vertSource,
 	return !CheckGLErrors();
 }
 
-//Intitialize and activate buffers for geometry, returning true if successful
+//Creates and configures buffers for desired geometry object, returning true if successful
+//This function DOES NOT actually buffer any data to the GPU. That's done by the Renderer Class
 bool RendererUtility::InitializeGeometry(Geometry *geometry)
 {
 	// create a vertex array object encapsulating all vertex attributes
@@ -75,22 +76,35 @@ bool RendererUtility::InitializeGeometry(Geometry *geometry)
 
 	// create an array buffer object for storing positions
 	glGenBuffers(1, &geometry->positionBuffer);
+	glBindBuffer(GL_VERTEX_ARRAY, geometry->positionBuffer);
+	glVertexAttribPointer(POSITION_INDEX, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(POSITION_INDEX);
 
 	// create another one for storing colors
 	glGenBuffers(1, &geometry->colorBuffer);
+	glBindBuffer(GL_VERTEX_ARRAY, geometry->colorBuffer);
+	glVertexAttribPointer(COLOR_INDEX, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(COLOR_INDEX);
 
 	// create another one for storing normals
 	glGenBuffers(1, &geometry->normalBuffer);
+	glBindBuffer(GL_VERTEX_ARRAY, geometry->normalBuffer);
+	glVertexAttribPointer(NORMAL_INDEX, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(NORMAL_INDEX);
 
 	// create another one for storing texcoords
 	glGenBuffers(1, &geometry->texCoordBuffer);
+	glBindBuffer(GL_VERTEX_ARRAY, geometry->texCoordBuffer);
+	glVertexAttribPointer(TEXCOORD_INDEX, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(TEXCOORD_INDEX);
 
 	// create another for storing indices
 	glGenBuffers(1, &geometry->indexBuffer);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, geometry->indexBuffer);
 
-	// unbind our buffers, resetting to default state
+	//Unbind buffers, resetting to default state
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
 	// check for OpenGL errors and return false if error occurred

@@ -129,11 +129,13 @@ Mesh GeoGenerator::MakeSphere(float radius, int lattitudes, int longitudes, bool
 	return result;
 }
 
-Mesh GeoGenerator::MakePlane(float width, float height, int widthSegs, int heightSegs)
+Mesh GeoGenerator::MakePlane(float width, float height, int widthSegs, int heightSegs, bool upsideDown)
 {
 	Mesh result;
 
 	//Prep
+	float flip = upsideDown ? -1.0 : 1.0;
+
 	float westStart = -width*0.5;
 	float northStart = height*0.5;
 	
@@ -150,7 +152,7 @@ Mesh GeoGenerator::MakePlane(float width, float height, int widthSegs, int heigh
 		{
 			result.positions.push_back(vec3(westStart+widthStep*i, 0, northStart-heightStep*j));
 			result.colors.push_back(vec3((float)i/widthSegs,1,(float)j/heightSegs));
-			result.normals.push_back(vec3(0,1,0));
+			result.normals.push_back(flip * vec3(0,1,0));
 			result.texcoords.push_back(vec2(0+(float)i/widthSegs, 1-(float)j/heightSegs));
 		}
 	}
@@ -160,13 +162,27 @@ Mesh GeoGenerator::MakePlane(float width, float height, int widthSegs, int heigh
 	{
 		for(int j = 0; j < heightSegs; j++)
 		{
-			result.indices.push_back(i*heightVerts + j);
-			result.indices.push_back(i*heightVerts + j + 1);
-			result.indices.push_back((i + 1)*heightVerts + j + 1);
-	
-			result.indices.push_back(i*heightVerts + j);
-			result.indices.push_back((i + 1)*heightVerts + j + 1);
-			result.indices.push_back((i + 1)*heightVerts + j);
+
+			if (!upsideDown)
+			{
+				result.indices.push_back(i*heightVerts + j);
+				result.indices.push_back(i*heightVerts + j + 1);
+				result.indices.push_back((i + 1)*heightVerts + j + 1);
+
+				result.indices.push_back(i*heightVerts + j);
+				result.indices.push_back((i + 1)*heightVerts + j + 1);
+				result.indices.push_back((i + 1)*heightVerts + j);
+			}
+			else
+			{
+				result.indices.push_back(i*heightVerts + j);
+				result.indices.push_back((i + 1)*heightVerts + j + 1);
+				result.indices.push_back(i*heightVerts + j + 1);
+
+				result.indices.push_back(i*heightVerts + j);
+				result.indices.push_back((i + 1)*heightVerts + j);
+				result.indices.push_back((i + 1)*heightVerts + j + 1);
+			}
 		}
 	}
 	
@@ -174,7 +190,7 @@ Mesh GeoGenerator::MakePlane(float width, float height, int widthSegs, int heigh
 	return result;
 }
 
-Mesh GeoGenerator::MakeCylinder(float startRadius, float endRadius, float height, int segments)
+Mesh GeoGenerator::MakeCylinder(float startRadius, float endRadius, float height, int segments, bool upright)
 {
 	Mesh result;
 
@@ -234,6 +250,22 @@ Mesh GeoGenerator::MakeCylinder(float startRadius, float endRadius, float height
 			result.texcoords.push_back(vec2((float)(i - segments - 1) / (segments), 0));
 		}
 		pole = yaw * pole;
+	}
+
+	if (!upright)
+	{
+		float theta = Mathf::PI * 0.5;
+
+		mat3 roll = mat3(
+			cos(theta), sin(theta), 0,
+			-sin(theta), cos(theta), 0,
+			0,0,1);
+
+		for (int i = 0; i < result.positions.size(); i++)
+		{
+			result.positions[i] = roll * result.positions[i];
+			result.normals[i] = roll * result.normals[i];
+		}
 	}
 
 	//Indices
@@ -370,6 +402,144 @@ Mesh GeoGenerator::MakeBox(float width, float height, float depth, bool insideOu
 	}
 	
 	result.elementCount = result.positions.size();
+	return result;
+}
+
+Mesh GeoGenerator::MakeParticle()
+{
+	Mesh result;
+
+	//Main construction
+	result.positions.push_back(vec3(-1.0, 1.0, 0.0));
+	result.colors.push_back(vec3(1.0, 0.0, 0.0));
+	result.normals.push_back(vec3(0.0, 0.0, 1.0));
+	result.texcoords.push_back(vec2(1.0, 1.0));
+
+	result.positions.push_back(vec3(1.0, 1.0, 0.0));
+	result.colors.push_back(vec3(0.0, 1.0, 0.0));
+	result.normals.push_back(vec3(0.0, 0.0, 1.0));
+	result.texcoords.push_back(vec2(0.0, 1.0));
+
+	result.positions.push_back(vec3(1.0, -1.0, 0.0));
+	result.colors.push_back(vec3(0.0, 0.0, 1.0));
+	result.normals.push_back(vec3(0.0, 0.0, 1.0));
+	result.texcoords.push_back(vec2(0.0, 0.0));
+
+	result.positions.push_back(vec3(-1.0, -1.0, 0.0));
+	result.colors.push_back(vec3(1.0, 1.0, 0.0));
+	result.normals.push_back(vec3(0.0, 0.0, 1.0));
+	result.texcoords.push_back(vec2(1.0, 0.0));
+
+	//Indicies
+	result.indices.push_back(0);
+	result.indices.push_back(1);
+	result.indices.push_back(3);
+
+	result.indices.push_back(1);
+	result.indices.push_back(2);
+	result.indices.push_back(3);
+
+	result.elementCount = result.positions.size();
+	return result;
+}
+
+Mesh GeoGenerator::MakeThunderbowl(int curveSegments, int revolveSegments, bool insideOut)
+{
+	//Control Points
+	vector<vec3> cPoints = {};
+	cPoints.push_back(vec3(6, 0, 0));
+	cPoints.push_back(vec3(6, 8, 0));
+	cPoints.push_back(vec3(8, 9, 0));
+
+	cPoints.push_back(vec3(12, 6, 0));
+	cPoints.push_back(vec3(20, 4, 0));
+
+	cPoints.push_back(vec3(30, 8, 0));
+	cPoints.push_back(vec3(38, 16, 0));
+	
+	cPoints.push_back(vec3(40, 22, 0));
+	cPoints.push_back(vec3(32, 16, 0));
+	
+	cPoints.push_back(vec3(16, 4, 0));
+	cPoints.push_back(vec3(6, 0, 0));
+
+	int strides = cPoints.size() / 2;
+
+	for (int i = 0; i < cPoints.size(); i++)
+	{
+		cPoints[i].x *= 3;
+		cPoints[i].y *= 2;
+		cPoints[i].z *= 3;
+	}
+
+	//Prep
+	Mesh result;
+	float flip = insideOut ? -1.0 : 1.0;
+	float theta = 2 * Mathf::PI / revolveSegments;
+
+	mat3 yaw = mat3(
+		cos(theta), 0, sin(theta),
+		0, 1, 0,
+		-sin(theta), 0, cos(theta));
+
+	//Main construction
+	vector<vec3> curvePoints = {};
+
+	for (int i = 0; i < strides; i++)
+	{
+		for (int j = 0; j < curveSegments; j++)
+		{
+			float u = (float)j / (curveSegments-1);
+			//[(1-u)+u]^2
+			//(1-u)^2 + 2u(1-u) + u^2
+			vec3 point = (1 - u)*(1 - u)*cPoints[i*2] + 2 * u*(1 - u)*cPoints[i*2+1] + u*u*cPoints[i*2+2];
+			curvePoints.push_back(point);
+		}
+	}
+
+	for (int i = 0; i < revolveSegments+1; i++)
+	{
+		for (int j = 0; j < curvePoints.size(); j++)
+		{
+			result.positions.push_back(curvePoints[j]);
+			result.colors.push_back(vec3(1, 0, 0));
+			result.normals.push_back(normalize(flip*vec3(curvePoints[j])));
+			result.texcoords.push_back(vec2((float)i/revolveSegments, (float)j/curvePoints.size()));
+
+			curvePoints[j] = yaw * curvePoints[j];
+		}
+	}
+
+	//Indices
+	int quadCount = (curvePoints.size() - 1)*(revolveSegments + 1) -revolveSegments;
+	for (int i = 0; i < quadCount; i++)
+	{
+		if (insideOut)
+		{
+			result.indices.push_back(i);
+			result.indices.push_back(i + curvePoints.size());
+			result.indices.push_back(i + 1);
+
+			result.indices.push_back(i + curvePoints.size());
+			result.indices.push_back(i + curvePoints.size() + 1);
+			result.indices.push_back(i + 1);
+		}
+		else
+		{
+			result.indices.push_back(i);
+			result.indices.push_back(i + 1);
+			result.indices.push_back(i + curvePoints.size());
+
+			result.indices.push_back(i + curvePoints.size());
+			result.indices.push_back(i + 1);
+			result.indices.push_back(i + curvePoints.size() + 1);
+		}
+	}
+
+	result.elementCount = result.positions.size();
+
+	cout << "MINE " << result.indices.size() << endl;
+
 	return result;
 }
 
