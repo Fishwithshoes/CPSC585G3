@@ -177,6 +177,7 @@ void main()
 	float glossiness = (1-_roughness);
 	float specExp = pow(glossiness+1, 2 + glossiness*10);//4096;//(1.04-_roughness)*25;
 	float specFade = (1-_roughness) * 5;
+
 	vec3 diffuseCoeff = _diffuseLevel * diffuseLevel * _diffuseColor * diffuseTex.xyz;
 	vec3 specCoeff = _reflectivity * _reflectColor;
 	

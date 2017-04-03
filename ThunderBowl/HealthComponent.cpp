@@ -126,8 +126,6 @@ void HealthComponent::Update()
 		currentHealth = 100;
 		shouldRespawn = false;
 	}
-
-
 	Finalize();
 }
 

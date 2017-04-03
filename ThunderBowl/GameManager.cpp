@@ -238,7 +238,6 @@ void GameManager::StartGame()
 	ps.initialFogLevel.min = 1.0;
 	ps.initialFogLevel.max = 1.0;
 	//Game::CreateParticleObject(ps);
-
 }
 
 void GameManager::ToggleGamePause()

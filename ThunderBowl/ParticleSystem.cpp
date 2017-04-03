@@ -2,6 +2,7 @@
 #include "Game.h"
 #include "Renderer.h"
 
+
 ParticleSystem::ParticleSystem()
 {
 	ParticleSystemDesc desc = ParticleSystem::descriptionIdentity();

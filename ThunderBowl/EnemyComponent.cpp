@@ -5,7 +5,6 @@
 #include "Physics.h"
 #include "Audio.h"
 
-
 void EnemyComponent::Start()
 {
 	Initialize();

@@ -32,6 +32,7 @@ public:
 		AMI_GAME_TIME
 	};
 	static bool isBloodMoon;
+
 private:
 	static void HandleMenu();
 	static void RedrawTimers();

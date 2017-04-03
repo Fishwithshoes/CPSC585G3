@@ -10,6 +10,7 @@ void AIControlComponent1::Start() {
 
 	thisEnemy = Game::Find(selfName);
 
+	//cout << "CHECKER AIControlComponent Ref1" << endl;
 
 	currentState = State::AI_SEEK_POWERUP;
 	//currentState = State::AI_SEEK_PLAYERS;

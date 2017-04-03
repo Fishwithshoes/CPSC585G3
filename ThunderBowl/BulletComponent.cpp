@@ -26,6 +26,7 @@ void BulletComponent::Start()
 	EnemyComponent* aiVeh;
 
 	selfGameObject = Game::Find(ownerName);
+
 	if (selfGameObject->tag == TAGS_HUMAN_PLAYER) 
 	{
 		VehicleComponent* temp = &VehicleComponent();
@@ -36,7 +37,6 @@ void BulletComponent::Start()
 		EnemyComponent* temp = &EnemyComponent();
 		aiVeh = (EnemyComponent*)Game::Find(ownerName)->GetComponent(temp);
 	}
-
 
 	speed = 200.0f;
 	lifeSpan = 1.00f;
@@ -182,5 +182,6 @@ void BulletComponent::OnCollision(Component::CollisionPair collisionPair, Compon
 
 		break;
 	}
+
 	Finalize();
 }

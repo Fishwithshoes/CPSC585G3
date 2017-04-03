@@ -477,7 +477,6 @@ void Renderer::RenderScene(Renderer *renderer)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	vec3 finalCameraPos;
-
 #pragma parallel for
 	for (int i = 0; i < cameraCount; i++)
 	{
@@ -549,6 +548,7 @@ void Renderer::RenderScene(Renderer *renderer)
 			glUniformMatrix4fv(renderer->viewToProjectionSkybox_uniform, 1, GL_TRUE, value_ptr(currentCamera->GetViewToProjectionMatrix(aspect)));
 			glUniform3fv(renderer->cameraPosSkybox_uniform, 1, value_ptr(currentCamera->transform.position));
 			glUniform3fv(renderer->cameraForwardSkybox_uniform, 1, value_ptr(currentCamera->transform.GetForward()));
+
 			GLint isBloodMoon_uniform = glGetUniformLocation(renderer->skyboxShader.program, "isBloodMoon");
 			glUniform1i(isBloodMoon_uniform, GameManager::isBloodMoon ? 1 : 0);
 

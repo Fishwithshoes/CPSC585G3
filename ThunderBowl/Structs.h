@@ -64,6 +64,7 @@ enum StaticGeos
 	SG_MG_BULLET,
 	SG_LEFT_WHEEL,
 	SG_RIGHT_WHEEL,
+	SG_WHEEL,
 	SG_CAR,
 	SG_MAP
 };
@@ -314,9 +315,9 @@ struct ParticleSystemDesc
 	float						gravityScale;
 	float						accelerationScale;
 	float						scaleScale;
+	bool						useParticleLights;
 	vector<ParticleBurst>		burstList;
 	vector<ParticleTimeStop>	timeStopList;
-	bool						useParticleLights;
 	bool						useSystemLifespan;
 	float						systemLifespan;
 	bool						destroySystemWhenEmpty;

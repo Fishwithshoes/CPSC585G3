@@ -281,7 +281,7 @@ void Game::BuildWorld()
 		middleNodeRef->adjacentNodes.push_back(outerNodeRef);
 
 		outerNodeRef->adjacentNodes.push_back(middleNodeRef);
-	}
+	}															//NODES END
 
 	/*GameObject pathNode1 = GameObject();
 	pathNode1.name = "Node1";

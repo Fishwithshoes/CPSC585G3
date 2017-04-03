@@ -334,6 +334,7 @@ void VehicleComponent::UpdateParticles()
 	{
 		systems[i]->spawnRate = speed * 0.5;
 		systems[i]->spawnRate = Mathf::Clamp(systems[i]->spawnRate, 0.0, 20.0);
+
 		if (health->currentHealth <= 0.0)
 			systems[i]->spawnRate = 0.0;
 
@@ -347,6 +348,7 @@ void VehicleComponent::UpdateParticles()
 		{
 			systems[i]->initialColor.alpha = vec4(0.8, 0.9, 1.0, 1.0);
 			systems[i]->initialColor.bravo = vec4(0.6, 0.7, 0.9, 1.0);
+
 			if (GameManager::isBloodMoon)
 			{
 				systems[i]->initialColor.alpha = vec4(1.0, 0.2, 0.2, 1);
@@ -374,11 +376,13 @@ void VehicleComponent::UpdateParticles()
 		ps.gravityScale = 68;
 		ps.initialColor.alpha = vec4(0.8, 0.9, 1.0, 1.0);
 		ps.initialColor.bravo = vec4(0.6, 0.7, 0.9, 1.0);
+
 		if (GameManager::isBloodMoon)
 		{
 			ps.initialColor.alpha = vec4(1.0, 0.2, 0.2, 1);
 			ps.initialColor.bravo = vec4(1.0, 0.4, 0.4, 1);
 		}
+
 		ps.initialRadius.min = 1.0;
 		ps.initialRadius.max = 1.4;
 		ps.lifeSpan.min = 0.4;

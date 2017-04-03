@@ -186,7 +186,6 @@ void MissileComponent::Explode()
 		}
 	}
 
-	
 	Audio::Play2DSound(SFX_ExplodeMissile, Random::rangef(0.4,0.5), 0);
 
 	ParticleSystem ps = ParticleSystem();
