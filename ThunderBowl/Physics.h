@@ -1,0 +1,151 @@
+#include "CommonIncludes.h"
+#include <PxPhysicsAPI.h>
+#include <PxTransform.h>
+#include <PxRigidBodyExt.h>
+#include "VehicleRaycast.h"
+
+physx::PxFilterFlags VehicleFilterShader
+(physx::PxFilterObjectAttributes attributes0, physx::PxFilterData filterData0,
+	physx::PxFilterObjectAttributes attributes1, physx::PxFilterData filterData1,
+	physx::PxPairFlags& pairFlags, const void* constantBlock, physx::PxU32 constantBlockSize);
+
+class Physics
+{
+public:
+
+	enum SurfaceTypes
+	{
+		SURFACE_TYPE_TARMAC,
+		MAX_NUM_SURFACE_TYPES
+	};
+
+	//Tire types.
+	enum TireTypes
+	{
+		TIRE_TYPE_NORMAL = 0,
+		TIRE_TYPE_WORN,
+		MAX_NUM_TIRE_TYPES
+	};
+
+	enum CollisionTypes
+	{
+		COLLISION_FLAG_GROUND = 1 << 0,
+		COLLISION_FLAG_WHEEL = 1 << 1,
+		COLLISION_FLAG_CHASSIS = 1 << 2,
+		COLLISION_FLAG_OBSTACLE = 1 << 3,
+		COLLISION_FLAG_DRIVABLE_OBSTACLE = 1 << 4,
+		COLLISION_FLAG_PROJECTILE = 1 << 5,
+		COLLISION_FLAG_MISSILE = 1 << 6,
+		COLLISION_FLAG_POWERUP = 1 << 7,
+
+		COLLISION_FLAG_GROUND_AGAINST = COLLISION_FLAG_CHASSIS | COLLISION_FLAG_OBSTACLE | COLLISION_FLAG_DRIVABLE_OBSTACLE | COLLISION_FLAG_PROJECTILE | COLLISION_FLAG_MISSILE,
+		COLLISION_FLAG_WHEEL_AGAINST = COLLISION_FLAG_WHEEL | COLLISION_FLAG_CHASSIS | COLLISION_FLAG_OBSTACLE | COLLISION_FLAG_PROJECTILE | COLLISION_FLAG_MISSILE | COLLISION_FLAG_POWERUP,
+		COLLISION_FLAG_CHASSIS_AGAINST = COLLISION_FLAG_GROUND | COLLISION_FLAG_WHEEL | COLLISION_FLAG_CHASSIS | COLLISION_FLAG_OBSTACLE | COLLISION_FLAG_DRIVABLE_OBSTACLE | COLLISION_FLAG_PROJECTILE | COLLISION_FLAG_MISSILE | COLLISION_FLAG_POWERUP,
+		COLLISION_FLAG_OBSTACLE_AGAINST = COLLISION_FLAG_GROUND | COLLISION_FLAG_WHEEL | COLLISION_FLAG_CHASSIS | COLLISION_FLAG_OBSTACLE | COLLISION_FLAG_DRIVABLE_OBSTACLE | COLLISION_FLAG_PROJECTILE,
+		COLLISION_FLAG_DRIVABLE_OBSTACLE_AGAINST = COLLISION_FLAG_GROUND | COLLISION_FLAG_CHASSIS | COLLISION_FLAG_OBSTACLE | COLLISION_FLAG_DRIVABLE_OBSTACLE | COLLISION_FLAG_PROJECTILE,
+		COLLISION_FLAG_PROJECTILE_AGAINST = COLLISION_FLAG_GROUND | COLLISION_FLAG_WHEEL | COLLISION_FLAG_CHASSIS | COLLISION_FLAG_OBSTACLE | COLLISION_FLAG_DRIVABLE_OBSTACLE,
+		COLLISION_FLAG_MISSILE_AGAINST = COLLISION_FLAG_GROUND | COLLISION_FLAG_WHEEL | COLLISION_FLAG_CHASSIS | COLLISION_FLAG_OBSTACLE | COLLISION_FLAG_DRIVABLE_OBSTACLE,
+		COLLISION_FLAG_POWERUP_AGAINST = COLLISION_FLAG_CHASSIS | COLLISION_FLAG_WHEEL,
+	};
+
+	enum DriveMode
+	{
+		eDRIVE_MODE_ACCEL_FORWARDS = 0,
+		eDRIVE_MODE_ACCEL_REVERSE,
+		eDRIVE_MODE_HARD_TURN_LEFT,
+		eDRIVE_MODE_HANDBRAKE_TURN_LEFT,
+		eDRIVE_MODE_HARD_TURN_RIGHT,
+		eDRIVE_MODE_HANDBRAKE_TURN_RIGHT,
+		eDRIVE_MODE_BRAKE,
+		eDRIVE_MODE_NONE
+	};
+
+	//Begin These are now obsolete
+	static const int playerVehiclesNum = 1;
+	static const int opponentVehiclesNum = 3;
+	static const int totalVehiclesNum = playerVehiclesNum + opponentVehiclesNum;
+	//End These are now obsolete
+
+	static vector <physx::PxVehicleNoDrive*> playerVehicleNoDrives;
+	static vector <physx::PxVehicleNoDrive*> opponentVehicleNoDrives;
+	
+	static void initializePhysX();
+	static physx::PxRigidDynamic* createTestBox(physx::PxReal sideLength);
+	static physx::PxRigidStatic* createPowerUp(physx::PxReal sideLength);
+	static physx::PxRigidDynamic* createTestProjectile();
+	static physx::PxRigidDynamic* CreateMissile(vec3 size);
+
+	static physx::PxRigidStatic* CreateStaticBox(physx::PxReal length, physx::PxReal width, physx::PxReal height);
+	static physx::PxRigidStatic* CreateStaticSphere(physx::PxReal radius);
+	static physx::PxRigidStatic* CreateStaticCapsule(physx::PxReal radius, physx::PxReal height);
+
+	static void computeRotation(physx::PxQuat angle);
+	static void stepPhysics();
+	static void cleanupPhysics();
+
+	//getters
+	static physx::PxPhysics* getGPhysics();
+	static physx::PxCooking* getGCooking();
+	static physx::PxScene* getGScene();
+
+	//setter
+	//static void setGVehicleNoDrive(physx::PxVehicleNoDrive* in);
+	static void addPlVehicleNoDrive(physx::PxVehicleNoDrive* in);
+	static void addEnVehicleNoDrive(physx::PxVehicleNoDrive* in);
+
+	//PxVehicleSetup
+	static void computeWheelCenterActorOffsets(const physx::PxF32 wheelFrontZ, const physx::PxF32 wheelRearZ, const physx::PxVec3& chassisDims, const physx::PxF32 wheelWidth, const physx::PxF32 wheelRadius, const physx::PxU32 numWheels, physx::PxVec3* wheelCentreOffsets);
+	static physx::PxRigidStatic* createDrivablePlane(physx::PxMaterial* material, physx::PxPhysics* physics);
+	static physx::PxRigidStatic* CreateDrivableThunderbowl(physx::PxMaterial* material, physx::PxPhysics* physics);
+
+	static void Physics::setupWheelsSimulationData
+	(const physx::PxF32 wheelMass, const physx::PxF32 wheelMOI, const physx::PxF32 wheelRadius, const physx::PxF32 wheelWidth,
+		const physx::PxU32 numWheels, const physx::PxVec3* wheelCenterActorOffsets,
+		const physx::PxVec3& chassisCMOffset, const physx::PxF32 chassisMass,
+		physx::PxVehicleWheelsSimData* wheelsSimData);
+
+	////////////////////////////////////////////////
+
+	static physx::PxConvexMesh* createChassisMesh(const physx::PxVec3 dims, physx::PxPhysics& physics, physx::PxCooking& cooking);
+
+	static physx::PxConvexMesh* createWheelMesh(const physx::PxF32 width, const physx::PxF32 radius, physx::PxPhysics& physics, physx::PxCooking& cooking);
+
+	////////////////////////////////////////////////
+
+	static physx::PxRigidDynamic* createVehicleActor
+	(const physx::PxVehicleChassisData& chassisData,
+		physx::PxMaterial** wheelMaterials, physx::PxConvexMesh** wheelConvexMeshes, const physx::PxU32 numWheels,
+		physx::PxMaterial** chassisMaterials, physx::PxConvexMesh** chassisConvexMeshes, const physx::PxU32 numChassisMeshes,
+		physx::PxPhysics& physics);
+
+	////////////////////////////////////////////////
+
+	struct VehicleDesc
+	{
+		physx::PxF32 chassisMass;
+		physx::PxVec3 chassisDims;
+		physx::PxVec3 chassisMOI;
+		physx::PxVec3 chassisCMOffset;
+		physx::PxMaterial* chassisMaterial;
+		physx::PxF32 wheelMass;
+		physx::PxF32 wheelWidth;
+		physx::PxF32 wheelRadius;
+		physx::PxF32 wheelMOI;
+		physx::PxMaterial* wheelMaterial;
+		physx::PxU32 numWheels;
+	};
+
+	static VehicleDesc initVehicleDesc();
+
+	static physx::PxVehicleNoDrive* createVehicleNoDrive(const VehicleDesc& vehDesc, physx::PxPhysics* physics, physx::PxCooking* cooking);
+
+	static void customizeVehicleToLengthScale(const physx::PxReal lengthScale, physx::PxRigidDynamic* rigidDynamic, physx::PxVehicleWheelsSimData* wheelsSimData, physx::PxVehicleDriveSimData* driveSimData);
+
+	static void customizeVehicleToLengthScale(const physx::PxReal lengthScale, physx::PxRigidDynamic* rigidDynamic, physx::PxVehicleWheelsSimData* wheelsSimData, physx::PxVehicleDriveSimData4W* driveSimData);
+
+	static physx::PxVehicleDrivableSurfaceToTireFrictionPairs* createFrictionPairs(const physx::PxMaterial* defaultMaterial);
+
+
+private:
+
+};

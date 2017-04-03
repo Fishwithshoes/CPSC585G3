@@ -1,0 +1,247 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="AINodeComponent.h" />
+    <ClInclude Include="Audio.h" />
+    <ClInclude Include="BulletComponent.h" />
+    <ClInclude Include="ButtonCode.h" />
+    <ClInclude Include="Camera.h" />
+    <ClInclude Include="CommonIncludes.h" />
+    <ClInclude Include="Component.h" />
+    <ClInclude Include="EnemyComponent.h" />
+    <ClInclude Include="FlamethrowerComponent.h" />
+    <ClInclude Include="FloatComponent.h" />
+    <ClInclude Include="Game.h" />
+    <ClInclude Include="GameManager.h" />
+    <ClInclude Include="GameObject.h" />
+    <ClInclude Include="GeoGenerator.h" />
+    <ClInclude Include="AIControlComponent1.h" />
+    <ClInclude Include="HealthComponent.h" />
+    <ClInclude Include="Input.h" />
+    <ClInclude Include="Loader.h" />
+    <ClInclude Include="MachineGunComponent.h" />
+    <ClInclude Include="Mathf.h" />
+    <ClInclude Include="MissileComponent.h" />
+    <ClInclude Include="OceanComponent.h" />
+    <ClInclude Include="ParticleSystem.h" />
+    <ClInclude Include="Physics.h" />
+    <ClInclude Include="PlayerComponent.h" />
+    <ClInclude Include="PowerUpComponent.h" />
+    <ClInclude Include="PuddleComponent.h" />
+    <ClInclude Include="Random.h" />
+    <ClInclude Include="Renderer.h" />
+    <ClInclude Include="RendererUtility.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="MissileLauncherComponent.h" />
+    <ClInclude Include="RotateComponent.h" />
+    <ClInclude Include="StaticComponent.h" />
+    <ClInclude Include="Structs.h" />
+    <ClInclude Include="Time.h" />
+    <ClInclude Include="Transform.h" />
+    <ClInclude Include="VehicleComponent.h" />
+    <ClInclude Include="VehicleRaycast.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="main" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="AIControlComponent1.cpp" />
+    <ClCompile Include="AINodeComponent.cpp" />
+    <ClCompile Include="Audio.cpp" />
+    <ClCompile Include="BulletComponent.cpp" />
+    <ClCompile Include="ButtonCode.cpp" />
+    <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Component.cpp" />
+    <ClCompile Include="EnemyComponent.cpp" />
+    <ClCompile Include="FlamethrowerComponent.cpp" />
+    <ClCompile Include="FloatComponent.cpp" />
+    <ClCompile Include="Game.cpp" />
+    <ClCompile Include="GameManager.cpp" />
+    <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="GeoGenerator.cpp" />
+    <ClCompile Include="HealthComponent.cpp" />
+    <ClCompile Include="Input.cpp" />
+    <ClCompile Include="Loader.cpp" />
+    <ClCompile Include="MachineGunComponent.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Mathf.cpp" />
+    <ClCompile Include="MissileComponent.cpp" />
+    <ClCompile Include="OceanComponent.cpp" />
+    <ClCompile Include="ParticleSystem.cpp" />
+    <ClCompile Include="Physics.cpp" />
+    <ClCompile Include="PlayerComponent.cpp" />
+    <ClCompile Include="PowerUpComponent.cpp" />
+    <ClCompile Include="PuddleComponent.cpp" />
+    <ClCompile Include="Random.cpp" />
+    <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="RendererUtility.cpp" />
+    <ClCompile Include="MissileLauncherComponent.cpp" />
+    <ClCompile Include="RotateComponent.cpp" />
+    <ClCompile Include="StaticComponent.cpp" />
+    <ClCompile Include="Time.cpp" />
+    <ClCompile Include="Transform.cpp" />
+    <ClCompile Include="VehicleComponent.cpp" />
+    <ClCompile Include="VehicleRaycast.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="ThunderBowl.rc" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{3858FE05-309A-4899-96A3-08B47065A913}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>ThunderBowl</RootNamespace>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <IntDir>$(Configuration)\Tmp</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <IntDir>$(Platform)\$(Configuration)\tmp\</IntDir>
+    <OutDir>$(SolutionDir)\$(Platform)\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <IntDir>$(Platform)\$(Configuration)\tmp\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\middleware\SDL\2.0.5\include;C:\middleware;C:\middleware\glfw-3.2.1\include;C:\middleware\glew-2.0.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>C:\middleware\SDL\2.0.5\lib\x86;C:\middleware\glfw-3.2.1\lib-vc2015;C:\middleware\glew-2.0.0\lib\Release\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>sdl2.lib;opengl32.lib;glfw3.lib;glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\middleware\PhysX-3.3-master\PhysXSDK\Include\pxtask;$(ProjectDir)..\middleware\PhysX-3.3-master\PhysXSDK\Include\extensions;$(ProjectDir)..\middleware\PhysX-3.3-master\PhysXSDK\Include\foundation;$(ProjectDir)..\middleware\PhysX-3.3-master\PhysXSDK\Include\common;$(ProjectDir)..\middleware\PhysX-3.3-master\PhysXSDK\Include;$(ProjectDir)..\middleware\assimp-3.1.1-win-binaries\assimp-3.1.1-win-binaries\include;$(ProjectDir)..\middleware\SDL\2.0.5\include;$(ProjectDir)..\middleware;$(ProjectDir)..\middleware\glfw-3.2.1x64\include;$(ProjectDir)..\middleware\glew-2.0.0\include;$(ProjectDir)..\middleware\SDL2_mixer-2.0.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OpenMPSupport>true</OpenMPSupport>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>SDL2_mixer.lib;PhysX3ExtensionsDEBUG.lib;PhysX3DEBUG_x64.lib;PhysX3VehicleDEBUG.lib;PhysX3CommonDEBUG_x64.lib;PhysXProfileSDKDEBUG.lib;PhysX3CookingDEBUG_x64.lib;assimp.lib;sdl2.lib;opengl32.lib;glfw3.lib;glew32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\middleware\PhysX-3.3-master\PhysXSDK\Lib\vc14win64;$(ProjectDir)..\middleware\assimp-3.1.1-win-binaries\assimp-3.1.1-win-binaries\lib64;$(ProjectDir)..\middleware\SDL2_mixer-2.0.1\lib\x64;$(ProjectDir)..\middleware\SDL\2.0.5\lib\x64;$(ProjectDir)..\middleware\glfw-3.2.1x64\lib-vc2015;$(ProjectDir)..\middleware\glew-2.0.0\lib\Release\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\middleware\PhysX-3.3-master\PhysXSDK\Include\pxtask;$(ProjectDir)..\middleware\PhysX-3.3-master\PhysXSDK\Include\extensions;$(ProjectDir)..\middleware\PhysX-3.3-master\PhysXSDK\Include\foundation;$(ProjectDir)..\middleware\PhysX-3.3-master\PhysXSDK\Include\common;$(ProjectDir)..\middleware\PhysX-3.3-master\PhysXSDK\Include;$(ProjectDir)..\middleware\assimp-3.1.1-win-binaries\assimp-3.1.1-win-binaries\include;$(ProjectDir)..\middleware\SDL\2.0.5\include;$(ProjectDir)..\middleware;$(ProjectDir)..\middleware\glfw-3.2.1x64\include;$(ProjectDir)..\middleware\glew-2.0.0\include;$(ProjectDir)..\middleware\SDL2_mixer-2.0.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\middleware\PhysX-3.3-master\PhysXSDK\Lib\vc14win64;$(ProjectDir)..\middleware\assimp-3.1.1-win-binaries\assimp-3.1.1-win-binaries\lib64;$(ProjectDir)..\middleware\SDL2_mixer-2.0.1\lib\x64;$(ProjectDir)..\middleware\SDL\2.0.5\lib\x64;$(ProjectDir)..\middleware\glfw-3.2.1x64\lib-vc2015;$(ProjectDir)..\middleware\glew-2.0.0\lib\Release\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL2_mixer.lib;PhysX3Extensions.lib;PhysX3_x64.lib;PhysX3Vehicle.lib;PhysX3Common_x64.lib;PhysXProfileSDK.lib;PhysX3Cooking_x64.lib;assimp.lib;sdl2.lib;opengl32.lib;glfw3.lib;glew32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
