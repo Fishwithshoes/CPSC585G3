@@ -60,9 +60,14 @@ public:
 		eDRIVE_MODE_NONE
 	};
 
+	//Begin These are now obsolete
 	static const int playerVehiclesNum = 1;
 	static const int opponentVehiclesNum = 3;
 	static const int totalVehiclesNum = playerVehiclesNum + opponentVehiclesNum;
+	//End These are now obsolete
+
+	static vector <physx::PxVehicleNoDrive*> playerVehicleNoDrives;
+	static vector <physx::PxVehicleNoDrive*> opponentVehicleNoDrives;
 	
 	static void initializePhysX();
 	static physx::PxRigidDynamic* createTestBox(physx::PxReal sideLength);

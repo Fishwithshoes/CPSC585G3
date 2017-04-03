@@ -43,10 +43,12 @@ uniform vec2 offsetUV;
 
 uniform vec3 cameraPos;
 uniform vec3 cameraForward;
-uniform vec4 lightPos;
-uniform vec4 lightColor;
+uniform vec4 lightColors[100];
+uniform vec4 lightPositions[100];
+uniform int lightCount;
 uniform sampler2D shadowMap;
 uniform vec2 screenDims;
+uniform int isBloodMoon;
 
 //Post Process
 layout(location = 0) out vec4 OutputColor;
@@ -74,6 +76,8 @@ void main()
 	t = (dot(normalize(dayPos), cameraForward)+1)*0.5;	
 	// vec3 envColor = vec3(0.7, 0.9, 1.0)*(1-t) + vec3(0.7, 0.9, 1.0)*t;
 	vec3 envColor = vec3(0.4, 0.4, 1.0)*(1-t) + vec3(1.0,0.5,0.2)*t;
+	if(isBloodMoon == 1)
+		envColor = vec3(0.8, 0.2, 0.2)*(1-t) + vec3(1.0,0.5,0.2)*t;
 	
 	if(cameraPos.y < -2.0)
 	{
@@ -89,7 +93,9 @@ void main()
 	float lightDist0 = length(lightPos0.xyz-Position);
 	
 	vec3 lightPos1 = vec3(-4,1,-4)*650;
-	vec3 lightColor1 = vec3(0.8,0.8,1.0)*0.3;	
+	vec3 lightColor1 = vec3(0.8,0.8,1.0)*0.3;
+	if(isBloodMoon == 1)
+		lightColor1 = vec3(1.0, 0.3, 0.3);
 	vec3 lightDir1 = normalize(lightPos1.xyz-Position);
 	float lightDist1 = length(lightPos1.xyz-Position);
 	
@@ -171,16 +177,31 @@ void main()
 	float glossiness = (1-_roughness);
 	float specExp = pow(glossiness+1, 2 + glossiness*10);//4096;//(1.04-_roughness)*25;
 	float specFade = (1-_roughness) * 5;
+
+	vec3 diffuseCoeff = _diffuseLevel * diffuseLevel * _diffuseColor * diffuseTex.xyz;
+	vec3 specCoeff = _reflectivity * _reflectColor;
 	
-	vec3 diffuse0 = _diffuseLevel * lightColor0 * diffuseLevel * _diffuseColor * diffuseTex.xyz * clamp(dot(lightDir0, normalDir), 0, 1);
-	vec3 specular0 = _reflectivity * lightColor0 * _reflectColor * pow(clamp(dot(viewDir, reflect(-lightDir0, normalDir)), 0, 1), specExp) * specFade;
+	vec3 diffuse0 = lightColor0 * diffuseCoeff * clamp(dot(lightDir0, normalDir), 0, 1);
+	vec3 specular0 = lightColor0 * specCoeff * pow(clamp(dot(viewDir, reflect(-lightDir0, normalDir)), 0, 1), specExp) * specFade;
 	
-	vec3 diffuse1 = _diffuseLevel * lightColor1 * diffuseLevel * _diffuseColor * diffuseTex.xyz * clamp(dot(lightDir1, normalDir), 0, 1);
-	vec3 specular1 = _reflectivity * lightColor1 * _reflectColor * pow(clamp(dot(viewDir, reflect(-lightDir1, normalDir)), 0, 1), specExp) * specFade;
+	vec3 diffuse1 = lightColor1 * diffuseCoeff * clamp(dot(lightDir1, normalDir), 0, 1);
+	vec3 specular1 = lightColor1 * specCoeff * pow(clamp(dot(viewDir, reflect(-lightDir1, normalDir)), 0, 1), specExp) * specFade;
 	
-	vec3 reflection = _reflectivity * _reflectColor * envTex;
+	vec3 reflection = specCoeff * envTex;
 	vec3 selfIllum = selfIllumLevel * selfIllumColor * diffuseTex.xyz;
 	vec3 rim = rimLevel * rimColor * clamp(dot(normalDir, lightDir0), 0, 1) * pow(1 - clamp(dot(viewDir, normalDir), 0, 1), rimPower);
+	
+	vec3 diffuse;
+	vec3 specular;
+	
+	for(int i = 0; i < lightCount; i++)
+	{
+		vec3 dir = normalize(lightPositions[i].xyz - Position);
+		float dist = distance(lightPositions[i].xyz, Position);
+		float level = clamp((lightPositions[i].w - dist)/lightPositions[i].w, 0, 1) * lightColors[i].w;
+		diffuse += lightColors[i].xyz * diffuseCoeff * clamp(dot(dir, normalDir), 0, 1) * level;
+		specular += lightColors[i].xyz * specCoeff * pow(clamp(dot(viewDir, reflect(-dir, normalDir)), 0, 1), specExp) * level * specFade;
+	}
 	
 	//SHADOWS!! BUT WATCH THAT SAMPLE RATE!	
 	vec3 revisedShadowCoords = ShadowCoord.xyz * 0.5 + 0.5;
@@ -216,8 +237,8 @@ void main()
 	diffuse0 *= 1.0-shadow;
 	specular0 *= 1.0-shadow;
 	
-	vec3 diffuse = diffuse0 + diffuse1;
-	vec3 specular = specular0 + specular1;
+	diffuse += diffuse0 + diffuse1;
+	specular += specular0 + specular1;
 	
 	//MIX IN AMBIENT COLOR AND SUM CONTRIBUTORS
 	diffuse += (1-_diffuseLevel)*(envColor*ambientLevel)*diffuseLevel*diffuseColor*diffuseTex.xyz*(1-_reflectivity);
@@ -225,7 +246,7 @@ void main()
 	
 	//FOGGY FUGUE
 	float u = clamp(viewDist*0.003*fogLevel, 0, 1);
-	// final = final * (1-u) + envColor * u;
+	final = final * (1-u) + envColor * u;
 	
 	//SHADOW MAP DEBUG
 	// final = vec3(revisedShadowCoords.x, 0, 0);

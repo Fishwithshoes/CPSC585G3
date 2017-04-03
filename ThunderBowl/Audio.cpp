@@ -8,10 +8,13 @@ vector<string> Audio::soundFilePaths =
 	"Sounds/hit_SFX.wav",
 	"Sounds/pause_SFX.wav",
 	"Sounds/select_SFX.wav",
+	"Sounds/switchWeapon_SFX.wav",
 	"Sounds/machinefire_SFX.wav",
 	"Sounds/powerup_SFX.wav",
 	"Sounds/fireMissile_SFX.wav",
 	"Sounds/explodeMissile_SFX.wav",
+	"Sounds/explodeCar_SFX.wav",
+	"Sounds/flamethrower_SFX.wav",
 	"Sounds/splish_SFX.wav",
 	"Sounds/splash_SFX.wav",
 	"Sounds/engine_SFX.wav"

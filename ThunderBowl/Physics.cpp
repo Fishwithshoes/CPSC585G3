@@ -22,8 +22,8 @@ PxVehicleDrivableSurfaceToTireFrictionPairs* gFrictionPairs = NULL;
 
 PxRigidStatic*			gGroundPlane = NULL;
 PxVehicleNoDrive*		gVehicleNoDrive = NULL;
-vector<PxVehicleNoDrive*> playerVehicleNoDrives;
-vector<PxVehicleNoDrive*> opponentVehicleNoDrives;
+vector<PxVehicleNoDrive*> Physics::playerVehicleNoDrives = {};
+vector<PxVehicleNoDrive*> Physics::opponentVehicleNoDrives = {};
 
 
 
@@ -175,7 +175,7 @@ void Physics::initializePhysX()
 	}*/
 
 	PxSceneDesc sceneDesc(gPhysics->getTolerancesScale());
-	sceneDesc.gravity = PxVec3(0.0f, 4*-9.81f, 0.0f);
+	sceneDesc.gravity = PxVec3(0.0f, 8*-9.81f, 0.0f);
 	gDispatcher = PxDefaultCpuDispatcherCreate(2);
 	sceneDesc.cpuDispatcher = gDispatcher;
 	sceneDesc.filterShader = VehicleFilterShader;//PxFilterFlag::eSUPPRESS;
@@ -259,11 +259,13 @@ void Physics::stepPhysics()
 
 void Physics::cleanupPhysics()
 {
-	for (int i = 0; i < playerVehicleNoDrives.size(); i++) {
+	for (int i = 0; i < playerVehicleNoDrives.size(); i++) 
+	{
 		playerVehicleNoDrives[i]->getRigidDynamicActor()->release();
 		playerVehicleNoDrives[i]->free();
 	}
-	for (int i = 0; i < opponentVehicleNoDrives.size(); i++) {
+	for (int i = 0; i < opponentVehicleNoDrives.size(); i++) 
+	{
 		opponentVehicleNoDrives[i]->getRigidDynamicActor()->release();
 		opponentVehicleNoDrives[i]->free();
 	}
@@ -485,9 +487,10 @@ PxVehicleNoDrive* Physics::createVehicleNoDrive(const Physics::VehicleDesc& vehi
 	{
 		//Compute the wheel center offsets from the origin.
 		PxVec3 wheelCentreActorOffsets[PX_MAX_NB_WHEELS];
-		const PxF32 frontZ = chassisDims.z*0.3f;
-		const PxF32 rearZ = -chassisDims.z*0.3f;
-		computeWheelCenterActorOffsets(frontZ, rearZ, chassisDims, wheelWidth, wheelRadius, numWheels, wheelCentreActorOffsets);
+		const PxF32 frontZ = chassisDims.z*0.32f;
+		const PxF32 rearZ = -chassisDims.z*0.28f;
+		computeWheelCenterActorOffsets(frontZ, rearZ, physx::PxVec3(chassisDims.x, chassisDims.y*0.75, chassisDims.z), 
+			wheelWidth, wheelRadius, numWheels, wheelCentreActorOffsets);
 
 		setupWheelsSimulationData
 		(vehicleDesc.wheelMass, vehicleDesc.wheelMOI, wheelRadius, wheelWidth,
@@ -1047,7 +1050,7 @@ Physics::VehicleDesc Physics::initVehicleDesc()
 	//The moment of inertia is just the moment of inertia of a cuboid but modified for easier steering.
 	//Center of mass offset is 0.65m above the base of the chassis and 0.25m towards the front.
 	const PxF32 chassisMass = 1500.0f;
-	const PxVec3 chassisDims(3.0f, 1.0f, 3.0f);	//CHASDIM
+	const PxVec3 chassisDims(3.3f, 1.5f, 8.0f);	//CHASDIM
 	const PxVec3 chassisMOI
 	((chassisDims.y*chassisDims.y + chassisDims.z*chassisDims.z)*chassisMass / 10.0f,
 		(chassisDims.x*chassisDims.x + chassisDims.z*chassisDims.z)*0.6f*chassisMass / 10.0f,
@@ -1057,8 +1060,8 @@ Physics::VehicleDesc Physics::initVehicleDesc()
 	//Set up the wheel mass, radius, width, moment of inertia, and number of wheels.
 	//Moment of inertia is just the moment of inertia of a cylinder.
 	const PxF32 wheelMass = 100.0f;
-	const PxF32 wheelRadius = 0.5f;
-	const PxF32 wheelWidth = 0.4f;
+	const PxF32 wheelRadius = 0.8f;
+	const PxF32 wheelWidth = 0.6f;
 	const PxF32 wheelMOI = 0.30f*wheelMass*wheelRadius*wheelRadius;
 	const PxU32 nbWheels = 4;
 

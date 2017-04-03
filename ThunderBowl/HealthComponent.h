@@ -9,6 +9,9 @@ public:
 	bool isDead();
 
 	float currentHealth;
+	
+private:
+	bool shouldRespawn = false;
 	float respawnTime;
 };
 

@@ -3,6 +3,7 @@
 #include "Physics.h"
 #include "GeoGenerator.h"
 #include "Game.h"
+#include "GameManager.h"
 #include "Audio.h"
 
 void VehicleComponent::Start()
@@ -37,16 +38,19 @@ void VehicleComponent::Start()
 	{
 		GameObject temp = GameObject();
 		physx::PxTransform currWheel = wheelBuffer[i]->getLocalPose();
-		temp.mesh = GeoGenerator::MakeCylinder(0.5, 0.5, 0.6, 16, false); //change to take in physx values
-		//if(i==0)
-		//	temp.standardMat.diffuseColor = vec3(1, 0, 0);
-		//if(i==1)
-		//	temp.standardMat.diffuseColor = vec3(0, 1, 0);
-		temp.standardMat.diffuseColor = vec3(0);
-		temp.standardMat.roughness = 0.5;
-		temp.standardMat.metalness = 0.2;
-		temp.standardMat.isMetallic = false;
-		wheelVector.push_back(Game::CreateWorldObject(temp));
+		if (i % 2 == 0)
+			temp.staticGeo = SG_LEFT_WHEEL;
+		else
+			temp.staticGeo = SG_RIGHT_WHEEL;
+		temp.tag = TAGS_VEHICLE_WHEEL;
+		temp.standardMat.diffuseMap = MAP_WHEEL_DIFFUSE;
+		temp.standardMat.roughnessMap = MAP_WHEEL_ROUGHNESS;
+		temp.standardMat.metalnessMap = MAP_WHEEL_METALNESS;
+		temp.standardMat.normalMap = MAP_WHEEL_NORMAL;
+		temp.standardMat.roughness = 1.0;
+		temp.standardMat.metalness = 1.0;
+		temp.standardMat.isMetallic = true;
+		wheelVector.push_back(Game::CreateStaticObject(temp));
 	}
 
 	followCam = Renderer::GetCamera(playerNum-1);
@@ -120,9 +124,9 @@ void VehicleComponent::Update()
 
 	}
 
-	physx::PxReal maxTorque = 2000.0;
-	physx::PxReal brakeTorque = 3000.0;
-	physx::PxReal turnTemper = 0.10;
+	physx::PxReal maxTorque = 10000.0;
+	physx::PxReal brakeTorque = 11000.0;
+	physx::PxReal turnTemper = 0.1 * (1.0+Input::GetXBoxAxis(playerNum, ButtonCode::XBOX_LEFT_TRIGGER)*1.0);
 
 	//Gas
 	if (gVehicleNoDrive->computeForwardSpeed() > topSpeed) {
@@ -143,6 +147,12 @@ void VehicleComponent::Update()
 	//gVehicleNoDrive->setBrakeTorque(1, Input::GetXBoxAxis(playerNum, ButtonCode::XBOX_LEFT_TRIGGER)*brakeTorque);
 
 	//Alt-Brake
+	if (gVehicleNoDrive->computeForwardSpeed() < -topReverse)
+	{
+		gVehicleNoDrive->setDriveTorque(0, 0.0);
+		gVehicleNoDrive->setDriveTorque(1, 0.0);
+	}
+
 	if (Input::GetXBoxAxis(playerNum, ButtonCode::XBOX_LEFT_TRIGGER) > 0.0f)
 	{
 		gVehicleNoDrive->setDriveTorque(0, -Input::GetXBoxAxis(playerNum, ButtonCode::XBOX_LEFT_TRIGGER)*brakeTorque);
@@ -179,21 +189,42 @@ void VehicleComponent::Update()
 
 	if (followCam->mode == Camera::Modes::MODE_GAME)
 	{
-		followCam->transform.rotation.x = rotQuat.x*0.5;
-		// rotQuat.x;
-		followCam->transform.rotation.y = rotQuat.y;
-		followCam->transform.rotation.z = rotQuat.z*0.5;
-		//rotQuat.z;
-		followCam->transform.rotation.w = rotQuat.w;
+		//followCam->transform.rotation.x = rotQuat.x*0.5;
+		//// rotQuat.x;
+		//followCam->transform.rotation.y = rotQuat.y*1.0;
+		//followCam->transform.rotation.z = rotQuat.z*0.5;
+		////rotQuat.z;
+		//followCam->transform.rotation.w = rotQuat.w;
+		//
+		//followCam->transform.rotation = normalize(followCam->transform.rotation);
+		//followCam->transform.rotation = followCam->transform.GetInverseRotation();
+		//
+		//glm::vec4 cameraOffset = glm::vec4(0.0,	4.0, -12.0, 0.0);
+		//cameraOffset = newRot * cameraOffset;
+		//cameraOffset = glm::vec4(transform.position, 0.0) + cameraOffset;
+		//followCam->transform.position = cameraOffset;
 
-		followCam->transform.rotation = normalize(followCam->transform.rotation);
-		followCam->transform.rotation = followCam->transform.GetInverseRotation();
+		//Transform parent = transform;
+		//parent.rotation = parent.GetInverseRotation();
+		followCam->transform = transform;
+		//CAMERA JOCKEY
+		vec4 standardRot = transform.GetInverseRotation();
+		followCam->transform.rotation = normalize(
+			vec4(standardRot.x*0.8, standardRot.y*1.0f, standardRot.z*0.8, standardRot.w));
 
+		//CAMERA SMOOTH FOLLOW (YAW ONLY)
+		float desiredYaw = Mathf::PI * 0.2 * Input::GetXBoxAxis(playerNum, ButtonCode::XBOX_JOY_LEFT_HORIZONTAL) *
+			(Input::GetXBoxAxis(playerNum, ButtonCode::XBOX_LEFT_TRIGGER)*1.8 + 0.5);
+		float snappiness = 8.0 - 6.0*abs(Input::GetXBoxAxis(playerNum, ButtonCode::XBOX_JOY_LEFT_HORIZONTAL));
+		if (currentYaw != desiredYaw)
+		{
+			currentYaw += (desiredYaw - currentYaw) * Time::getDeltaTime() * snappiness;
+		}
+		followCam->transform.Rotate(followCam->transform.GetUp(), currentYaw, false);
 
-		glm::vec4 cameraOffset = glm::vec4(0.0, 5.0, -15.0, 0.0);
-		cameraOffset = newRot * cameraOffset;
-		cameraOffset = glm::vec4(transform.position, 0.0) + cameraOffset;
-		followCam->transform.position = cameraOffset;
+		//CAMERA OFFSET
+		followCam->transform.Translate(followCam->transform.GetForward() * -12.0f, false);
+		followCam->transform.Translate(followCam->transform.GetUp() * 4.0f, false);
 	}
 	//transform.rotationMatrix = newRot;
 	//glm::vec4 forward = glm::vec4(0.0, 0.0, 1.0, 0.0);
@@ -205,18 +236,20 @@ void VehicleComponent::Update()
 
 	if (transform.position.y < -20)
 	{
-		physVehicle->setGlobalPose(physx::PxTransform(myStartPosition, physx::PxQuat(physx::PxIdentity)));
-		physVehicle->setAngularVelocity(physx::PxVec3(0, 0, 0));
-		physVehicle->setLinearVelocity(physx::PxVec3(0, 0, 0));
+		HealthComponent* health = &HealthComponent();
+		health = (HealthComponent*)Game::Find(selfName)->GetComponent(health);
+		health->currentHealth = 0.0;
 	}
 
 	//IFNDEF_SPEEDOMETER
-	/*GameObject* speedNeedle = Game::Find("SpeedometerNeedle"+playerNum);
+	GameObject* speedNeedle = Game::Find("SpeedometerNeedle"+playerNum);
 	speedNeedle->transform.rotation = vec4(0, 0, 0, 1);
 	float speed = physVehicle->getLinearVelocity().magnitude() * 3.6;
 	float angle = -0.002 * Mathf::PI * speed; //At full the needle points to 500 km/h
-	speedNeedle->transform.Rotate(Transform::Forward(), angle, false);*/
+	speedNeedle->transform.Rotate(Transform::Forward(), angle, false);
 	//ENDIF_SPEEDOMETER
+	if(followCam->mode == Camera::Modes::MODE_GAME)
+		followCam->SetVerticalFOV(60 + speed*0.1);
 
 	//IF_DEF Wheel Spray Particles
 	UpdateParticles();
@@ -226,8 +259,8 @@ void VehicleComponent::Update()
 	nextEngine -= Time::getDeltaTime();
 	//if (nextEngine <= 0.0f)
 	//{
-		//Audio::Play2DSound(SFX_Engine, speed*0.001, 0.0);
-		//nextEngine = engineDelay;
+		Audio::Play2DSound(SFX_Engine, 0.03 + speed*0.0002, 0.0);
+		nextEngine = engineDelay;
 	//}
 	//END_IF ENGINE LOOP SOUND
 
@@ -293,11 +326,17 @@ void VehicleComponent::UpdateParticles()
 	systems.push_back(wheelSprayLeft);
 	systems.push_back(wheelSprayRight);
 
+	HealthComponent* health = &HealthComponent();
+	health = (HealthComponent*)Game::Find(selfName)->GetComponent(health);
+
 	float speed = physVehicle->getLinearVelocity().magnitude();
 	for (int i = 0; i < systems.size(); i++)
 	{
 		systems[i]->spawnRate = speed * 0.5;
 		systems[i]->spawnRate = Mathf::Clamp(systems[i]->spawnRate, 0.0, 20.0);
+
+		if (health->currentHealth <= 0.0)
+			systems[i]->spawnRate = 0.0;
 
 		//systems[i]->initialSpeed.min = speed * 1.0;
 		//systems[i]->initialSpeed.max = speed * 1.3;
@@ -309,6 +348,12 @@ void VehicleComponent::UpdateParticles()
 		{
 			systems[i]->initialColor.alpha = vec4(0.8, 0.9, 1.0, 1.0);
 			systems[i]->initialColor.bravo = vec4(0.6, 0.7, 0.9, 1.0);
+
+			if (GameManager::isBloodMoon)
+			{
+				systems[i]->initialColor.alpha = vec4(1.0, 0.2, 0.2, 1);
+				systems[i]->initialColor.bravo = vec4(1.0, 0.4, 0.4, 1);
+			}
 		}
 		else
 		{
@@ -317,7 +362,7 @@ void VehicleComponent::UpdateParticles()
 		}
 	}
 
-	if (transform.position.y < 8.5 && !enteredWaterPrev)
+	if (transform.position.y < 9.5 && !enteredWaterPrev)
 	{
 		Audio::Play2DSound(SFX_Splash, Random::rangef(0.4, 0.5), 0.0);
 		ParticleSystem ps = ParticleSystem();
@@ -331,6 +376,13 @@ void VehicleComponent::UpdateParticles()
 		ps.gravityScale = 68;
 		ps.initialColor.alpha = vec4(0.8, 0.9, 1.0, 1.0);
 		ps.initialColor.bravo = vec4(0.6, 0.7, 0.9, 1.0);
+
+		if (GameManager::isBloodMoon)
+		{
+			ps.initialColor.alpha = vec4(1.0, 0.2, 0.2, 1);
+			ps.initialColor.bravo = vec4(1.0, 0.4, 0.4, 1);
+		}
+
 		ps.initialRadius.min = 1.0;
 		ps.initialRadius.max = 1.4;
 		ps.lifeSpan.min = 0.4;

@@ -62,6 +62,8 @@ enum StaticGeos
 	SG_OCEAN_DOWN,
 	SG_PUDDLE,
 	SG_MG_BULLET,
+	SG_LEFT_WHEEL,
+	SG_RIGHT_WHEEL,
 	SG_WHEEL,
 	SG_CAR,
 	SG_MAP
@@ -90,6 +92,7 @@ enum Tags
 	TAGS_MISSILE,
 	TAGS_DECORATION,
 	TAGS_PARTICLE_SYSTEM,
+	TAGS_VEHICLE_WHEEL,
 	//Overlay objects
 	TAGS_MENU,
 	TAGS_HUD,
@@ -160,6 +163,12 @@ struct ParticleOverlayMaterial
 	float fogLevel;
 };
 
+struct PointLight
+{
+	vec4 Color;//Color and intensity
+	vec4 Pos;//Position and radius
+};
+
 //Be sure to bind maps in this order
 enum Maps
 {
@@ -174,6 +183,7 @@ enum Maps
 	MAP_POSITION_BUFFER,//Store position for post-process
 	MAP_NORMAL_BUFFER,//Store normal for post-process
 	MAP_PREVIOUS_BUFFER,//Store last frame's color buffer for motion blur
+	MAP_PARTICLE_FADE,//Store copy of position buffer to depth test particles
 	MAP_GRAB_PASS,//Feed Color Buffer into this when an object requests it (For refraction)
 	//Overlay
 	MAP_ZERO,
@@ -188,13 +198,19 @@ enum Maps
 	MAP_NINE,
 	MAP_SCORE,
 	MAP_TIME,
+	MAP_PLAYERS,
 	MAP_PAUSED,
 	MAP_GAME_OVER,
 	MAP_START,
+	MAP_ARROW_ICON,
 	MAP_HEALTH_ICON,
 	MAP_MACHINE_GUN_ICON,
 	MAP_MISSILE_LAUNCHER_ICON,
 	MAP_FLAMETHROWER_ICON,
+	MAP_RING01_ICON,
+	MAP_RING02_ICON,
+	MAP_RING03_ICON,
+	MAP_RING04_ICON,
 	MAP_JERRY,
 	MAP_SPIDER,
 	//Particles
@@ -231,15 +247,17 @@ enum Maps
 	MAP_MOON_DIFFUSE,
 	MAP_MOON_NORMAL,
 	MAP_WATER_NORMAL,
+	MAP_TRACK_DIFFUSE,
+	MAP_TRACK_ROUGHNESS,
+	MAP_TRACK_NORMAL,
 	MAP_CHASSIS_DIFFUSE,
 	MAP_CHASSIS_ROUGHNESS,
+	MAP_CHASSIS_METALNESS,
 	MAP_CHASSIS_NORMAL,
 	MAP_WHEEL_DIFFUSE,
 	MAP_WHEEL_ROUGHNESS,
+	MAP_WHEEL_METALNESS,
 	MAP_WHEEL_NORMAL,
-	MAP_TRACK_DIFFUSE,
-	MAP_TRACK_ROUGHNESS,
-	MAP_TRACK_NORMAL
 };
 
 //Particles
@@ -296,6 +314,8 @@ struct ParticleSystemDesc
 	vec3						spawnPointVariance;
 	float						gravityScale;
 	float						accelerationScale;
+	float						scaleScale;
+	bool						useParticleLights;
 	vector<ParticleBurst>		burstList;
 	vector<ParticleTimeStop>	timeStopList;
 	bool						useSystemLifespan;
@@ -309,10 +329,13 @@ enum Sounds
 	SFX_Hit,
 	SFX_Pause,
 	SFX_Select,
+	SFX_SwitchWeapon,
 	SFX_MG,
 	SFX_Powerup,
 	SFX_FireMissile,
 	SFX_ExplodeMissile,
+	SFX_ExplodeCar,
+	SFX_Flamethrower,
 	SFX_Splish,
 	SFX_Splash,
 	SFX_Engine

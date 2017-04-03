@@ -1,5 +1,7 @@
 #include "ParticleSystem.h"
 #include "Game.h"
+#include "Renderer.h"
+
 
 ParticleSystem::ParticleSystem()
 {
@@ -29,6 +31,8 @@ void ParticleSystem::InitParticleSystem(ParticleSystemDesc desc)
 	
 	gravityScale = desc.gravityScale;
 	accelerationScale = desc.accelerationScale;
+	scaleScale = desc.scaleScale;
+	useParticleLights = desc.useParticleLights;
 
 	burstList = desc.burstList;
 	//Ensure all bursts are ready to fire
@@ -61,8 +65,10 @@ ParticleSystemDesc ParticleSystem::descriptionIdentity()
 	result.spawnPointVariance = vec3(0.0, 0.0, 0.0);
 	result.gravityScale = 1.0;
 	result.accelerationScale = 1.0;
+	result.scaleScale = 1.0;
 	result.burstList = vector<ParticleBurst>();
 	result.timeStopList = vector<ParticleTimeStop>();
+	result.useParticleLights = false;
 	result.useSystemLifespan = true;
 	result.systemLifespan = 10.0f;
 	result.destroySystemWhenEmpty = true;
@@ -128,6 +134,7 @@ void ParticleSystem::Update()
 	
 		p->velocity -= Transform::Up() * gravityScale * Time::timeScale * Time::getDeltaTime();
 		p->velocity *= accelerationScale;
+		p->scale *= scaleScale;
 		p->position += p->velocity * Time::timeScale * Time::getDeltaTime();
 	
 		//if (p->position.y < p->scale.x*0.5)
@@ -136,6 +143,14 @@ void ParticleSystem::Update()
 		float u = Mathf::Clamp(1.0-p->lifeRemaining/p->startingLife, 0, 1);
 	
 		p->material.color.w = 1 - u;
+
+		if (useParticleLights)
+		{
+			PointLight light;
+			light.Color = p->material.color;
+			light.Pos = vec4(p->position, p->scale.x * 10.0);
+			Renderer::AddPointLight(light);
+		}
 	
 		//Life reduction
 		p->lifeRemaining -= Time::timeScale * Time::getDeltaTime();

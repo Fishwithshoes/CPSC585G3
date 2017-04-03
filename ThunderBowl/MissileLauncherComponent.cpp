@@ -67,6 +67,6 @@ void MissileLauncherComponent::FireMissile()
 	
 		nextLaunch = launchDelay;
 		currentMissile++;
-		Audio::Play2DSound(SFX_FireMissile, 0.2, 0);
+		Audio::Play2DSound(SFX_FireMissile, 0.5, 0);
 	}
 }

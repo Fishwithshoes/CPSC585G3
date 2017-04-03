@@ -3,6 +3,7 @@
 #include "Game.h"
 #include "GeoGenerator.h"
 #include "BulletComponent.h"
+#include "Renderer.h"
 
 void MachineGunComponent::Start()
 {
@@ -100,13 +101,16 @@ void MachineGunComponent::FireMG()
 			temp.transform.Rotate(temp.transform.GetUp(), theta, false);
 			temp.transform.Rotate(temp.transform.GetRight(), phi, false);
 		}
-		temp.transform.Translate(temp.transform.GetUp() * 1.25f, false);
-		temp.transform.Translate(temp.transform.GetForward() * 3.0f, false);
+		temp.transform.Translate(temp.transform.GetUp() * 0.8f, false);
+		temp.transform.Translate(temp.transform.GetForward() * 6.5f, false);
 		temp.standardMat.roughness = 0.3;
 		temp.standardMat.metalness = 1.0;
 		temp.standardMat.isMetallic = true;
 		GameObject* bullet = Game::CreateStaticObject(temp);
 		bullet->AddComponent(new BulletComponent(selfName));
+		BulletComponent* bulletComp = &BulletComponent("");
+		bulletComp = (BulletComponent*)bullet->GetComponent(bulletComp);
+		bulletComp->ownerName = selfName;
 		//BulletComponent* bulletTempRef = &BulletComponent();
 		//bulletTempRef = (BulletComponent*)Game::Find(selfName + "Bullet" + to_string(currentBullet))->GetComponent(bulletTempRef);
 		//bulletTempRef->ownerName = selfName;
@@ -115,8 +119,8 @@ void MachineGunComponent::FireMG()
 		ParticleSystem ps = ParticleSystem();
 		ps.transform = transform;
 		ps.transform.rotation = ps.transform.GetInverseRotation();
-		ps.transform.Translate(ps.transform.GetUp()*1.25f, false);
-		ps.transform.Translate(ps.transform.GetForward()*2.5f, false);
+		ps.transform.Translate(ps.transform.GetUp()*0.8f, false);
+		ps.transform.Translate(ps.transform.GetForward()*6.0f, false);
 		ps.initialRadius.min = 0.4;
 		ps.initialRadius.max = 0.7;
 		ps.initialColor.alpha = vec4(vec3(1), 1.0);
@@ -131,9 +135,13 @@ void MachineGunComponent::FireMG()
 		ps.destroySystemWhenEmpty = true;
 		ParticleSystem* flashPtr = Game::CreateParticleObject(ps);
 		flashPtr->AddParticleBurst(1, 0.0);
+		PointLight light;
+		light.Color = vec4(1.0, 0.7, 0.1, 10.0);
+		light.Pos = vec4(ps.transform.position, 8.0);
+		Renderer::AddPointLight(light);
 		//END_IF MUZZLE FLASH
 
-		Audio::Play2DSound(SFX_MG, Random::rangef(0.20, 0.40), 0.0);
+		Audio::Play2DSound(SFX_MG, Random::rangef(0.30, 0.45), 0.0);
 		nextBullet = bulletDelay;
 	}
 }

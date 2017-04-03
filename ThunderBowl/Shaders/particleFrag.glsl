@@ -11,6 +11,9 @@ uniform float fogLevel;
 
 uniform vec3 cameraPos;
 uniform vec3 cameraForward;
+uniform sampler2D particleFadeMap;
+uniform vec2 screenDims;
+uniform int isBloodMoon;
 
 //Post Process
 layout(location = 0) out vec4 OutputColor;
@@ -25,6 +28,8 @@ void main()
 	t = (dot(normalize(dayPos), cameraForward)+1)*0.5;	
 	// vec3 envColor = vec3(0.7, 0.9, 1.0)*(1-t) + vec3(0.7, 0.9, 1.0)*t;
 	vec3 envColor = vec3(0.4, 0.4, 1.0)*(1-t) + vec3(1.0,0.5,0.2)*t;
+	if(isBloodMoon == 1)
+		envColor = vec3(0.8, 0.2, 0.2)*(1-t) + vec3(1.0,0.5,0.2)*t;
 	
 	if(cameraPos.y < -2.0)
 	{
@@ -38,8 +43,13 @@ void main()
 	float viewDist = length(cameraPos-Position);
 	
 	vec4 mainTex = texture2D(mainTexture, TexCoord);
+	vec4 fadeTex = texture2D(particleFadeMap, vec2(gl_FragCoord.x/screenDims.x, gl_FragCoord.y/screenDims.y))*2000.0 - vec4(1000.0);
 	
 	vec4 final = color * mainTex;
+	
+	//PARTICLE DEPTH FADE
+	// float dist = distance(Position, fadeTex.xyz);
+	// final.w = clamp(final.w*clamp(dist*0.1, 0.0, 1.0), 0.0, final.w);
 	
 	//FOGGY FUGUE
 	float u = clamp(viewDist*0.003*fogLevel, 0, 1);
@@ -60,4 +70,6 @@ void main()
 	// OutputColor = vec4(cameraPos, 1);
 	// OutputColor = vec4(fogLevel, 0, 0, 1);
 	// OutputColor = vec4(viewDist);
+	// OutputColor = vec4(abs(fadeTex.xyz*0.001), 1.0);
+	// OutputColor = vec4(vec3(dist*0.1), 1.0);
 }

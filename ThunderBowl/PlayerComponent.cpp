@@ -71,7 +71,7 @@ void PlayerComponent::Update()
 	HealthComponent* playerHealth = &HealthComponent();
 	playerHealth = (HealthComponent*)self->GetComponent(playerHealth);
 
-
+	//Switch Weapon - Human Players
 	if (self->tag == TAGS_HUMAN_PLAYER)
 	{
 		VehicleComponent* vehicle = &VehicleComponent();
@@ -97,7 +97,7 @@ void PlayerComponent::Update()
 				cout << "ERROR: Illegal weapon detected at PlayerComponent.Update()" << endl;
 				break;
 			}
-
+			Audio::Play2DSound(SFX_SwitchWeapon, 1, 0);
 			switchWeaponPrev = true;
 		}
 		if (!Input::GetXBoxButton(vehicle->GetPlayerNum(), ButtonCode::XBOX_Y))

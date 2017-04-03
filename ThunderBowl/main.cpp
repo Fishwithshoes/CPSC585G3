@@ -101,6 +101,11 @@ int main(int argc, char *argv[])
 	RendererUtility::CheckGLErrors();
 #endif
 
+//#pragma omp parallel
+//	{
+//	printf("Running on multiple threads\n");
+//	}
+
 	RendererUtility::QueryGLVersion();
 
 	Time::Init();
@@ -112,7 +117,7 @@ int main(int argc, char *argv[])
 	Game::BuildWorld();
 	Renderer::GetCamera(0)->Start();
 
-	Audio::PlayMusic(MUS_Automation, 0.25);
+	//Audio::PlayMusic(MUS_Automation, 0.25);
 
 	//MAIN LOOP
 	while (!glfwWindowShouldClose(window))
@@ -141,22 +146,27 @@ int main(int argc, char *argv[])
 		//Game Logic
 		if (GameManager::GetGameState() == GS_IN_GAME)
 		{
+#pragma parallel for
 			for (int i = Game::staticObjectList.size() - 1; i >= 0; i--)
 			{
 				Game::staticObjectList[i].Update();
 			}
+#pragma parallel for
 			for (int i = Game::worldObjectList.size() - 1; i >= 0; i--)
 			{
 				Game::worldObjectList[i].Update();
 			}
+#pragma parallel for
 			for (int i = Game::particleObjectList.size() - 1; i >= 0; i--)
 			{
 				Game::particleObjectList[i].Update();
 			}
+#pragma parallel for
 			for (int i = Game::overlayObjectList.size() - 1; i >= 0; i--)
 			{
 				Game::overlayObjectList[i].Update();
 			}
+#pragma parallel for
 			for (int i = Game::aiObjectList.size() - 1; i >= 0; i--)
 			{
 				Game::aiObjectList[i].Update();

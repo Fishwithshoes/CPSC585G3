@@ -1,6 +1,7 @@
 #include "Renderer.h"
 #include "RendererUtility.h"
 #include "Game.h"
+#include "GameManager.h"
 #include "GameObject.h"
 #include "GeoGenerator.h"
 #include "Loader.h"
@@ -11,6 +12,8 @@
 
 vector<Camera*> Renderer::cameraList = {};
 int Renderer::cameraCount = 1;
+vector<vec4> Renderer::pointLightColors = {};
+vector<vec4> Renderer::pointLightPositions = {};
 vector<string> Renderer::textureFilePaths = 
 {
 	"Textures/white_DIFF.jpg",
@@ -23,6 +26,7 @@ vector<string> Renderer::textureFilePaths =
 	"GL_TEXTURE_POSITION_BUFFER",
 	"GL_TEXTURE_NORMAL_BUFFER",
 	"GL_TEXTURE_PREVIOUS_BUFFER",
+	"GL_TEXTURE_PARTICLE_FADE",
 	"GL_TEXTURE_GRAB_PASS",
 	"Textures/zero_TEXT.png",
 	"Textures/one_TEXT.png",
@@ -36,13 +40,19 @@ vector<string> Renderer::textureFilePaths =
 	"Textures/nine_TEXT.png",
 	"Textures/score_TEXT.png",
 	"Textures/time_TEXT.png",
+	"Textures/players_TEXT.png",
 	"Textures/paused_TEXT.png",
 	"Textures/gameover_TEXT.png",
 	"Textures/start_TEXT.png",
+	"Textures/arrow_ICON.png",
 	"Textures/health_ICON.png",
 	"Textures/machineGun_ICON.png",
 	"Textures/missileLauncher_ICON.png",
 	"Textures/flamethrower_ICON.png",
+	"Textures/ring1_ICON.png",
+	"Textures/ring2_ICON.png",
+	"Textures/ring3_ICON.png",
+	"Textures/ring4_ICON.png",
 	"Textures/jerry_DIFF.jpg",
 	"Textures/SpiderTex.jpg",
 	"Textures/default_PART.png",
@@ -79,7 +89,15 @@ vector<string> Renderer::textureFilePaths =
 	"Textures/water_NORM.jpg",
 	"Textures/floor_DIFF.jpg",
 	"Textures/floor_DIFF.jpg",
-	"Textures/floor_NORM.jpg"
+	"Textures/floor_NORM.jpg",
+	"Textures/chassis_DIFF.png",
+	"Textures/chassis_ROUG.png",
+	"Textures/chassis_META.png",
+	"Textures/chassis_NORM.png",
+	"Textures/wheel_DIFF.png",
+	"Textures/wheel_ROUG.png",
+	"Textures/wheel_META.png",
+	"Textures/wheel_NORM.png"
 };
 vector<string> Renderer::cubemapTextureFilePaths =
 {
@@ -159,6 +177,7 @@ void Renderer::LoadTextures(Renderer *renderer)
 			i != MAP_POSITION_BUFFER &&
 			i != MAP_NORMAL_BUFFER &&
 			i != MAP_PREVIOUS_BUFFER &&
+			i != MAP_PARTICLE_FADE &&
 			i != MAP_GRAB_PASS)//Bind images to GL_TEXTURE_2D
 		{
 			stbi_set_flip_vertically_on_load(true);
@@ -197,7 +216,7 @@ void Renderer::LoadTextures(Renderer *renderer)
 
 			cout << "Created shadow mapping image at: " << texID << "!" << endl;
 		}
-		else if (i == MAP_COLOR_BUFFER || i == MAP_POSITION_BUFFER || i == MAP_NORMAL_BUFFER || i == MAP_PREVIOUS_BUFFER)//These are for the Post Process Effects
+		else if (i == MAP_COLOR_BUFFER || i == MAP_POSITION_BUFFER || i == MAP_NORMAL_BUFFER || i == MAP_PARTICLE_FADE || i == MAP_PREVIOUS_BUFFER)//These are for the Post Process Effects
 		{
 			glGenTextures(1, &texID);
 			glActiveTexture(GL_TEXTURE0 + i);
@@ -271,15 +290,26 @@ void Renderer::LoadStaticGeo(Renderer *renderer)
 	RendererUtility::InitializeGeometry(&renderer->mgbulletGeo);
 	BufferStaticGeoData(&renderer->mgbulletGeo, &GeoGenerator::MakeSphere(0.2, 16, 32, false));
 
-	//TODO Replace with actual loaded geometry
-	RendererUtility::InitializeGeometry(&renderer->wheelGeo);
-	BufferStaticGeoData(&renderer->wheelGeo, &GeoGenerator::MakeCylinder(0.4, 0.4, 0.3, 32, false));
+	Loader loader = Loader();
+	loader.loadModel("Models/LeftWheel.obj", vec3(3.5, 2.0, 2.0), false);
+	RendererUtility::InitializeGeometry(&renderer->leftWheelGeo);
+	//BufferStaticGeoData(&renderer->wheelGeo, &GeoGenerator::MakeCylinder(0.5, 0.5, 0.6, 32, false));
+	BufferStaticGeoData(&renderer->leftWheelGeo, &loader.getMeshes()[0]);
 
+	loader = Loader();
+	loader.loadModel("Models/RightWheel.obj", vec3(3.5, 2.0, 2.0), false);
+	RendererUtility::InitializeGeometry(&renderer->rightWheelGeo);
+	//BufferStaticGeoData(&renderer->wheelGeo, &GeoGenerator::MakeCylinder(0.5, 0.5, 0.6, 32, false));
+	BufferStaticGeoData(&renderer->rightWheelGeo, &loader.getMeshes()[0]);
+
+	loader = Loader();
+	loader.loadModel("Models/ChassisFull.obj", vec3(1.0), false);
 	RendererUtility::InitializeGeometry(&renderer->carGeo);
-	BufferStaticGeoData(&renderer->carGeo, &GeoGenerator::MakeBox(2.0, 0.5, 3.0, false));
+	//BufferStaticGeoData(&renderer->carGeo, &GeoGenerator::MakeBox(2.0, 0.5, 3.0, false));
+	BufferStaticGeoData(&renderer->carGeo, &loader.getMeshes()[0]);
 
 	//TODO Possible redo of map model to include platform and rigging
-	Loader loader;
+	loader = Loader();
 	loader.loadModel("Models/thunderbowl001.obj", vec3(15, 13, 15), true);
 	RendererUtility::InitializeGeometry(&renderer->mapGeo);
 	BufferStaticGeoData(&renderer->mapGeo, &loader.getMeshes()[0]);
@@ -342,8 +372,8 @@ void Renderer::GetShaderUniforms(Renderer *renderer)
 
 	renderer->cameraPosStandard_uniform = glGetUniformLocation(renderer->standardShader.program, "cameraPos");
 	renderer->cameraForwardStandard_uniform = glGetUniformLocation(renderer->standardShader.program, "cameraForward");
-	renderer->lightPosStandard_uniform = glGetUniformLocation(renderer->standardShader.program, "lightPos");
-	renderer->lightColorStandard_uniform = glGetUniformLocation(renderer->standardShader.program, "lightColor");
+	renderer->lightColorStandard_uniform = glGetUniformLocation(renderer->standardShader.program, "lightColors");
+	renderer->lightPosStandard_uniform = glGetUniformLocation(renderer->standardShader.program, "lightPositions");
 
 	//Particle Shader - World Info
 	renderer->modelToWorldParticle_uniform = glGetUniformLocation(renderer->particleShader.program, "ModelToWorld");
@@ -445,12 +475,16 @@ void Renderer::RenderScene(Renderer *renderer)
 //**TURN OVER TO THE DEFERRED FRAMEBUFFER TO DRAW WORLD AND PARTICLES**********
 	glBindFramebuffer(GL_FRAMEBUFFER, renderer->framebufferID);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	vec3 realCameraPos;
-	vec2 aspect = vec2(Camera::WIDTH, Camera::HEIGHT);
-	Camera* currentCamera;
-	//Set camera rendering zone
+
+	vec3 finalCameraPos;
+#pragma parallel for
 	for (int i = 0; i < cameraCount; i++)
 	{
+		vec3 realCameraPos;
+		vec2 aspect = vec2(Camera::WIDTH, Camera::HEIGHT);
+		Camera* currentCamera;
+
+		//Set camera rendering zone
 		if (cameraCount == 1)
 		{
 			glViewport(0, 0, Camera::WIDTH, Camera::HEIGHT);
@@ -493,7 +527,6 @@ void Renderer::RenderScene(Renderer *renderer)
 			}
 		}
 		currentCamera = Renderer::GetCamera(i);
-		//glViewport(0, 0, Camera::WIDTH, Camera::HEIGHT);
 
 		//**DRAW SKYBOX FIRST AS BACKGROUND**********
 		glUseProgram(renderer->skyboxShader.program);
@@ -516,6 +549,9 @@ void Renderer::RenderScene(Renderer *renderer)
 			glUniform3fv(renderer->cameraPosSkybox_uniform, 1, value_ptr(currentCamera->transform.position));
 			glUniform3fv(renderer->cameraForwardSkybox_uniform, 1, value_ptr(currentCamera->transform.GetForward()));
 
+			GLint isBloodMoon_uniform = glGetUniformLocation(renderer->skyboxShader.program, "isBloodMoon");
+			glUniform1i(isBloodMoon_uniform, GameManager::isBloodMoon ? 1 : 0);
+
 			BufferGeoData(renderer, &mesh);
 			glDrawElements(GL_TRIANGLES, renderer->geometry.elementCount, GL_UNSIGNED_INT, nullptr);
 		}
@@ -531,10 +567,16 @@ void Renderer::RenderScene(Renderer *renderer)
 		realCameraPos = currentCamera->transform.position;
 		if (currentCamera->transform.parent != nullptr)
 			realCameraPos = currentCamera->transform.parent->GetModelToWorld() * vec4(realCameraPos, 1.0);
+		finalCameraPos = realCameraPos;
 		glUniform3fv(renderer->cameraPosStandard_uniform, 1, value_ptr(realCameraPos));
 		glUniform3fv(renderer->cameraForwardStandard_uniform, 1, value_ptr(currentCamera->transform.GetForward()));
-		glUniform4fv(renderer->lightPosStandard_uniform, 1, value_ptr(vec4(7, 10, -7, 1)));
-		glUniform4fv(renderer->lightColorStandard_uniform, 1, value_ptr(vec4(1, 1, 1, 1)));
+		if (pointLightColors.size() > 0)
+		{
+			glUniform4fv(renderer->lightColorStandard_uniform, pointLightColors.size(), value_ptr(pointLightColors[0]));
+			glUniform4fv(renderer->lightPosStandard_uniform, pointLightPositions.size(), value_ptr(pointLightPositions[0]));
+		}
+		GLint lightCount_uniform = glGetUniformLocation(renderer->standardShader.program, "lightCount");
+		glUniform1i(lightCount_uniform, pointLightColors.size());
 
 		//Uniforms for shadow mapping
 		GLint shadowMap_uniform = glGetUniformLocation(renderer->standardShader.program, "shadowMap");
@@ -543,11 +585,14 @@ void Renderer::RenderScene(Renderer *renderer)
 		glUniformMatrix4fv(worldToLight_uniform, 1, GL_FALSE, value_ptr(lightWorldToView));
 		GLint lightToProjection_uniform = glGetUniformLocation(renderer->standardShader.program, "LightToProjection");
 		glUniformMatrix4fv(lightToProjection_uniform, 1, GL_FALSE, value_ptr(lightViewToProjection));
+		GLint isBloodMoon_uniform = glGetUniformLocation(renderer->standardShader.program, "isBloodMoon");
+		glUniform1i(isBloodMoon_uniform, GameManager::isBloodMoon ? 1 : 0);
 
 		DrawPhysicalObjects(renderer, true);
 
 		//**RETAIN DEPTH BUFFER AND DRAW PARTICLE SYSTEM OBJECTS**********
 		glUseProgram(renderer->particleShader.program);
+		glCopyImageSubData(MAP_POSITION_BUFFER + 1, GL_TEXTURE_2D, 0, 0, 0, 0, MAP_PARTICLE_FADE + 1, GL_TEXTURE_2D, 0, 0, 0, 0, Camera::WIDTH, Camera::HEIGHT, 1);
 
 		//Program Uniforms for WorldToView and ViewToProjection
 		glUniformMatrix4fv(renderer->worldToViewParticle_uniform, 1, GL_TRUE, value_ptr(currentCamera->GetWorldToViewMatrix()));
@@ -556,6 +601,12 @@ void Renderer::RenderScene(Renderer *renderer)
 		//Program Other Program Scope Uniforms
 		glUniform3fv(renderer->cameraPosParticle_uniform, 1, value_ptr(realCameraPos));
 		glUniform3fv(renderer->cameraForwardParticle_uniform, 1, value_ptr(currentCamera->transform.GetForward()));
+		GLint positionBuffPart_uniform = glGetUniformLocation(renderer->particleShader.program, "particleFadeMap");
+		glUniform1i(positionBuffPart_uniform, MAP_PARTICLE_FADE);
+		GLint screenDimsPart_uniform = glGetUniformLocation(renderer->particleShader.program, "screenDims");
+		glUniform2f(screenDimsPart_uniform, Camera::WIDTH, Camera::HEIGHT);
+		isBloodMoon_uniform = glGetUniformLocation(renderer->particleShader.program, "isBloodMoon");
+		glUniform1i(isBloodMoon_uniform, GameManager::isBloodMoon ? 1 : 0);
 
 		//Load bilboard mesh into GPU to draw particles with
 		{
@@ -565,6 +616,7 @@ void Renderer::RenderScene(Renderer *renderer)
 		}
 		//For each ParticleSystem GameObject collect the particles into a single vector
 		vector<Particle> particleRenderQueue = {};
+#pragma parallel for
 		for (int i = 0; i < Game::particleObjectList.size(); i++)
 		{
 			ParticleSystem ps = Game::particleObjectList[i];
@@ -577,7 +629,8 @@ void Renderer::RenderScene(Renderer *renderer)
 				}
 			}
 		}
-		//Sort particles in queue by depth
+		//Sort particles in queue by depth from current camera
+#pragma parallel for
 		for (int i = 1; i < particleRenderQueue.size(); i++)
 		{
 			for (int j = 1; j < particleRenderQueue.size(); j++)
@@ -598,6 +651,7 @@ void Renderer::RenderScene(Renderer *renderer)
 			}
 		}
 		//For each particle in the queue, pass uniforms and draw
+#pragma parallel for
 		for (int i = 0; i < particleRenderQueue.size(); i++)
 		{
 			Particle p = particleRenderQueue[i];
@@ -619,9 +673,9 @@ void Renderer::RenderScene(Renderer *renderer)
 			glUniformMatrix4fv(renderer->normalToWorldParticle_uniform, 1, GL_TRUE, value_ptr(normalToWorld));
 
 			glDrawElements(GL_TRIANGLES, renderer->geometry.elementCount, GL_UNSIGNED_INT, nullptr);
-			//glDrawElements(GL_LINE_LOOP, renderer->geometry.elementCount, GL_UNSIGNED_INT, nullptr);
 		}
 	}
+//#pragma omp barrier
 //**TURN OVER TO THE DEFAULT FRAMEBUFFER TO DRAW POST-PROCESS AND OVERLAY**********
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(0, 0, Camera::WIDTH, Camera::HEIGHT);
@@ -639,7 +693,7 @@ void Renderer::RenderScene(Renderer *renderer)
 	GLint depthBuffer_uniform = glGetUniformLocation(renderer->fsppShader.program, "depthBufferMap");
 
 	glUniform2f(screenDims_uniform, (float)Camera::WIDTH, (float)Camera::HEIGHT);
-	glUniform3fv(cameraPosPost_uniform, 1, value_ptr(realCameraPos));
+	glUniform3fv(cameraPosPost_uniform, 1, value_ptr(finalCameraPos));
 	glUniform1i(colorBuffer_uniform, MAP_COLOR_BUFFER);
 	glUniform1i(positionBuffer_uniform, MAP_POSITION_BUFFER);
 	glUniform1i(normalBuffer_uniform, MAP_NORMAL_BUFFER);
@@ -659,6 +713,7 @@ void Renderer::RenderScene(Renderer *renderer)
 	glUniform1f(renderer->aspectRatio_uniform, (float)Camera::WIDTH / (float)Camera::HEIGHT);
 
 	//For each Overlay GameObject, Load geometry, bind and draw
+#pragma parallel for
 	for (int i = 0; i < Game::overlayObjectList.size(); i++)
 	{
 		//Setup drawing configs
@@ -681,9 +736,12 @@ void Renderer::RenderScene(Renderer *renderer)
 			glDrawElements(GL_TRIANGLES, renderer->geometry.elementCount, GL_UNSIGNED_INT, nullptr);
 		}
 	}
+//#pragma omp barrier
 
 	//Store this frame's color buffer for next frame
 	glCopyImageSubData(MAP_COLOR_BUFFER + 1, GL_TEXTURE_2D, 0, 0, 0, 0, MAP_PREVIOUS_BUFFER + 1, GL_TEXTURE_2D, 0, 0, 0, 0, Camera::WIDTH, Camera::HEIGHT, 1);
+	pointLightColors = {};
+	pointLightPositions = {};
 
 	//Unbind geometry and shader
 	glBindVertexArray(0);
@@ -716,6 +774,7 @@ void Renderer::DrawPhysicalObjects(Renderer *renderer, bool programStandardUnifo
 {
 	//DRAW DYNAMIC MESH WORLD OBJECTS
 	//For each World GameObject Load geometry into GPU, bind and draw it
+#pragma parallel for
 	for (int i = 0; i < Game::worldObjectList.size(); i++)
 	{
 		//Setup drawing configs
@@ -751,7 +810,8 @@ void Renderer::DrawPhysicalObjects(Renderer *renderer, bool programStandardUnifo
 
 	//DRAW STATIC MESH WORLD OBJECTS
 	//For each Static World GameObject point to appropriate mesh on GPU and draw
-	for (int i = 0; i < Game::staticObjectList.size(); i++)
+#pragma parallel for
+	for (int i = Game::staticObjectList.size()-1; i >= 0; i--)
 	{
 		GameObject gameObject = Game::staticObjectList[i];
 		StandardMaterial standardMat = gameObject.standardMat;
@@ -790,8 +850,11 @@ void Renderer::DrawPhysicalObjects(Renderer *renderer, bool programStandardUnifo
 			case SG_MG_BULLET:
 				geoToUse = renderer->mgbulletGeo;
 				break;
-			case SG_WHEEL:
-				geoToUse = renderer->wheelGeo;
+			case SG_LEFT_WHEEL:
+				geoToUse = renderer->leftWheelGeo;
+				break;
+			case SG_RIGHT_WHEEL:
+				geoToUse = renderer->rightWheelGeo;
 				break;
 			case SG_CAR:
 				geoToUse = renderer->carGeo;
@@ -927,4 +990,10 @@ void Renderer::BufferStaticGeoData(Geometry *geometry, Mesh *mesh)
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
+}
+
+void Renderer::AddPointLight(PointLight lightDesc)
+{
+	pointLightColors.push_back(lightDesc.Color);
+	pointLightPositions.push_back(lightDesc.Pos);
 }

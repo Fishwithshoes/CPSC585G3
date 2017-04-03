@@ -31,6 +31,8 @@ public:
 	vec3 spawnPointVariance;
 	float gravityScale;
 	float accelerationScale;
+	float scaleScale;
+	bool useParticleLights;
 
 	bool useSystemLifespan;
 	float systemLifespan;

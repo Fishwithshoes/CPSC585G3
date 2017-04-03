@@ -1,5 +1,262 @@
-﻿  PlayerComponent.cpp
-c:\cpsc585g3\thunderbowl\VehicleComponent.h(23): warning C4305: 'initializing': truncation from 'double' to 'float'
+﻿  AIControlComponent1.cpp
+c:\cpsc585g3\thunderbowl\VehicleComponent.h(24): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\cpsc585g3\thunderbowl\OceanComponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
+  AINodeComponent.cpp
+c:\cpsc585g3\thunderbowl\VehicleComponent.h(24): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\cpsc585g3\thunderbowl\OceanComponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
+  Audio.cpp
+Audio.cpp(92): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+Audio.cpp(94): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+Audio.cpp(111): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+Audio.cpp(113): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+Audio.cpp(203): warning C4150: deletion of pointer to incomplete type '_Mix_Music'; no destructor called
+  C:\CPSC585G3\middleware\SDL2_mixer-2.0.1\include\SDL_mixer.h(131): note: see declaration of '_Mix_Music'
+  BulletComponent.cpp
+c:\cpsc585g3\thunderbowl\VehicleComponent.h(24): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\cpsc585g3\thunderbowl\OceanComponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
+BulletComponent.cpp(86): warning C4305: 'argument': truncation from 'double' to 'float'
+BulletComponent.cpp(103): warning C4305: '=': truncation from 'double' to 'float'
+BulletComponent.cpp(104): warning C4305: '=': truncation from 'double' to 'float'
+BulletComponent.cpp(105): warning C4305: '=': truncation from 'double' to 'float'
+BulletComponent.cpp(110): warning C4305: 'argument': truncation from 'double' to 'float'
+BulletComponent.cpp(155): warning C4305: '=': truncation from 'double' to 'float'
+BulletComponent.cpp(156): warning C4305: '=': truncation from 'double' to 'float'
+BulletComponent.cpp(157): warning C4305: '=': truncation from 'double' to 'float'
+BulletComponent.cpp(171): warning C4305: 'argument': truncation from 'double' to 'float'
+BulletComponent.cpp(173): warning C4244: '+=': conversion from 'double' to 'int', possible loss of data
+BulletComponent.cpp(179): warning C4244: '+=': conversion from 'double' to 'int', possible loss of data
+  Camera.cpp
+Camera.cpp(9): warning C4305: '=': truncation from 'double' to 'float'
+Camera.cpp(17): warning C4305: '=': truncation from 'double' to 'float'
+Camera.cpp(156): warning C4305: 'argument': truncation from 'double' to 'float'
+  Component.cpp
+c:\cpsc585g3\thunderbowl\VehicleComponent.h(24): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\cpsc585g3\thunderbowl\OceanComponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
+  EnemyComponent.cpp
+c:\cpsc585g3\thunderbowl\VehicleComponent.h(24): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\cpsc585g3\thunderbowl\OceanComponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
+EnemyComponent.cpp(182): warning C4244: 'argument': conversion from 'double' to 'const physx::PxReal', possible loss of data
+EnemyComponent.cpp(183): warning C4244: 'argument': conversion from 'double' to 'const physx::PxReal', possible loss of data
+EnemyComponent.cpp(187): warning C4244: 'argument': conversion from 'double' to 'const physx::PxReal', possible loss of data
+EnemyComponent.cpp(188): warning C4244: 'argument': conversion from 'double' to 'const physx::PxReal', possible loss of data
+EnemyComponent.cpp(197): warning C4244: 'argument': conversion from 'double' to 'const physx::PxReal', possible loss of data
+EnemyComponent.cpp(198): warning C4244: 'argument': conversion from 'double' to 'const physx::PxReal', possible loss of data
+EnemyComponent.cpp(214): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+  FlamethrowerComponent.cpp
+c:\cpsc585g3\thunderbowl\VehicleComponent.h(24): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\cpsc585g3\thunderbowl\OceanComponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
+FlamethrowerComponent.cpp(23): warning C4305: '=': truncation from 'double' to 'float'
+FlamethrowerComponent.cpp(24): warning C4305: '=': truncation from 'double' to 'float'
+FlamethrowerComponent.cpp(62): warning C4305: 'argument': truncation from 'double' to 'float'
+FlamethrowerComponent.cpp(90): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+FlamethrowerComponent.cpp(92): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+FlamethrowerComponent.cpp(111): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+FlamethrowerComponent.cpp(112): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+FlamethrowerComponent.cpp(113): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+FlamethrowerComponent.cpp(144): warning C4244: '+=': conversion from 'double' to 'int', possible loss of data
+  FloatComponent.cpp
+c:\cpsc585g3\thunderbowl\VehicleComponent.h(24): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\cpsc585g3\thunderbowl\OceanComponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
+  Game.cpp
+c:\cpsc585g3\thunderbowl\VehicleComponent.h(24): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\cpsc585g3\thunderbowl\OceanComponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
+Game.cpp(556): warning C4305: '=': truncation from 'double' to 'float'
+Game.cpp(569): warning C4305: '=': truncation from 'double' to 'float'
+Game.cpp(570): warning C4305: '=': truncation from 'double' to 'float'
+Game.cpp(572): warning C4305: '=': truncation from 'double' to 'float'
+Game.cpp(583): warning C4305: '=': truncation from 'double' to 'float'
+Game.cpp(584): warning C4305: '=': truncation from 'double' to 'float'
+Game.cpp(585): warning C4305: '=': truncation from 'double' to 'float'
+Game.cpp(587): warning C4305: '=': truncation from 'double' to 'float'
+Game.cpp(620): warning C4305: 'argument': truncation from 'double' to 'float'
+Game.cpp(625): warning C4305: 'argument': truncation from 'double' to 'float'
+Game.cpp(632): warning C4305: 'argument': truncation from 'double' to 'float'
+Game.cpp(639): warning C4305: 'argument': truncation from 'double' to 'float'
+Game.cpp(647): warning C4305: 'argument': truncation from 'double' to 'float'
+Game.cpp(655): warning C4305: 'argument': truncation from 'double' to 'float'
+Game.cpp(662): warning C4305: 'argument': truncation from 'double' to 'float'
+Game.cpp(669): warning C4305: 'argument': truncation from 'double' to 'float'
+Game.cpp(676): warning C4305: 'argument': truncation from 'double' to 'float'
+Game.cpp(683): warning C4305: 'argument': truncation from 'double' to 'float'
+Game.cpp(691): warning C4305: 'argument': truncation from 'double' to 'float'
+Game.cpp(698): warning C4305: 'argument': truncation from 'double' to 'float'
+Game.cpp(704): warning C4305: 'argument': truncation from 'double' to 'float'
+Game.cpp(715): warning C4305: 'argument': truncation from 'double' to 'float'
+Game.cpp(721): warning C4305: 'argument': truncation from 'double' to 'float'
+Game.cpp(741): warning C4305: 'argument': truncation from 'double' to 'float'
+Game.cpp(749): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+Game.cpp(750): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+Game.cpp(752): warning C4305: 'argument': truncation from 'double' to 'float'
+Game.cpp(753): warning C4305: 'argument': truncation from 'double' to 'float'
+Game.cpp(756): warning C4305: 'argument': truncation from 'double' to 'float'
+Game.cpp(762): warning C4305: 'argument': truncation from 'double' to 'float'
+Game.cpp(769): warning C4305: 'argument': truncation from 'double' to 'float'
+Game.cpp(776): warning C4305: 'argument': truncation from 'double' to 'float'
+Game.cpp(783): warning C4305: 'argument': truncation from 'double' to 'float'
+Game.cpp(790): warning C4305: 'argument': truncation from 'double' to 'float'
+Game.cpp(797): warning C4305: 'argument': truncation from 'double' to 'float'
+Game.cpp(804): warning C4305: 'argument': truncation from 'double' to 'float'
+Game.cpp(811): warning C4305: 'argument': truncation from 'double' to 'float'
+Game.cpp(111): warning C4101: 'ptrP': unreferenced local variable
+Game.cpp(831): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+Game.cpp(835): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+Game.cpp(839): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+Game.cpp(843): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+Game.cpp(851): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+Game.cpp(860): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+Game.cpp(867): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+Game.cpp(874): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+Game.cpp(881): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+  GameManager.cpp
+c:\cpsc585g3\thunderbowl\VehicleComponent.h(24): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\cpsc585g3\thunderbowl\OceanComponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
+GameManager.cpp(179): warning C4305: 'argument': truncation from 'double' to 'float'
+GameManager.cpp(187): warning C4305: '=': truncation from 'double' to 'float'
+GameManager.cpp(188): warning C4305: '=': truncation from 'double' to 'float'
+GameManager.cpp(189): warning C4305: '=': truncation from 'double' to 'float'
+GameManager.cpp(190): warning C4305: '=': truncation from 'double' to 'float'
+GameManager.cpp(197): warning C4305: '=': truncation from 'double' to 'float'
+GameManager.cpp(199): warning C4305: 'argument': truncation from 'double' to 'float'
+GameManager.cpp(200): warning C4305: 'argument': truncation from 'double' to 'float'
+GameManager.cpp(201): warning C4305: '=': truncation from 'double' to 'float'
+GameManager.cpp(203): warning C4305: '=': truncation from 'double' to 'float'
+GameManager.cpp(204): warning C4305: '=': truncation from 'double' to 'float'
+GameManager.cpp(226): warning C4305: '=': truncation from 'double' to 'float'
+GameManager.cpp(227): warning C4305: '=': truncation from 'double' to 'float'
+GameManager.cpp(228): warning C4305: '=': truncation from 'double' to 'float'
+GameManager.cpp(229): warning C4305: '=': truncation from 'double' to 'float'
+GameManager.cpp(267): warning C4305: 'argument': truncation from 'double' to 'float'
+GameManager.cpp(322): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+GameManager.cpp(364): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+GameManager.cpp(374): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+GameManager.cpp(399): warning C4305: '=': truncation from 'double' to 'float'
+GameManager.cpp(400): warning C4305: '=': truncation from 'double' to 'float'
+GameManager.cpp(401): warning C4305: '=': truncation from 'double' to 'float'
+GameManager.cpp(402): warning C4305: '=': truncation from 'double' to 'float'
+GameManager.cpp(412): warning C4305: 'argument': truncation from 'double' to 'float'
+GameManager.cpp(447): warning C4305: 'argument': truncation from 'double' to 'float'
+GameManager.cpp(448): warning C4305: 'argument': truncation from 'double' to 'float'
+GameManager.cpp(483): warning C4305: 'argument': truncation from 'double' to 'float'
+GameManager.cpp(484): warning C4305: 'argument': truncation from 'double' to 'float'
+GameManager.cpp(504): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+GameManager.cpp(604): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+GameManager.cpp(610): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+GameManager.cpp(616): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+GameManager.cpp(623): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+GameManager.cpp(629): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+GameManager.cpp(636): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+GameManager.cpp(642): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+GameManager.cpp(648): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+GameManager.cpp(655): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+GameManager.cpp(661): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+GameManager.cpp(668): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+GameManager.cpp(675): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+GameManager.cpp(682): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+GameManager.cpp(690): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+GameManager.cpp(696): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+GameManager.cpp(703): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+GameManager.cpp(710): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+GameManager.cpp(717): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+GameManager.cpp(724): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+GameManager.cpp(734): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+  GameObject.cpp
+c:\cpsc585g3\thunderbowl\VehicleComponent.h(24): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\cpsc585g3\thunderbowl\OceanComponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
+GameObject.cpp(33): warning C4305: '=': truncation from 'double' to 'float'
+GameObject.cpp(36): warning C4305: '=': truncation from 'double' to 'float'
+  GeoGenerator.cpp
+GeoGenerator.cpp(9): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+GeoGenerator.cpp(87): warning C4267: 'argument': conversion from 'size_t' to 'unsigned int', possible loss of data
+GeoGenerator.cpp(120): warning C4267: 'argument': conversion from 'size_t' to 'unsigned int', possible loss of data
+GeoGenerator.cpp(127): warning C4267: '=': conversion from 'size_t' to 'GLsizei', possible loss of data
+GeoGenerator.cpp(137): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+GeoGenerator.cpp(139): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+GeoGenerator.cpp(140): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+GeoGenerator.cpp(189): warning C4267: '=': conversion from 'size_t' to 'GLsizei', possible loss of data
+GeoGenerator.cpp(257): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+GeoGenerator.cpp(294): warning C4267: '=': conversion from 'size_t' to 'GLsizei', possible loss of data
+GeoGenerator.cpp(303): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+GeoGenerator.cpp(404): warning C4267: '=': conversion from 'size_t' to 'GLsizei', possible loss of data
+GeoGenerator.cpp(442): warning C4267: '=': conversion from 'size_t' to 'GLsizei', possible loss of data
+GeoGenerator.cpp(466): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+GeoGenerator.cpp(477): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+GeoGenerator.cpp(514): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+GeoGenerator.cpp(520): warning C4267: 'argument': conversion from 'size_t' to 'unsigned int', possible loss of data
+GeoGenerator.cpp(523): warning C4267: 'argument': conversion from 'size_t' to 'unsigned int', possible loss of data
+GeoGenerator.cpp(524): warning C4267: 'argument': conversion from 'size_t' to 'unsigned int', possible loss of data
+GeoGenerator.cpp(531): warning C4267: 'argument': conversion from 'size_t' to 'unsigned int', possible loss of data
+GeoGenerator.cpp(533): warning C4267: 'argument': conversion from 'size_t' to 'unsigned int', possible loss of data
+GeoGenerator.cpp(535): warning C4267: 'argument': conversion from 'size_t' to 'unsigned int', possible loss of data
+GeoGenerator.cpp(539): warning C4267: '=': conversion from 'size_t' to 'GLsizei', possible loss of data
+GeoGenerator.cpp(582): warning C4267: '=': conversion from 'size_t' to 'GLsizei', possible loss of data
+GeoGenerator.cpp(645): warning C4267: '=': conversion from 'size_t' to 'GLsizei', possible loss of data
+  HealthComponent.cpp
+c:\cpsc585g3\thunderbowl\VehicleComponent.h(24): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\cpsc585g3\thunderbowl\OceanComponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
+HealthComponent.cpp(70): warning C4305: '=': truncation from 'double' to 'float'
+HealthComponent.cpp(72): warning C4305: 'argument': truncation from 'double' to 'float'
+HealthComponent.cpp(73): warning C4305: '=': truncation from 'double' to 'float'
+HealthComponent.cpp(74): warning C4305: '=': truncation from 'double' to 'float'
+HealthComponent.cpp(75): warning C4305: '=': truncation from 'double' to 'float'
+HealthComponent.cpp(76): warning C4305: '=': truncation from 'double' to 'float'
+  Input.cpp
+Input.cpp(6): warning C4305: 'initializing': truncation from 'double' to 'float'
+Input.cpp(30): warning C4804: '>': unsafe use of type 'bool' in operation
+Input.cpp(40): warning C4804: '>': unsafe use of type 'bool' in operation
+Input.cpp(165): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+  Loader.cpp
+Loader.cpp(47): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+  MachineGunComponent.cpp
+c:\cpsc585g3\thunderbowl\VehicleComponent.h(24): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\cpsc585g3\thunderbowl\OceanComponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
+MachineGunComponent.cpp(13): warning C4305: 'argument': truncation from 'double' to 'float'
+MachineGunComponent.cpp(98): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+MachineGunComponent.cpp(99): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+MachineGunComponent.cpp(106): warning C4305: '=': truncation from 'double' to 'float'
+MachineGunComponent.cpp(124): warning C4305: '=': truncation from 'double' to 'float'
+MachineGunComponent.cpp(125): warning C4305: '=': truncation from 'double' to 'float'
+MachineGunComponent.cpp(132): warning C4305: '=': truncation from 'double' to 'float'
+MachineGunComponent.cpp(133): warning C4305: '=': truncation from 'double' to 'float'
+MachineGunComponent.cpp(144): warning C4305: 'argument': truncation from 'double' to 'float'
+  MissileComponent.cpp
+c:\cpsc585g3\thunderbowl\VehicleComponent.h(24): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\cpsc585g3\thunderbowl\OceanComponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
+MissileComponent.cpp(40): warning C4305: 'argument': truncation from 'double' to 'float'
+MissileComponent.cpp(41): warning C4305: '=': truncation from 'double' to 'float'
+MissileComponent.cpp(42): warning C4305: '=': truncation from 'double' to 'float'
+MissileComponent.cpp(43): warning C4305: '=': truncation from 'double' to 'float'
+MissileComponent.cpp(44): warning C4305: '=': truncation from 'double' to 'float'
+MissileComponent.cpp(121): warning C4244: '+=': conversion from 'double' to 'int', possible loss of data
+MissileComponent.cpp(161): warning C4244: '+=': conversion from 'double' to 'int', possible loss of data
+MissileComponent.cpp(167): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
+MissileComponent.cpp(189): warning C4305: 'argument': truncation from 'double' to 'float'
+MissileComponent.cpp(194): warning C4305: '=': truncation from 'double' to 'float'
+MissileComponent.cpp(195): warning C4305: 'argument': truncation from 'double' to 'float'
+MissileComponent.cpp(197): warning C4305: '=': truncation from 'double' to 'float'
+MissileComponent.cpp(198): warning C4305: '=': truncation from 'double' to 'float'
+MissileComponent.cpp(199): warning C4305: '=': truncation from 'double' to 'float'
+MissileComponent.cpp(200): warning C4305: '=': truncation from 'double' to 'float'
+  MissileLauncherComponent.cpp
+c:\cpsc585g3\thunderbowl\VehicleComponent.h(24): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\cpsc585g3\thunderbowl\OceanComponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
+  OceanComponent.cpp
+c:\cpsc585g3\thunderbowl\OceanComponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
+  Compiling...
+  ParticleSystem.cpp
+c:\cpsc585g3\thunderbowl\VehicleComponent.h(24): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\cpsc585g3\thunderbowl\OceanComponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
+ParticleSystem.cpp(107): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+ParticleSystem.cpp(143): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+ParticleSystem.cpp(181): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
+ParticleSystem.cpp(203): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+ParticleSystem.cpp(247): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+  Physics.cpp
+Physics.cpp(492): warning C4244: 'argument': conversion from 'double' to 'physx::PxReal', possible loss of data
+Physics.cpp(657): warning C4267: '=': conversion from 'size_t' to 'physx::PxU32', possible loss of data
+Physics.cpp(746): warning C4244: 'argument': conversion from 'double' to 'physx::PxReal', possible loss of data
+Physics.cpp(776): warning C4305: 'argument': truncation from 'double' to 'physx::PxReal'
+  PlayerComponent.cpp
+c:\cpsc585g3\thunderbowl\VehicleComponent.h(24): warning C4305: 'initializing': truncation from 'double' to 'float'
 c:\cpsc585g3\thunderbowl\OceanComponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
 PlayerComponent.cpp(31): warning C4305: '=': truncation from 'double' to 'float'
 PlayerComponent.cpp(32): warning C4305: '=': truncation from 'double' to 'float'
@@ -22,11 +279,123 @@ PlayerComponent.cpp(248): warning C4244: 'argument': conversion from 'double' to
 PlayerComponent.cpp(249): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
 PlayerComponent.cpp(250): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
 PlayerComponent.cpp(251): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+  PowerUpComponent.cpp
+c:\cpsc585g3\thunderbowl\VehicleComponent.h(24): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\cpsc585g3\thunderbowl\OceanComponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
+  PuddleComponent.cpp
+  Random.cpp
+Random.cpp(11): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
+Random.cpp(16): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
+  Renderer.cpp
+c:\cpsc585g3\thunderbowl\VehicleComponent.h(24): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\cpsc585g3\thunderbowl\OceanComponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
+C:\CPSC585G3\middleware\stb/stb_image.h(219): warning C4068: unknown pragma
+C:\CPSC585G3\middleware\stb/stb_image_write.h(222): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\stdio.h(205): note: see declaration of 'fopen'
+C:\CPSC585G3\middleware\stb/stb_image_write.h(616): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\stdio.h(1769): note: see declaration of 'sprintf'
+C:\CPSC585G3\middleware\stb/stb_image_write.h(998): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\stdio.h(205): note: see declaration of 'fopen'
+Renderer.cpp(167): warning C4101: 'loc': unreferenced local variable
+Renderer.cpp(291): warning C4305: 'argument': truncation from 'double' to 'float'
+Renderer.cpp(458): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+Renderer.cpp(459): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+Renderer.cpp(460): warning C4305: 'initializing': truncation from 'double' to 'float'
+Renderer.cpp(480): warning C4068: unknown pragma
+Renderer.cpp(497): warning C4244: 'argument': conversion from 'double' to 'GLsizei', possible loss of data
+Renderer.cpp(497): warning C4244: 'argument': conversion from 'double' to 'GLint', possible loss of data
+Renderer.cpp(500): warning C4244: 'argument': conversion from 'double' to 'GLsizei', possible loss of data
+Renderer.cpp(500): warning C4244: 'argument': conversion from 'double' to 'GLint', possible loss of data
+Renderer.cpp(513): warning C4244: 'argument': conversion from 'double' to 'GLsizei', possible loss of data
+Renderer.cpp(513): warning C4244: 'argument': conversion from 'double' to 'GLint', possible loss of data
+Renderer.cpp(516): warning C4244: 'argument': conversion from 'double' to 'GLsizei', possible loss of data
+Renderer.cpp(519): warning C4244: 'argument': conversion from 'double' to 'GLsizei', possible loss of data
+Renderer.cpp(519): warning C4244: 'argument': conversion from 'double' to 'GLint', possible loss of data
+Renderer.cpp(522): warning C4244: 'argument': conversion from 'double' to 'GLsizei', possible loss of data
+Renderer.cpp(522): warning C4244: 'argument': conversion from 'double' to 'GLint', possible loss of data
+Renderer.cpp(538): warning C4267: '=': conversion from 'size_t' to 'GLsizei', possible loss of data
+Renderer.cpp(575): warning C4267: 'argument': conversion from 'size_t' to 'GLsizei', possible loss of data
+Renderer.cpp(576): warning C4267: 'argument': conversion from 'size_t' to 'GLsizei', possible loss of data
+Renderer.cpp(579): warning C4267: 'argument': conversion from 'size_t' to 'GLint', possible loss of data
+Renderer.cpp(607): warning C4244: 'argument': conversion from 'const int' to 'GLfloat', possible loss of data
+Renderer.cpp(614): warning C4267: '=': conversion from 'size_t' to 'GLsizei', possible loss of data
+Renderer.cpp(619): warning C4068: unknown pragma
+Renderer.cpp(633): warning C4068: unknown pragma
+Renderer.cpp(654): warning C4068: unknown pragma
+Renderer.cpp(704): warning C4267: '=': conversion from 'size_t' to 'GLsizei', possible loss of data
+Renderer.cpp(716): warning C4068: unknown pragma
+Renderer.cpp(725): warning C4267: '=': conversion from 'size_t' to 'GLsizei', possible loss of data
+Renderer.cpp(777): warning C4068: unknown pragma
+Renderer.cpp(784): warning C4267: '=': conversion from 'size_t' to 'GLsizei', possible loss of data
+Renderer.cpp(813): warning C4068: unknown pragma
+Renderer.cpp(814): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+Renderer.cpp(909): warning C4244: 'argument': conversion from 'const int' to 'GLfloat', possible loss of data
+Renderer.cpp(919): warning C4267: 'argument': conversion from 'size_t' to 'GLsizei', possible loss of data
+Renderer.cpp(960): warning C4267: '=': conversion from 'size_t' to 'GLsizei', possible loss of data
+  RendererUtility.cpp
+RendererUtility.cpp(153): warning C4267: 'argument': conversion from 'size_t' to 'GLsizei', possible loss of data
+RendererUtility.cpp(183): warning C4267: 'argument': conversion from 'size_t' to 'GLsizei', possible loss of data
+  RotateComponent.cpp
+c:\cpsc585g3\thunderbowl\VehicleComponent.h(24): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\cpsc585g3\thunderbowl\OceanComponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
+  StaticComponent.cpp
+c:\cpsc585g3\thunderbowl\VehicleComponent.h(24): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\cpsc585g3\thunderbowl\OceanComponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
+StaticComponent.cpp(60): warning C4244: '-=': conversion from 'double' to 'physx::PxReal', possible loss of data
+StaticComponent.cpp(101): warning C4305: 'argument': truncation from 'double' to 'float'
+StaticComponent.cpp(104): warning C4305: 'argument': truncation from 'double' to 'float'
+  Transform.cpp
+Transform.cpp(58): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+Transform.cpp(59): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+Transform.cpp(60): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+Transform.cpp(61): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+Transform.cpp(62): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+Transform.cpp(63): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+Transform.cpp(88): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+Transform.cpp(89): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+Transform.cpp(90): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+Transform.cpp(91): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+  VehicleComponent.cpp
+c:\cpsc585g3\thunderbowl\VehicleComponent.h(24): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\cpsc585g3\thunderbowl\OceanComponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
+VehicleComponent.cpp(76): warning C4305: '=': truncation from 'double' to 'float'
+VehicleComponent.cpp(77): warning C4305: '=': truncation from 'double' to 'float'
+VehicleComponent.cpp(78): warning C4305: '=': truncation from 'double' to 'float'
+VehicleComponent.cpp(129): warning C4244: 'initializing': conversion from 'double' to 'physx::PxReal', possible loss of data
+VehicleComponent.cpp(217): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+VehicleComponent.cpp(218): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+VehicleComponent.cpp(247): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+VehicleComponent.cpp(248): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+VehicleComponent.cpp(252): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+VehicleComponent.cpp(262): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+VehicleComponent.cpp(315): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+VehicleComponent.cpp(322): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+VehicleComponent.cpp(335): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+VehicleComponent.cpp(344): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+VehicleComponent.cpp(345): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+VehicleComponent.cpp(367): warning C4305: 'argument': truncation from 'double' to 'float'
+VehicleComponent.cpp(374): warning C4305: '=': truncation from 'double' to 'float'
+VehicleComponent.cpp(387): warning C4305: '=': truncation from 'double' to 'float'
+VehicleComponent.cpp(388): warning C4305: '=': truncation from 'double' to 'float'
+  main.cpp
+c:\cpsc585g3\thunderbowl\VehicleComponent.h(24): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\cpsc585g3\thunderbowl\OceanComponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
+main.cpp(149): warning C4068: unknown pragma
+main.cpp(150): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+main.cpp(154): warning C4068: unknown pragma
+main.cpp(155): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+main.cpp(159): warning C4068: unknown pragma
+main.cpp(160): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+main.cpp(164): warning C4068: unknown pragma
+main.cpp(165): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+main.cpp(169): warning C4068: unknown pragma
+main.cpp(170): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
 LINK : warning LNK4075: ignoring '/INCREMENTAL' due to '/LTCG' specification
   Generating code
-  132 of 2735 functions ( 4.8%) were compiled, the rest were copied from previous compilation.
-    0 functions were new in current compilation
-    30 functions had inline decision re-evaluated but remain unchanged
+c:\cpsc585g3\thunderbowl\gameobject.cpp(123): warning C4172: returning address of local variable or temporary
+  408 of 2778 functions (14.7%) were compiled, the rest were copied from previous compilation.
+    50 functions were new in current compilation
+    133 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
   ThunderBowl.vcxproj -> C:\CPSC585G3\ThunderBowl\x64\Release\ThunderBowl.exe
   ThunderBowl.vcxproj -> C:\CPSC585G3\ThunderBowl\x64\Release\ThunderBowl.pdb (Full PDB)

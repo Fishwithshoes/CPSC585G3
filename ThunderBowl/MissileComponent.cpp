@@ -144,7 +144,7 @@ void MissileComponent::Explode()
 				physx::PxVec3 explosionForce;
 				explosionForce = physx::PxVec3(missileToPlayer.x, missileToPlayer.y, missileToPlayer.z);
 				explosionForce = physx::PxVec3(0, 1, 0);
-				explosionForce *= 40000 - distance * 100;
+				explosionForce *= 150000 - distance * 1000;
 
 				//Do damage to Health Component
 				HealthComponent* victimHealth = &HealthComponent();
@@ -186,21 +186,20 @@ void MissileComponent::Explode()
 		}
 	}
 
-	
-	Audio::Play2DSound(SFX_ExplodeMissile, Random::rangef(0.1,0.2), 0);
+	Audio::Play2DSound(SFX_ExplodeMissile, Random::rangef(0.4,0.5), 0);
 
 	ParticleSystem ps = ParticleSystem();
 	ps.initialSpeed.min = 115;
 	ps.initialSpeed.max = 118;
 	ps.accelerationScale = 0.88;
-	ps.initialColor.alpha = vec4(vec3(1.0), 1);
-	ps.initialColor.bravo = vec4(vec3(0.7), 1);
+	ps.initialColor.alpha = vec4(vec3(0.8), 1);
+	ps.initialColor.bravo = vec4(1.0, 0.8, 0.4, 1);
 	ps.initialRadius.min = 3.3;
 	ps.initialRadius.max = 3.9;
 	ps.lifeSpan.min = 1.3;
 	ps.lifeSpan.max = 1.8;
 	ps.spawnPointVariance = vec3(0.5);
-	ps.monochromatic = true;
+	ps.monochromatic = false;
 	ps.mainTexture = MAP_FLAME13_PART;
 	ps.textures = {MAP_FLAME09_PART, MAP_FLAME13_PART, MAP_FLAME13_PART, MAP_SMOKE_PART};
 	ps.spawnRate = 0;
@@ -209,6 +208,7 @@ void MissileComponent::Explode()
 	ps.transform = transform;
 	ps.initialFogLevel.min = 0;
 	ps.initialFogLevel.max = 0;
+	ps.useParticleLights = true;
 	ParticleSystem* ptr = Game::CreateParticleObject(ps);
 	ptr->AddParticleBurst(30, 0);
 

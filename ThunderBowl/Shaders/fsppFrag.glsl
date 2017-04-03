@@ -24,7 +24,7 @@ const float DOF_STEP = DOF_STRIDE/DOF_SAMPLES*2;
 const float CURRENT_WEIGHT = 0.67;
 const float PREVIOUS_WEIGHT = 1.0 - CURRENT_WEIGHT;
 
-const int BLOOM_SAMPLES = 8;
+const int BLOOM_SAMPLES = 16;
 const float BLOOM_SAMPLE_CONTRIB = 1.0/(BLOOM_SAMPLES*BLOOM_SAMPLES);
 const float BLOOM_STRIDE = 0.05;
 const float BLOOM_FILLER = 1.0/BLOOM_STRIDE;
@@ -41,7 +41,7 @@ const float EPSILON = 0.003;
 void main()
 {
 	//TODO Make these uniforms as desired
-	float focalDist = 15;
+	float focalDist = 10;
 	float depthBlur = 0.06;
 	float blurMinSize = 0.0;
 	float blurMaxSize = 1.0;
@@ -51,7 +51,7 @@ void main()
 	float blurFarSize = 0.25;
 	
 	float bloomThreshold = 1.8;
-	float bloomStrength = 9.25;
+	float bloomStrength = 8.25;
 	
 	float ambientOcclusionLevel = 0.25;
 	
@@ -94,7 +94,7 @@ void main()
 	
 	//PERFORM BLOOM WITH COLOR SAMPLES
 	index = 0;
-	float finalBloomStride = clamp(BLOOM_STRIDE - dist*0.002, 0.02, BLOOM_STRIDE);
+	float finalBloomStride = clamp(BLOOM_STRIDE - dist*0.003, 0.015, BLOOM_STRIDE);
 	float finalBloomFiller = 1.0/finalBloomStride;
 	float finalBloomStep = finalBloomStride/BLOOM_SAMPLES*2.0;
 	
@@ -172,8 +172,8 @@ void main()
 	// float c = 0.1;//Cuts component down
 	// final.xyz = vec3(clamp(final.x-(final.x-0.5)*m-c,0,1),clamp(final.y-(final.y-0.5)*m-c,0,1),clamp(final.z-(final.z-0.5)*m-c,0,1));
 	
-	// FragmentColor = vec4(final.xyz, 1.0);//Allow all effects
-	FragmentColor = vec4(colorSample.xyz, 1.0);//Turn off all effects. This does NOT shut off sampling.
+	FragmentColor = vec4(final.xyz, 1.0);//Allow all effects
+	// FragmentColor = vec4(colorSample.xyz, 1.0);//Turn off all effects. This does NOT shut off sampling.
 	
 	// FragmentColor = vec4(Color, 1);
     // FragmentColor = vec4(TexCoord.x, 0, 0, 1);

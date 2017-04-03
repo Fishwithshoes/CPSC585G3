@@ -10,6 +10,7 @@ uniform vec4 color;
 uniform samplerCube envMap;
 uniform vec3 cameraForward;
 uniform vec3 cameraPos;
+uniform int isBloodMoon;
 
 //Post Process
 layout(location = 0) out vec4 OutputColor;
@@ -24,6 +25,8 @@ void main()
 	t = (dot(normalize(dayPos), cameraForward)+1)*0.5;	
 	// vec3 envColor = vec3(0.7, 0.9, 1.0)*(1-t) + vec3(0.7, 0.9, 1.0)*t;
 	vec3 envColor = vec3(0.4, 0.4, 1.0)*(1-t) + vec3(1.0,0.5,0.2)*t;
+	if(isBloodMoon == 1)
+		envColor = vec3(0.8, 0.2, 0.2)*(1-t) + vec3(1.0,0.5,0.2)*t;
 	
 	if(cameraPos.y < 8.0)
 	{

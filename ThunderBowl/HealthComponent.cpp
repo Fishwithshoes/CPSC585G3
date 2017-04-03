@@ -12,7 +12,7 @@ void HealthComponent::Start()
 	//respawnTime = GameManager::RESPAWN_TIME;
 	currentHealth = 100.0;
 	respawnTime = 20.0;
-	standardMat.diffuseColor = glm::vec3(0.0, 1.0, 0.0);
+	//standardMat.diffuseColor = glm::vec3(0.0, 1.0, 0.0);
 	Finalize();
 }
 
@@ -37,34 +37,30 @@ void HealthComponent::Update()
 	//}
 	//
 
-	standardMat.diffuseColor = glm::vec3(0.0, currentHealth/100.0, 0.0);
+	//standardMat.diffuseColor = glm::vec3(0.0, currentHealth/100.0, 0.0);
 
-	if (currentHealth <= 0.0)
+	if (currentHealth <= 0.0 && !shouldRespawn)
 	{
-		//transform.position = glm::vec3(0.0, -1005.0, 0.0);
 		GameObject* self = Game::Find(selfName);
+		self->isVisible = false;
 		if (self->tag == TAGS_AI_PLAYER)
 		{
 			EnemyComponent* enemy = &EnemyComponent();
 			enemy = (EnemyComponent*)self->GetComponent(enemy);
 
-			enemy->enPhysVehicle->setGlobalPose(physx::PxTransform(physx::PxVec3(0, 10, 0), physx::PxQuat(0, 0, 0, 1)));
-			enemy->enPhysVehicle->setAngularVelocity(physx::PxVec3(0, 0, 0));
-			enemy->enPhysVehicle->setLinearVelocity(physx::PxVec3(0, 0, 0));
+			for (int i = 0; i < enemy->enWheelVector.size(); i++)
+				enemy->enWheelVector[i]->isVisible = false;
 		}
 		else
 		{
 			VehicleComponent* human = &VehicleComponent();
 			human = (VehicleComponent*)self->GetComponent(human);
 
-			human->physVehicle->setGlobalPose(physx::PxTransform(physx::PxVec3(0, 10, 0), physx::PxQuat(0, 0, 0, 1)));
-			human->physVehicle->setAngularVelocity(physx::PxVec3(0, 0, 0));
-			human->physVehicle->setLinearVelocity(physx::PxVec3(0, 0, 0));
+			for (int i = 0; i < human->wheelVector.size(); i++)
+				human->wheelVector[i]->isVisible = false;
 		}
-	
-		currentHealth = 100;
 
-		Audio::Play2DSound(SFX_ExplodeMissile, 1.0, 0.0);
+		Audio::Play2DSound(SFX_ExplodeCar, 1.0, 0.0);
 
 		//IF_DEF EXPLOSION PARTICLES
 		ParticleSystem ps = ParticleSystem();
@@ -92,7 +88,43 @@ void HealthComponent::Update()
 		ptr->AddParticleBurst(10, 0);
 		//END_IF EXPLOSION PARTICLES
 
-		respawnTime = 20.0;
+		respawnTime = 0.5;
+		shouldRespawn = true;
+	}
+
+	respawnTime -= Time::getDeltaTime();
+	if (respawnTime <= 0.0 && shouldRespawn)
+	{
+		//transform.position = glm::vec3(0.0, -1005.0, 0.0);
+		GameObject* self = Game::Find(selfName);
+		self->isVisible = true;
+		if (self->tag == TAGS_AI_PLAYER)
+		{
+			EnemyComponent* enemy = &EnemyComponent();
+			enemy = (EnemyComponent*)self->GetComponent(enemy);
+
+			enemy->enPhysVehicle->setGlobalPose(physx::PxTransform(enemy->startPosition, enemy->startRotation));
+			enemy->enPhysVehicle->setAngularVelocity(physx::PxVec3(0, 0, 0));
+			enemy->enPhysVehicle->setLinearVelocity(physx::PxVec3(0, 0, 0));
+
+			for (int i = 0; i < enemy->enWheelVector.size(); i++)
+				enemy->enWheelVector[i]->isVisible = true;
+		}
+		else
+		{
+			VehicleComponent* human = &VehicleComponent();
+			human = (VehicleComponent*)self->GetComponent(human);
+
+			human->physVehicle->setGlobalPose(physx::PxTransform(human->myStartPosition, physx::PxQuat(0, 0, 0, 1)));
+			human->physVehicle->setAngularVelocity(physx::PxVec3(0, 0, 0));
+			human->physVehicle->setLinearVelocity(physx::PxVec3(0, 0, 0));
+
+			for (int i = 0; i < human->wheelVector.size(); i++)
+				human->wheelVector[i]->isVisible = true;
+		}
+
+		currentHealth = 100;
+		shouldRespawn = false;
 	}
 	Finalize();
 }

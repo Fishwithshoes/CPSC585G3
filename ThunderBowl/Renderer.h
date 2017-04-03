@@ -6,11 +6,16 @@ class Renderer
 {
 public:
 	//RENDERER PRIMARY OPS
-	static void Init(Renderer *renderer);//Setup geometry, shaders and camera(s)
+	//Setup geometry, shaders and camera(s)
+	static void Init(Renderer *renderer);
 	static void RenderScene(Renderer *renderer);//Draw those tris
-	static Camera* GetCamera(int index);//Grabs the specified camera for editing props
-	static void SetCameraCount(int count);//Split screen using count cameras (1-4)
+	//Grabs the specified camera for editing props
+	static Camera* GetCamera(int index);
+	//Split screen using count cameras (1-4)
+	static void SetCameraCount(int count);
 	static int GetCameraCount();
+	//Add a point light. Removed every frame.
+	static void AddPointLight(PointLight lightDesc);
 
 protected:
 
@@ -34,7 +39,8 @@ private:
 	Geometry oceanGeoDown;
 	Geometry puddleGeo;
 	Geometry mgbulletGeo;
-	Geometry wheelGeo;
+	Geometry leftWheelGeo;
+	Geometry rightWheelGeo;
 	Geometry carGeo;
 	Geometry mapGeo;
 	//TODO add any additional high-res items below. Add to the StaticGeos enum too.
@@ -137,6 +143,8 @@ private:
 	static int cameraCount;
 	static vector<string> textureFilePaths;
 	static vector<string> cubemapTextureFilePaths;
+	static vector<vec4> pointLightColors;
+	static vector<vec4> pointLightPositions;
 
 	//RENDERER DELEGATE OPS
 	static void LoadTextures(Renderer *renderer);//Read textures from disk, bind into GPU

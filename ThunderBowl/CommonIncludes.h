@@ -9,6 +9,7 @@
 #include <iterator>
 #include <algorithm>
 #include <math.h>
+#include <omp.h>
 
 //For Windows (glew) or UNIX (direct to gl)?
 #ifdef _WIN32

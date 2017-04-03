@@ -3,8 +3,11 @@
 #include "GeoGenerator.h"
 #include "Renderer.h"
 #include "Audio.h"
+#include "Physics.h"
 
 float		GameManager::initialGameTime = 300.0;
+int			GameManager::humanPlayerCount = 1;
+int			GameManager::timeMinuteCount = 5;
 GameStates	GameManager::gameState = GS_FRONT_MENU;
 float		GameManager::gameTimeRemaining = 0.0;
 int			GameManager::timerSeconds = 0;
@@ -23,7 +26,10 @@ const int		GameManager::MAX_MACHINE_GUN_AMMO = 200;
 const float		GameManager::MAX_FLAMETHROWER_AMMO = 10.0;
 const int		GameManager::MAX_MISSILE_LAUNCHER_AMMO = 4;
 
-bool		GameManager::startButtonPrev = false;
+bool							GameManager::startButtonPrev = false;
+bool							GameManager::menuChangePrev = false;
+GameManager::ActiveMenuItems	GameManager::activeMenuItem = AMI_PLAYER_COUNT;
+bool			GameManager::isBloodMoon = false;
 
 void GameManager::Update()//Check stuff as game runs
 {
@@ -33,6 +39,7 @@ void GameManager::Update()//Check stuff as game runs
 	switch (gameState)
 	{
 	case GS_FRONT_MENU:
+		HandleMenu();
 		if (Input::GetXBoxButton(1, ButtonCode::XBOX_START) && !startButtonPrev)
 		{
 			StartGame();
@@ -72,6 +79,12 @@ void GameManager::Update()//Check stuff as game runs
 			ToggleGamePause();
 			startButtonPrev = true;
 		}
+		if (Input::GetXBoxButton(1, ButtonCode::XBOX_BACK))
+		{
+			ToggleGamePause();
+			EndGame();
+			GotoMainMenu();
+		}
 		break;
 	case GS_GAME_OVER:
 		if (Input::GetXBoxButton(1, ButtonCode::XBOX_START) && !startButtonPrev)
@@ -93,10 +106,65 @@ void GameManager::StartGame()
 	gameState = GS_IN_GAME;
 	Time::timeScale = 1.0;
 
+	for (int i = 0; i < humanPlayerCount; i++) //CREATE PLAYERS
+	{
+		GameObject player = GameObject();
+		//player.mesh = GeoGenerator::MakeBox(3, 1, 3, false);
+		player.staticGeo = SG_CAR;
+		player.transform.position = Game::plVehStartPositions[i];
+		player.name = "Player" + to_string(i);
+		player.tag = TAGS_HUMAN_PLAYER;
+		player.standardMat.diffuseMap = MAP_CHASSIS_DIFFUSE;
+		player.standardMat.roughnessMap = MAP_CHASSIS_ROUGHNESS;
+		player.standardMat.metalnessMap = MAP_CHASSIS_METALNESS;
+		player.standardMat.normalMap = MAP_CHASSIS_NORMAL;
+		//player.standardMat.diffuseColor = vec3(0.8, 0.0, 0.8);
+		player.standardMat.roughness = 1.0;
+		player.standardMat.metalness = 1.0;
+		player.standardMat.isMetallic = false;
+		//GameObject* ptr = Game::CreateWorldObject(player);
+		GameObject* ptr = Game::CreateStaticObject(player);
+		ptr->AddComponent(new PlayerComponent());
+		ptr->AddComponent(new VehicleComponent());
+		ptr->AddComponent(new MachineGunComponent());
+		ptr->AddComponent(new MissileLauncherComponent());
+		ptr->AddComponent(new FlamethrowerComponent());
+		ptr->AddComponent(new HealthComponent());
+		VehicleComponent* vehicle = &VehicleComponent();
+		vehicle = (VehicleComponent*)ptr->GetComponent(vehicle);
+		vehicle->SetPlayerNum(i + 1);
+	}
+
+	for (int i = 0; i < (4 - humanPlayerCount); i++) //CREATE AI
+	{
+		GameObject opponent = GameObject();
+		//opponent.mesh = GeoGenerator::MakeBox(2, 1, 2, false);
+		opponent.staticGeo = SG_CAR;
+		opponent.transform.position = Game::aiVehStartPositions[i];
+		opponent.transform.Rotate(Transform::Up(), Mathf::PI, false);
+		opponent.name = "AI" + to_string(i);
+		opponent.tag = TAGS_AI_PLAYER;
+		opponent.standardMat.diffuseMap = MAP_CHASSIS_DIFFUSE;
+		opponent.standardMat.roughnessMap = MAP_CHASSIS_ROUGHNESS;
+		opponent.standardMat.metalnessMap = MAP_CHASSIS_METALNESS;
+		opponent.standardMat.normalMap = MAP_CHASSIS_NORMAL;
+		//opponent.standardMat.diffuseColor = vec3(0.0, 1.0, 1.0);
+		opponent.standardMat.roughness = 1.0;
+		opponent.standardMat.metalness = 1.0;
+		opponent.standardMat.isMetallic = false;
+		//GameObject* ptr = Game::CreateWorldObject(opponent);
+		GameObject* ptr = Game::CreateStaticObject(opponent);
+		ptr->AddComponent(new PlayerComponent());
+		ptr->AddComponent(new EnemyComponent());
+		ptr->AddComponent(new MachineGunComponent());
+		ptr->AddComponent(new AIControlComponent1());
+		ptr->AddComponent(new HealthComponent());
+	}
+
 	Renderer::GetCamera(0)->mode = Camera::Modes::MODE_GAME;
 	Renderer::GetCamera(0)->transform.parent = nullptr;
 
-	Renderer::SetCameraCount(1);
+	Renderer::SetCameraCount(humanPlayerCount);
 
 	CreateHUD();
 
@@ -109,6 +177,67 @@ void GameManager::StartGame()
 		menuItems[i]->isVisible = false;
 
 	Audio::Play2DSound(SFX_Select, 0.20, 0.0);
+
+	isBloodMoon = Random::rangei(1, 10, true) == 10 ? true : false;
+	if (isBloodMoon)
+	{
+		Game::Find("Moon")->standardMat.selfIllumColor = vec3(1.0, 0.45, 0.45);
+		Game::Find("OceanTop")->standardMat.diffuseColor = vec3(1.0, 0.2, 0.2)*0.5f;
+		Game::Find("OceanBottom")->standardMat.diffuseColor = vec3(1.0, 0.2, 0.2)*0.5f;
+		Game::Find("OceanTop")->standardMat.transparency = 0.3;
+		Game::Find("OceanBottom")->standardMat.transparency = 0.3;
+		Game::Find("OceanTop")->standardMat.roughness = 0.2;
+		Game::Find("OceanBottom")->standardMat.roughness = 0.2;
+	}
+
+	//Nuclear fallout
+	ParticleSystem ps = ParticleSystem();
+	ps.transform.position = vec3(0, 20, 0);
+	ps.initialSpeed.min = 0.5;
+	ps.initialSpeed.max = 0.8;
+	ps.accelerationScale = 1.0;
+	ps.initialColor.alpha = vec4(vec3(0.6), 1);
+	ps.initialColor.bravo = vec4(vec3(0.9), 1);
+	ps.initialRadius.min = 0.3;
+	ps.initialRadius.max = 0.5;
+	ps.lifeSpan.min = 1.3;
+	ps.lifeSpan.max = 1.8;
+	ps.spawnPointVariance = vec3(100, 20, 100);
+	ps.monochromatic = true;
+	ps.mainTexture = MAP_DEFAULT_PART;
+	ps.textures = { MAP_DEFAULT_PART, MAP_DEFAULT_PART, MAP_DEFAULT_PART, MAP_BUBBLE_PART };
+	ps.spawnRate = 20;
+	ps.maxParticles = 1000;
+	ps.destroySystemWhenEmpty = false;
+	ps.useSystemLifespan = false;
+	ps.gravityScale = 1;
+	ps.initialFogLevel.min = 1.0;
+	ps.initialFogLevel.max = 1.0;
+	Game::CreateParticleObject(ps);
+
+	//Dust Storm
+	ps.transform.position = vec3(0, 20, -150);
+	ps.initialSpeed.min = 161;
+	ps.initialSpeed.max = 169;
+	ps.accelerationScale = 1.0;
+	ps.coneAngle = 0.0;
+	ps.initialColor.alpha = vec4(0.2, 0.1, 0.0, 1);
+	ps.initialColor.bravo = vec4(0.3, 0.15, 0.0, 1);
+	ps.initialRadius.min = 8.3;
+	ps.initialRadius.max = 8.8;
+	ps.lifeSpan.min = 2.3;
+	ps.lifeSpan.max = 2.8;
+	ps.spawnPointVariance = vec3(280, 20, 10);
+	ps.monochromatic = false;
+	ps.mainTexture = MAP_SMOKE_PART;
+	ps.textures = {};
+	ps.spawnRate = 10;
+	ps.destroySystemWhenEmpty = false;
+	ps.useSystemLifespan = false;
+	ps.gravityScale = 1;
+	ps.initialFogLevel.min = 1.0;
+	ps.initialFogLevel.max = 1.0;
+	//Game::CreateParticleObject(ps);
 }
 
 void GameManager::ToggleGamePause()
@@ -144,17 +273,41 @@ void GameManager::EndGame()
 	Time::timeScale = 1.0;
 
 	Renderer::SetCameraCount(1);
+	Renderer::GetCamera(0)->SetVerticalFOV(60);
 
 	DestroyHUD();
 	vector<GameObject*> gameOverItems = Game::FindGameObjectsWithTag(TAGS_GAME_OVER);
 	for (int i = 0; i < gameOverItems.size(); i++)
 		gameOverItems[i]->isVisible = true;
 
-	//Display scores
+	//Get player GameObjects
 	vector<GameObject*> players = Game::FindGameObjectsWithTag(TAGS_HUMAN_PLAYER);
 	vector<GameObject*> playeri = Game::FindGameObjectsWithTag(TAGS_AI_PLAYER);
 	players.insert(players.end(), playeri.begin(), playeri.end());
 
+	//Sort by score
+	for (int i = 1; i < players.size(); i++)
+	{
+		for (int j = 1; j < players.size(); j++)
+		{
+			PlayerComponent* playerCurrent = &PlayerComponent();
+			playerCurrent = (PlayerComponent*)players[j]->GetComponent(playerCurrent);
+
+			PlayerComponent* playerPrev = &PlayerComponent();
+			playerPrev = (PlayerComponent*)players[j-1]->GetComponent(playerPrev);
+
+			GameObject* pCurrent = players[j];
+			GameObject* pPrev = players[j - 1];
+
+			if (playerCurrent->playerScore > playerPrev->playerScore)
+			{
+				players[j] = pPrev;
+				players[j - 1] = pCurrent;
+			}
+		}
+	}
+
+	//Print to screen
 	for (int i = 0; i < players.size(); i++)
 	{
 		PlayerComponent* player = &PlayerComponent();
@@ -187,51 +340,66 @@ void GameManager::EndGame()
 				break;
 			}
 		}
+		//Icon
+		if (players[i]->tag == TAGS_HUMAN_PLAYER)
+		{
+			GameObject* icon = Game::Find("PlayerIcon" + i);
+			icon->particleOverlayMat.color.w = 1.0;
+			VehicleComponent* vehicle = &VehicleComponent();
+			vehicle = (VehicleComponent*)players[i]->GetComponent(vehicle);
+			icon->particleOverlayMat.mainTexture = MAP_RING01_ICON + vehicle->GetPlayerNum() - 1;
+		}
 	}
 }
 void GameManager::GotoMainMenu()
 {
 	gameState = GS_FRONT_MENU;
+	activeMenuItem = AMI_PLAYER_COUNT;
 	Time::timeScale = 1.0;
 
-	//Return all players back to normal
+	//Destroy all human and bot duplicants so they can be reprinted by StartGame()
 	vector<GameObject*> players = Game::FindGameObjectsWithTag(TAGS_HUMAN_PLAYER);
 	vector<GameObject*> playeri = Game::FindGameObjectsWithTag(TAGS_AI_PLAYER);
 	players.insert(players.end(), playeri.begin(), playeri.end());
-
-	for (int i = 0; i < players.size(); i++)
+	for (int i = players.size()-1; i >= 0; i--)//Chassis objects
 	{
-		PlayerComponent* player = &PlayerComponent();
-		player = (PlayerComponent*)players[i]->GetComponent(player);
-		player->currentWeapon = GW_MACHINE_GUN;
-		player->machineGunAmmo = START_MG_AMMO;
-		player->flamethrowerAmmo = START_FLAMETHROWER_AMMO;
-		player->missileLauncherAmmo = START_MISSILE_AMMO;
-		player->playerScore = 0;
+		//Hide ring icons
+		GameObject* icon = Game::Find("PlayerIcon" + i);
+		icon->particleOverlayMat.color.w = 0.0;
+		icon->particleOverlayMat.mainTexture = MAP_RING01_ICON;
 
-		HealthComponent* health = &HealthComponent();
-		health = (HealthComponent*)players[i]->GetComponent(health);
-		health->currentHealth = MAX_HEALTH;
-
-		if (players[i]->tag == TAGS_HUMAN_PLAYER)
-		{
-			VehicleComponent* vehicle = &VehicleComponent();
-			vehicle = (VehicleComponent*)players[i]->GetComponent(vehicle);
-
-			vehicle->physVehicle->setGlobalPose(physx::PxTransform(vehicle->myStartPosition, physx::PxQuat(physx::PxIdentity)));
-			vehicle->physVehicle->setAngularVelocity(physx::PxVec3(0, 0, 0));
-			vehicle->physVehicle->setLinearVelocity(physx::PxVec3(0, 0, 0));
-		}
-		else
-		{
-			EnemyComponent* enemy = &EnemyComponent();
-			enemy = (EnemyComponent*)players[i]->GetComponent(enemy);
-
-			enemy->enPhysVehicle->setGlobalPose(physx::PxTransform(enemy->startPosition, enemy->startRotation));
-			enemy->enPhysVehicle->setAngularVelocity(physx::PxVec3(0, 0, 0));
-			enemy->enPhysVehicle->setLinearVelocity(physx::PxVec3(0, 0, 0));
-		}
+		Game::DestroyStaticObjectAt(players[i]->objectID);
 	}
+	vector<GameObject*> wheels = Game::FindGameObjectsWithTag(TAGS_VEHICLE_WHEEL);
+	for (int i = wheels.size() - 1; i >= 0; i--)//Chassis objects
+	{
+		Game::DestroyStaticObjectAt(wheels[i]->objectID);
+	}
+
+	//Get rid of the physics representations
+	for (int i = 0; i < Physics::playerVehicleNoDrives.size(); i++)
+	{
+		Physics::playerVehicleNoDrives[i]->getRigidDynamicActor()->release();
+		Physics::playerVehicleNoDrives[i]->free();
+	}
+	for (int i = 0; i < Physics::opponentVehicleNoDrives.size(); i++)
+	{
+		Physics::opponentVehicleNoDrives[i]->getRigidDynamicActor()->release();
+		Physics::opponentVehicleNoDrives[i]->free();
+	}
+	Physics::playerVehicleNoDrives = {};
+	Physics::opponentVehicleNoDrives = {};
+
+	Game::KillAllParticles();
+
+	//Reset possible blood moon
+	Game::Find("Moon")->standardMat.selfIllumColor = vec3(0.8, 0.8, 1.0);
+	Game::Find("OceanTop")->standardMat.diffuseColor = vec3(0.0, 1.0, 1.0)*0.5f;
+	Game::Find("OceanBottom")->standardMat.diffuseColor = vec3(0.0, 1.0, 1.0)*0.5f;
+	Game::Find("OceanTop")->standardMat.transparency = 0.4;
+	Game::Find("OceanBottom")->standardMat.transparency = 0.4;
+	Game::Find("OceanTop")->standardMat.roughness = 0.05;
+	Game::Find("OceanBottom")->standardMat.roughness = 0.05;
 
 	vector<GameObject*> gameOverItems = Game::FindGameObjectsWithTag(TAGS_GAME_OVER);
 	for (int i = 0; i < gameOverItems.size(); i++)
@@ -253,6 +421,92 @@ float GameManager::GetGameTime()
 	return gameTimeRemaining;
 }
 
+void GameManager::HandleMenu()
+{
+	vector<GameObject*> menuItems = Game::FindGameObjectsWithTag(TAGS_MENU);
+	vector<GameObject*> playerMenu = {};
+	vector<GameObject*> timeMenu = {};
+	for (int i = 0; i < menuItems.size(); i++)
+	{
+		if (menuItems[i]->name.find("Players") != string::npos)			
+			playerMenu.push_back(menuItems[i]);
+		if (menuItems[i]->name.find("Time") != string::npos)
+			timeMenu.push_back(menuItems[i]);
+	}
+
+	switch (activeMenuItem)
+	{
+	case AMI_PLAYER_COUNT:
+		if (Input::GetXBoxAxis(1, ButtonCode::XBOX_JOY_LEFT_VERTICAL) < -0.5 && !menuChangePrev)
+		{
+			menuChangePrev = true;
+			activeMenuItem = AMI_GAME_TIME;
+		}
+		for (int i = 0; i < playerMenu.size(); i++)
+		{
+			playerMenu[i]->transform.scale = vec3(1.3);
+			playerMenu[i]->particleOverlayMat.color = vec4(vec3(0.8), 1.0);
+		}
+		for (int i = 0; i < timeMenu.size(); i++)
+		{
+			timeMenu[i]->transform.scale = vec3(1.0);
+			timeMenu[i]->particleOverlayMat.color = vec4(vec3(0.5), 1.0);
+		}
+		if (Input::GetXBoxAxis(1, ButtonCode::XBOX_JOY_LEFT_HORIZONTAL) < -0.5 && !menuChangePrev)
+		{
+			menuChangePrev = true;
+			humanPlayerCount--;
+			if (humanPlayerCount < 1)
+				humanPlayerCount = 1;			
+		}
+		if (Input::GetXBoxAxis(1, ButtonCode::XBOX_JOY_LEFT_HORIZONTAL) > 0.5 && !menuChangePrev)
+		{
+			menuChangePrev = true;
+			humanPlayerCount++;
+			if (humanPlayerCount > 4)
+				humanPlayerCount = 4;
+		}
+		break;
+	case AMI_GAME_TIME:
+		if (Input::GetXBoxAxis(1, ButtonCode::XBOX_JOY_LEFT_VERTICAL) > 0.5 && !menuChangePrev)
+		{
+			menuChangePrev = true;
+			activeMenuItem = AMI_PLAYER_COUNT;
+		}
+		for (int i = 0; i < playerMenu.size(); i++)
+		{
+			playerMenu[i]->transform.scale = vec3(1.0);
+			playerMenu[i]->particleOverlayMat.color = vec4(vec3(0.5), 1.0);
+		}
+		for (int i = 0; i < timeMenu.size(); i++)
+		{
+			timeMenu[i]->transform.scale = vec3(1.3);
+			timeMenu[i]->particleOverlayMat.color = vec4(vec3(0.8), 1.0);
+		}
+		if (Input::GetXBoxAxis(1, ButtonCode::XBOX_JOY_LEFT_HORIZONTAL) < -0.5 && !menuChangePrev)
+		{
+			menuChangePrev = true;
+			timeMinuteCount--;
+			if (timeMinuteCount < 3)
+				timeMinuteCount = 3;
+		}
+		if (Input::GetXBoxAxis(1, ButtonCode::XBOX_JOY_LEFT_HORIZONTAL) > 0.5 && !menuChangePrev)
+		{
+			menuChangePrev = true;
+			timeMinuteCount++;
+			if (timeMinuteCount > 8)
+				timeMinuteCount = 8;
+		}
+		break;
+	}
+	Game::Find("PlayersCount")->particleOverlayMat.mainTexture = MAP_ZERO + humanPlayerCount;
+	Game::Find("TimeCount")->particleOverlayMat.mainTexture = MAP_ZERO + timeMinuteCount;
+	initialGameTime = timeMinuteCount * 60;
+
+	if ((abs(Input::GetXBoxAxis(1, ButtonCode::XBOX_JOY_LEFT_HORIZONTAL)) +
+		abs(Input::GetXBoxAxis(1, ButtonCode::XBOX_JOY_LEFT_VERTICAL))) < 0.5)
+		menuChangePrev = false;
+}
 void GameManager::RedrawTimers()
 {
 	for (int i = 0; i < Renderer::GetCameraCount(); i++)

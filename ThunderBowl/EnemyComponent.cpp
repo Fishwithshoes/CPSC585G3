@@ -5,7 +5,6 @@
 #include "Physics.h"
 #include "Audio.h"
 
-
 void EnemyComponent::Start()
 {
 	Initialize();
@@ -37,9 +36,21 @@ void EnemyComponent::Start()
 
 	for (int i = 0; i < 4; i++) {
 		GameObject temp = GameObject();
+		temp.tag = TAGS_VEHICLE_WHEEL;
 		physx::PxTransform currWheel = enWheelBuffer[i]->getLocalPose();
-		temp.mesh = GeoGenerator::MakeCylinder(0.5, 0.5, 0.4, 8, false); //change to take in physx values
-		enWheelVector.push_back(Game::CreateWorldObject(temp));
+		if (i % 2 == 0)
+			temp.staticGeo = SG_LEFT_WHEEL;
+		else
+			temp.staticGeo = SG_RIGHT_WHEEL;
+		temp.standardMat.diffuseMap = MAP_WHEEL_DIFFUSE;
+		temp.standardMat.roughnessMap = MAP_WHEEL_ROUGHNESS;
+		temp.standardMat.metalnessMap = MAP_WHEEL_METALNESS;
+		temp.standardMat.normalMap = MAP_WHEEL_NORMAL;
+		temp.standardMat.roughness = 1.0;
+		temp.standardMat.metalness = 1.0;
+		temp.standardMat.bumpLevel = 5.0;
+		temp.standardMat.isMetallic = true;
+		enWheelVector.push_back(Game::CreateStaticObject(temp));
 	}
 
 	AIControlComponent1* tempController = &AIControlComponent1();
@@ -98,9 +109,9 @@ void EnemyComponent::Update()
 
 	if (transform.position.y < -20)
 	{
-		enPhysVehicle->setGlobalPose(physx::PxTransform(startPosition, startRotation));
-		enPhysVehicle->setAngularVelocity(physx::PxVec3(0, 0, 0));
-		enPhysVehicle->setLinearVelocity(physx::PxVec3(0, 0, 0));
+		HealthComponent* health = &HealthComponent();
+		health = (HealthComponent*)Game::Find(selfName)->GetComponent(health);
+		health->currentHealth = 0.0;
 	}
 
 	vec3 requiredHeading = glm::normalize(aiController->currentHeading);

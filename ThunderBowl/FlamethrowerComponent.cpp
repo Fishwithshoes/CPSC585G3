@@ -4,6 +4,7 @@
 #include "GeoGenerator.h"
 #include "ParticleSystem.h"
 #include "Audio.h"
+#include "Renderer.h"
 
 void FlamethrowerComponent::Start()
 {
@@ -86,6 +87,8 @@ void FlamethrowerComponent::UpdateParticles()
 	streamPower = vertical + abs(horizontal);
 	streamPower = Mathf::Clamp(streamPower, 0.0, 1.0);
 
+	Audio::Play2DSound(SFX_Flamethrower, streamPower*0.2, 0.0);
+
 	float theta = -Mathf::PI * 0.3 * horizontal;
 	fireStream->transform.Rotate(t.GetUp(), theta, false);
 
@@ -105,8 +108,9 @@ void FlamethrowerComponent::UpdateParticles()
 	fireStream->initialSpeed.min = streamPower * 60 + inheritedVelocity;
 	fireStream->initialSpeed.max = streamPower * 68 + inheritedVelocity;
 	fireStream->spawnRate = streamPower * 60;
-	fireStream->initialRadius.min = streamPower * 1.2;
-	fireStream->initialRadius.max = streamPower * 2.0;
+	fireStream->initialRadius.min = streamPower * 0.7;
+	fireStream->initialRadius.max = streamPower * 1.2;
+	fireStream->scaleScale = 1.0 + streamPower*0.3;
 
 	vector<GameObject*> players = Game::FindGameObjectsWithTag(TAGS_AI_PLAYER);
 	vector<GameObject*> playeri = Game::FindGameObjectsWithTag(TAGS_HUMAN_PLAYER);
@@ -140,6 +144,15 @@ void FlamethrowerComponent::UpdateParticles()
 				ownerPlayer->playerScore += damage*0.5;
 			}
 		}
+	}
+
+	for (int i = 0; i < fireStream->GetParticleCount(); i++)
+	{
+		PointLight light;
+		Particle p = fireStream->GetParticles()[i];
+		light.Color = vec4(1.0, 0.6, 0.1, 0.25 + p.scale.x * 0.3);
+		light.Pos = vec4(p.position, p.scale.x * 8.0);
+		Renderer::AddPointLight(light);
 	}
 
 	ownerPlayer->flamethrowerAmmo -= streamPower*Time::getDeltaTime();
