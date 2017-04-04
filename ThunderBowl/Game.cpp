@@ -10,6 +10,7 @@ vector<ParticleSystem> Game::particleObjectList = {};
 vector<GameObject> Game::overlayObjectList = {};
 vector<GameObject> Game::aiObjectList = {};
 vector<vec3> Game::plVehStartPositions = {};
+vector<float> Game::plVehStartRotations = {};
 vector<vec3> Game::aiVehStartPositions = {};
 vector<vec3> Game::innerNodePositions = {}; //For assigning center node positions
 vector<GameObject*> Game::innerNodes = {}; //For assigning center node positions
@@ -30,14 +31,20 @@ void Game::BuildWorld()
 	aiVehStartPositions.reserve(2);
 	aiVehStartPositions.reserve(5);
 
-	plVehStartPositions.push_back(vec3(0.0, 20.0, -120.0));
-	plVehStartPositions.push_back(vec3(0.0, 20.0, 120.0));
-	plVehStartPositions.push_back(vec3(120.0, 20.0, 0.0));
-	plVehStartPositions.push_back(vec3(-120.0, 20.0, 0.0));
+	plVehStartPositions.push_back(vec3(0.0, 35.0, -150.0));
+	plVehStartPositions.push_back(vec3(0.0, 35.0, 150.0));
+	plVehStartPositions.push_back(vec3(150.0, 35.0, 0.0));
+	plVehStartPositions.push_back(vec3(-150.0, 35.0, 0.0));
 
-	aiVehStartPositions.push_back(vec3(120.0, 20.0, 0.0));
-	aiVehStartPositions.push_back(vec3(-120.0, 20.0, 0.0));
-	aiVehStartPositions.push_back(vec3(0.0, 20.0, 120.0));
+
+	plVehStartRotations.push_back(3*Mathf::PI/2);
+	plVehStartRotations.push_back(Mathf::PI);
+	plVehStartRotations.push_back(Mathf::PI/2);
+
+
+	aiVehStartPositions.push_back(vec3(150.0, 35.0, 0.0));
+	aiVehStartPositions.push_back(vec3(0.0, 35.0, 150.0));
+	aiVehStartPositions.push_back(vec3(-150.0, 35.0, 0.0));
 
 	innerNodePositions.push_back(vec3(60.0, 20.0, 0.0));
 	innerNodePositions.push_back(vec3(42.42, 20.0, 42.42));
@@ -66,11 +73,7 @@ void Game::BuildWorld()
 	outerNodePositions.push_back(vec3(-150.0, 35.0, 0.0));
 	outerNodePositions.push_back(vec3(-106.0, 35.0, 106.0));
 
-	/*aiVehStartPositions.push_back(vec3(120.0, 1.0, 0.0));
-	aiVehStartPositions.push_back(vec3(-120.0, 1.0, 0.0));
-	aiVehStartPositions.push_back(vec3(0.0, 1.0, 120.0));
-
-	innerNodePositions.push_back(vec3(60.0, 1.0, 0.0));
+	/*innerNodePositions.push_back(vec3(60.0, 1.0, 0.0));
 	innerNodePositions.push_back(vec3(42.42, 1.0, 42.42));
 	innerNodePositions.push_back(vec3(0.0, 1.0, 60.0));
 	innerNodePositions.push_back(vec3(42.42, 1.0, -42.42));
@@ -130,7 +133,7 @@ void Game::BuildWorld()
 		GameObject tempNode = GameObject();
 		tempNode.name = "InnerNode" + to_string(i);
 		tempNode.transform.position = innerNodePositions.at(i);
-		//tempNode.mesh = GeoGenerator::MakeBox(1, 1, 1, false);
+		tempNode.mesh = GeoGenerator::MakeBox(1, 1, 1, false);
 		tempNode.tag = TAGS_AI_NODE;
 		ptr = Game::CreateWorldObject(tempNode);
 		ptr->AddComponent(new AINodeComponent());
@@ -166,7 +169,8 @@ void Game::BuildWorld()
 		tempNode.transform.position = middleNodePositions.at(i);
 		tempNode.tag = TAGS_AI_NODE;
 
-		if (remainder(i, 4) == 0) {
+		if (i == 0 || i == 4) {
+		//if (remainder(i, 4) == 0) {
 			tempNode.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
 			ptr = Game::CreateWorldObject(tempNode);
 			ptr->AddComponent(new AINodeComponent());
@@ -175,7 +179,8 @@ void Game::BuildWorld()
 			ptr->AddComponent(new RotateComponent());
 			ptr->AddComponent(new AINodeComponent(NodeTypes::NT_FT_POWERUP));
 		}
-		else if (remainder(i, 2) == 0) {
+		else if (i == 2 || i == 6) {
+		//else if (remainder(i, 2) == 0) {
 			tempNode.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
 			ptr = Game::CreateWorldObject(tempNode);
 			ptr->AddComponent(new AINodeComponent());
@@ -185,6 +190,8 @@ void Game::BuildWorld()
 			ptr->AddComponent(new AINodeComponent(NodeTypes::NT_MG_POWERUP));
 		}
 		else {
+			tempNode.mesh = GeoGenerator::MakeBox(1, 1, 1, false);
+			ptr = Game::CreateWorldObject(tempNode);
 			ptr = Game::CreateWorldObject(tempNode);
 			ptr->AddComponent(new AINodeComponent());
 			ptr->AddComponent(new AINodeComponent());
@@ -221,7 +228,7 @@ void Game::BuildWorld()
 		GameObject tempNode = GameObject();
 		tempNode.name = "OuterNode" + to_string(i);
 		tempNode.transform.position = outerNodePositions.at(i);
-		//tempNode.mesh = GeoGenerator::MakeBox(1, 1, 1, false);
+		tempNode.mesh = GeoGenerator::MakeBox(1, 1, 1, false);
 		tempNode.tag = TAGS_AI_NODE;
 		ptr = Game::CreateWorldObject(tempNode);
 		ptr->AddComponent(new AINodeComponent());

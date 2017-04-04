@@ -29,6 +29,7 @@ public:
 	static vector<GameObject> overlayObjectList;//For menu and HUD elements to draw atop all else
 	static vector<GameObject> aiObjectList; //For quick access to all AI nodes
 	static vector<glm::vec3> plVehStartPositions; //For assigning player vehicle start positions
+	static vector<float> plVehStartRotations; //For assigning player vehicle start positions
 	static vector<glm::vec3> aiVehStartPositions; //For assigning AI vehicle start positions
 	static vector<glm::vec3> innerNodePositions; //For assigning center node positions
 	static vector<GameObject*> innerNodes; //For assigning center node positions

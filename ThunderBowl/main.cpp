@@ -82,7 +82,6 @@ int main(int argc, char *argv[])
 		glfwTerminate();
 		return -1;
 	}
-	glfwSwapInterval(1);
 	Input::SetWindowSize(Camera::WIDTH, Camera::HEIGHT);
 
 	//Set input callbacks and make the window active
@@ -107,6 +106,7 @@ int main(int argc, char *argv[])
 //	}
 
 	RendererUtility::QueryGLVersion();
+	glfwSwapInterval(0);
 
 	Time::Init();
 	Audio::Init();
