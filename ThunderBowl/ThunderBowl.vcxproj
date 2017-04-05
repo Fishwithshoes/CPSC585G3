@@ -200,8 +200,8 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SDL2_mixer.lib;PhysX3ExtensionsDEBUG.lib;PhysX3DEBUG_x64.lib;PhysX3VehicleDEBUG.lib;PhysX3CommonDEBUG_x64.lib;PhysXProfileSDKDEBUG.lib;PhysX3CookingDEBUG_x64.lib;assimp.lib;sdl2.lib;opengl32.lib;glfw3.lib;glew32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)..\middleware\PhysX-3.3-master\PhysXSDK\Lib\vc14win64;$(ProjectDir)..\middleware\assimp-3.1.1-win-binaries\assimp-3.1.1-win-binaries\lib64;$(ProjectDir)..\middleware\SDL2_mixer-2.0.1\lib\x64;$(ProjectDir)..\middleware\SDL\2.0.5\lib\x64;$(ProjectDir)..\middleware\glfw-3.2.1x64\lib-vc2015;$(ProjectDir)..\middleware\glew-2.0.0\lib\Release\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>xinput.lib;SDL2_mixer.lib;PhysX3ExtensionsDEBUG.lib;PhysX3DEBUG_x64.lib;PhysX3VehicleDEBUG.lib;PhysX3CommonDEBUG_x64.lib;PhysXProfileSDKDEBUG.lib;PhysX3CookingDEBUG_x64.lib;assimp.lib;sdl2.lib;opengl32.lib;glfw3.lib;glew32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\middleware\;$(ProjectDir)..\middleware\PhysX-3.3-master\PhysXSDK\Lib\vc14win64;$(ProjectDir)..\middleware\assimp-3.1.1-win-binaries\assimp-3.1.1-win-binaries\lib64;$(ProjectDir)..\middleware\SDL2_mixer-2.0.1\lib\x64;$(ProjectDir)..\middleware\SDL\2.0.5\lib\x64;$(ProjectDir)..\middleware\glfw-3.2.1x64\lib-vc2015;$(ProjectDir)..\middleware\glew-2.0.0\lib\Release\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -230,16 +230,15 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\middleware\PhysX-3.3-master\PhysXSDK\Include;$(ProjectDir)..\middleware\SDL\2.0.5\include;$(ProjectDir)..\middleware;$(ProjectDir)..\middleware\glfw-3.2.1x64\include;$(ProjectDir)..\middleware\assimp-3.1.1-win-binaries\assimp-3.1.1-win-binaries\include;$(ProjectDir)..\middleware\glew-2.0.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <OpenMPSupport>true</OpenMPSupport>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\middleware\PhysX-3.3-master\PhysXSDK\Include\pxtask;$(ProjectDir)..\middleware\PhysX-3.3-master\PhysXSDK\Include\extensions;$(ProjectDir)..\middleware\PhysX-3.3-master\PhysXSDK\Include\foundation;$(ProjectDir)..\middleware\PhysX-3.3-master\PhysXSDK\Include\common;$(ProjectDir)..\middleware\PhysX-3.3-master\PhysXSDK\Include;$(ProjectDir)..\middleware\assimp-3.1.1-win-binaries\assimp-3.1.1-win-binaries\include;$(ProjectDir)..\middleware\SDL\2.0.5\include;$(ProjectDir)..\middleware;$(ProjectDir)..\middleware\glfw-3.2.1x64\include;$(ProjectDir)..\middleware\glew-2.0.0\include;$(ProjectDir)..\middleware\SDL2_mixer-2.0.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(ProjectDir)..\middleware\SDL\2.0.5\lib\x64;$(ProjectDir)..\middleware\glfw-3.2.1x64\lib-vc2015;$(ProjectDir)..\middleware\glew-2.0.0\lib\Release\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>sdl2.lib;opengl32.lib;glfw3.lib;glew32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\middleware\;$(ProjectDir)..\middleware\PhysX-3.3-master\PhysXSDK\Lib\vc14win64;$(ProjectDir)..\middleware\assimp-3.1.1-win-binaries\assimp-3.1.1-win-binaries\lib64;$(ProjectDir)..\middleware\SDL2_mixer-2.0.1\lib\x64;$(ProjectDir)..\middleware\SDL\2.0.5\lib\x64;$(ProjectDir)..\middleware\glfw-3.2.1x64\lib-vc2015;$(ProjectDir)..\middleware\glew-2.0.0\lib\Release\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>xinput.lib;SDL2_mixer.lib;PhysX3Extensions.lib;PhysX3_x64.lib;PhysX3Vehicle.lib;PhysX3Common_x64.lib;PhysXProfileSDK.lib;PhysX3Cooking_x64.lib;assimp.lib;sdl2.lib;opengl32.lib;glfw3.lib;glew32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

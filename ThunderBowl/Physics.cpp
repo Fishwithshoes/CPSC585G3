@@ -212,7 +212,7 @@ void Physics::computeRotation(PxQuat angle) {}
 
 void Physics::stepPhysics()
 {
-	const PxF32 timestep = 1.0f / 60.0f;
+	PxF32 timestep = Time::getDeltaTime();
 
 	//Raycasts.
 	PxVehicleWheels* vehicles[totalVehiclesNum];
@@ -253,7 +253,7 @@ void Physics::stepPhysics()
 	PxVehicleUpdates(timestep, grav, *gFrictionPairs, 2, vehicles, vehicleQueryResults);*/
 
 	//Scene update.
-	gScene->simulate(1.0f / 60.0f);
+	gScene->simulate(timestep);
 	gScene->fetchResults(true);
 }
 
@@ -773,7 +773,7 @@ PxRigidStatic* Physics::createPowerUp(PxReal sideLength)
 
 PxRigidDynamic* Physics::createTestProjectile()
 {
-	PxShape* shape = gPhysics->createShape(PxSphereGeometry(0.1), *gMaterial);
+	PxShape* shape = gPhysics->createShape(PxSphereGeometry(0.4), *gMaterial);
 	PxRigidDynamic* body = gPhysics->createRigidDynamic(PxTransform(PxIdentity));
 
 	PxFilterData projSimFilterData;

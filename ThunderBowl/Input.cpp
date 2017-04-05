@@ -214,3 +214,38 @@ vec2 Input::GetWindowSize()
 {
 	return windowSize;
 }
+
+vec2 Input::GetControllerVibration(int playerNum)
+{
+	XINPUT_STATE state;
+	XInputGetState(playerNum - 1, &state);
+
+	return vec2();
+}
+
+void Input::SetControllerVibration(int playerNum, float left, float right)
+{
+	XINPUT_VIBRATION vibration;
+	vibration.wLeftMotorSpeed = left*65535;
+	vibration.wRightMotorSpeed = right*65535;
+	XInputSetState(playerNum - 1, &vibration);
+}
+
+void Input::StopControllerVibration(int playerNum)
+{
+	XINPUT_VIBRATION vibration;
+	vibration.wLeftMotorSpeed = 0;
+	vibration.wRightMotorSpeed = 0;
+	XInputSetState(playerNum - 1, &vibration);
+}
+
+void Input::StopAllControllerVibration()
+{
+	XINPUT_VIBRATION vibration;
+	vibration.wLeftMotorSpeed = 0;
+	vibration.wRightMotorSpeed = 0;
+	for (int i = 0; i < 4; i++)
+	{
+		XInputSetState(i, &vibration);
+	}
+}

@@ -1,0 +1,72 @@
+#version 450
+#extension GL_NV_shadow_samplers_cube : enable
+
+in vec3 Position;
+in vec3 Color;
+in vec3 Normal;
+in vec2 TexCoord;
+
+uniform vec4 color;
+uniform samplerCube envMap;
+uniform vec3 cameraForward;
+uniform vec3 cameraPos;
+uniform int isBloodMoon;
+
+//Post Process
+layout(location = 0) out vec4 OutputColor;
+layout(location = 1) out vec4 OutputPosition;
+layout(location = 2) out vec4 OutputNormal;
+
+void main()
+{
+	//ENV COLOR
+	vec3 dayPos = vec3(1,0,1);
+	float t = 1.0;
+	t = (dot(normalize(dayPos), cameraForward)+1)*0.5;	
+	// vec3 envColor = vec3(0.7, 0.9, 1.0)*(1-t) + vec3(0.7, 0.9, 1.0)*t;
+	vec3 envColor = vec3(0.4, 0.4, 1.0)*(1-t) + vec3(1.0,0.5,0.2)*t;
+	if(isBloodMoon == 1)
+		envColor = vec3(0.8, 0.2, 0.2)*(1-t) + vec3(1.0,0.5,0.2)*t;
+	
+	if(cameraPos.y < 8.0)
+	{
+		float v = clamp(0.0 - Position.y*0.0003, 0.0, 1.0);
+		vec3 newEnvColor = (vec3(0.0, 1.0, 1.0)*0.4)*0.5 + envColor*0.5;
+		envColor = (newEnvColor*(1-v) + vec3(0)*v);
+	}
+
+	//SKYBOX
+	vec4 envTex = textureCube(envMap, -Normal);
+	vec3 final = color.xyz * envTex.xyz * envColor;
+	
+	//FOGGY FUGUE
+	float u = 0.0;
+	
+	float fogHorizon = cameraPos.y > 8.0 ? -50 : 1200.0;
+	
+	if(Position.y < fogHorizon)
+		u = 1.0;
+	else
+	{
+		u = clamp(1.0 - (Position.y+50)*0.002, 0, 1);
+	}
+	
+	final = final*(1-u) + envColor*u;
+	
+	//OUTPUT	
+	OutputColor = vec4(final, 1.0);
+	OutputPosition = vec4(Position*0.0005+0.5, 1.0);
+	OutputNormal = vec4(Normal*0.5+0.5, 1.0);
+	
+	// FragmentColor = vec4(Color.xyz, 1);
+	// FragmentColor = vec4(Normal, 1);	
+    // FragmentColor = vec4(TexCoord.x, 0, 0, 1);
+	// FragmentColor = vec4(0, TexCoord.y, 0, 1);
+	// FragmentColor = vec4(TexCoord.x, TexCoord.y, 0, 1);
+	
+	// FragmentColor = vec4(viewDir, 1.0);
+	// FragmentColor = vec4(red, 1.0);
+	
+	// FragmentColor = color;	
+	// FragmentColor = texture(envMap, red);
+}

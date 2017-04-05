@@ -69,8 +69,10 @@ void MachineGunComponent::FireMG()
 		player = (PlayerComponent*)self->GetComponent(player);
 		ammo = player->machineGunAmmo;
 	}
+	HealthComponent* health = &HealthComponent();
+	health = (HealthComponent*)self->GetComponent(health);
 
-	if (nextBullet <= 0.0f && ammo > 0)
+	if (nextBullet <= 0.0f && ammo > 0 && health->currentHealth > 0.0)
 	{
 		//Spawn bullet
 		//cout << "Fire!" << endl;
@@ -103,8 +105,12 @@ void MachineGunComponent::FireMG()
 		}
 		temp.transform.Translate(temp.transform.GetUp() * 0.8f, false);
 		temp.transform.Translate(temp.transform.GetForward() * 6.5f, false);
-		temp.standardMat.roughness = 0.3;
-		temp.standardMat.metalness = 1.0;
+		temp.standardMat.roughness = 1.0;
+		temp.standardMat.metalness = 0.0;
+		temp.standardMat.diffuseLevel = 0.0;
+		temp.standardMat.selfIllumLevel = 2.0;
+		temp.standardMat.selfIllumColor = vec3(1.0, 0.5, 0);
+
 		temp.standardMat.isMetallic = true;
 		GameObject* bullet = Game::CreateStaticObject(temp);
 		bullet->AddComponent(new BulletComponent(selfName));

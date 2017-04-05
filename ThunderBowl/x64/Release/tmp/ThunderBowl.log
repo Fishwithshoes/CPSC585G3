@@ -1,100 +1,26 @@
-﻿  Audio.cpp
-c:\cpsc585g3\thunderbowl\Audio.h(3): fatal error C1083: Cannot open include file: 'SDL_mixer.h': No such file or directory
-  BulletComponent.cpp
-c:\cpsc585g3\thunderbowl\FloatComponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\VehicleComponent.h(15): warning C4305: 'initializing': truncation from 'double' to 'float'
-  ButtonCode.cpp
-  Camera.cpp
-Camera.cpp(9): warning C4305: '=': truncation from 'double' to 'float'
-Camera.cpp(20): warning C4305: '=': truncation from 'double' to 'float'
-Camera.cpp(174): warning C4305: 'argument': truncation from 'double' to 'float'
-  Component.cpp
-c:\cpsc585g3\thunderbowl\FloatComponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\VehicleComponent.h(15): warning C4305: 'initializing': truncation from 'double' to 'float'
-  EnemyComponent.cpp
-c:\cpsc585g3\thunderbowl\FloatComponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\VehicleComponent.h(15): warning C4305: 'initializing': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\Physics.h(3): fatal error C1083: Cannot open include file: 'PxTransform.h': No such file or directory
-  FloatComponent.cpp
-c:\cpsc585g3\thunderbowl\FloatComponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\VehicleComponent.h(15): warning C4305: 'initializing': truncation from 'double' to 'float'
-  Game.cpp
-c:\cpsc585g3\thunderbowl\FloatComponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\VehicleComponent.h(15): warning C4305: 'initializing': truncation from 'double' to 'float'
-Game.cpp(117): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-Game.cpp(124): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-Game.cpp(131): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-  GameObject.cpp
-c:\cpsc585g3\thunderbowl\FloatComponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\VehicleComponent.h(15): warning C4305: 'initializing': truncation from 'double' to 'float'
-GameObject.cpp(17): warning C4305: '=': truncation from 'double' to 'float'
-GameObject.cpp(53): warning C4305: '=': truncation from 'double' to 'float'
-  GeoGenerator.cpp
-c:\cpsc585g3\thunderbowl\FloatComponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\VehicleComponent.h(15): warning C4305: 'initializing': truncation from 'double' to 'float'
-GeoGenerator.cpp(9): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-GeoGenerator.cpp(87): warning C4267: 'argument': conversion from 'size_t' to 'unsigned int', possible loss of data
-GeoGenerator.cpp(120): warning C4267: 'argument': conversion from 'size_t' to 'unsigned int', possible loss of data
-GeoGenerator.cpp(127): warning C4267: '=': conversion from 'size_t' to 'GLsizei', possible loss of data
-GeoGenerator.cpp(137): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-GeoGenerator.cpp(138): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-GeoGenerator.cpp(173): warning C4267: '=': conversion from 'size_t' to 'GLsizei', possible loss of data
-GeoGenerator.cpp(262): warning C4267: '=': conversion from 'size_t' to 'GLsizei', possible loss of data
-GeoGenerator.cpp(271): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-GeoGenerator.cpp(372): warning C4267: '=': conversion from 'size_t' to 'GLsizei', possible loss of data
-GeoGenerator.cpp(412): warning C4267: '=': conversion from 'size_t' to 'GLsizei', possible loss of data
-GeoGenerator.cpp(475): warning C4267: '=': conversion from 'size_t' to 'GLsizei', possible loss of data
-  HealthComponent.cpp
-c:\cpsc585g3\thunderbowl\FloatComponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\VehicleComponent.h(15): warning C4305: 'initializing': truncation from 'double' to 'float'
-  Input.cpp
-Input.cpp(6): warning C4305: 'initializing': truncation from 'double' to 'float'
-Input.cpp(30): warning C4804: '>': unsafe use of type 'bool' in operation
-Input.cpp(40): warning C4804: '>': unsafe use of type 'bool' in operation
-Input.cpp(157): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-  Loader.cpp
-  MachineGunComponent.cpp
-c:\cpsc585g3\thunderbowl\FloatComponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\VehicleComponent.h(15): warning C4305: 'initializing': truncation from 'double' to 'float'
-MachineGunComponent.cpp(10): warning C4305: 'argument': truncation from 'double' to 'float'
-  main.cpp
-c:\cpsc585g3\thunderbowl\FloatComponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\VehicleComponent.h(15): warning C4305: 'initializing': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\Physics.h(3): fatal error C1083: Cannot open include file: 'PxTransform.h': No such file or directory
-  Mathf.cpp
-Mathf.cpp(3): warning C4305: 'initializing': truncation from 'double' to 'float'
-  Physics.cpp
-c:\cpsc585g3\thunderbowl\Physics.h(3): fatal error C1083: Cannot open include file: 'PxTransform.h': No such file or directory
-  Random.cpp
-Random.cpp(11): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
-Random.cpp(16): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
-  Renderer.cpp
-c:\cpsc585g3\thunderbowl\FloatComponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\VehicleComponent.h(15): warning C4305: 'initializing': truncation from 'double' to 'float'
-C:\CPSC585G3\middleware\stb/stb_image.h(219): warning C4068: unknown pragma
-C:\CPSC585G3\middleware\stb/stb_image_write.h(222): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-  C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\stdio.h(205): note: see declaration of 'fopen'
-C:\CPSC585G3\middleware\stb/stb_image_write.h(616): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-  C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\stdio.h(1769): note: see declaration of 'sprintf'
-C:\CPSC585G3\middleware\stb/stb_image_write.h(998): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-  C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\stdio.h(205): note: see declaration of 'fopen'
-Renderer.cpp(137): warning C4101: 'loc': unreferenced local variable
-Renderer.cpp(231): warning C4267: '=': conversion from 'size_t' to 'GLsizei', possible loss of data
-Renderer.cpp(301): warning C4267: '=': conversion from 'size_t' to 'GLsizei', possible loss of data
-Renderer.cpp(394): warning C4244: 'argument': conversion from 'GLuint' to 'GLfloat', possible loss of data
-Renderer.cpp(420): warning C4267: '=': conversion from 'size_t' to 'GLsizei', possible loss of data
-Renderer.cpp(438): warning C4267: '=': conversion from 'size_t' to 'GLsizei', possible loss of data
-  RendererUtility.cpp
-RendererUtility.cpp(139): warning C4267: 'argument': conversion from 'size_t' to 'GLsizei', possible loss of data
-RendererUtility.cpp(169): warning C4267: 'argument': conversion from 'size_t' to 'GLsizei', possible loss of data
-  Compiling...
-  RotateComponent.cpp
-c:\cpsc585g3\thunderbowl\FloatComponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\VehicleComponent.h(15): warning C4305: 'initializing': truncation from 'double' to 'float'
-  Time.cpp
-  Transform.cpp
-  VehicleComponent.cpp
-c:\cpsc585g3\thunderbowl\VehicleComponent.h(15): warning C4305: 'initializing': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\FloatComponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\Physics.h(3): fatal error C1083: Cannot open include file: 'PxTransform.h': No such file or directory
-  VehicleRaycast.cpp
+﻿  MissileLauncherComponent.cpp
+c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\VehicleComponent.h(24): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\OceanComponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
+MissileLauncherComponent.cpp(35): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+MissileLauncherComponent.cpp(37): warning C4390: ';': empty controlled statement found; is this the intent?
+MissileLauncherComponent.cpp(86): warning C4305: 'argument': truncation from 'double' to 'float'
+  PlayerComponent.cpp
+c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\VehicleComponent.h(24): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\OceanComponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
+PlayerComponent.cpp(136): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+PlayerComponent.cpp(139): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+PlayerComponent.cpp(142): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+PlayerComponent.cpp(157): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+PlayerComponent.cpp(231): warning C4305: 'argument': truncation from 'double' to 'float'
+PlayerComponent.cpp(232): warning C4244: '+=': conversion from 'double' to 'int', possible loss of data
+PlayerComponent.cpp(238): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+PlayerComponent.cpp(243): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+PlayerComponent.cpp(256): warning C4305: 'argument': truncation from 'double' to 'float'
+LINK : warning LNK4075: ignoring '/INCREMENTAL' due to '/LTCG' specification
+  Generating code
+  220 of 2784 functions ( 7.9%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    23 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
+  ThunderBowl.vcxproj -> C:\Users\james.hollowaycurrie\CPSC585G3\ThunderBowl\x64\Release\ThunderBowl.exe
+  ThunderBowl.vcxproj -> C:\Users\james.hollowaycurrie\CPSC585G3\ThunderBowl\x64\Release\ThunderBowl.pdb (Full PDB)

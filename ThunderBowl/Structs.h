@@ -66,6 +66,8 @@ enum StaticGeos
 	SG_RIGHT_WHEEL,
 	SG_WHEEL,
 	SG_CAR,
+	SG_CAR_MED,
+	SG_CAR_LOW,
 	SG_MAP
 };
 
@@ -211,6 +213,9 @@ enum Maps
 	MAP_RING02_ICON,
 	MAP_RING03_ICON,
 	MAP_RING04_ICON,
+	MAP_DEFAULT_GRAD,
+	MAP_JHCBLUE_GRAD,
+	MAP_JHCGRAY_GRAD,
 	MAP_JERRY,
 	MAP_SPIDER,
 	//Particles
@@ -327,6 +332,7 @@ struct ParticleSystemDesc
 enum Sounds 
 {
 	SFX_Hit,
+	SFX_Dent,
 	SFX_Pause,
 	SFX_Select,
 	SFX_SwitchWeapon,
@@ -344,8 +350,9 @@ enum Sounds
 
 enum Musics
 {
-	MUS_Automation
-
+	MUS_Menu,
+	MUS_Battle,
+	MUS_BloodMoon
 };
 
 struct RIFF_Header 

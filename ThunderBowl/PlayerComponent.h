@@ -24,12 +24,9 @@ public:
 	void Burning();
 
 	void StartParticles();
-	void UpdateParticles(float currentHealth);
+	void UpdateParticles();
 
 private:
 	bool switchWeaponPrev = false;
-
-	Transform t;
-	string damagedSmokeName;
 };
 
