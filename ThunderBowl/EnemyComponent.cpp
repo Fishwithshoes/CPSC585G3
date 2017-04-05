@@ -56,9 +56,9 @@ void EnemyComponent::Start()
 	AIControlComponent1* tempController = &AIControlComponent1();
 	aiController = (AIControlComponent1*)Game::Find(selfName)->GetComponent(tempController);
 
-	maxTorque = 5500.0;
+	maxTorque = 10500.0;
 	brakeTorque = 3000.0;
-	turnTemper = 0.25;
+	turnTemper = 0.35;
 
 	performUTurn = false;
 

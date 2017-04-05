@@ -1,26 +1,13 @@
-﻿  MissileLauncherComponent.cpp
-c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\VehicleComponent.h(24): warning C4305: 'initializing': truncation from 'double' to 'float'
-c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\OceanComponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
-MissileLauncherComponent.cpp(35): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-MissileLauncherComponent.cpp(37): warning C4390: ';': empty controlled statement found; is this the intent?
-MissileLauncherComponent.cpp(86): warning C4305: 'argument': truncation from 'double' to 'float'
-  PlayerComponent.cpp
-c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\VehicleComponent.h(24): warning C4305: 'initializing': truncation from 'double' to 'float'
-c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\OceanComponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
-PlayerComponent.cpp(136): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-PlayerComponent.cpp(139): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-PlayerComponent.cpp(142): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-PlayerComponent.cpp(157): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-PlayerComponent.cpp(231): warning C4305: 'argument': truncation from 'double' to 'float'
-PlayerComponent.cpp(232): warning C4244: '+=': conversion from 'double' to 'int', possible loss of data
-PlayerComponent.cpp(238): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
-PlayerComponent.cpp(243): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
-PlayerComponent.cpp(256): warning C4305: 'argument': truncation from 'double' to 'float'
+﻿  Physics.cpp
+Physics.cpp(493): warning C4244: 'argument': conversion from 'double' to 'physx::PxReal', possible loss of data
+Physics.cpp(658): warning C4267: '=': conversion from 'size_t' to 'physx::PxU32', possible loss of data
+Physics.cpp(747): warning C4244: 'argument': conversion from 'double' to 'physx::PxReal', possible loss of data
+Physics.cpp(777): warning C4305: 'argument': truncation from 'double' to 'physx::PxReal'
 LINK : warning LNK4075: ignoring '/INCREMENTAL' due to '/LTCG' specification
   Generating code
-  220 of 2784 functions ( 7.9%) were compiled, the rest were copied from previous compilation.
-    0 functions were new in current compilation
-    23 functions had inline decision re-evaluated but remain unchanged
+  293 of 2854 functions (10.3%) were compiled, the rest were copied from previous compilation.
+    71 functions were new in current compilation
+    132 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
   ThunderBowl.vcxproj -> C:\Users\james.hollowaycurrie\CPSC585G3\ThunderBowl\x64\Release\ThunderBowl.exe
   ThunderBowl.vcxproj -> C:\Users\james.hollowaycurrie\CPSC585G3\ThunderBowl\x64\Release\ThunderBowl.pdb (Full PDB)

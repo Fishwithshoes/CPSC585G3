@@ -141,7 +141,7 @@ void GameManager::StartGame()
 		//opponent.mesh = GeoGenerator::MakeBox(2, 1, 2, false);
 		opponent.staticGeo = SG_CAR;
 		opponent.transform.position = Game::aiVehStartPositions[i];
-		opponent.transform.Rotate(Transform::Up(), Mathf::PI, false);
+		opponent.transform.Rotate(Transform::Up(), Game::plVehStartRotations[i], false);
 		opponent.name = "AI" + to_string(i);
 		opponent.tag = TAGS_AI_PLAYER;
 		opponent.standardMat.diffuseMap = MAP_CHASSIS_DIFFUSE;
