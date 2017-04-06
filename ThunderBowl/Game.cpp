@@ -170,7 +170,7 @@ void Game::BuildWorld()
 		tempNode.tag = TAGS_AI_NODE;
 		tempNode.mesh = GeoGenerator::MakeBox(1, 1, 1, false);
 
-		if (i == 0 || i == 4) {
+		if (i == 0 || i == 6) {
 		//if (remainder(i, 4) == 0) {
 
 			tempNode.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
@@ -180,7 +180,7 @@ void Game::BuildWorld()
 			ptr->AddComponent(new RotateComponent());
 			ptr->AddComponent(new AINodeComponent(NodeTypes::NT_FT_POWERUP));
 		}
-		else if (i == 2 || i == 6) {
+		else if (i == 2 || i == 4) {
 		//else if (remainder(i, 2) == 0) {
 			tempNode.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
 			ptr = Game::CreateWorldObject(tempNode);
@@ -257,7 +257,7 @@ void Game::BuildWorld()
 
 	}
 
-	/*GameObject centerNode = GameObject();
+	GameObject centerNode = GameObject();
 	centerNode.name = "CenterNode0";
 	centerNode.transform.position = vec3(0.0, 38.0, 0.0);
 	centerNode.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
@@ -265,7 +265,7 @@ void Game::BuildWorld()
 	ptr = Game::CreateWorldObject(centerNode);
 	ptr->AddComponent(new FloatComponent());
 	ptr->AddComponent(new RotateComponent());
-	ptr->AddComponent(new PowerUpComponent(GameWeapons::GW_MISSILE_LAUNCHER));*/
+	ptr->AddComponent(new PowerUpComponent(GameWeapons::GW_MISSILE_LAUNCHER));
 
 	AINodeComponent* innerNodeRef = &AINodeComponent();
 	AINodeComponent* middleNodeRef = &AINodeComponent();
