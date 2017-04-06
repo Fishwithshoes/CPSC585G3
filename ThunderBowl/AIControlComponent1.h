@@ -12,6 +12,7 @@ public:
 	AINodeComponent* findNearest();
 	void pathToDestination();
 	void repathOnTimout();
+	void resetCurrent();
 
 	vec3 currentHeading;
 	AINodeComponent* currentNode;

@@ -18,6 +18,10 @@ void AIControlComponent1::Start() {
 	for (int i = 0; i < gameNodes.size(); i++) {
 		currentAINodes.push_back((AINodeComponent*)gameNodes[i]->GetComponent(tempNode));
 	}
+	for (int i = 0; i < currentAINodes.size(); i++) {
+		cout << "Node names: " << currentAINodes.at(i)->getName() << endl;
+	}
+	cout << "Nodes size: " << currentAINodes.size() << endl;
 
 	AINodeComponent* outerNode7 = &AINodeComponent();
 	outerNode7 = (AINodeComponent*)Game::Find("OuterNode6")->GetComponent(outerNode7);
@@ -73,15 +77,23 @@ void AIControlComponent1::repathOnTimout() {
 	if (timer >= timeToRepath) {
 		//AINodeComponent* nearestNode = findNearest();
 		for (int i = 0; i < currentNode->adjacentNodes.size(); i++) {
-			if (currentNode->adjacentNodes.at(i)->getName().find("Middle")) {
-				previousNode = currentNode;
-				currentNode = currentNode->adjacentNodes.at(i);
-				currentHeading = (currentNode->nodeCurrentPosition - transform.position);
-				timer = 0.0;
-				break;
+			if (currentNode != previousNode) {
+				if (currentNode->adjacentNodes.at(i)->getName().find("Middle") != string::npos) {
+					previousNode = currentNode;
+					currentNode = currentNode->adjacentNodes.at(i);
+					currentHeading = (currentNode->nodeCurrentPosition - transform.position);
+					timer = 0.0;
+					break;
+				}
 			}
 		}
+		cout << "Repath to Node: " << currentNode->getName() << endl;
 	}
+}
+
+void AIControlComponent1::resetCurrent()
+{
+	currentNode = findNearest();
 }
 
 AINodeComponent* AIControlComponent1::findNearest()
@@ -92,9 +104,10 @@ AINodeComponent* AIControlComponent1::findNearest()
 		vec3 currentPath = (currentAINodes.at(i)->nodeCurrentPosition - transform.position);
 		if (glm::length(currentPath) < shortestPath) {
 			shortestPath = glm::length(currentPath);
-			returnComponent = currentAINodes.at(i);
+			returnComponent = currentAINodes[i];
 		}
 	}
+	cout << "nearest is: " << returnComponent->getName() << endl;
 	return returnComponent;
 }
 

@@ -103,10 +103,12 @@ void HealthComponent::Update()
 			EnemyComponent* enemy = &EnemyComponent();
 			enemy = (EnemyComponent*)self->GetComponent(enemy);
 
+			AIControlComponent1* enemyController = &AIControlComponent1();
+			enemyController = (AIControlComponent1*)self->GetComponent(enemyController);
+
 			enemy->enPhysVehicle->setGlobalPose(physx::PxTransform(enemy->startPosition, enemy->startRotation));
 			enemy->enPhysVehicle->setAngularVelocity(physx::PxVec3(0, 0, 0));
 			enemy->enPhysVehicle->setLinearVelocity(physx::PxVec3(0, 0, 0));
-			enemy->Start();
 
 			for (int i = 0; i < enemy->enWheelVector.size(); i++)
 				enemy->enWheelVector[i]->isVisible = true;
