@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <math.h>
 #include <omp.h>
+#include <Xinput.h>
 
 //For Windows (glew) or UNIX (direct to gl)?
 #ifdef _WIN32

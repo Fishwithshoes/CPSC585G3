@@ -1,4 +1,49 @@
-﻿  VehicleRaycast.cpp
+﻿  PlayerComponent.cpp
+c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\vehiclecomponent.h(24): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\oceancomponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\playercomponent.cpp(31): warning C4305: '=': truncation from 'double' to 'float'
+c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\playercomponent.cpp(32): warning C4305: '=': truncation from 'double' to 'float'
+c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\playercomponent.cpp(35): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\playercomponent.cpp(36): warning C4305: '=': truncation from 'double' to 'float'
+c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\playercomponent.cpp(37): warning C4305: '=': truncation from 'double' to 'float'
+c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\playercomponent.cpp(38): warning C4305: '=': truncation from 'double' to 'float'
+c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\playercomponent.cpp(39): warning C4305: '=': truncation from 'double' to 'float'
+c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\playercomponent.cpp(148): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\playercomponent.cpp(151): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\playercomponent.cpp(154): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\playercomponent.cpp(168): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\playercomponent.cpp(205): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\playercomponent.cpp(206): warning C4244: '+=': conversion from 'double' to 'int', possible loss of data
+c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\playercomponent.cpp(212): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\playercomponent.cpp(217): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\playercomponent.cpp(230): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\playercomponent.cpp(247): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\playercomponent.cpp(248): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\playercomponent.cpp(249): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\playercomponent.cpp(250): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\playercomponent.cpp(251): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+  Audio.cpp
+c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\audio.cpp(95): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\audio.cpp(97): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\audio.cpp(114): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\audio.cpp(116): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\audio.cpp(206): warning C4150: deletion of pointer to incomplete type '_Mix_Music'; no destructor called
+  c:\users\james.hollowaycurrie\cpsc585g3\middleware\sdl2_mixer-2.0.1\include\sdl_mixer.h(131): note: see declaration of '_Mix_Music'
+  Generating Code...
+  Compiling...
+  main.cpp
+c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\vehiclecomponent.h(24): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\oceancomponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\main.cpp(149): warning C4068: unknown pragma
+c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\main.cpp(150): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\main.cpp(154): warning C4068: unknown pragma
+c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\main.cpp(155): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\main.cpp(159): warning C4068: unknown pragma
+c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\main.cpp(160): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\main.cpp(164): warning C4068: unknown pragma
+c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\main.cpp(165): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\main.cpp(169): warning C4068: unknown pragma
+c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\main.cpp(170): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
   VehicleComponent.cpp
 c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\vehiclecomponent.h(24): warning C4305: 'initializing': truncation from 'double' to 'float'
 c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\oceancomponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
@@ -12,15 +57,16 @@ c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\vehiclecomponent.cpp(247): w
 c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\vehiclecomponent.cpp(248): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
 c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\vehiclecomponent.cpp(252): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
 c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\vehiclecomponent.cpp(262): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\vehiclecomponent.cpp(315): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\vehiclecomponent.cpp(322): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\vehiclecomponent.cpp(335): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\vehiclecomponent.cpp(344): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\vehiclecomponent.cpp(345): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\vehiclecomponent.cpp(367): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\vehiclecomponent.cpp(374): warning C4305: '=': truncation from 'double' to 'float'
-c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\vehiclecomponent.cpp(387): warning C4305: '=': truncation from 'double' to 'float'
-c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\vehiclecomponent.cpp(388): warning C4305: '=': truncation from 'double' to 'float'
+c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\vehiclecomponent.cpp(269): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\vehiclecomponent.cpp(323): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\vehiclecomponent.cpp(330): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\vehiclecomponent.cpp(343): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\vehiclecomponent.cpp(352): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\vehiclecomponent.cpp(353): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\vehiclecomponent.cpp(375): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\vehiclecomponent.cpp(382): warning C4305: '=': truncation from 'double' to 'float'
+c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\vehiclecomponent.cpp(395): warning C4305: '=': truncation from 'double' to 'float'
+c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\vehiclecomponent.cpp(396): warning C4305: '=': truncation from 'double' to 'float'
   Transform.cpp
 c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\transform.cpp(58): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
 c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\transform.cpp(59): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
@@ -32,7 +78,6 @@ c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\transform.cpp(88): warning C
 c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\transform.cpp(89): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
 c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\transform.cpp(90): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
 c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\transform.cpp(91): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-  Time.cpp
   StaticComponent.cpp
 c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\vehiclecomponent.h(24): warning C4305: 'initializing': truncation from 'double' to 'float'
 c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\oceancomponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
@@ -40,9 +85,6 @@ c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\staticcomponent.cpp(60): war
 c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\staticcomponent.cpp(101): warning C4305: 'argument': truncation from 'double' to 'float'
 c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\staticcomponent.cpp(104): warning C4305: 'argument': truncation from 'double' to 'float'
   RotateComponent.cpp
-c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\vehiclecomponent.h(24): warning C4305: 'initializing': truncation from 'double' to 'float'
-c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\oceancomponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
-  MissileLauncherComponent.cpp
 c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\vehiclecomponent.h(24): warning C4305: 'initializing': truncation from 'double' to 'float'
 c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\oceancomponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
   RendererUtility.cpp
@@ -101,30 +143,6 @@ c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\random.cpp(16): warning C424
   PowerUpComponent.cpp
 c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\vehiclecomponent.h(24): warning C4305: 'initializing': truncation from 'double' to 'float'
 c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\oceancomponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
-  PlayerComponent.cpp
-c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\vehiclecomponent.h(24): warning C4305: 'initializing': truncation from 'double' to 'float'
-c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\oceancomponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
-c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\playercomponent.cpp(31): warning C4305: '=': truncation from 'double' to 'float'
-c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\playercomponent.cpp(32): warning C4305: '=': truncation from 'double' to 'float'
-c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\playercomponent.cpp(35): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\playercomponent.cpp(36): warning C4305: '=': truncation from 'double' to 'float'
-c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\playercomponent.cpp(37): warning C4305: '=': truncation from 'double' to 'float'
-c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\playercomponent.cpp(38): warning C4305: '=': truncation from 'double' to 'float'
-c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\playercomponent.cpp(39): warning C4305: '=': truncation from 'double' to 'float'
-c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\playercomponent.cpp(148): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\playercomponent.cpp(151): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\playercomponent.cpp(154): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\playercomponent.cpp(168): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\playercomponent.cpp(205): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\playercomponent.cpp(206): warning C4244: '+=': conversion from 'double' to 'int', possible loss of data
-c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\playercomponent.cpp(212): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
-c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\playercomponent.cpp(217): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
-c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\playercomponent.cpp(230): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\playercomponent.cpp(247): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\playercomponent.cpp(248): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\playercomponent.cpp(249): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\playercomponent.cpp(250): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\playercomponent.cpp(251): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
   Physics.cpp
 c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\physics.cpp(492): warning C4244: 'argument': conversion from 'double' to 'physx::PxReal', possible loss of data
 c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\physics.cpp(657): warning C4267: '=': conversion from 'size_t' to 'physx::PxU32', possible loss of data
@@ -139,6 +157,9 @@ c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\particlesystem.cpp(181): war
 c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\particlesystem.cpp(203): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
 c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\particlesystem.cpp(247): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
   OceanComponent.cpp
+c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\oceancomponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
+  MissileLauncherComponent.cpp
+c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\vehiclecomponent.h(24): warning C4305: 'initializing': truncation from 'double' to 'float'
 c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\oceancomponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
   MissileComponent.cpp
 c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\vehiclecomponent.h(24): warning C4305: 'initializing': truncation from 'double' to 'float'
@@ -158,21 +179,6 @@ c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\missilecomponent.cpp(197): w
 c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\missilecomponent.cpp(198): warning C4305: '=': truncation from 'double' to 'float'
 c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\missilecomponent.cpp(199): warning C4305: '=': truncation from 'double' to 'float'
 c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\missilecomponent.cpp(200): warning C4305: '=': truncation from 'double' to 'float'
-  Mathf.cpp
-c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\mathf.cpp(3): warning C4305: 'initializing': truncation from 'double' to 'float'
-  main.cpp
-c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\vehiclecomponent.h(24): warning C4305: 'initializing': truncation from 'double' to 'float'
-c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\oceancomponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
-c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\main.cpp(149): warning C4068: unknown pragma
-c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\main.cpp(150): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\main.cpp(154): warning C4068: unknown pragma
-c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\main.cpp(155): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\main.cpp(159): warning C4068: unknown pragma
-c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\main.cpp(160): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\main.cpp(164): warning C4068: unknown pragma
-c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\main.cpp(165): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\main.cpp(169): warning C4068: unknown pragma
-c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\main.cpp(170): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
   MachineGunComponent.cpp
 c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\vehiclecomponent.h(24): warning C4305: 'initializing': truncation from 'double' to 'float'
 c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\oceancomponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
@@ -185,8 +191,6 @@ c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\machineguncomponent.cpp(125)
 c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\machineguncomponent.cpp(132): warning C4305: '=': truncation from 'double' to 'float'
 c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\machineguncomponent.cpp(133): warning C4305: '=': truncation from 'double' to 'float'
 c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\machineguncomponent.cpp(144): warning C4305: 'argument': truncation from 'double' to 'float'
-  Generating Code...
-  Compiling...
   Loader.cpp
 c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\loader.cpp(47): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
   Input.cpp
@@ -229,6 +233,8 @@ c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\geogenerator.cpp(535): warni
 c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\geogenerator.cpp(539): warning C4267: '=': conversion from 'size_t' to 'GLsizei', possible loss of data
 c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\geogenerator.cpp(582): warning C4267: '=': conversion from 'size_t' to 'GLsizei', possible loss of data
 c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\geogenerator.cpp(645): warning C4267: '=': conversion from 'size_t' to 'GLsizei', possible loss of data
+  Generating Code...
+  Compiling...
   GameObject.cpp
 c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\vehiclecomponent.h(24): warning C4305: 'initializing': truncation from 'double' to 'float'
 c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\oceancomponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
@@ -368,7 +374,6 @@ c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\oceancomponent.h(11): warnin
 c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\camera.cpp(9): warning C4305: '=': truncation from 'double' to 'float'
 c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\camera.cpp(17): warning C4305: '=': truncation from 'double' to 'float'
 c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\camera.cpp(156): warning C4305: 'argument': truncation from 'double' to 'float'
-  ButtonCode.cpp
   BulletComponent.cpp
 c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\vehiclecomponent.h(24): warning C4305: 'initializing': truncation from 'double' to 'float'
 c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\oceancomponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
@@ -383,13 +388,6 @@ c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\bulletcomponent.cpp(157): wa
 c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\bulletcomponent.cpp(171): warning C4305: 'argument': truncation from 'double' to 'float'
 c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\bulletcomponent.cpp(173): warning C4244: '+=': conversion from 'double' to 'int', possible loss of data
 c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\bulletcomponent.cpp(179): warning C4244: '+=': conversion from 'double' to 'int', possible loss of data
-  Audio.cpp
-c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\audio.cpp(92): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\audio.cpp(94): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\audio.cpp(111): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\audio.cpp(113): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\audio.cpp(203): warning C4150: deletion of pointer to incomplete type '_Mix_Music'; no destructor called
-  c:\users\james.hollowaycurrie\cpsc585g3\middleware\sdl2_mixer-2.0.1\include\sdl_mixer.h(131): note: see declaration of '_Mix_Music'
   AINodeComponent.cpp
 c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\vehiclecomponent.h(24): warning C4305: 'initializing': truncation from 'double' to 'float'
 c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\oceancomponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
@@ -397,8 +395,9 @@ c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\oceancomponent.h(11): warnin
 c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\vehiclecomponent.h(24): warning C4305: 'initializing': truncation from 'double' to 'float'
 c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\oceancomponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
   Generating Code...
-c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\gameobject.cpp(133): warning C4172: returning address of local variable or temporary
 c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\gameobject.cpp(123): warning C4172: returning address of local variable or temporary
+c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\gameobject.cpp(133): warning C4172: returning address of local variable or temporary
+  LINK : C:\Users\james.hollowaycurrie\CPSC585G3\ThunderBowl\\x64\Debug\ThunderBowl.exe not found or not built by the last incremental link; performing full link
 LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library
   ThunderBowl.vcxproj -> C:\Users\james.hollowaycurrie\CPSC585G3\ThunderBowl\\x64\Debug\ThunderBowl.exe
   ThunderBowl.vcxproj -> C:\Users\james.hollowaycurrie\CPSC585G3\ThunderBowl\\x64\Debug\ThunderBowl.pdb (Full PDB)

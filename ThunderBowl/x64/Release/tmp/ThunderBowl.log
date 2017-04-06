@@ -1,11 +1,2 @@
-﻿  AIControlComponent1.cpp
-c:\cpsc585g3\thunderbowl\VehicleComponent.h(24): warning C4305: 'initializing': truncation from 'double' to 'float'
-c:\cpsc585g3\thunderbowl\OceanComponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
-LINK : warning LNK4075: ignoring '/INCREMENTAL' due to '/LTCG' specification
-  Generating code
-  217 of 2850 functions ( 7.6%) were compiled, the rest were copied from previous compilation.
-    0 functions were new in current compilation
-    26 functions had inline decision re-evaluated but remain unchanged
-  Finished generating code
-  ThunderBowl.vcxproj -> C:\CPSC585G3\ThunderBowl\x64\Release\ThunderBowl.exe
+﻿  ThunderBowl.vcxproj -> C:\CPSC585G3\ThunderBowl\x64\Release\ThunderBowl.exe
   ThunderBowl.vcxproj -> C:\CPSC585G3\ThunderBowl\x64\Release\ThunderBowl.pdb (Full PDB)

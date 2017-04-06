@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
 {
 	// initialize the GLFW windowing system
 	if (!glfwInit()) {
-		cout << "ERROR: GLFW failed to initilize, TERMINATING" << endl;
+		std::cout << "ERROR: GLFW failed to initilize, TERMINATING" << endl;
 		return -1;
 	}
 	glfwSetErrorCallback(RendererUtility::ErrorCallback);
@@ -78,7 +78,7 @@ int main(int argc, char *argv[])
 	GLFWmonitor *monitor = glfwGetPrimaryMonitor();
 	window = glfwCreateWindow(Camera::WIDTH, Camera::HEIGHT, "Thunderbowl", 0, 0);
 	if (!window) {
-		cout << "Program failed to create GLFW window, TERMINATING" << endl;
+		std::cout << "Program failed to create GLFW window, TERMINATING" << endl;
 		glfwTerminate();
 		return -1;
 	}
@@ -94,7 +94,7 @@ int main(int argc, char *argv[])
 	// Intialize GLEW
 	glewExperimental = GL_TRUE;
 	if (glewInit() != GLEW_OK) {
-		cout << "glew init failed" << endl;
+		std::cout << "glew init failed" << endl;
 		return -1;
 	}
 	RendererUtility::CheckGLErrors();
@@ -117,7 +117,7 @@ int main(int argc, char *argv[])
 	Game::BuildWorld();
 	Renderer::GetCamera(0)->Start();
 
-	//Audio::PlayMusic(MUS_Automation, 0.25);
+	Audio::PlayMusic(MUS_Menu, 0.15);
 
 	//MAIN LOOP
 	while (!glfwWindowShouldClose(window))
@@ -186,6 +186,44 @@ int main(int argc, char *argv[])
 		Input::UpdateInput();
 		Input::SetOldMousePosition();
 
+		//Framerate display
+		if (Input::GetButton(ButtonCode::F))
+		{
+			vector<GameObject*> frameItems = Game::FindGameObjectsWithTag(TAGS_DEBUG_0);
+			for (int i = 0; i < frameItems.size(); i++)
+				frameItems[i]->isVisible = true;
+
+			string strFrame = to_string((int)Time::getFrameRate());
+			GameObject* frame1 = Game::Find("framerate1");
+			GameObject* frame2 = Game::Find("framerate2");
+			GameObject* frame3 = Game::Find("framerate3");
+
+			for (int i = strFrame.length() - 1; i >= 0; i--)
+			{
+				switch (i)
+				{
+				case 0:
+					frame3->particleOverlayMat.mainTexture = MAP_ZERO + (strFrame[-1 + strFrame.length()] - 48);
+					break;
+				case 1:
+					frame2->particleOverlayMat.mainTexture = MAP_ZERO + (strFrame[-2 + strFrame.length()] - 48);
+					break;
+				case 2:
+					frame1->particleOverlayMat.mainTexture = MAP_ZERO + (strFrame[-3 + strFrame.length()] - 48);
+					break;
+				default:
+					std::cout << "What are ya doin' matey? Score be too large!" << std::endl;
+					break;
+				}
+			}
+		}
+		else
+		{
+			vector<GameObject*> frameItems = Game::FindGameObjectsWithTag(TAGS_DEBUG_0);
+			for (int i = 0; i < frameItems.size(); i++)
+				frameItems[i]->isVisible = false;
+		}
+
 		//End the frame
 		Time::EndFrame();
 	}
@@ -196,6 +234,6 @@ int main(int argc, char *argv[])
 	glfwDestroyWindow(window);
 	glfwTerminate();
 
-	cout << "ThunderBowl out!" << endl;
+	std::cout << "ThunderBowl out!" << std::endl;
 	return 0;
 }

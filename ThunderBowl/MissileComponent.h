@@ -28,4 +28,3 @@ private:
 	ParticleSystem* particleTrail;
 	string particleTrailName;
 };
-
