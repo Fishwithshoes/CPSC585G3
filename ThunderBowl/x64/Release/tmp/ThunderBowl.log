@@ -3,7 +3,7 @@ c:\cpsc585g3\thunderbowl\VehicleComponent.h(24): warning C4305: 'initializing': 
 c:\cpsc585g3\thunderbowl\OceanComponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
 LINK : warning LNK4075: ignoring '/INCREMENTAL' due to '/LTCG' specification
   Generating code
-  229 of 2924 functions ( 7.8%) were compiled, the rest were copied from previous compilation.
+  226 of 2925 functions ( 7.7%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
     25 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
