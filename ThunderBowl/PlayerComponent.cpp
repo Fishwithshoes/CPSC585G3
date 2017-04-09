@@ -9,6 +9,7 @@
 void PlayerComponent::Start() 
 {
 	Initialize();
+	playerCurrentPosition = transform.position;
 
 	playerScore = 0;
 	oldScore = playerScore;
@@ -30,6 +31,7 @@ void PlayerComponent::StartParticles()
 void PlayerComponent::Update() 
 {
 	Initialize();
+	playerCurrentPosition = transform.position;
 
 	if (oldScore != playerScore) 
 	{

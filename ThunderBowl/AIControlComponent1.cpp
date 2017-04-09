@@ -13,15 +13,23 @@ void AIControlComponent1::Start() {
 	thisEnemy = Game::Find(selfName);
 
 	gameNodes = Game::FindGameObjectsWithTag(TAGS_AI_NODE);
+	gamePlayers = Game::FindGameObjectsWithTag(TAGS_HUMAN_PLAYER);
+	//ADD in AI PLAYERS
 
 	AINodeComponent* tempNode = &AINodeComponent();
 	for (int i = 0; i < gameNodes.size(); i++) {
 		currentAINodes.push_back((AINodeComponent*)gameNodes[i]->GetComponent(tempNode));
 	}
-	for (int i = 0; i < currentAINodes.size(); i++) {
-		cout << "Node names: " << currentAINodes.at(i)->getName() << endl;
+
+	PlayerComponent* tempPlayer = &PlayerComponent();
+	for (int i = 0; i < gamePlayers.size(); i++) {
+		currentPlayers.push_back((PlayerComponent*)gamePlayers[i]->GetComponent(tempPlayer));
 	}
-	cout << "Nodes size: " << currentAINodes.size() << endl;
+
+	for (int i = 0; i < currentPlayers.size(); i++) {
+		cout << "Player names: " << currentPlayers.at(i)->getName() << endl;
+	}
+	cout << "Nodes size: " << currentPlayers.size() << endl;
 
 	AINodeComponent* outerNode7 = &AINodeComponent();
 	outerNode7 = (AINodeComponent*)Game::Find("OuterNode6")->GetComponent(outerNode7);
@@ -35,9 +43,15 @@ void AIControlComponent1::Start() {
 void AIControlComponent1::Update() {
 	Initialize();
 
+	detectEnemy();
 	timer += Time::getDeltaTime();
 
-	if (reversing) {
+	if (tracking) {
+		cout << selfName << "is tracking" << endl;
+		trackEnemy();
+	}
+
+	else if (reversing) {
 		EnemyComponent* thisEnemyComp = &EnemyComponent();
 		thisEnemyComp = (EnemyComponent*)thisEnemy->GetComponent(thisEnemyComp);
 		thisEnemyComp->ReverseOut();
@@ -148,6 +162,40 @@ void AIControlComponent1::updateHeading()
 	vec3 newHeading = normalize(currentNode->nodeCurrentPosition - transform.position);
 	newHeading.z = -newHeading.z;
 	currentHeading = vec3(newHeading.x, newHeading.y, newHeading.z);
+}
+
+void AIControlComponent1::updateTracking()
+{
+	if (currentEnemy != NULL) {
+		vec3 newHeading = normalize(currentEnemy->playerCurrentPosition - transform.position);
+		newHeading.z = -newHeading.z;
+		currentHeading = vec3(newHeading.x, newHeading.y, newHeading.z);
+	}
+}
+
+void AIControlComponent1::detectEnemy() {
+	bool enemyFound = false;
+	for (int i = 0; i < currentPlayers.size(); i++) {
+		if (glm::distance(transform.position, currentPlayers.at(i)->playerCurrentPosition) < 50.0) {
+			currentEnemy = currentPlayers.at(i);
+			enemyFound = true;
+			tracking = true;
+		}
+	}
+	if (!enemyFound)
+		currentEnemy = NULL;
+}
+
+void AIControlComponent1::trackEnemy() {
+	if (currentEnemy != NULL) {
+		if (glm::distance(transform.position, currentEnemy->playerCurrentPosition) < 75.0) {
+			updateTracking();
+		}
+	}
+	else {
+		currentEnemy = NULL;
+		tracking = false;
+	}
 }
 
 /*void AIControlComponent1::startPath() {

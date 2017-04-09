@@ -63,12 +63,18 @@ void MachineGunComponent::FireMG()
 {
 	int ammo = 0;
 	GameObject* self = Game::Find(selfName);
-	if (self->tag == TAGS_HUMAN_PLAYER)
-	{
+	//if (self->tag == TAGS_HUMAN_PLAYER)
+	//{
 		PlayerComponent* player = &PlayerComponent();
 		player = (PlayerComponent*)self->GetComponent(player);
 		ammo = player->machineGunAmmo;
-	}
+	/*}
+	else {
+		PlayerComponent* enemy = &PlayerComponent();
+		enemy = (PlayerComponent*)self->GetComponent(enemy);
+		ammo = enemy->machineGunAmmo;
+	}*/
+
 	HealthComponent* health = &HealthComponent();
 	health = (HealthComponent*)self->GetComponent(health);
 
@@ -102,6 +108,9 @@ void MachineGunComponent::FireMG()
 
 			temp.transform.Rotate(temp.transform.GetUp(), theta, false);
 			temp.transform.Rotate(temp.transform.GetRight(), phi, false);
+		}
+		else {
+			//AI firing, need a horizontal and vertical
 		}
 		temp.transform.Translate(temp.transform.GetUp() * 0.8f, false);
 		temp.transform.Translate(temp.transform.GetForward() * 6.5f, false);
