@@ -5,6 +5,8 @@
 #include "ParticleSystem.h"
 #include "Audio.h"
 #include "Renderer.h"
+#include "GameManager.h"
+#include "Mathf.h"
 
 void FlamethrowerComponent::Start()
 {
@@ -86,8 +88,20 @@ void FlamethrowerComponent::UpdateParticles()
 
 	streamPower = vertical + abs(horizontal);
 	streamPower = Mathf::Clamp(streamPower, 0.0, 1.0);
+	
+	//using the game timer play flamethrower sound so it doesn't overplay
+	float time = GameManager::GetGameTime();
+	time = time * 1000;
+	int time2 = (int)time;
+	time = time - time2;
+	time2 = (int)(time * 10);
 
-	Audio::Play2DSound(SFX_Flamethrower, streamPower*0.2, 0.0);
+	if (time2 == 9 || time2 == 1)
+	{
+		Audio::Play2DSound(SFX_Flamethrower, streamPower*0.2, 0.0);
+	}
+	
+	
 
 	float theta = -Mathf::PI * 0.3 * horizontal;
 	fireStream->transform.Rotate(t.GetUp(), theta, false);

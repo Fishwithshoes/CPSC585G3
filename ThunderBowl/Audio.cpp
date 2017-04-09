@@ -17,12 +17,22 @@ vector<string> Audio::soundFilePaths =
 	"Sounds/flamethrower_SFX.wav",
 	"Sounds/splish_SFX.wav",
 	"Sounds/splash_SFX.wav",
-	"Sounds/engine_SFX.wav"
+	"Sounds/engine_SFX.wav",
+	"Sounds/engine_SFX1.wav",
+	"Sounds/engine_SFX2.wav",
+	"Sounds/engine_SFX3.wav",
+	"Sounds/engine_SFX4.wav",
+	"Sounds/engine_SFX5.wav",
+	"Sounds/engine_SFX6.wav",
+	"Sounds/engine_SFX7.wav",
+	"Sounds/engine_SFX8.wav",
+	"Sounds/engine_SFX9.wav"
 };
 
 vector<string> Audio::musicFilePaths =
 {
-	"Sounds/Automation.wav"
+	"Sounds/Automation.wav",
+	"Sounds/Contra_MUS.wav"
 };
 
 vector<Mix_Chunk*> Audio::sounds = {};

@@ -338,13 +338,22 @@ enum Sounds
 	SFX_Flamethrower,
 	SFX_Splish,
 	SFX_Splash,
-	SFX_Engine
+	SFX_Engine,
+	SFX_Engine1,
+	SFX_Engine2,
+	SFX_Engine3,
+	SFX_Engine4,
+	SFX_Engine5,
+	SFX_Engine6,
+	SFX_Engine7,
+	SFX_Engine8,
+	SFX_Engine9
 };
 
 enum Musics
 {
-	MUS_Automation
-
+	MUS_Automation,
+	MUS_Conta
 };
 
 struct RIFF_Header 

@@ -124,8 +124,8 @@ void VehicleComponent::Update()
 
 	}
 
-	physx::PxReal maxTorque = 10000.0;
-	physx::PxReal brakeTorque = 11000.0;
+	physx::PxReal maxTorque = 20000.0;
+	physx::PxReal brakeTorque = 20000.0;
 	physx::PxReal turnTemper = 0.1 * (1.0+Input::GetXBoxAxis(playerNum, ButtonCode::XBOX_LEFT_TRIGGER)*1.0);
 
 	//Gas
@@ -257,10 +257,160 @@ void VehicleComponent::Update()
 
 	//IF_DEF ENGINE LOOP SOUND
 	nextEngine -= Time::getDeltaTime();
+
 	//if (nextEngine <= 0.0f)
 	//{
-		Audio::Play2DSound(SFX_Engine, 0.03 + speed*0.0002, 0.0);
-		nextEngine = engineDelay;
+	//using the game timer play engine sound so it doesn't overplay
+	float time = GameManager::GetGameTime();
+	time = time * 1000;
+	int time2 = (int)time;
+	time = time - time2;
+	time2 = (int)(time * 10);
+
+	if (time2 == 9)
+	{
+		/*
+		float throttleOpen = Input::GetXBoxAxis(playerNum, ButtonCode::XBOX_RIGHT_TRIGGER);
+
+		if (throttleOpen > 0.1)
+		{		
+			//gear 1
+			if (speed < 5)
+			{
+				Audio::Play2DSound(SFX_Engine1, 0.2, 0.0);
+			}
+			else if (speed < 10)
+			{
+				Audio::Play2DSound(SFX_Engine2, 0.2, 0.0);
+			}
+			else if (speed < 15)
+			{
+				Audio::Play2DSound(SFX_Engine3, 0.2, 0.0);
+			}
+			else if (speed < 20)
+			{
+				Audio::Play2DSound(SFX_Engine4, 0.2, 0.0);
+			}
+			else if (speed < 25)
+			{
+				Audio::Play2DSound(SFX_Engine5, 0.2, 0.0);
+			}
+			else if (speed < 30)
+			{
+				Audio::Play2DSound(SFX_Engine6, 0.2, 0.0);
+			}
+
+			//gear 2
+			else if (speed < 30)
+			{
+				Audio::Play2DSound(SFX_Engine1, 0.2, 0.0);
+			}
+			else if (speed < 40)
+			{
+				Audio::Play2DSound(SFX_Engine2, 0.2, 0.0);
+			}
+			else if (speed < 50)
+			{
+				Audio::Play2DSound(SFX_Engine3, 0.2, 0.0);
+			}
+			else if (speed < 60)
+			{
+				Audio::Play2DSound(SFX_Engine4, 0.2, 0.0);
+			}
+			else if (speed < 70)
+			{
+				Audio::Play2DSound(SFX_Engine5, 0.2, 0.0);
+			}
+			else if (speed < 80)
+			{
+				Audio::Play2DSound(SFX_Engine6, 0.2, 0.0);
+			}
+
+			//gear 3
+			else if (speed < 100)
+			{
+				Audio::Play2DSound(SFX_Engine1, 0.2, 0.0);
+			}
+			else if (speed < 120)
+			{
+				Audio::Play2DSound(SFX_Engine2, 0.2, 0.0);
+			}
+			else if (speed < 140)
+			{
+				Audio::Play2DSound(SFX_Engine3, 0.2, 0.0);
+			}
+			else if (speed < 160)
+			{
+				Audio::Play2DSound(SFX_Engine4, 0.2, 0.0);
+			}
+			else if (speed < 180)
+			{
+				Audio::Play2DSound(SFX_Engine5, 0.2, 0.0);
+			}
+			else if (speed < 200)
+			{
+				Audio::Play2DSound(SFX_Engine6, 0.2, 0.0);
+			}
+
+			//gear 4
+			else if (speed < 200)
+			{
+				Audio::Play2DSound(SFX_Engine1, 0.2, 0.0);
+			}
+			else if (speed < 220)
+			{
+				Audio::Play2DSound(SFX_Engine2, 0.2, 0.0);
+			}
+			else if (speed < 240)
+			{
+				Audio::Play2DSound(SFX_Engine3, 0.2, 0.0);
+			}
+			else if (speed < 260)
+			{
+				Audio::Play2DSound(SFX_Engine4, 0.2, 0.0);
+			}
+			else if (speed < 280)
+			{
+				Audio::Play2DSound(SFX_Engine5, 0.2, 0.0);
+			}
+			else if (speed < 300)
+			{
+				Audio::Play2DSound(SFX_Engine6, 0.2, 0.0);
+			}
+
+
+		}
+		else
+		{ 
+		*/
+		if (speed < 75)
+		{
+			Audio::Play2DSound(SFX_Engine1, 0.1, 0.0);
+		}
+		else if (speed < 150)
+		{
+			Audio::Play2DSound(SFX_Engine2, 0.1, 0.0);
+		}
+		else if (speed < 225)
+		{
+			Audio::Play2DSound(SFX_Engine3, 0.1, 0.0);
+		}
+		else if (speed < 300)
+		{
+			Audio::Play2DSound(SFX_Engine4, 0.1, 0.0);
+		}
+		else if (speed < 375)
+		{
+			Audio::Play2DSound(SFX_Engine5, 0.1, 0.0);
+		}
+		else
+		{
+			Audio::Play2DSound(SFX_Engine6, 0.1, 0.0);
+		}
+		
+	}
+	nextEngine = engineDelay;
+
 	//}
 	//END_IF ENGINE LOOP SOUND
 
@@ -364,7 +514,7 @@ void VehicleComponent::UpdateParticles()
 
 	if (transform.position.y < 9.5 && !enteredWaterPrev)
 	{
-		Audio::Play2DSound(SFX_Splash, Random::rangef(0.4, 0.5), 0.0);
+		Audio::Play2DSound(SFX_Splash, Random::rangef(0.1, 0.25), 0.0);
 		ParticleSystem ps = ParticleSystem();
 		ps.name = selfName + "Splash";
 		ps.transform = t;
