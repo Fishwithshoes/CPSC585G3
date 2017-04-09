@@ -141,7 +141,7 @@ void GameManager::StartGame()
 		//opponent.mesh = GeoGenerator::MakeBox(2, 1, 2, false);
 		opponent.staticGeo = SG_CAR;
 		opponent.transform.position = Game::aiVehStartPositions[i];
-		opponent.transform.Rotate(Transform::Up(), Mathf::PI, false);
+		opponent.transform.Rotate(Transform::Up(), Game::plVehStartRotations[i], false);
 		opponent.name = "AI" + to_string(i);
 		opponent.tag = TAGS_AI_PLAYER;
 		opponent.standardMat.diffuseMap = MAP_CHASSIS_DIFFUSE;
@@ -177,8 +177,9 @@ void GameManager::StartGame()
 		menuItems[i]->isVisible = false;
 
 	Audio::Play2DSound(SFX_Select, 0.20, 0.0);
+	Audio::StopMusic();
 
-	isBloodMoon = Random::rangei(1, 10, true) == 10 ? true : false;
+	isBloodMoon = Random::rangei(10, 10, true) == 10 ? true : false;
 	if (isBloodMoon)
 	{
 		Game::Find("Moon")->standardMat.selfIllumColor = vec3(1.0, 0.45, 0.45);
@@ -188,7 +189,10 @@ void GameManager::StartGame()
 		Game::Find("OceanBottom")->standardMat.transparency = 0.3;
 		Game::Find("OceanTop")->standardMat.roughness = 0.2;
 		Game::Find("OceanBottom")->standardMat.roughness = 0.2;
+		Audio::PlayMusic(MUS_BloodMoon, 0.3);
 	}
+	else
+		Audio::PlayMusic(MUS_Battle, 0.3);
 
 	//Nuclear fallout
 	ParticleSystem ps = ParticleSystem();
@@ -202,11 +206,11 @@ void GameManager::StartGame()
 	ps.initialRadius.max = 0.5;
 	ps.lifeSpan.min = 1.3;
 	ps.lifeSpan.max = 1.8;
-	ps.spawnPointVariance = vec3(100, 20, 100);
+	ps.spawnPointVariance = vec3(160, 20, 160);
 	ps.monochromatic = true;
 	ps.mainTexture = MAP_DEFAULT_PART;
-	ps.textures = { MAP_DEFAULT_PART, MAP_DEFAULT_PART, MAP_DEFAULT_PART, MAP_BUBBLE_PART };
-	ps.spawnRate = 20;
+	//ps.textures = { MAP_DEFAULT_PART, MAP_DEFAULT_PART, MAP_DEFAULT_PART, MAP_BUBBLE_PART };
+	ps.spawnRate = 100;
 	ps.maxParticles = 1000;
 	ps.destroySystemWhenEmpty = false;
 	ps.useSystemLifespan = false;
@@ -217,8 +221,8 @@ void GameManager::StartGame()
 
 	//Dust Storm
 	ps.transform.position = vec3(0, 20, -150);
-	ps.initialSpeed.min = 161;
-	ps.initialSpeed.max = 169;
+	ps.initialSpeed.min = 131;
+	ps.initialSpeed.max = 149;
 	ps.accelerationScale = 1.0;
 	ps.coneAngle = 0.0;
 	ps.initialColor.alpha = vec4(0.2, 0.1, 0.0, 1);
@@ -231,7 +235,8 @@ void GameManager::StartGame()
 	ps.monochromatic = false;
 	ps.mainTexture = MAP_SMOKE_PART;
 	ps.textures = {};
-	ps.spawnRate = 10;
+	ps.spawnRate = 300;
+	ps.maxParticles = 1000;
 	ps.destroySystemWhenEmpty = false;
 	ps.useSystemLifespan = false;
 	ps.gravityScale = 1;
@@ -265,7 +270,7 @@ void GameManager::ToggleGamePause()
 		cout << "ERROR: Can't toggle pause in MENU or GAME_OVER states!" << endl;
 	}
 	Audio::Play2DSound(Sounds::SFX_Pause, 0.20, 0);
-	
+	Input::StopAllControllerVibration();
 }
 void GameManager::EndGame()
 {
@@ -274,6 +279,10 @@ void GameManager::EndGame()
 
 	Renderer::SetCameraCount(1);
 	Renderer::GetCamera(0)->SetVerticalFOV(60);
+	
+	Audio::StopMusic();
+	Audio::PlayMusic(MUS_Menu, 0.15);
+	Input::StopAllControllerVibration();
 
 	DestroyHUD();
 	vector<GameObject*> gameOverItems = Game::FindGameObjectsWithTag(TAGS_GAME_OVER);
@@ -318,28 +327,33 @@ void GameManager::EndGame()
 		GameObject* score2 = Game::Find("PlayerScore-2-" + i);
 		GameObject* score3 = Game::Find("PlayerScore-3-" + i);
 		GameObject* score4 = Game::Find("PlayerScore-4-" + i);
+		GameObject* score5 = Game::Find("PlayerScore-5-" + i);
 
 		for (int i = strScore.length() - 1; i >= 0; i--)
 		{
 			switch (i)
 			{
 			case 0:
-				score4->particleOverlayMat.mainTexture = MAP_ZERO + (strScore[-1 + strScore.length()] - 48);
+				score5->particleOverlayMat.mainTexture = MAP_ZERO + (strScore[-1 + strScore.length()] - 48);
 				break;
 			case 1:
-				score3->particleOverlayMat.mainTexture = MAP_ZERO + (strScore[-2 + strScore.length()] - 48);
+				score4->particleOverlayMat.mainTexture = MAP_ZERO + (strScore[-2 + strScore.length()] - 48);
 				break;
 			case 2:
-				score2->particleOverlayMat.mainTexture = MAP_ZERO + (strScore[-3 + strScore.length()] - 48);
+				score3->particleOverlayMat.mainTexture = MAP_ZERO + (strScore[-3 + strScore.length()] - 48);
 				break;
 			case 3:
-				score1->particleOverlayMat.mainTexture = MAP_ZERO + (strScore[-4 + strScore.length()] - 48);
+				score2->particleOverlayMat.mainTexture = MAP_ZERO + (strScore[-4 + strScore.length()] - 48);
+				break;
+			case 4:
+				score1->particleOverlayMat.mainTexture = MAP_ZERO + (strScore[-5 + strScore.length()] - 48);
 				break;
 			default:
 				cout << "What are ya doin' matey? Score be too large!" << endl;
 				break;
 			}
 		}
+
 		//Icon
 		if (players[i]->tag == TAGS_HUMAN_PLAYER)
 		{
@@ -609,7 +623,8 @@ void GameManager::CreateHUD()
 		temp = GameObject("HealthMeter" + (i + 1), TAGS_HUD);
 		temp.mesh = GeoGenerator::MakeRect(1.00*rescale, 0.15*rescale, GA_LEFT);
 		temp.transform.Translate(vec3(-0.3725 + 0.1225*rescale, 0.79 + 0.06*rescale, -0.1) + metersOffset, false);
-		temp.particleOverlayMat.color = vec4(0, 0.5, 1, 1);
+		temp.particleOverlayMat.color = vec4(1.0, 1.0, 1.0, 1);
+		temp.particleOverlayMat.mainTexture = MAP_JHCGRAY_GRAD;
 		Game::CreateOverlayObject(temp);
 
 		temp = GameObject("HeathIcon" + (i + 1), TAGS_HUD);
@@ -622,7 +637,8 @@ void GameManager::CreateHUD()
 		temp = GameObject("AmmoMeter" + (i + 1), TAGS_HUD);
 		temp.mesh = GeoGenerator::MakeRect(1.00*rescale, 0.05*rescale, GA_LEFT);
 		temp.transform.Translate(vec3(-0.3725 + 0.1225*rescale, 0.79 - 0.09*rescale, -0.1) + metersOffset, false);
-		temp.particleOverlayMat.color = vec4(0.8, 0.4, 0.0, 1);
+		temp.particleOverlayMat.color = vec4(1.0, 0.5, 0.0, 1);
+		temp.particleOverlayMat.mainTexture = MAP_DEFAULT_GRAD;
 		Game::CreateOverlayObject(temp);
 
 		temp = GameObject("WeaponIcon" + (i + 1), TAGS_HUD);
@@ -722,7 +738,14 @@ void GameManager::CreateHUD()
 
 		temp = GameObject("Score4" + (i + 1), TAGS_HUD);
 		temp.mesh = GeoGenerator::MakeRect(0.075*rescale, 0.075*rescale, GA_LEFT);
-		temp.transform.Translate(vec3(0.34 + 0.2*rescale, 0.9, -0.5) + scoreOffset, false);
+		temp.transform.Translate(vec3(0.34 + 0.20*rescale, 0.9, -0.5) + scoreOffset, false);
+		temp.particleOverlayMat.color = vec4(1.0, 1.0, 1.0, 1.0);
+		temp.particleOverlayMat.mainTexture = MAP_ZERO;
+		Game::CreateOverlayObject(temp);
+
+		temp = GameObject("Score5" + (i + 1), TAGS_HUD);
+		temp.mesh = GeoGenerator::MakeRect(0.075*rescale, 0.075*rescale, GA_LEFT);
+		temp.transform.Translate(vec3(0.34 + 0.22*rescale, 0.9, -0.6) + scoreOffset, false);
 		temp.particleOverlayMat.color = vec4(1.0, 1.0, 1.0, 1.0);
 		temp.particleOverlayMat.mainTexture = MAP_ZERO;
 		Game::CreateOverlayObject(temp);

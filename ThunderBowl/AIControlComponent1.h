@@ -8,26 +8,26 @@ class AIControlComponent1 : public Component
 public:
 	void Start();
 	void Update();
-	void findNewPath(AINodeComponent* oldNode);
-	void startPath();
 	void updateHeading();
-
-	void findNearestOfType(NodeTypes inType);
 	AINodeComponent* findNearest();
-	void pathToPU();
-	void trackPlayers();
-
-	void pathToDestination(AINodeComponent* destination);
+	void pathToDestination();
+	void repathOnTimout();
+	void resetCurrent();
 
 	vec3 currentHeading;
 	AINodeComponent* currentNode;
+	AINodeComponent* previousNode;
 	AINodeComponent* destinationNode;
 	vector<AINodeComponent*> currentAINodes;
 	vector<GameObject*> gameNodes;
 	AINodeComponent* aiNode;
 	GameObject* thisEnemy;
 
+	float timer;
+
+	bool arrived = false;
 	bool newPath = true;
+	bool reversing = false;
 
 
 private:

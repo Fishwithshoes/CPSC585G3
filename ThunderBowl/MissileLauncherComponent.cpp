@@ -24,6 +24,19 @@ void MissileLauncherComponent::Update()
 	nextLaunch -= Time::getDeltaTime();
 	nextLaunch = Mathf::Clamp(nextLaunch, 0.0, launchDelay);
 
+	VehicleComponent* vehicle = &VehicleComponent();
+	vehicle = (VehicleComponent*)self->GetComponent(vehicle);
+	GameObject* weaponIcon = Game::Find("WeaponIcon" + vehicle->GetPlayerNum());
+
+	PlayerComponent* player = &PlayerComponent();
+	player = (PlayerComponent*)self->GetComponent(player);
+
+	if(player->currentWeapon == GW_MISSILE_LAUNCHER)
+		weaponIcon->particleOverlayMat.color.w = (1 - (nextLaunch / launchDelay))*0.5;
+	
+	if (nextLaunch <= 0.0);
+		weaponIcon->particleOverlayMat.color.w = 1;
+
 	Finalize();
 }
 
@@ -48,7 +61,10 @@ void MissileLauncherComponent::FireMissile()
 	player = (PlayerComponent*)self->GetComponent(player);
 	int ammo = player->missileLauncherAmmo;
 
-	if (nextLaunch <= 0 && ammo > 0)
+	HealthComponent* health = &HealthComponent();
+	health = (HealthComponent*)self->GetComponent(health);
+
+	if (nextLaunch <= 0 && ammo > 0 && health->currentHealth > 0.0)
 	{
 		GameObject missile = GameObject("Missile" + selfName + to_string(currentMissile), TAGS_MISSILE);
 		vec3 size = vec3(1.8, 1.8, 5.0);
@@ -67,6 +83,6 @@ void MissileLauncherComponent::FireMissile()
 	
 		nextLaunch = launchDelay;
 		currentMissile++;
-		Audio::Play2DSound(SFX_FireMissile, 0.5, 0);
+		Audio::Play2DSound(SFX_FireMissile, 0.6, 0);
 	}
 }

@@ -3,6 +3,7 @@
 #include "Game.h"
 #include "GameManager.h"
 #include "Audio.h"
+#include "Renderer.h"
 
 //VehicleComponent* playerVeh;
 void PlayerComponent::Start() 
@@ -23,28 +24,7 @@ void PlayerComponent::Start()
 
 void PlayerComponent::StartParticles()
 {
-	t = transform;
-	t.rotation = t.GetInverseRotation();
-	ParticleSystem ps = ParticleSystem();
-	ps.name = selfName + "DamagedSmoke";
-	ps.transform = t;
-	ps.initialSpeed.min = 0.6;
-	ps.initialSpeed.max = 0.8;
-	ps.gravityScale = -5.0;
-	ps.initialColor.alpha = vec4(vec3(0.5), 1);
-	ps.initialColor.bravo = vec4(vec3(0.7), 1);
-	ps.initialRadius.min = 1.4;
-	ps.initialRadius.max = 1.8;
-	ps.lifeSpan.min = 1.4;
-	ps.lifeSpan.max = 1.8;
-	ps.spawnPointVariance = vec3(0.5);
-	ps.monochromatic = true;
-	ps.mainTexture = MAP_SMOKE_PART;
-	ps.spawnRate = 0.0;
-	ps.destroySystemWhenEmpty = false;
-	ps.useSystemLifespan = false;
-	Game::CreateParticleObject(ps);
-	damagedSmokeName = ps.name;
+	
 }
 
 void PlayerComponent::Update() 
@@ -53,7 +33,7 @@ void PlayerComponent::Update()
 
 	if (oldScore != playerScore) 
 	{
-		PlayerStateToConsole();
+		//PlayerStateToConsole();
 		oldScore = playerScore;
 	}
 
@@ -88,10 +68,12 @@ void PlayerComponent::Update()
 			case GW_MISSILE_LAUNCHER:
 				currentWeapon = GW_FLAMETHROWER;
 				weaponIcon->particleOverlayMat.mainTexture = MAP_FLAMETHROWER_ICON;
+				//weaponIcon->particleOverlayMat.color.w = 1.0;
 				break;
 			case GW_FLAMETHROWER:
 				currentWeapon = GW_MACHINE_GUN;
 				weaponIcon->particleOverlayMat.mainTexture = MAP_MACHINE_GUN_ICON;
+				//weaponIcon->particleOverlayMat.color.w = 1.0;
 				break;
 			default:
 				cout << "ERROR: Illegal weapon detected at PlayerComponent.Update()" << endl;
@@ -139,6 +121,12 @@ void PlayerComponent::Update()
 		vehicle = (VehicleComponent*)self->GetComponent(vehicle);
 		GameObject* health = Game::Find("HealthMeter"+vehicle->GetPlayerNum());
 		health->transform.scale.x = playerHealth->currentHealth / 100;
+		vec3 color;
+		if (playerHealth->currentHealth > 50.0)
+			color = vec3(1-(playerHealth->currentHealth-50.0)*0.02, 1, 0);
+		else
+			color = vec3(1, playerHealth->currentHealth*0.02, 0);
+		health->particleOverlayMat.color = vec4(color, 1.0);
 
 		GameObject* ammo = Game::Find("AmmoMeter"+vehicle->GetPlayerNum());
 		float ratio;
@@ -164,31 +152,69 @@ void PlayerComponent::Update()
 		GameObject* score2 = Game::Find("Score2"+vehicle->GetPlayerNum());
 		GameObject* score3 = Game::Find("Score3"+vehicle->GetPlayerNum());
 		GameObject* score4 = Game::Find("Score4"+vehicle->GetPlayerNum());
+		GameObject* score5 = Game::Find("Score5"+vehicle->GetPlayerNum());
 
 		for (int i = strScore.length() - 1; i >= 0; i--)
 		{
 			switch (i)
 			{
 			case 0:
-				score4->particleOverlayMat.mainTexture = MAP_ZERO + (strScore[-1 + strScore.length()] - 48);
+				score5->particleOverlayMat.mainTexture = MAP_ZERO + (strScore[-1 + strScore.length()] - 48);
 				break;
 			case 1:
-				score3->particleOverlayMat.mainTexture = MAP_ZERO + (strScore[-2 + strScore.length()] - 48);
+				score4->particleOverlayMat.mainTexture = MAP_ZERO + (strScore[-2 + strScore.length()] - 48);
 				break;
 			case 2:
-				score2->particleOverlayMat.mainTexture = MAP_ZERO + (strScore[-3 + strScore.length()] - 48);
+				score3->particleOverlayMat.mainTexture = MAP_ZERO + (strScore[-3 + strScore.length()] - 48);
 				break;
 			case 3:
-				score1->particleOverlayMat.mainTexture = MAP_ZERO + (strScore[-4 + strScore.length()] - 48);
+				score2->particleOverlayMat.mainTexture = MAP_ZERO + (strScore[-4 + strScore.length()] - 48);
+				break;
+			case 4:
+				score1->particleOverlayMat.mainTexture = MAP_ZERO + (strScore[-5 + strScore.length()] - 48);
 				break;
 			default:
-				cout << "What are ya doin' matey? Score be too large!" << endl;
+				//cout << "What are ya doin' matey? Score be too large!" << endl;
 				break;
 			}
 		}
 	}
 
-	UpdateParticles(playerHealth->currentHealth);
+	//Headlights
+	{
+		Transform t = transform;
+		t.rotation = t.GetInverseRotation();
+		float speed;
+		physx::PxVec3 v;
+		if (self->tag == TAGS_HUMAN_PLAYER)
+		{
+			VehicleComponent* vehicle = &VehicleComponent();
+			vehicle = (VehicleComponent*)self->GetComponent(vehicle);
+			v = vehicle->physVehicle->getLinearVelocity();
+		}
+		else
+		{
+			EnemyComponent* enemy = &EnemyComponent();
+			enemy = (EnemyComponent*)self->GetComponent(enemy);
+			v = enemy->enPhysVehicle->getLinearVelocity();
+		}
+		speed = v.magnitude();
+		vec3 dir = normalize(vec3(v.x, v.y, v.z));
+		if (dot(dir, t.GetForward()) > 0.0)
+			speed = -speed;
+		t.position = t.position + (4.2f - speed*0.016f)*t.GetForward() + 0.6f*t.GetUp();
+		PointLight light;
+		light.Color = vec4(vec3(1), 10);
+		light.Pos = vec4(t.position - 1.0f*t.GetRight(), 1.8);
+		HealthComponent* health = &HealthComponent();
+		health = (HealthComponent*)self->GetComponent(health);
+		Renderer::AddPointLight(light);
+		light.Pos = vec4(t.position + 1.0f*t.GetRight(), 1.8);
+		if (health->currentHealth > 33.33)
+			Renderer::AddPointLight(light);
+	}
+
+	UpdateParticles();
 
 	Finalize();
 }
@@ -236,19 +262,9 @@ void PlayerComponent::OnCollision(Component::CollisionPair collisionPair, Compon
 	}
 }
 
-void PlayerComponent::UpdateParticles(float currentHealth)
+void PlayerComponent::UpdateParticles()
 {
-	t = transform;
-	t.rotation = t.GetInverseRotation();
-	ParticleSystem* damagedSmoke = (ParticleSystem*)Game::Find(damagedSmokeName);
-	damagedSmoke->transform = t;
 	
-	
-	damagedSmoke->spawnRate = 5.0 - currentHealth*0.05;
-	damagedSmoke->initialColor.alpha = vec4(vec3(0.5 - currentHealth*0.003), 1.0);
-	damagedSmoke->initialColor.bravo = vec4(vec3(0.7 - currentHealth*0.003), 1.0);
-	damagedSmoke->initialRadius.min = 1.4 - currentHealth*0.014;
-	damagedSmoke->initialRadius.max = 1.8 - currentHealth*0.018;
 }
 
 void PlayerComponent::PlayerStateToConsole() 

@@ -6,6 +6,7 @@ Transform Audio::listenerTransform = Transform::identity();
 vector<string> Audio::soundFilePaths =
 {
 	"Sounds/hit_SFX.wav",
+	"Sounds/dent_SFX.wav",
 	"Sounds/pause_SFX.wav",
 	"Sounds/select_SFX.wav",
 	"Sounds/switchWeapon_SFX.wav",
@@ -26,13 +27,19 @@ vector<string> Audio::soundFilePaths =
 	"Sounds/engine_SFX6.wav",
 	"Sounds/engine_SFX7.wav",
 	"Sounds/engine_SFX8.wav",
-	"Sounds/engine_SFX9.wav"
+	"Sounds/engine_SFX9.wav",
+	"Sounds/horn_SFX.wav"
 };
 
 vector<string> Audio::musicFilePaths =
 {
+
 	"Sounds/Automation.wav",
-	"Sounds/Contra_MUS.wav"
+	"Sounds/Contra_MUS.wav",
+	"Sounds/menu_MUS.wav",
+	"Sounds/battle_MUS.wav",
+	"Sounds/bloodMoon_MUS.wav"
+
 };
 
 vector<Mix_Chunk*> Audio::sounds = {};

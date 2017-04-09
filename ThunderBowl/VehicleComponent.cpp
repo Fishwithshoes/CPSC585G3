@@ -157,6 +157,33 @@ void VehicleComponent::Update()
 	{
 		gVehicleNoDrive->setDriveTorque(0, -Input::GetXBoxAxis(playerNum, ButtonCode::XBOX_LEFT_TRIGGER)*brakeTorque);
 		gVehicleNoDrive->setDriveTorque(1, -Input::GetXBoxAxis(playerNum, ButtonCode::XBOX_LEFT_TRIGGER)*brakeTorque);
+		//Tail / brake lights
+		if (Input::GetXBoxAxis(playerNum, ButtonCode::XBOX_LEFT_TRIGGER) > 0.1f)
+		{
+			Transform t = transform;
+			t.rotation = t.GetInverseRotation();
+			float speed = physVehicle->getLinearVelocity().magnitude();
+			PointLight light;
+			physx::PxVec3 v = physVehicle->getLinearVelocity();
+			vec3 dir = normalize(vec3(v.x, v.y, v.z));
+			if (dot(dir, t.GetForward()) > 0.0)
+			{
+				speed = -speed;
+				light.Color = vec4(1, 0, 0, 10);
+			}
+			else
+			{
+				light.Color = vec4(vec3(1), 10);
+			}
+			t.position = t.position - (3.3f + speed*0.016f)*t.GetForward() + 0.8f*t.GetUp();
+			light.Pos = vec4(t.position - 0.9f*t.GetRight(), 1.8);
+			HealthComponent* health = &HealthComponent();
+			health = (HealthComponent*)Game::Find(selfName)->GetComponent(health);
+			if(health->currentHealth > 66.67)
+				Renderer::AddPointLight(light);
+			light.Pos = vec4(t.position + 0.9f*t.GetRight(), 1.8);
+			Renderer::AddPointLight(light);
+		}
 	}
 
 	if (Input::GetXBoxButton(playerNum, ButtonCode::XBOX_A))
@@ -249,7 +276,9 @@ void VehicleComponent::Update()
 	speedNeedle->transform.Rotate(Transform::Forward(), angle, false);
 	//ENDIF_SPEEDOMETER
 	if(followCam->mode == Camera::Modes::MODE_GAME)
-		followCam->SetVerticalFOV(60 + speed*0.1);
+		followCam->SetVerticalFOV(60 + speed*0.08);
+
+	//Input::SetControllerVibration(playerNum, 0.08 + speed*0.0003, 0.0);
 
 	//IF_DEF Wheel Spray Particles
 	UpdateParticles();
@@ -260,6 +289,7 @@ void VehicleComponent::Update()
 
 	//if (nextEngine <= 0.0f)
 	//{
+
 	//using the game timer play engine sound so it doesn't overplay
 	float time = GameManager::GetGameTime();
 	time = time * 1000;
@@ -414,6 +444,14 @@ void VehicleComponent::Update()
 	//}
 	//END_IF ENGINE LOOP SOUND
 
+	if (Input::GetXBoxButton(playerNum, ButtonCode::XBOX_LEFT_STICK) && hornReady)
+	{
+		Audio::Play2DSound(SFX_Horn, Random::rangef(0.2, 0.3), 0.0);
+		hornReady = false;
+	}
+	if (!Input::GetXBoxButton(playerNum, ButtonCode::XBOX_LEFT_STICK) && !hornReady)
+		hornReady = true;
+
 	Finalize();
 }
 
@@ -494,7 +532,7 @@ void VehicleComponent::UpdateParticles()
 		systems[i]->initialRadius.min = 0.4 + speed*0.008;
 		systems[i]->initialRadius.max = 0.7 + speed*0.008;
 
-		if (systems[i]->transform.position.y < 8.0)
+		if (systems[i]->transform.position.y < 8.8)
 		{
 			systems[i]->initialColor.alpha = vec4(0.8, 0.9, 1.0, 1.0);
 			systems[i]->initialColor.bravo = vec4(0.6, 0.7, 0.9, 1.0);
@@ -514,7 +552,9 @@ void VehicleComponent::UpdateParticles()
 
 	if (transform.position.y < 9.5 && !enteredWaterPrev)
 	{
+
 		Audio::Play2DSound(SFX_Splash, Random::rangef(0.1, 0.25), 0.0);
+
 		ParticleSystem ps = ParticleSystem();
 		ps.name = selfName + "Splash";
 		ps.transform = t;

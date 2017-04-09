@@ -164,14 +164,14 @@ void MissileComponent::Explode()
 				//Add score to Player Component
 				PlayerComponent* playerRef = &PlayerComponent();
 				MissileShooter = (PlayerComponent*)Game::Find(missileOwnerName)->GetComponent(playerRef);
-				MissileShooter->playerScore += 100 - distance * 2;;
+				MissileShooter->playerScore += 100 - distance * 2;
 
 				//Add force at rigid body position
 				if (players[i]->tag == TAGS_AI_PLAYER)
 				{
 					EnemyComponent* enemy = &EnemyComponent();
 					enemy = (EnemyComponent*)players[i]->GetComponent(enemy);
-					enemy->enPhysVehicle->addForce(explosionForce, physx::PxForceMode::eIMPULSE);		//BOTH THROW NPWRITECHECK WARNING
+					enemy->enPhysVehicle->addForce(explosionForce, physx::PxForceMode::eIMPULSE);
 					enemy->enPhysVehicle->addTorque(explosionForce, physx::PxForceMode::eIMPULSE);
 
 				}
@@ -181,17 +181,19 @@ void MissileComponent::Explode()
 					vehicle = (VehicleComponent*)players[i]->GetComponent(vehicle);
 					vehicle->physVehicle->addForce(explosionForce, physx::PxForceMode::eIMPULSE);
 					vehicle->physVehicle->addTorque(explosionForce, physx::PxForceMode::eIMPULSE);
+					float rumble = (50.0 - distance) * 0.02;
+					Input::SetControllerVibration(vehicle->GetPlayerNum(), rumble, rumble);
 				}
 			}
 		}
 	}
 
-	Audio::Play2DSound(SFX_ExplodeMissile, Random::rangef(0.4,0.5), 0);
+	Audio::Play2DSound(SFX_ExplodeMissile, 1.0, Random::rangef(-0.5, 0.5));
 
 	ParticleSystem ps = ParticleSystem();
 	ps.initialSpeed.min = 115;
 	ps.initialSpeed.max = 118;
-	ps.accelerationScale = 0.88;
+	ps.accelerationScale = 0.90;
 	ps.initialColor.alpha = vec4(vec3(0.8), 1);
 	ps.initialColor.bravo = vec4(1.0, 0.8, 0.4, 1);
 	ps.initialRadius.min = 3.3;

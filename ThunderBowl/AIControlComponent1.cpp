@@ -8,26 +8,26 @@
 void AIControlComponent1::Start() {
 	Initialize();
 
+	timer = 0.0;
+
 	thisEnemy = Game::Find(selfName);
-
-	//cout << "CHECKER AIControlComponent Ref1" << endl;
-
-	currentState = State::AI_SEEK_POWERUP;
-	//currentState = State::AI_SEEK_PLAYERS;
-
 
 	gameNodes = Game::FindGameObjectsWithTag(TAGS_AI_NODE);
 
 	AINodeComponent* tempNode = &AINodeComponent();
 	for (int i = 0; i < gameNodes.size(); i++) {
 		currentAINodes.push_back((AINodeComponent*)gameNodes[i]->GetComponent(tempNode));
-		cout << "got the node here" << endl;
 	}
-	cout << "total nodes: " << currentAINodes.size() << endl;
-	startPath();
-	//AINodeComponent* outerNode7 = &AINodeComponent();
-	//outerNode7 = (AINodeComponent*)Game::Find("OuterNode7")->GetComponent(outerNode7);
-	//pathToDestination(outerNode7);
+	for (int i = 0; i < currentAINodes.size(); i++) {
+		cout << "Node names: " << currentAINodes.at(i)->getName() << endl;
+	}
+	cout << "Nodes size: " << currentAINodes.size() << endl;
+
+	AINodeComponent* outerNode7 = &AINodeComponent();
+	outerNode7 = (AINodeComponent*)Game::Find("OuterNode6")->GetComponent(outerNode7);
+	currentNode = findNearest();
+	destinationNode = outerNode7;
+	pathToDestination();
 
 	Finalize();
 }
@@ -35,23 +35,134 @@ void AIControlComponent1::Start() {
 void AIControlComponent1::Update() {
 	Initialize();
 
-	//AINodeComponent* outerNode7 = &AINodeComponent();
-	//outerNode7 = (AINodeComponent*)Game::Find("OuterNode7")->GetComponent(outerNode7);
-	//pathToDestination(outerNode7);
+	timer += Time::getDeltaTime();
 
-		float currentDistance = glm::length((currentNode->nodeCurrentPosition - transform.position));
-		if (currentDistance <= 10.0) {
-			//AINodeComponent* innerNode3 = &AINodeComponent();
-			//innerNode3 = (AINodeComponent*)Game::Find("InnerNode3")->GetComponent(innerNode3);
-			//pathToDestination(innerNode3);
-			//current Node arrived at, repath
+	if (reversing) {
+		EnemyComponent* thisEnemyComp = &EnemyComponent();
+		thisEnemyComp = (EnemyComponent*)thisEnemy->GetComponent(thisEnemyComp);
+		thisEnemyComp->ReverseOut();
+		if (timer >= 3.0) {
+			timer = 0.0;
+			reversing = false;
+		}
+	}
+	else {
+		repathOnTimout();
+		if (glm::length(currentNode->nodeCurrentPosition - transform.position) < 15.00) {
+			pathToDestination();
+			timer = 0.0;
 		}
 		else {
 			updateHeading();
 		}
+	}
 
 	Finalize();
 }
+
+void AIControlComponent1::pathToDestination()
+{
+	AINodeComponent* nearestNode = findNearest();
+	vec3 projectedHeading = glm::normalize((destinationNode->nodeCurrentPosition = transform.position));
+
+	double tempDot = -2.0;
+	AINodeComponent* tempNode = NULL;
+	for (int i = 0; i < nearestNode->adjacentNodes.size(); i++) {
+		//if (nearestNode->adjacentNodes.at(i) == destinationNode) {
+			//tempNode = nearestNode->adjacentNodes.at(i);
+		//}
+		if (nearestNode->adjacentNodes.at(i) != previousNode) {
+			vec3 tempPath = glm::normalize((nearestNode->adjacentNodes.at(i)->nodeCurrentPosition - transform.position));
+			if (glm::dot(tempPath, projectedHeading) > tempDot) {
+				tempDot = glm::dot(tempPath, projectedHeading);
+				tempNode = nearestNode->adjacentNodes.at(i);
+			}
+		}
+	}
+	previousNode = currentNode;
+	currentNode = tempNode;
+	currentHeading = (tempNode->nodeCurrentPosition - transform.position);
+}
+
+void AIControlComponent1::repathOnTimout() {
+	EnemyComponent* thisEnemyComp = &EnemyComponent();
+	thisEnemyComp = (EnemyComponent*)thisEnemy->GetComponent(thisEnemyComp);
+	HealthComponent* thisHealthComp = &HealthComponent();
+	thisHealthComp = (HealthComponent*)thisEnemy->GetComponent(thisHealthComp);
+
+	float timeToRepath = 10.0;
+	if (timer >= timeToRepath) {
+		if ((thisHealthComp->currentHealth > 0.0) && (thisEnemyComp->enPhysVehicle->getLinearVelocity().magnitude() < 75.0)) {
+			for (int i = 0; i < currentNode->adjacentNodes.size(); i++) {
+				if (currentNode != previousNode) {
+					if (currentNode->adjacentNodes.at(i)->getName().find("Middle") != string::npos) {
+						previousNode = currentNode;
+						currentNode = currentNode->adjacentNodes.at(i);
+					}
+				}
+			}
+			thisEnemyComp->enVehicleNoDrive->setSteerAngle(2, -thisEnemyComp->enVehicleNoDrive->getSteerAngle(2));
+			thisEnemyComp->enVehicleNoDrive->setSteerAngle(3, -thisEnemyComp->enVehicleNoDrive->getSteerAngle(3));
+			reversing = true;
+			timer = 0.0;
+		}
+	}
+}
+
+
+/*for (int i = 0; i < currentNode->adjacentNodes.size(); i++) {
+if (currentNode != previousNode) {
+if (currentNode->adjacentNodes.at(i)->getName().find("Middle") != string::npos) {
+previousNode = currentNode;
+currentNode = currentNode->adjacentNodes.at(i);
+currentHeading = (currentNode->nodeCurrentPosition - transform.position);
+timer = 0.0;
+cout << selfName << " Repath to Node: " << currentNode->getName() << endl;
+
+break;
+}
+}
+}*/
+void AIControlComponent1::resetCurrent()
+{
+	currentNode = findNearest();
+}
+
+AINodeComponent* AIControlComponent1::findNearest()
+{
+	AINodeComponent* returnComponent;
+	double shortestPath = 1000000.0;
+	for (int i = 0; i < currentAINodes.size(); i++) {
+		vec3 currentPath = (currentAINodes.at(i)->nodeCurrentPosition - transform.position);
+		if (glm::length(currentPath) < shortestPath) {
+			shortestPath = glm::length(currentPath);
+			returnComponent = currentAINodes[i];
+		}
+	}
+	cout << "nearest is: " << returnComponent->getName() << endl;
+	return returnComponent;
+}
+
+void AIControlComponent1::updateHeading()
+{
+	vec3 newHeading = normalize(currentNode->nodeCurrentPosition - transform.position);
+	newHeading.z = -newHeading.z;
+	currentHeading = vec3(newHeading.x, newHeading.y, newHeading.z);
+}
+
+/*void AIControlComponent1::startPath() {
+
+double shortestPath = 1000000.0;					//CHANGE TO MAP_MAX_WIDTH
+for (int i = 0; i < currentAINodes.size(); i++) {
+vec3 currentPath = (currentAINodes.at(i)->nodeCurrentPosition - transform.position);
+if (glm::length(currentPath) < shortestPath) {
+shortestPath = glm::length(currentPath);
+currentHeading = currentPath;
+currentNode = currentAINodes.at(i);
+}
+}
+//cout << "start Node: " << currentNode->getName() << endl;
+}*/
 
 /*void AIControlComponent1::findNearestOfType(NodeTypes inType)
 {
@@ -68,19 +179,7 @@ void AIControlComponent1::Update() {
 	}
 }*/
 
-AINodeComponent* AIControlComponent1::findNearest()
-{
-	AINodeComponent* returnComponent;
-	double shortestPath = 1000000.0;
-	for (int i = 0; i < currentAINodes.size(); i++) {
-		vec3 currentPath = (currentAINodes.at(i)->nodeCurrentPosition - transform.position);
-		if (glm::length(currentPath) < shortestPath) {
-			shortestPath = glm::length(currentPath);
-			returnComponent = currentAINodes.at(i);
-		}
-	}
-	return returnComponent;
-}
+
 
 /*void AIControlComponent1::pathToPU() {
 	PlayerComponent* player = &PlayerComponent();
@@ -114,48 +213,32 @@ AINodeComponent* AIControlComponent1::findNearest()
 	}
 }*/
 
-void AIControlComponent1::pathToDestination(AINodeComponent * destination)
+/*void AIControlComponent1::pathToDestination(AINodeComponent * destination)
 {
 	AINodeComponent* pathNode = destination;
 	AINodeComponent* nearestNode = findNearest();
+	cout << "nearest node: " << nearestNode->getName() << endl;
 	for (int i = 0; i < nearestNode->adjacentNodes.size(); i++) {
 		cout << "nodes adj: " << nearestNode->adjacentNodes.at(i)->getName() << endl;
 	}
-
-	std::vector<AINodeComponent*> visited;
-//	cout << "nearest: " << nearestNode->getName() << endl;
 	while (find(nearestNode->adjacentNodes.begin(), nearestNode->adjacentNodes.end(), pathNode) == nearestNode->adjacentNodes.end()) {
 		double shortestPath = 1000000.0;					//CHANGE TO MAP_MAX_WIDTH
-		AINodeComponent* tempNode = NULL; //= &AINodeComponent();
+		AINodeComponent* tempNode = NULL;
 		for (int i = 0; i < pathNode->adjacentNodes.size(); i++) {
-			//std::cout << "i = " << i << std::endl;
 			vec3 tempPath = (pathNode->adjacentNodes.at(i)->nodeCurrentPosition - transform.position);
-			if (glm::length(tempPath) < shortestPath) { // && pathNode->adjacentNodes.at(i) != tempNode) {
+			if (glm::length(tempPath) < shortestPath) {
 				shortestPath = glm::length(tempPath);
 				tempNode = pathNode->adjacentNodes.at(i);
-				//std::cout << "min len found: " << glm::length(tempPath) <<  std::endl;
 			}
 		}
-		if (pathNode == tempNode) {
-
-			std::cout << "What" << std::endl;
-		}
-		visited.push_back(tempNode);
-		for (auto &a : visited) {
-			// if (a == pathNode)
-			//	std::cout << "been here before" << std::endl;
-
-		}
 		pathNode = tempNode;
-		cout << pathNode->getName() << endl;
-		for (AINodeComponent* a : nearestNode->adjacentNodes) {
-			//if (a == pathNode)
-				//std::cout << "ptr match found" << std::endl;
-		}
+		//cout << pathNode->getName() << endl;
 	}
 	currentNode = pathNode;
 	currentHeading = (currentNode->nodeCurrentPosition - transform.position);
-}
+}*/
+
+
 
 /*void AIControlComponent1::findNewPath(AINodeComponent* oldNode) {
 	double shortestPath = 1000000.0;					//CHANGE TO MAP_MAX_WIDTH
@@ -182,25 +265,3 @@ void AIControlComponent1::pathToDestination(AINodeComponent * destination)
 	}
 	cout << "Car: " << selfName << "swapped from: " << oldNode->getName() << "to: " << currentNode->getName() << endl;
 }*/
-
-void AIControlComponent1::startPath() {
-
-	double shortestPath = 1000000.0;					//CHANGE TO MAP_MAX_WIDTH
-	for (int i = 0; i < currentAINodes.size(); i++) {
-		vec3 currentPath = (currentAINodes.at(i)->nodeCurrentPosition - transform.position);
-
-		if (glm::length(currentPath) < shortestPath) {
-			shortestPath = glm::length(currentPath);
-			currentHeading = currentPath;
-			currentNode = currentAINodes.at(i);
-		}
-	}
-	//cout << "start Node: " << currentNode->getName() << endl;
-}
-
-void AIControlComponent1::updateHeading() 
-{
-	vec3 newHeading = normalize(currentNode->nodeCurrentPosition - transform.position);
-	newHeading.z = -newHeading.z;
-	currentHeading = vec3(newHeading.x, newHeading.y, newHeading.z);
-}

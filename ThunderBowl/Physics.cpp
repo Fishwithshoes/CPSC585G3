@@ -212,7 +212,8 @@ void Physics::computeRotation(PxQuat angle) {}
 
 void Physics::stepPhysics()
 {
-	const PxF32 timestep = 1.0f / 60.0f;
+	//const PxF32 timestep = 1.0f / 60.0f;
+	PxF32 timestep = Time::getDeltaTime();
 
 	//Raycasts.
 	PxVehicleWheels* vehicles[totalVehiclesNum];
@@ -253,7 +254,7 @@ void Physics::stepPhysics()
 	PxVehicleUpdates(timestep, grav, *gFrictionPairs, 2, vehicles, vehicleQueryResults);*/
 
 	//Scene update.
-	gScene->simulate(1.0f / 60.0f);
+	gScene->simulate(timestep);
 	gScene->fetchResults(true);
 }
 
@@ -773,7 +774,7 @@ PxRigidStatic* Physics::createPowerUp(PxReal sideLength)
 
 PxRigidDynamic* Physics::createTestProjectile()
 {
-	PxShape* shape = gPhysics->createShape(PxSphereGeometry(0.1), *gMaterial);
+	PxShape* shape = gPhysics->createShape(PxSphereGeometry(0.4), *gMaterial);
 	PxRigidDynamic* body = gPhysics->createRigidDynamic(PxTransform(PxIdentity));
 
 	PxFilterData projSimFilterData;
@@ -1017,7 +1018,7 @@ void Physics::customizeVehicleToLengthScale(const PxReal lengthScale, PxRigidDyn
 static PxF32 gTireFrictionMultipliers[Physics::SurfaceTypes::MAX_NUM_SURFACE_TYPES][Physics::TireTypes::MAX_NUM_TIRE_TYPES] =
 {
 	//NORMAL,	WORN
-	{ 7.50f,		0.1f }//TARMAC FRICTION VALUE FOR TIRE
+	{ 2.50f,		0.1f }//TARMAC FRICTION VALUE FOR TIRE
 };
 
 PxVehicleDrivableSurfaceToTireFrictionPairs* Physics::createFrictionPairs(const PxMaterial* defaultMaterial)

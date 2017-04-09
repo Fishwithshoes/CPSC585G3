@@ -47,5 +47,6 @@ private:
 	float engineDelay = 0.0;
 	float nextEngine = 0.0;
 	float currentYaw = 0.0;
+	bool hornReady = true;
 };
 

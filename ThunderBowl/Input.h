@@ -29,6 +29,15 @@ public:
 	static void SetWindowSize(int width, int height);
 	static vec2 GetWindowSize();
 
+	//For XBOX 360 Controllers: Get both controller motor speeds. Range 0-1.
+	static vec2 GetControllerVibration(int playerNum);
+	//For XBOX 360 Controllers: Set both controller motor speeds. Range 0-1.
+	static void SetControllerVibration(int playerNum, float left, float right);
+	//For XBOX 360 Controllers: Stop controller motor.
+	static void StopControllerVibration(int playerNum);
+	//For XBOX 360 Controllers: Stop motors on all connected controllers
+	static void StopAllControllerVibration();
+
 protected:
 
 private:

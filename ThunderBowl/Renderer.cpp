@@ -53,6 +53,9 @@ vector<string> Renderer::textureFilePaths =
 	"Textures/ring2_ICON.png",
 	"Textures/ring3_ICON.png",
 	"Textures/ring4_ICON.png",
+	"Textures/default_GRAD.png",
+	"Textures/jhcBlue_GRAD.png",
+	"Textures/jhcGray_GRAD.png",
 	"Textures/jerry_DIFF.jpg",
 	"Textures/SpiderTex.jpg",
 	"Textures/default_PART.png",
@@ -307,6 +310,16 @@ void Renderer::LoadStaticGeo(Renderer *renderer)
 	RendererUtility::InitializeGeometry(&renderer->carGeo);
 	//BufferStaticGeoData(&renderer->carGeo, &GeoGenerator::MakeBox(2.0, 0.5, 3.0, false));
 	BufferStaticGeoData(&renderer->carGeo, &loader.getMeshes()[0]);
+
+	loader = Loader();
+	loader.loadModel("Models/ChassisMed.obj", vec3(1.0), false);
+	RendererUtility::InitializeGeometry(&renderer->carMedGeo);
+	BufferStaticGeoData(&renderer->carMedGeo, &loader.getMeshes()[0]);
+
+	loader = Loader();
+	loader.loadModel("Models/ChassisLow.obj", vec3(1.0), false);
+	RendererUtility::InitializeGeometry(&renderer->carLowGeo);
+	BufferStaticGeoData(&renderer->carLowGeo, &loader.getMeshes()[0]);
 
 	//TODO Possible redo of map model to include platform and rigging
 	loader = Loader();
@@ -858,6 +871,12 @@ void Renderer::DrawPhysicalObjects(Renderer *renderer, bool programStandardUnifo
 				break;
 			case SG_CAR:
 				geoToUse = renderer->carGeo;
+				break;
+			case SG_CAR_MED:
+				geoToUse = renderer->carMedGeo;
+				break;
+			case SG_CAR_LOW:
+				geoToUse = renderer->carLowGeo;
 				break;
 			case SG_MAP:
 				geoToUse = renderer->mapGeo;

@@ -16,7 +16,7 @@ uniform sampler2D depthBufferMap;
 
 out vec4 FragmentColor;
 
-const int DOF_SAMPLES = 8;//Setting this to 0 will render black
+const int DOF_SAMPLES = 12;//Setting this to 0 will render black
 const float DOF_SAMPLE_CONTRIB = 1.0/(DOF_SAMPLES*DOF_SAMPLES);
 const float DOF_STRIDE = 0.01;
 const float DOF_FILLER = 1.0/DOF_STRIDE;
@@ -30,9 +30,9 @@ const float BLOOM_STRIDE = 0.05;
 const float BLOOM_FILLER = 1.0/BLOOM_STRIDE;
 const float BLOOM_STEP = BLOOM_STRIDE/BLOOM_SAMPLES*2;
 
-const int AO_SAMPLES = 0;
+const int AO_SAMPLES = 8;
 const float AO_SAMPLE_CONTRIB = 1.0/(AO_SAMPLES*AO_SAMPLES);
-const float AO_STRIDE = 0.02;
+const float AO_STRIDE = 0.01;
 const float AO_FILLER = 1.0/AO_STRIDE;
 const float AO_STEP = AO_STRIDE/AO_SAMPLES*2;
 
@@ -51,9 +51,9 @@ void main()
 	float blurFarSize = 0.25;
 	
 	float bloomThreshold = 1.8;
-	float bloomStrength = 8.25;
+	float bloomStrength = 6.25;
 	
-	float ambientOcclusionLevel = 0.25;
+	float ambientOcclusionLevel = 0.5;
 	
 	vec3 colorCorrection = vec3(1.0, 1.0, 1.0);
 
@@ -141,7 +141,7 @@ void main()
 				//Compare using a hemisphere to avoid shadowing with intersected geometry
 				vec3 otherNormal = normalize(currentPos.xyz - positionSample.xyz);
 				float dist = distance(positionSample.xyz, currentPos.xyz);
-				float distFalloff = clamp((10.0-dist)*0.1, 0.0, 1.0);
+				float distFalloff = clamp((4.0-dist)*0.25, 0.0, 1.0);
 				float angle = dot(normalSample.xyz, otherNormal);
 				float angleFalloff = clamp(angle, 0.0, 1.0);
 				// occlusionAmt += distFalloff * AO_SAMPLE_CONTRIB;
@@ -172,8 +172,8 @@ void main()
 	// float c = 0.1;//Cuts component down
 	// final.xyz = vec3(clamp(final.x-(final.x-0.5)*m-c,0,1),clamp(final.y-(final.y-0.5)*m-c,0,1),clamp(final.z-(final.z-0.5)*m-c,0,1));
 	
-	FragmentColor = vec4(final.xyz, 1.0);//Allow all effects
-	// FragmentColor = vec4(colorSample.xyz, 1.0);//Turn off all effects. This does NOT shut off sampling.
+	//FragmentColor = vec4(final.xyz, 1.0);//Allow all effects
+	FragmentColor = vec4(colorSample.xyz, 1.0);//Turn off all effects. This does NOT shut off sampling.
 	
 	// FragmentColor = vec4(Color, 1);
     // FragmentColor = vec4(TexCoord.x, 0, 0, 1);
