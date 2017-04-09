@@ -24,18 +24,21 @@ void MissileLauncherComponent::Update()
 	nextLaunch -= Time::getDeltaTime();
 	nextLaunch = Mathf::Clamp(nextLaunch, 0.0, launchDelay);
 
-	VehicleComponent* vehicle = &VehicleComponent();
-	vehicle = (VehicleComponent*)self->GetComponent(vehicle);
-	GameObject* weaponIcon = Game::Find("WeaponIcon" + vehicle->GetPlayerNum());
+	if (self->tag == TAGS_HUMAN_PLAYER) 
+	{
+		VehicleComponent* vehicle = &VehicleComponent();
+		vehicle = (VehicleComponent*)self->GetComponent(vehicle);
+		GameObject* weaponIcon = Game::Find("WeaponIcon" + vehicle->GetPlayerNum());
 
-	PlayerComponent* player = &PlayerComponent();
-	player = (PlayerComponent*)self->GetComponent(player);
+		PlayerComponent* player = &PlayerComponent();
+		player = (PlayerComponent*)self->GetComponent(player);
 
-	if(player->currentWeapon == GW_MISSILE_LAUNCHER)
-		weaponIcon->particleOverlayMat.color.w = (1 - (nextLaunch / launchDelay))*0.5;
-	
-	if (nextLaunch <= 0.0);
+		if (player->currentWeapon == GW_MISSILE_LAUNCHER)
+			weaponIcon->particleOverlayMat.color.w = (1 - (nextLaunch / launchDelay))*0.5;
+
+		if (nextLaunch <= 0.0);
 		weaponIcon->particleOverlayMat.color.w = 1;
+	}
 
 	Finalize();
 }

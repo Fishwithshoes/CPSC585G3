@@ -1,6 +1,7 @@
 #pragma once
 #include "Component.h"
 #include "AINodeComponent.h"
+#include "PlayerComponent.h"
 #include "GameObject.h"
 
 class AIControlComponent1 : public Component
@@ -9,17 +10,28 @@ public:
 	void Start();
 	void Update();
 	void updateHeading();
+	void updateTracking();
 	AINodeComponent* findNearest();
 	void pathToDestination();
 	void repathOnTimout();
 	void resetCurrent();
+	void detectEnemy();
+	void trackEnemy();
+	void chooseWeapon();
+	void getTheta();
+	void getPhi();
+	vec3 getFiringVector();
 
 	vec3 currentHeading;
 	AINodeComponent* currentNode;
 	AINodeComponent* previousNode;
 	AINodeComponent* destinationNode;
+	PlayerComponent* currentEnemy;
+	PlayerComponent* thisAIPlayer;
 	vector<AINodeComponent*> currentAINodes;
+	vector<PlayerComponent*> currentPlayers;
 	vector<GameObject*> gameNodes;
+	vector<GameObject*> gamePlayers;
 	AINodeComponent* aiNode;
 	GameObject* thisEnemy;
 
@@ -28,6 +40,7 @@ public:
 	bool arrived = false;
 	bool newPath = true;
 	bool reversing = false;
+	bool tracking = false;
 
 
 private:

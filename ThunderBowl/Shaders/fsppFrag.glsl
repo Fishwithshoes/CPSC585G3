@@ -164,8 +164,8 @@ void main()
 	// final.xyz = vec3(lum+0.4, lum+0.2, lum);
 	
 	//Juicy
-	// float m = 0.6;
-	// final.xyz = vec3(clamp(final.x+(final.x-0.5)*m,0,1),clamp(final.y+(final.y-0.5)*m,0,1),clamp(final.z+(final.z-0.5)*m,0,1));
+	//float m = 0.6;
+	//final.xyz = vec3(clamp(final.x+(final.x-0.5)*m,0,1),clamp(final.y+(final.y-0.5)*m,0,1),clamp(final.z+(final.z-0.5)*m,0,1));
 	
 	//Drab
 	// float m = 0.4;

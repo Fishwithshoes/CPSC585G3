@@ -9,11 +9,12 @@
 void PlayerComponent::Start() 
 {
 	Initialize();
+	playerCurrentPosition = transform.position;
 
 	playerScore = 0;
 	oldScore = playerScore;
 
-	machineGunAmmo = 50;// GameManager::START_MG_AMMO;
+	machineGunAmmo = 500;// GameManager::START_MG_AMMO;
 	missileLauncherAmmo = 4;// GameManager::START_MISSILE_AMMO;
 	flamethrowerAmmo = 10.0; // GameManager::START_FLAMETHROWER_AMMO;
 
@@ -30,6 +31,7 @@ void PlayerComponent::StartParticles()
 void PlayerComponent::Update() 
 {
 	Initialize();
+	playerCurrentPosition = transform.position;
 
 	if (oldScore != playerScore) 
 	{

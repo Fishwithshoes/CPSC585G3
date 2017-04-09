@@ -63,12 +63,18 @@ void MachineGunComponent::FireMG()
 {
 	int ammo = 0;
 	GameObject* self = Game::Find(selfName);
-	if (self->tag == TAGS_HUMAN_PLAYER)
-	{
+	//if (self->tag == TAGS_HUMAN_PLAYER)
+	//{
 		PlayerComponent* player = &PlayerComponent();
 		player = (PlayerComponent*)self->GetComponent(player);
 		ammo = player->machineGunAmmo;
-	}
+	/*}
+	else {
+		PlayerComponent* enemy = &PlayerComponent();
+		enemy = (PlayerComponent*)self->GetComponent(enemy);
+		ammo = enemy->machineGunAmmo;
+	}*/
+
 	HealthComponent* health = &HealthComponent();
 	health = (HealthComponent*)self->GetComponent(health);
 
@@ -102,6 +108,31 @@ void MachineGunComponent::FireMG()
 
 			temp.transform.Rotate(temp.transform.GetUp(), theta, false);
 			temp.transform.Rotate(temp.transform.GetRight(), phi, false);
+		}
+		else {
+
+			AIControlComponent1* enemyController = &AIControlComponent1();
+			enemyController = (AIControlComponent1*)self->GetComponent(enemyController);
+
+			vec3 firingVector = enemyController->getFiringVector();
+			vec3 tempVector = normalize(firingVector*vec3(1.0, 0.0, 1.0));
+			glm::normalize(tempVector);
+			Transform t = transform;
+			//t.z = -transform.z;
+			t.rotation = t.GetInverseRotation();
+			float theta = acos(glm::dot(glm::normalize(t.GetForward()*vec3(1.0,0.0,1.0)), tempVector));
+			if (dot(t.GetRight(), tempVector) > 0.0)//rotate right
+				theta = -theta;
+			//cout << "theta: " << theta << endl;
+
+			tempVector = firingVector*vec3(0.0, 1.0, 0.0);
+			glm::normalize(tempVector);
+			//float phi = acos(glm::dot(transform.GetUp(), firingVector))*0.3f * firingVector.y < 0.0 ? -1.0 : 1.0;
+			//cout << "phi: " << phi << endl;
+
+
+			temp.transform.Rotate(temp.transform.GetUp(), theta, false);
+			//temp.transform.Rotate(temp.transform.GetRight(), phi, false);
 		}
 		temp.transform.Translate(temp.transform.GetUp() * 0.8f, false);
 		temp.transform.Translate(temp.transform.GetForward() * 6.5f, false);
