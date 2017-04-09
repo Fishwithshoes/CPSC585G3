@@ -85,6 +85,8 @@ void HealthComponent::Update()
 			EnemyComponent* enemy = &EnemyComponent();
 			enemy = (EnemyComponent*)self->GetComponent(enemy);
 
+			enemy->enPhysVehicle->setGlobalPose(physx::PxTransform(physx::PxVec3(0, 1000, 0), physx::PxIdentity));
+
 			for (int i = 0; i < enemy->enWheelVector.size(); i++)
 				enemy->enWheelVector[i]->isVisible = false;
 		}
@@ -92,6 +94,8 @@ void HealthComponent::Update()
 		{
 			VehicleComponent* human = &VehicleComponent();
 			human = (VehicleComponent*)self->GetComponent(human);
+
+			human->physVehicle->setGlobalPose(physx::PxTransform(physx::PxVec3(0, 1000, 0), physx::PxIdentity));
 
 			for (int i = 0; i < human->wheelVector.size(); i++)
 				human->wheelVector[i]->isVisible = false;
@@ -180,7 +184,7 @@ void HealthComponent::UpdateParticles()
 	t.rotation = t.GetInverseRotation();
 	ParticleSystem* damagedSmoke = (ParticleSystem*)Game::Find(damagedSmokeName);
 	damagedSmoke->transform = t;
-	damagedSmoke->spawnRate = 10.0 - currentHealth*0.1;
+	damagedSmoke->spawnRate = currentHealth > 0.0 ? 10.0 - currentHealth*0.1 : 0.0;
 	damagedSmoke->initialColor.alpha = vec4(vec3(0.5 - currentHealth*0.003), 1.0);
 	damagedSmoke->initialColor.bravo = vec4(vec3(0.7 - currentHealth*0.003), 1.0);
 	damagedSmoke->initialRadius.min = 1.4 - currentHealth*0.014;

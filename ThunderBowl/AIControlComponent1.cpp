@@ -28,10 +28,15 @@ void AIControlComponent1::Start() {
 		currentPlayers.push_back((PlayerComponent*)gamePlayers[i]->GetComponent(tempPlayer));
 	}
 
+	for (int i = 0; i < currentAINodes.size(); i++) {
+		cout << "Node names: " << currentAINodes.at(i)->getName() << endl;
+	}
+	cout << "Node size: " << currentAINodes.size() << endl;
+
 	for (int i = 0; i < currentPlayers.size(); i++) {
 		cout << "Player names: " << currentPlayers.at(i)->getName() << endl;
 	}
-	cout << "Nodes size: " << currentPlayers.size() << endl;
+	cout << "Player size: " << currentPlayers.size() << endl;
 
 	AINodeComponent* outerNode7 = &AINodeComponent();
 	outerNode7 = (AINodeComponent*)Game::Find("OuterNode6")->GetComponent(outerNode7);
@@ -147,12 +152,19 @@ void AIControlComponent1::resetCurrent()
 AINodeComponent* AIControlComponent1::findNearest()
 {
 	AINodeComponent* returnComponent;
+	AINodeComponent* centerNode = &AINodeComponent();
+	centerNode = (AINodeComponent*)Game::Find("CenterNode0")->GetComponent(centerNode);
+
+
+
 	double shortestPath = 1000000.0;
 	for (int i = 0; i < currentAINodes.size(); i++) {
-		vec3 currentPath = (currentAINodes.at(i)->nodeCurrentPosition - transform.position);
-		if (glm::length(currentPath) < shortestPath) {
-			shortestPath = glm::length(currentPath);
-			returnComponent = currentAINodes[i];
+		if (currentAINodes.at(i) != centerNode) {
+			vec3 currentPath = (currentAINodes.at(i)->nodeCurrentPosition - transform.position);
+			if (glm::length(currentPath) < shortestPath) {
+				shortestPath = glm::length(currentPath);
+				returnComponent = currentAINodes[i];
+			}
 		}
 	}
 	cout << "nearest is: " << returnComponent->getName() << endl;

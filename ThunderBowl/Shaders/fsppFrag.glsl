@@ -164,16 +164,16 @@ void main()
 	// final.xyz = vec3(lum+0.4, lum+0.2, lum);
 	
 	//Juicy
-	// float m = 0.6;
-	// final.xyz = vec3(clamp(final.x+(final.x-0.5)*m,0,1),clamp(final.y+(final.y-0.5)*m,0,1),clamp(final.z+(final.z-0.5)*m,0,1));
+	//float m = 0.6;
+	//final.xyz = vec3(clamp(final.x+(final.x-0.5)*m,0,1),clamp(final.y+(final.y-0.5)*m,0,1),clamp(final.z+(final.z-0.5)*m,0,1));
 	
 	//Drab
 	// float m = 0.4;
 	// float c = 0.1;//Cuts component down
 	// final.xyz = vec3(clamp(final.x-(final.x-0.5)*m-c,0,1),clamp(final.y-(final.y-0.5)*m-c,0,1),clamp(final.z-(final.z-0.5)*m-c,0,1));
 	
-	//FragmentColor = vec4(final.xyz, 1.0);//Allow all effects
-	FragmentColor = vec4(colorSample.xyz, 1.0);//Turn off all effects. This does NOT shut off sampling.
+	FragmentColor = vec4(final.xyz, 1.0);//Allow all effects
+	// FragmentColor = vec4(colorSample.xyz, 1.0);//Turn off all effects. This does NOT shut off sampling.
 	
 	// FragmentColor = vec4(Color, 1);
     // FragmentColor = vec4(TexCoord.x, 0, 0, 1);
