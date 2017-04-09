@@ -9,8 +9,10 @@ void AIControlComponent1::Start() {
 	Initialize();
 
 	timer = 0.0;
-
 	thisEnemy = Game::Find(selfName);
+
+	PlayerComponent* tempAiPlayer = &PlayerComponent();
+	thisAIPlayer = (PlayerComponent*)Game::Find(selfName)->GetComponent(tempAiPlayer);
 
 	gameNodes = Game::FindGameObjectsWithTag(TAGS_AI_NODE);
 	gamePlayers = Game::FindGameObjectsWithTag(TAGS_HUMAN_PLAYER);
@@ -47,8 +49,8 @@ void AIControlComponent1::Update() {
 	timer += Time::getDeltaTime();
 
 	if (tracking) {
-		cout << selfName << "is tracking" << endl;
 		trackEnemy();
+		chooseWeapon();
 	}
 
 	else if (reversing) {
@@ -188,7 +190,7 @@ void AIControlComponent1::detectEnemy() {
 
 void AIControlComponent1::trackEnemy() {
 	if (currentEnemy != NULL) {
-		if (glm::distance(transform.position, currentEnemy->playerCurrentPosition) < 75.0) {
+		if (glm::distance(transform.position, currentEnemy->playerCurrentPosition) < 100.0) {
 			updateTracking();
 		}
 	}
@@ -196,6 +198,30 @@ void AIControlComponent1::trackEnemy() {
 		currentEnemy = NULL;
 		tracking = false;
 	}
+}
+
+void AIControlComponent1::chooseWeapon()
+{
+	//MissileLauncherComponent* thisMissileLauncher = &MissileLauncherComponent();
+	//thisMissileLauncher = (MissileLauncherComponent*)Game::Find(selfName)->GetComponent(thisMissileLauncher);
+	//FlamethrowerComponent* thisFlameThrower = &FlamethrowerComponent();
+	//thisFlameThrower = (FlamethrowerComponent*)Game::Find(selfName)->GetComponent(thisFlameThrower);
+
+	if (currentEnemy != NULL) 
+	{
+		if((thisAIPlayer->machineGunAmmo != 0) && glm::dot(getFiringVector(), transform.GetForward()) > 0.5) 
+		{
+			MachineGunComponent* thisMG = &MachineGunComponent();
+			thisMG = (MachineGunComponent*)Game::Find(selfName)->GetComponent(thisMG);
+			thisMG->FireMG();
+		}
+	}
+
+}
+
+vec3 AIControlComponent1::getFiringVector()
+{
+	return glm::normalize(currentEnemy->playerCurrentPosition - transform.position);
 }
 
 /*void AIControlComponent1::startPath() {

@@ -175,7 +175,7 @@ void Physics::initializePhysX()
 	}*/
 
 	PxSceneDesc sceneDesc(gPhysics->getTolerancesScale());
-	sceneDesc.gravity = PxVec3(0.0f, 4*-9.81f, 0.0f);
+	sceneDesc.gravity = PxVec3(0.0f, 8*-9.81f, 0.0f);
 	gDispatcher = PxDefaultCpuDispatcherCreate(2);
 	sceneDesc.cpuDispatcher = gDispatcher;
 	sceneDesc.filterShader = VehicleFilterShader;//PxFilterFlag::eSUPPRESS;
@@ -1018,7 +1018,7 @@ void Physics::customizeVehicleToLengthScale(const PxReal lengthScale, PxRigidDyn
 static PxF32 gTireFrictionMultipliers[Physics::SurfaceTypes::MAX_NUM_SURFACE_TYPES][Physics::TireTypes::MAX_NUM_TIRE_TYPES] =
 {
 	//NORMAL,	WORN
-	{ 2.50f,		0.1f }//TARMAC FRICTION VALUE FOR TIRE
+	{ 3.50f,		0.1f }//TARMAC FRICTION VALUE FOR TIRE
 };
 
 PxVehicleDrivableSurfaceToTireFrictionPairs* Physics::createFrictionPairs(const PxMaterial* defaultMaterial)

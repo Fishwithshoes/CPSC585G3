@@ -16,7 +16,7 @@ public:
 	void UpdateParticles();
 
 	float currentSpeed;
-	float topSpeed = 75.0;
+	float topSpeed = 125.0;
 	float topReverse = 50.0;
 	float acceleration = 1.0;
 

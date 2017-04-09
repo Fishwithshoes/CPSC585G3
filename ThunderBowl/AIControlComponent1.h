@@ -17,12 +17,17 @@ public:
 	void resetCurrent();
 	void detectEnemy();
 	void trackEnemy();
+	void chooseWeapon();
+	void getTheta();
+	void getPhi();
+	vec3 getFiringVector();
 
 	vec3 currentHeading;
 	AINodeComponent* currentNode;
 	AINodeComponent* previousNode;
 	AINodeComponent* destinationNode;
 	PlayerComponent* currentEnemy;
+	PlayerComponent* thisAIPlayer;
 	vector<AINodeComponent*> currentAINodes;
 	vector<PlayerComponent*> currentPlayers;
 	vector<GameObject*> gameNodes;

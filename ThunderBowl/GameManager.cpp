@@ -157,6 +157,8 @@ void GameManager::StartGame()
 		ptr->AddComponent(new PlayerComponent());
 		ptr->AddComponent(new EnemyComponent());
 		ptr->AddComponent(new MachineGunComponent());
+		ptr->AddComponent(new FlamethrowerComponent());
+		ptr->AddComponent(new MissileLauncherComponent());
 		ptr->AddComponent(new AIControlComponent1());
 		ptr->AddComponent(new HealthComponent());
 	}
