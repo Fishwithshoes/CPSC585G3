@@ -93,7 +93,14 @@ vector<string> Renderer::textureFilePaths =
 	"Textures/floor_DIFF.jpg",
 	"Textures/floor_DIFF.jpg",
 	"Textures/floor_NORM.jpg",
-	"Textures/chassis_DIFF.png",
+	"Textures/chassisRed_DIFF.png",
+	"Textures/chassisOrange_DIFF.png",
+	"Textures/chassisMaroon_DIFF.png",
+	"Textures/chassisPink_DIFF.png",
+	"Textures/chassisSteel_DIFF.png",
+	"Textures/chassisTeal_DIFF.png",
+	"Textures/chassisBlue_DIFF.png",
+	"Textures/chassisBlack_DIFF.png",
 	"Textures/chassis_ROUG.png",
 	"Textures/chassis_META.png",
 	"Textures/chassis_NORM.png",
@@ -193,8 +200,11 @@ void Renderer::LoadTextures(Renderer *renderer)
 				glActiveTexture(GL_TEXTURE0 + i);
 				glBindTexture(GL_TEXTURE_2D, texID);
 				glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+				if (i < MAP_SUN_DIFFUSE)
+				{
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+				}
 				glGenerateMipmap(GL_TEXTURE_2D);
 			}
 			else

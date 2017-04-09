@@ -63,7 +63,8 @@ void MissileComponent::Update()
 	Finalize();
 
 	lifeRemaining -= Time::getDeltaTime();
-	if (lifeRemaining <= 0) {
+	if (lifeRemaining <= 0) 
+	{
 		Explode();
 
 		Physics::getGScene()->removeActor(*missile);

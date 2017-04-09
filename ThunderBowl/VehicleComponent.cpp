@@ -214,7 +214,10 @@ void VehicleComponent::Update()
 
 	//followCam->transform.rotationMatrix = glm::inverse(newRot);
 
-	if (followCam->mode == Camera::Modes::MODE_GAME)
+	HealthComponent* myHealth = &HealthComponent();
+	myHealth = (HealthComponent*)Game::Find(selfName)->GetComponent(myHealth);
+
+	if (followCam->mode == Camera::Modes::MODE_GAME && myHealth->currentHealth > 0.0)
 	{
 		//followCam->transform.rotation.x = rotQuat.x*0.5;
 		//// rotQuat.x;

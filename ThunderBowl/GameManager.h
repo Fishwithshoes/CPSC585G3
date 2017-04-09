@@ -38,6 +38,7 @@ private:
 	static void RedrawTimers();
 	static void CreateHUD();
 	static void DestroyHUD();
+	static void EndBloodMoon();
 
 	static GameStates gameState;
 	static int humanPlayerCount;

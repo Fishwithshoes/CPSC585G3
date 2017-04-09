@@ -1,2 +1,7 @@
-﻿  ThunderBowl.vcxproj -> C:\CPSC585G3\ThunderBowl\x64\Release\ThunderBowl.exe
-  ThunderBowl.vcxproj -> C:\CPSC585G3\ThunderBowl\x64\Release\ThunderBowl.pdb (Full PDB)
+﻿LINK : warning LNK4075: ignoring '/INCREMENTAL' due to '/LTCG' specification
+  Generating code
+c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\gameobject.cpp(123): warning C4172: returning address of local variable or temporary
+  All 2861 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Finished generating code
+  ThunderBowl.vcxproj -> C:\Users\james.hollowaycurrie\CPSC585G3\ThunderBowl\x64\Release\ThunderBowl.exe
+  ThunderBowl.vcxproj -> C:\Users\james.hollowaycurrie\CPSC585G3\ThunderBowl\x64\Release\ThunderBowl.pdb (Full PDB)
