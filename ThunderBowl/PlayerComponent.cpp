@@ -33,7 +33,7 @@ void PlayerComponent::Update()
 
 	if (oldScore != playerScore) 
 	{
-		PlayerStateToConsole();
+		//PlayerStateToConsole();
 		oldScore = playerScore;
 	}
 
@@ -174,7 +174,7 @@ void PlayerComponent::Update()
 				score1->particleOverlayMat.mainTexture = MAP_ZERO + (strScore[-5 + strScore.length()] - 48);
 				break;
 			default:
-				cout << "What are ya doin' matey? Score be too large!" << endl;
+				//cout << "What are ya doin' matey? Score be too large!" << endl;
 				break;
 			}
 		}

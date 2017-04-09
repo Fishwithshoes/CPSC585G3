@@ -168,22 +168,22 @@ void Game::BuildWorld()
 		tempNode.name = "MiddleNode" + to_string(i);
 		tempNode.transform.position = middleNodePositions.at(i);
 		tempNode.tag = TAGS_AI_NODE;
+		tempNode.mesh = GeoGenerator::MakeBox(1, 1, 1, false);
 
-		if (i == 0 || i == 4) {
+		if (i == 0 || i == 6) {
 		//if (remainder(i, 4) == 0) {
+
 			tempNode.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
 			ptr = Game::CreateWorldObject(tempNode);
-			ptr->AddComponent(new AINodeComponent());
 			ptr->AddComponent(new PowerUpComponent(GameWeapons::GW_FLAMETHROWER));
 			ptr->AddComponent(new FloatComponent());
 			ptr->AddComponent(new RotateComponent());
 			ptr->AddComponent(new AINodeComponent(NodeTypes::NT_FT_POWERUP));
 		}
-		else if (i == 2 || i == 6) {
+		else if (i == 2 || i == 4) {
 		//else if (remainder(i, 2) == 0) {
 			tempNode.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
 			ptr = Game::CreateWorldObject(tempNode);
-			ptr->AddComponent(new AINodeComponent());
 			ptr->AddComponent(new PowerUpComponent(GameWeapons::GW_MACHINE_GUN));
 			ptr->AddComponent(new FloatComponent());
 			ptr->AddComponent(new RotateComponent());
@@ -192,8 +192,6 @@ void Game::BuildWorld()
 		else {
 			tempNode.mesh = GeoGenerator::MakeBox(1, 1, 1, false);
 			ptr = Game::CreateWorldObject(tempNode);
-			ptr = Game::CreateWorldObject(tempNode);
-			ptr->AddComponent(new AINodeComponent());
 			ptr->AddComponent(new AINodeComponent());
 		}
 
@@ -268,11 +266,12 @@ void Game::BuildWorld()
 	ptr->AddComponent(new FloatComponent());
 	ptr->AddComponent(new RotateComponent());
 	ptr->AddComponent(new PowerUpComponent(GameWeapons::GW_MISSILE_LAUNCHER));
+	ptr->AddComponent(new AINodeComponent(NodeTypes::NT_RK_POWERUP));
 
 	AINodeComponent* innerNodeRef = &AINodeComponent();
 	AINodeComponent* middleNodeRef = &AINodeComponent();
 	AINodeComponent* outerNodeRef = &AINodeComponent();
-	//AINodeComponent* centerNodeRef = &AINodeComponent();
+	AINodeComponent* centerNodeRef = &AINodeComponent();
 
 	for (int i = 0; i < nodesPerRing; i++) {
 		innerNodeRef = (AINodeComponent*)innerNodes.at(i)->GetComponent(innerNodeRef);
@@ -281,13 +280,13 @@ void Game::BuildWorld()
 		//centerNodeRef = (AINodeComponent*)Game::Find("CenterNode0")->GetComponent(centerNodeRef);
 
 		innerNodeRef->adjacentNodes.push_back(middleNodeRef);
-		//innerNodeRef->adjacentNodes.push_back(centerNodeRef);
-		//centerNodeRef->adjacentNodes.push_back(innerNodeRef);
 
 		middleNodeRef->adjacentNodes.push_back(innerNodeRef);
 		middleNodeRef->adjacentNodes.push_back(outerNodeRef);
 
 		outerNodeRef->adjacentNodes.push_back(middleNodeRef);
+		//outerNodeRef->adjacentNodes.push_back(centerNodeRef);
+		//centerNodeRef->adjacentNodes.push_back(outerNodeRef);
 	}															//NODES END
 
 	/*GameObject pathNode1 = GameObject();

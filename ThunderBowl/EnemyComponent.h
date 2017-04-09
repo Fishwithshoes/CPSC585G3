@@ -32,6 +32,7 @@ public:
 	void OnCollision(CollisionPair collisionPair, Component* collider);
 	void MoveOnHeading();
 	void UTurn(vec3 inHeading);
+	void ReverseOut();
 
 	void maintainUpright();
 

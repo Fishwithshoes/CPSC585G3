@@ -57,7 +57,7 @@ void EnemyComponent::Start()
 	aiController = (AIControlComponent1*)Game::Find(selfName)->GetComponent(tempController);
 
 	maxTorque = 10500.0;
-	brakeTorque = 3000.0;
+	brakeTorque = 10500.0;
 	turnTemper = 0.35;
 
 	performUTurn = false;
@@ -205,20 +205,26 @@ void EnemyComponent::UTurn(vec3 inHeading) {
 	}
 }
 
+void EnemyComponent::ReverseOut()
+{
+	enVehicleNoDrive->setDriveTorque(0, -brakeTorque);
+	enVehicleNoDrive->setDriveTorque(1, -brakeTorque);
+}
+
 void EnemyComponent::maintainUpright()
 {
+	float flipTimer = 0.0;
 	vec3 currentUp = glm::normalize(transform.GetUp());
-	physx::PxVec3 currentDown = physx::PxVec3(-currentUp.x, -currentUp.y, -currentUp.y);
-	physx::PxVec3 currentRight = physx::PxVec3(transform.GetRight().x, transform.GetRight().y, transform.GetRight().z);
+	//physx::PxVec3 currentDown = physx::PxVec3(-currentUp.x, -currentUp.y, -currentUp.y);
+	//physx::PxVec3 currentRight = physx::PxVec3(transform.GetRight().x, transform.GetRight().y, transform.GetRight().z);
 	vec3 worldUp = glm::normalize(Transform::Up());
-	float tiltValue = (1.0 - glm::dot(currentUp, worldUp));
-	if (tiltValue >= 0.0 && tiltValue <= 1.0) {
-		//enPhysVehicle->setCMassLocalPose(physx::PxTransform(enPhysVehicle->getCMassLocalPose().p * tiltValue, enPhysVehicle->getCMassLocalPose().q));
-		enPhysVehicle->addTorque(currentRight*tiltValue);
+	
+	if ((glm::dot(worldUp, currentUp) > 0.25)) {
+		flipTimer += Time::getDeltaTime();
 	}
-	else if (tiltValue > 1.0) {
-		cout << "going over" << endl;
-		enPhysVehicle->addTorque(currentRight*tiltValue* 10.0);
+	if (flipTimer >= 3.0) {
+		enPhysVehicle->addForce(physx::PxVec3(0.0,-1.0,0.0)*100, physx::PxForceMode::eIMPULSE);
+		enPhysVehicle->addTorque(physx::PxVec3(0.0,0.0, 1.0) * 100, physx::PxForceMode::eIMPULSE);
+		flipTimer = 0.0;
 	}
-
 }
