@@ -175,7 +175,7 @@ void Physics::initializePhysX()
 	}*/
 
 	PxSceneDesc sceneDesc(gPhysics->getTolerancesScale());
-	sceneDesc.gravity = PxVec3(0.0f, 8*-9.81f, 0.0f);
+	sceneDesc.gravity = PxVec3(0.0f, 4*-9.81f, 0.0f);
 	gDispatcher = PxDefaultCpuDispatcherCreate(2);
 	sceneDesc.cpuDispatcher = gDispatcher;
 	sceneDesc.filterShader = VehicleFilterShader;//PxFilterFlag::eSUPPRESS;
@@ -1063,7 +1063,7 @@ Physics::VehicleDesc Physics::initVehicleDesc()
 	const PxF32 wheelMass = 100.0f;
 	const PxF32 wheelRadius = 0.8f;
 	const PxF32 wheelWidth = 0.6f;
-	const PxF32 wheelMOI = 0.30f*wheelMass*wheelRadius*wheelRadius;
+	const PxF32 wheelMOI = .30f*wheelMass*wheelRadius*wheelRadius;
 	const PxU32 nbWheels = 4;
 
 	Physics::VehicleDesc vehicleDesc;

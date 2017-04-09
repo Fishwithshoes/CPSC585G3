@@ -345,11 +345,23 @@ enum Sounds
 	SFX_Splish,
 	SFX_Splash,
 	SFX_Engine,
+	SFX_Engine1,
+	SFX_Engine2,
+	SFX_Engine3,
+	SFX_Engine4,
+	SFX_Engine5,
+	SFX_Engine6,
+	SFX_Engine7,
+	SFX_Engine8,
+	SFX_Engine9,
 	SFX_Horn
+
 };
 
 enum Musics
 {
+	MUS_Automation,
+	MUS_Conta,
 	MUS_Menu,
 	MUS_Battle,
 	MUS_BloodMoon

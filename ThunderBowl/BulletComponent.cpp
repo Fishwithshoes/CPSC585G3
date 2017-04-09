@@ -83,7 +83,7 @@ void BulletComponent::Update()
 	//IF_DEF SPLASH
 	if (transform.position.y < 7.5 && !splashed)
 	{
-		Audio::Play2DSound(SFX_Splish, Random::rangef(0.3, 0.4), 0.0);
+		Audio::Play2DSound(SFX_Splish, Random::rangef(0.05, 0.15), 0.0);
 		ParticleSystem ps = ParticleSystem();
 		ps.name = selfName + "Splish";
 		ps.transform = transform;
