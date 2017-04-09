@@ -266,11 +266,12 @@ void Game::BuildWorld()
 	ptr->AddComponent(new FloatComponent());
 	ptr->AddComponent(new RotateComponent());
 	ptr->AddComponent(new PowerUpComponent(GameWeapons::GW_MISSILE_LAUNCHER));
+	ptr->AddComponent(new AINodeComponent(NodeTypes::NT_RK_POWERUP));
 
 	AINodeComponent* innerNodeRef = &AINodeComponent();
 	AINodeComponent* middleNodeRef = &AINodeComponent();
 	AINodeComponent* outerNodeRef = &AINodeComponent();
-	//AINodeComponent* centerNodeRef = &AINodeComponent();
+	AINodeComponent* centerNodeRef = &AINodeComponent();
 
 	for (int i = 0; i < nodesPerRing; i++) {
 		innerNodeRef = (AINodeComponent*)innerNodes.at(i)->GetComponent(innerNodeRef);
@@ -279,13 +280,13 @@ void Game::BuildWorld()
 		//centerNodeRef = (AINodeComponent*)Game::Find("CenterNode0")->GetComponent(centerNodeRef);
 
 		innerNodeRef->adjacentNodes.push_back(middleNodeRef);
-		//innerNodeRef->adjacentNodes.push_back(centerNodeRef);
-		//centerNodeRef->adjacentNodes.push_back(innerNodeRef);
 
 		middleNodeRef->adjacentNodes.push_back(innerNodeRef);
 		middleNodeRef->adjacentNodes.push_back(outerNodeRef);
 
 		outerNodeRef->adjacentNodes.push_back(middleNodeRef);
+		//outerNodeRef->adjacentNodes.push_back(centerNodeRef);
+		//centerNodeRef->adjacentNodes.push_back(outerNodeRef);
 	}															//NODES END
 
 	/*GameObject pathNode1 = GameObject();

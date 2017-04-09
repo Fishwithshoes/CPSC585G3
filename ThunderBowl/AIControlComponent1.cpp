@@ -34,15 +34,27 @@ void AIControlComponent1::Start() {
 
 void AIControlComponent1::Update() {
 	Initialize();
-	timer += Time::getDeltaTime();
-	repathOnTimout();
 
-	if (glm::length(currentNode->nodeCurrentPosition - transform.position) < 15.00) {
-		pathToDestination();
-		timer = 0.0;
+	timer += Time::getDeltaTime();
+
+	if (reversing) {
+		EnemyComponent* thisEnemyComp = &EnemyComponent();
+		thisEnemyComp = (EnemyComponent*)thisEnemy->GetComponent(thisEnemyComp);
+		thisEnemyComp->ReverseOut();
+		if (timer >= 3.0) {
+			timer = 0.0;
+			reversing = false;
+		}
 	}
 	else {
-		updateHeading();
+		repathOnTimout();
+		if (glm::length(currentNode->nodeCurrentPosition - transform.position) < 15.00) {
+			pathToDestination();
+			timer = 0.0;
+		}
+		else {
+			updateHeading();
+		}
 	}
 
 	Finalize();
@@ -73,24 +85,44 @@ void AIControlComponent1::pathToDestination()
 }
 
 void AIControlComponent1::repathOnTimout() {
-	float timeToRepath = 3.0;
+	EnemyComponent* thisEnemyComp = &EnemyComponent();
+	thisEnemyComp = (EnemyComponent*)thisEnemy->GetComponent(thisEnemyComp);
+	HealthComponent* thisHealthComp = &HealthComponent();
+	thisHealthComp = (HealthComponent*)thisEnemy->GetComponent(thisHealthComp);
+
+	float timeToRepath = 10.0;
 	if (timer >= timeToRepath) {
-		//AINodeComponent* nearestNode = findNearest();
-		for (int i = 0; i < currentNode->adjacentNodes.size(); i++) {
-			if (currentNode != previousNode) {
-				if (currentNode->adjacentNodes.at(i)->getName().find("Middle") != string::npos) {
-					previousNode = currentNode;
-					currentNode = currentNode->adjacentNodes.at(i);
-					currentHeading = (currentNode->nodeCurrentPosition - transform.position);
-					timer = 0.0;
-					break;
+		if ((thisHealthComp->currentHealth > 0.0) && (thisEnemyComp->enPhysVehicle->getLinearVelocity().magnitude() < 75.0)) {
+			for (int i = 0; i < currentNode->adjacentNodes.size(); i++) {
+				if (currentNode != previousNode) {
+					if (currentNode->adjacentNodes.at(i)->getName().find("Middle") != string::npos) {
+						previousNode = currentNode;
+						currentNode = currentNode->adjacentNodes.at(i);
+					}
 				}
 			}
+			thisEnemyComp->enVehicleNoDrive->setSteerAngle(2, -thisEnemyComp->enVehicleNoDrive->getSteerAngle(2));
+			thisEnemyComp->enVehicleNoDrive->setSteerAngle(3, -thisEnemyComp->enVehicleNoDrive->getSteerAngle(3));
+			reversing = true;
+			timer = 0.0;
 		}
-		cout << "Repath to Node: " << currentNode->getName() << endl;
 	}
 }
 
+
+/*for (int i = 0; i < currentNode->adjacentNodes.size(); i++) {
+if (currentNode != previousNode) {
+if (currentNode->adjacentNodes.at(i)->getName().find("Middle") != string::npos) {
+previousNode = currentNode;
+currentNode = currentNode->adjacentNodes.at(i);
+currentHeading = (currentNode->nodeCurrentPosition - transform.position);
+timer = 0.0;
+cout << selfName << " Repath to Node: " << currentNode->getName() << endl;
+
+break;
+}
+}
+}*/
 void AIControlComponent1::resetCurrent()
 {
 	currentNode = findNearest();

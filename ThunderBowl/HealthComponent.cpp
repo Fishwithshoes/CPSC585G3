@@ -147,6 +147,7 @@ void HealthComponent::Update()
 			enemy->enPhysVehicle->setGlobalPose(physx::PxTransform(enemy->startPosition, enemy->startRotation));
 			enemy->enPhysVehicle->setAngularVelocity(physx::PxVec3(0, 0, 0));
 			enemy->enPhysVehicle->setLinearVelocity(physx::PxVec3(0, 0, 0));
+			enemyController->resetCurrent();
 
 			for (int i = 0; i < enemy->enWheelVector.size(); i++)
 				enemy->enWheelVector[i]->isVisible = true;

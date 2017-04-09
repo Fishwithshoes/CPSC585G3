@@ -278,7 +278,7 @@ void VehicleComponent::Update()
 	if(followCam->mode == Camera::Modes::MODE_GAME)
 		followCam->SetVerticalFOV(60 + speed*0.08);
 
-	Input::SetControllerVibration(playerNum, 0.08 + speed*0.0003, 0.0);
+	//Input::SetControllerVibration(playerNum, 0.08 + speed*0.0003, 0.0);
 
 	//IF_DEF Wheel Spray Particles
 	UpdateParticles();

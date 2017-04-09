@@ -27,6 +27,7 @@ public:
 
 	bool arrived = false;
 	bool newPath = true;
+	bool reversing = false;
 
 
 private:

@@ -171,7 +171,7 @@ void MissileComponent::Explode()
 				{
 					EnemyComponent* enemy = &EnemyComponent();
 					enemy = (EnemyComponent*)players[i]->GetComponent(enemy);
-					enemy->enPhysVehicle->addForce(explosionForce, physx::PxForceMode::eIMPULSE);		//BOTH THROW NPWRITECHECK WARNING
+					enemy->enPhysVehicle->addForce(explosionForce, physx::PxForceMode::eIMPULSE);
 					enemy->enPhysVehicle->addTorque(explosionForce, physx::PxForceMode::eIMPULSE);
 
 				}
