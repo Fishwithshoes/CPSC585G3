@@ -3,10 +3,9 @@ c:\cpsc585g3\thunderbowl\VehicleComponent.h(24): warning C4305: 'initializing': 
 c:\cpsc585g3\thunderbowl\OceanComponent.h(11): warning C4305: 'initializing': truncation from 'double' to 'float'
 LINK : warning LNK4075: ignoring '/INCREMENTAL' due to '/LTCG' specification
   Generating code
-c:\users\james.hollowaycurrie\cpsc585g3\thunderbowl\gameobject.cpp(123): warning C4172: returning address of local variable or temporary
-  2513 of 2927 functions (85.9%) were compiled, the rest were copied from previous compilation.
-    70 functions were new in current compilation
-    8 functions had inline decision re-evaluated but remain unchanged
+  229 of 2926 functions ( 7.8%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    23 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
 AINodeComponent.obj : warning LNK4099: PDB 'vc140.pdb' was not found with 'AINodeComponent.obj' or at 'C:\CPSC585G3\ThunderBowl\x64\Release\vc140.pdb'; linking object as if no debug info
 Audio.obj : warning LNK4099: PDB 'vc140.pdb' was not found with 'Audio.obj' or at 'C:\CPSC585G3\ThunderBowl\x64\Release\vc140.pdb'; linking object as if no debug info
@@ -14,16 +13,13 @@ BulletComponent.obj : warning LNK4099: PDB 'vc140.pdb' was not found with 'Bulle
 ButtonCode.obj : warning LNK4099: PDB 'vc140.pdb' was not found with 'ButtonCode.obj' or at 'C:\CPSC585G3\ThunderBowl\x64\Release\vc140.pdb'; linking object as if no debug info
 Camera.obj : warning LNK4099: PDB 'vc140.pdb' was not found with 'Camera.obj' or at 'C:\CPSC585G3\ThunderBowl\x64\Release\vc140.pdb'; linking object as if no debug info
 Component.obj : warning LNK4099: PDB 'vc140.pdb' was not found with 'Component.obj' or at 'C:\CPSC585G3\ThunderBowl\x64\Release\vc140.pdb'; linking object as if no debug info
-FlamethrowerComponent.obj : warning LNK4099: PDB 'vc140.pdb' was not found with 'FlamethrowerComponent.obj' or at 'C:\CPSC585G3\ThunderBowl\x64\Release\vc140.pdb'; linking object as if no debug info
 FloatComponent.obj : warning LNK4099: PDB 'vc140.pdb' was not found with 'FloatComponent.obj' or at 'C:\CPSC585G3\ThunderBowl\x64\Release\vc140.pdb'; linking object as if no debug info
-Game.obj : warning LNK4099: PDB 'vc140.pdb' was not found with 'Game.obj' or at 'C:\CPSC585G3\ThunderBowl\x64\Release\vc140.pdb'; linking object as if no debug info
 GameManager.obj : warning LNK4099: PDB 'vc140.pdb' was not found with 'GameManager.obj' or at 'C:\CPSC585G3\ThunderBowl\x64\Release\vc140.pdb'; linking object as if no debug info
 GameObject.obj : warning LNK4099: PDB 'vc140.pdb' was not found with 'GameObject.obj' or at 'C:\CPSC585G3\ThunderBowl\x64\Release\vc140.pdb'; linking object as if no debug info
 GeoGenerator.obj : warning LNK4099: PDB 'vc140.pdb' was not found with 'GeoGenerator.obj' or at 'C:\CPSC585G3\ThunderBowl\x64\Release\vc140.pdb'; linking object as if no debug info
 HealthComponent.obj : warning LNK4099: PDB 'vc140.pdb' was not found with 'HealthComponent.obj' or at 'C:\CPSC585G3\ThunderBowl\x64\Release\vc140.pdb'; linking object as if no debug info
 Input.obj : warning LNK4099: PDB 'vc140.pdb' was not found with 'Input.obj' or at 'C:\CPSC585G3\ThunderBowl\x64\Release\vc140.pdb'; linking object as if no debug info
 Loader.obj : warning LNK4099: PDB 'vc140.pdb' was not found with 'Loader.obj' or at 'C:\CPSC585G3\ThunderBowl\x64\Release\vc140.pdb'; linking object as if no debug info
-MachineGunComponent.obj : warning LNK4099: PDB 'vc140.pdb' was not found with 'MachineGunComponent.obj' or at 'C:\CPSC585G3\ThunderBowl\x64\Release\vc140.pdb'; linking object as if no debug info
 Mathf.obj : warning LNK4099: PDB 'vc140.pdb' was not found with 'Mathf.obj' or at 'C:\CPSC585G3\ThunderBowl\x64\Release\vc140.pdb'; linking object as if no debug info
 MissileComponent.obj : warning LNK4099: PDB 'vc140.pdb' was not found with 'MissileComponent.obj' or at 'C:\CPSC585G3\ThunderBowl\x64\Release\vc140.pdb'; linking object as if no debug info
 OceanComponent.obj : warning LNK4099: PDB 'vc140.pdb' was not found with 'OceanComponent.obj' or at 'C:\CPSC585G3\ThunderBowl\x64\Release\vc140.pdb'; linking object as if no debug info
@@ -35,7 +31,6 @@ PuddleComponent.obj : warning LNK4099: PDB 'vc140.pdb' was not found with 'Puddl
 Random.obj : warning LNK4099: PDB 'vc140.pdb' was not found with 'Random.obj' or at 'C:\CPSC585G3\ThunderBowl\x64\Release\vc140.pdb'; linking object as if no debug info
 Renderer.obj : warning LNK4099: PDB 'vc140.pdb' was not found with 'Renderer.obj' or at 'C:\CPSC585G3\ThunderBowl\x64\Release\vc140.pdb'; linking object as if no debug info
 RendererUtility.obj : warning LNK4099: PDB 'vc140.pdb' was not found with 'RendererUtility.obj' or at 'C:\CPSC585G3\ThunderBowl\x64\Release\vc140.pdb'; linking object as if no debug info
-MissileLauncherComponent.obj : warning LNK4099: PDB 'vc140.pdb' was not found with 'MissileLauncherComponent.obj' or at 'C:\CPSC585G3\ThunderBowl\x64\Release\vc140.pdb'; linking object as if no debug info
 RotateComponent.obj : warning LNK4099: PDB 'vc140.pdb' was not found with 'RotateComponent.obj' or at 'C:\CPSC585G3\ThunderBowl\x64\Release\vc140.pdb'; linking object as if no debug info
 StaticComponent.obj : warning LNK4099: PDB 'vc140.pdb' was not found with 'StaticComponent.obj' or at 'C:\CPSC585G3\ThunderBowl\x64\Release\vc140.pdb'; linking object as if no debug info
 Time.obj : warning LNK4099: PDB 'vc140.pdb' was not found with 'Time.obj' or at 'C:\CPSC585G3\ThunderBowl\x64\Release\vc140.pdb'; linking object as if no debug info

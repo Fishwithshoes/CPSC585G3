@@ -214,18 +214,36 @@ void AIControlComponent1::trackEnemy() {
 
 void AIControlComponent1::chooseWeapon()
 {
-	MissileLauncherComponent* thisMissileLauncher = &MissileLauncherComponent();
-	thisMissileLauncher = (MissileLauncherComponent*)Game::Find(selfName)->GetComponent(thisMissileLauncher);
-	FlamethrowerComponent* thisFlameThrower = &FlamethrowerComponent();
-	thisFlameThrower = (FlamethrowerComponent*)Game::Find(selfName)->GetComponent(thisFlameThrower);
 
 	if (currentEnemy != NULL) 
 	{
-		if((thisAIPlayer->machineGunAmmo != 0) && glm::dot(getFiringVector(), transform.GetForward()) > 0.1) 
+		Transform t = transform;
+		t.rotation = t.GetInverseRotation();
+
+
+		if ((glm::dot(getFiringVector(), t.GetForward()) > 0.8) && glm::distance(transform.position, currentEnemy->playerCurrentPosition) > 40.0)
 		{
-			MachineGunComponent* thisMG = &MachineGunComponent();
-			thisMG = (MachineGunComponent*)Game::Find(selfName)->GetComponent(thisMG);
-			thisMG->FireMG();
+				if (thisAIPlayer->missileLauncherAmmo != 0) {
+				MissileLauncherComponent* thisMissileLauncher = &MissileLauncherComponent();
+				thisMissileLauncher = (MissileLauncherComponent*)Game::Find(selfName)->GetComponent(thisMissileLauncher);
+				thisMissileLauncher->FireMissile();
+			}
+		}
+
+		else if (glm::dot(getFiringVector(), t.GetForward()) > 0.7)
+		{
+			if (thisAIPlayer->machineGunAmmo != 0) {
+				MachineGunComponent* thisMG = &MachineGunComponent();
+				thisMG = (MachineGunComponent*)Game::Find(selfName)->GetComponent(thisMG);
+				thisMG->FireMG();
+			}
+		}
+		
+		else if ((glm::dot(getFiringVector(), t.GetForward()) > 0.1) && glm::distance(transform.position, currentEnemy->playerCurrentPosition) < 35.0) {
+			if (thisAIPlayer->flamethrowerAmmo != 0)
+			{
+				thisAIPlayer->currentWeapon = GW_FLAMETHROWER;
+			}
 		}
 	}
 

@@ -85,8 +85,28 @@ void FlamethrowerComponent::UpdateParticles()
 		}
 		else
 		{
+			AIControlComponent1* enemyController = &AIControlComponent1();
+			enemyController = (AIControlComponent1*)self->GetComponent(enemyController);
+
+			vec3 firingVector = enemyController->getFiringVector();
+			vec3 tempVector = normalize(firingVector*vec3(1.0, 0.0, 1.0));
+			glm::normalize(tempVector);
+			Transform t = transform;
+			t.rotation = t.GetInverseRotation();
+			float theta = acos(glm::dot(glm::normalize(t.GetForward()*vec3(1.0, 0.0, 1.0)), tempVector));
+			if (dot(t.GetRight(), tempVector) > 0.0)//rotate right
+				theta = -theta;
+
+			tempVector = firingVector*vec3(0.0, 1.0, 0.0);
+			glm::normalize(tempVector);
+			
 			vertical = 1.0;
-			horizontal = 0.0;
+			horizontal = -theta;
+
+			PlayerComponent* ownerPlayer = &PlayerComponent();
+			ownerPlayer = (PlayerComponent*)self->GetComponent(ownerPlayer);
+			ownerPlayer->currentWeapon = GW_MACHINE_GUN;
+
 		}
 	}
 
@@ -146,7 +166,7 @@ void FlamethrowerComponent::UpdateParticles()
 			{
 				vec3 pPos = fireStream->GetParticles()[j].position;
 
-				damage += Mathf::Clamp(10.0f - distance(vPos, pPos), 0, 10) *
+				damage += Mathf::Clamp(10.0f - distance(vPos, pPos), 0, 10) * 1.5 *		//FLAME DAMAGE HERE
 					streamPower * Time::timeScale * Time::getDeltaTime();
 			}
 				

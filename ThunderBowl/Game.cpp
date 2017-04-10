@@ -133,9 +133,13 @@ void Game::BuildWorld()
 		GameObject tempNode = GameObject();
 		tempNode.name = "InnerNode" + to_string(i);
 		tempNode.transform.position = innerNodePositions.at(i);
-		tempNode.mesh = GeoGenerator::MakeBox(1, 1, 1, false);
+		//tempNode.mesh = GeoGenerator::MakeBox(1, 1, 1, false);
+		tempNode.staticGeo = SG_MG_BULLET;
+		tempNode.isVisible = false;
+		tempNode.castShadow = false;
 		tempNode.tag = TAGS_AI_NODE;
-		ptr = Game::CreateWorldObject(tempNode);
+		//ptr = Game::CreateWorldObject(tempNode);
+		ptr = Game::CreateStaticObject(tempNode);
 		ptr->AddComponent(new AINodeComponent());
 		innerNodes.push_back(ptr);
 	}
@@ -167,12 +171,8 @@ void Game::BuildWorld()
 		GameObject tempNode = GameObject();
 		tempNode.name = "MiddleNode" + to_string(i);
 		tempNode.transform.position = middleNodePositions.at(i);
-		tempNode.tag = TAGS_AI_NODE;
-		tempNode.mesh = GeoGenerator::MakeBox(1, 1, 1, false);
 
 		if (i == 0 || i == 6) {
-		//if (remainder(i, 4) == 0) {
-
 			tempNode.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
 			ptr = Game::CreateWorldObject(tempNode);
 			ptr->AddComponent(new PowerUpComponent(GameWeapons::GW_FLAMETHROWER));
@@ -181,7 +181,6 @@ void Game::BuildWorld()
 			ptr->AddComponent(new AINodeComponent(NodeTypes::NT_FT_POWERUP));
 		}
 		else if (i == 2 || i == 4) {
-		//else if (remainder(i, 2) == 0) {
 			tempNode.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
 			ptr = Game::CreateWorldObject(tempNode);
 			ptr->AddComponent(new PowerUpComponent(GameWeapons::GW_MACHINE_GUN));
@@ -190,8 +189,12 @@ void Game::BuildWorld()
 			ptr->AddComponent(new AINodeComponent(NodeTypes::NT_MG_POWERUP));
 		}
 		else {
-			tempNode.mesh = GeoGenerator::MakeBox(1, 1, 1, false);
-			ptr = Game::CreateWorldObject(tempNode);
+
+			tempNode.staticGeo = SG_MG_BULLET;
+			tempNode.isVisible = false;
+			tempNode.castShadow = false;
+			tempNode.tag = TAGS_AI_NODE;
+			ptr = Game::CreateStaticObject(tempNode);
 			ptr->AddComponent(new AINodeComponent());
 		}
 
@@ -226,9 +229,13 @@ void Game::BuildWorld()
 		GameObject tempNode = GameObject();
 		tempNode.name = "OuterNode" + to_string(i);
 		tempNode.transform.position = outerNodePositions.at(i);
-		tempNode.mesh = GeoGenerator::MakeBox(1, 1, 1, false);
+		//tempNode.mesh = GeoGenerator::MakeBox(1, 1, 1, false);
+		tempNode.staticGeo = SG_MG_BULLET;
 		tempNode.tag = TAGS_AI_NODE;
-		ptr = Game::CreateWorldObject(tempNode);
+		tempNode.isVisible = false;
+		tempNode.castShadow = false;
+		//ptr = Game::CreateWorldObject(tempNode);
+		ptr = Game::CreateStaticObject(tempNode);
 		ptr->AddComponent(new AINodeComponent());
 		outerNodes.push_back(ptr);
 	}
