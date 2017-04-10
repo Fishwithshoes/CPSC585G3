@@ -214,14 +214,14 @@ void AIControlComponent1::trackEnemy() {
 
 void AIControlComponent1::chooseWeapon()
 {
-	//MissileLauncherComponent* thisMissileLauncher = &MissileLauncherComponent();
-	//thisMissileLauncher = (MissileLauncherComponent*)Game::Find(selfName)->GetComponent(thisMissileLauncher);
-	//FlamethrowerComponent* thisFlameThrower = &FlamethrowerComponent();
-	//thisFlameThrower = (FlamethrowerComponent*)Game::Find(selfName)->GetComponent(thisFlameThrower);
+	MissileLauncherComponent* thisMissileLauncher = &MissileLauncherComponent();
+	thisMissileLauncher = (MissileLauncherComponent*)Game::Find(selfName)->GetComponent(thisMissileLauncher);
+	FlamethrowerComponent* thisFlameThrower = &FlamethrowerComponent();
+	thisFlameThrower = (FlamethrowerComponent*)Game::Find(selfName)->GetComponent(thisFlameThrower);
 
 	if (currentEnemy != NULL) 
 	{
-		if((thisAIPlayer->machineGunAmmo != 0) && glm::dot(getFiringVector(), transform.GetForward()) > 0.5) 
+		if((thisAIPlayer->machineGunAmmo != 0) && glm::dot(getFiringVector(), transform.GetForward()) > 0.1) 
 		{
 			MachineGunComponent* thisMG = &MachineGunComponent();
 			thisMG = (MachineGunComponent*)Game::Find(selfName)->GetComponent(thisMG);

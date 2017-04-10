@@ -1,3 +1,13 @@
+/*
+TODO:
+	Fix the player being able to kill themselves at high speed
+	Fix the scoring
+	Finish the AI shooting
+	General Debug/code cleanup
+	Add newspawn value;
+*/
+
+
 #include "CommonIncludes.h"
 #include "GameManager.h"
 #include "Game.h"
