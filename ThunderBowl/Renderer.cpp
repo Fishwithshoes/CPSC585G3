@@ -331,6 +331,15 @@ void Renderer::LoadStaticGeo(Renderer *renderer)
 	RendererUtility::InitializeGeometry(&renderer->carLowGeo);
 	BufferStaticGeoData(&renderer->carLowGeo, &loader.getMeshes()[0]);
 
+	RendererUtility::InitializeGeometry(&renderer->powerupGeo);
+	BufferStaticGeoData(&renderer->powerupGeo, &GeoGenerator::MakeBox(2, 2, 2, false));
+
+	RendererUtility::InitializeGeometry(&renderer->sphereGeo);
+	BufferStaticGeoData(&renderer->sphereGeo, &GeoGenerator::MakeSphere(0.5, 32, 64, false));
+
+	RendererUtility::InitializeGeometry(&renderer->skyGeo);
+	BufferStaticGeoData(&renderer->skyGeo, &GeoGenerator::MakeSphere(0.5, 32, 64, true));
+
 	//TODO Possible redo of map model to include platform and rigging
 	loader = Loader();
 	loader.loadModel("Models/thunderbowl001.obj", vec3(15, 13, 15), true);
@@ -556,9 +565,7 @@ void Renderer::RenderScene(Renderer *renderer)
 		if (Game::skybox.isVisible)
 		{
 			//Get skybox
-			Mesh mesh = Game::skybox.mesh;
 			ParticleOverlayMaterial skyBoxMat = Game::skybox.particleOverlayMat;
-			renderer->geometry.elementCount = mesh.indices.size();
 
 			//Program uniforms
 			glUniform4fv(renderer->colorSkybox_uniform, 1, value_ptr(skyBoxMat.color));
@@ -575,8 +582,9 @@ void Renderer::RenderScene(Renderer *renderer)
 			GLint isBloodMoon_uniform = glGetUniformLocation(renderer->skyboxShader.program, "isBloodMoon");
 			glUniform1i(isBloodMoon_uniform, GameManager::isBloodMoon ? 1 : 0);
 
-			BufferGeoData(renderer, &mesh);
-			glDrawElements(GL_TRIANGLES, renderer->geometry.elementCount, GL_UNSIGNED_INT, nullptr);
+			glBindVertexArray(renderer->skyGeo.vertexArray);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, renderer->skyGeo.indexBuffer);
+			glDrawElements(GL_TRIANGLES, renderer->skyGeo.elementCount, GL_UNSIGNED_INT, nullptr);
 		}
 
 		//**PREPARE TO DRAW ALL WORLD OBJECTS**********
@@ -887,6 +895,12 @@ void Renderer::DrawPhysicalObjects(Renderer *renderer, bool programStandardUnifo
 				break;
 			case SG_CAR_LOW:
 				geoToUse = renderer->carLowGeo;
+				break;
+			case SG_POWERUP:
+				geoToUse = renderer->powerupGeo;
+				break;
+			case SG_SPHERE:
+				geoToUse = renderer->sphereGeo;
 				break;
 			case SG_MAP:
 				geoToUse = renderer->mapGeo;

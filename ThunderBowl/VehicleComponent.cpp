@@ -169,19 +169,19 @@ void VehicleComponent::Update()
 			if (dot(dir, t.GetForward()) > 0.0)
 			{
 				speed = -speed;
-				light.Color = vec4(1, 0, 0, 10);
+				light.Color = vec4(1, 0, 0, 7);
 			}
 			else
 			{
-				light.Color = vec4(vec3(1), 10);
+				light.Color = vec4(vec3(0.4), 7);
 			}
 			t.position = t.position - (3.3f + speed*0.016f)*t.GetForward() + 0.8f*t.GetUp();
-			light.Pos = vec4(t.position - 0.9f*t.GetRight(), 1.8);
+			light.Pos = vec4(t.position - 1.2f*t.GetRight(), 1.8);
 			HealthComponent* health = &HealthComponent();
 			health = (HealthComponent*)Game::Find(selfName)->GetComponent(health);
 			if(health->currentHealth > 66.67)
 				Renderer::AddPointLight(light);
-			light.Pos = vec4(t.position + 0.9f*t.GetRight(), 1.8);
+			light.Pos = vec4(t.position + 1.2f*t.GetRight(), 1.8);
 			Renderer::AddPointLight(light);
 		}
 	}
@@ -276,7 +276,8 @@ void VehicleComponent::Update()
 	speedNeedle->transform.rotation = vec4(0, 0, 0, 1);
 	float speed = physVehicle->getLinearVelocity().magnitude() * 3.6;
 	float angle = -0.002 * Mathf::PI * speed; //At full the needle points to 500 km/h
-	speedNeedle->transform.Rotate(Transform::Forward(), angle, false);
+	if (myHealth->currentHealth > 0.0)
+		speedNeedle->transform.Rotate(Transform::Forward(), angle, false);
 	//ENDIF_SPEEDOMETER
 	if(followCam->mode == Camera::Modes::MODE_GAME)
 		followCam->SetVerticalFOV(60 + speed*0.08);

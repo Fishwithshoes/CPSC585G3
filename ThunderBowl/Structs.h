@@ -68,6 +68,8 @@ enum StaticGeos
 	SG_CAR,
 	SG_CAR_MED,
 	SG_CAR_LOW,
+	SG_POWERUP,
+	SG_SPHERE,
 	SG_MAP
 };
 
