@@ -135,6 +135,8 @@ void Game::BuildWorld()
 		tempNode.transform.position = innerNodePositions.at(i);
 		//tempNode.mesh = GeoGenerator::MakeBox(1, 1, 1, false);
 		tempNode.staticGeo = SG_POWERUP;
+		tempNode.isVisible = false;
+		tempNode.castShadow = false;
 		tempNode.tag = TAGS_AI_NODE;
 		//ptr = Game::CreateWorldObject(tempNode);
 		ptr = Game::CreateStaticObject(tempNode);
@@ -169,8 +171,6 @@ void Game::BuildWorld()
 		GameObject tempNode = GameObject();
 		tempNode.name = "MiddleNode" + to_string(i);
 		tempNode.transform.position = middleNodePositions.at(i);
-		tempNode.tag = TAGS_AI_NODE;
-		tempNode.mesh = GeoGenerator::MakeBox(1, 1, 1, false);
 
 		if (i == 0 || i == 6) {
 		//if (remainder(i, 4) == 0) {
@@ -195,11 +195,14 @@ void Game::BuildWorld()
 			ptr->AddComponent(new RotateComponent());
 			ptr->AddComponent(new AINodeComponent(NodeTypes::NT_MG_POWERUP));
 		}
+
 		else 
 		{
-			//tempNode.mesh = GeoGenerator::MakeBox(1, 1, 1, false);
+
 			tempNode.staticGeo = SG_POWERUP;
-			//ptr = Game::CreateWorldObject(tempNode);
+			tempNode.isVisible = false;
+			tempNode.castShadow = false;
+			tempNode.tag = TAGS_AI_NODE;
 			ptr = Game::CreateStaticObject(tempNode);
 			ptr->AddComponent(new AINodeComponent());
 		}
@@ -238,6 +241,8 @@ void Game::BuildWorld()
 		//tempNode.mesh = GeoGenerator::MakeBox(1, 1, 1, false);
 		tempNode.staticGeo = SG_POWERUP;
 		tempNode.tag = TAGS_AI_NODE;
+		tempNode.isVisible = false;
+		tempNode.castShadow = false;
 		//ptr = Game::CreateWorldObject(tempNode);
 		ptr = Game::CreateStaticObject(tempNode);
 		ptr->AddComponent(new AINodeComponent());
