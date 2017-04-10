@@ -206,7 +206,7 @@ void PlayerComponent::Update()
 			speed = -speed;
 		t.position = t.position + (4.2f - speed*0.016f)*t.GetForward() + 0.6f*t.GetUp();
 		PointLight light;
-		light.Color = vec4(vec3(1), 10);
+		light.Color = vec4(vec3(0.5), 7);
 		light.Pos = vec4(t.position - 1.0f*t.GetRight(), 1.8);
 		HealthComponent* health = &HealthComponent();
 		health = (HealthComponent*)self->GetComponent(health);

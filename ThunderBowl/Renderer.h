@@ -44,6 +44,9 @@ private:
 	Geometry carGeo;
 	Geometry carMedGeo;
 	Geometry carLowGeo;
+	Geometry powerupGeo;
+	Geometry sphereGeo;
+	Geometry skyGeo;
 	Geometry mapGeo;
 	//TODO add any additional high-res items below. Add to the StaticGeos enum too.
 

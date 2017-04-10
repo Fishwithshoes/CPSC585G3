@@ -103,7 +103,7 @@ void Game::BuildWorld()
 
 
 	//Skybox
-	skybox.mesh = GeoGenerator::MakeSphere(5000, 16, 32, true);
+	skybox.transform.scale = vec3(10000);
 	skybox.particleOverlayMat.mainTexture = MAP_ENV;
 
 	//Add initial World GameObjects
@@ -531,15 +531,16 @@ void Game::BuildWorld()
 	//Game::CreateWorldObject(temp);
 
 	temp = GameObject("Sun", TAGS_DECORATION);
-	temp.mesh = GeoGenerator::MakeSphere(250, 16, 32, false);
+	temp.staticGeo = SG_SPHERE;
 	temp.transform.position = vec3(5, 2, 5)*560.0f;
+	temp.transform.scale = vec3(500);
 	temp.standardMat.roughness = 1.0;
 	temp.standardMat.metalness = 0.00;
 	temp.standardMat.diffuseLevel = 0.0;
 	temp.standardMat.selfIllumLevel = 2.0;
 	temp.standardMat.selfIllumColor = vec3(1.0, 0.5, 0.1);
 	temp.standardMat.fogLevel = 0.0;
-	Game::CreateWorldObject(temp);
+	Game::CreateStaticObject(temp);
 
 	temp = GameObject("LightSymbol", TAGS_DEBUG_2);
 	temp.mesh = GeoGenerator::MakeSphere(20, 4, 8, false);
@@ -553,8 +554,9 @@ void Game::BuildWorld()
 	//Game::CreateWorldObject(temp);
 
 	temp = GameObject("Moon", TAGS_DECORATION);
-	temp.mesh = GeoGenerator::MakeSphere(100, 16, 32, false);
+	temp.staticGeo = SG_SPHERE;
 	temp.transform.position = vec3(-4, 1, -4)*700.0f;
+	temp.transform.scale = vec3(200);
 	temp.standardMat.roughness = 1.0;
 	temp.standardMat.metalness = 0.00;
 	temp.standardMat.diffuseLevel = 0.0;
@@ -564,7 +566,7 @@ void Game::BuildWorld()
 	temp.standardMat.normalMap = MAP_MOON_NORMAL;
 	temp.standardMat.bumpLevel = 0.5;
 	temp.standardMat.fogLevel = 0.0;
-	Game::CreateWorldObject(temp);
+	Game::CreateStaticObject(temp);
 
 	temp = GameObject("OceanTop", TAGS_DECORATION);
 	temp.staticGeo = SG_OCEAN;

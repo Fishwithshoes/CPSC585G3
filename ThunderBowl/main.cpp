@@ -100,10 +100,10 @@ int main(int argc, char *argv[])
 	RendererUtility::CheckGLErrors();
 #endif
 
-//#pragma omp parallel
-//	{
-//	printf("Running on multiple threads\n");
-//	}
+#pragma omp parallel
+	{
+		printf("Running on multiple threads\n");
+	}
 
 	RendererUtility::QueryGLVersion();
 	glfwSwapInterval(0);
