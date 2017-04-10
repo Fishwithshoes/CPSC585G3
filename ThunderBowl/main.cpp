@@ -188,6 +188,8 @@ int main(int argc, char *argv[])
 			Physics::stepPhysics();	//TODO SUBJECT TO CHANGE
 		}
 
+		//cout << "Dynamics to Douse: " << Game::worldObjectList.size() << endl;
+
 		Renderer::GetCamera(0)->Update();
 
 		GameManager::Update(); //TODO should this go elsewhere?

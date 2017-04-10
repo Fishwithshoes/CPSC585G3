@@ -101,7 +101,6 @@ void Game::BuildWorld()
 	outerNodePositions.push_back(vec3(-106.0, 1.0, 106.0));*/
 
 
-
 	//Skybox
 	skybox.transform.scale = vec3(10000);
 	skybox.particleOverlayMat.mainTexture = MAP_ENV;
@@ -129,13 +128,16 @@ void Game::BuildWorld()
 	ptr->AddComponent(new VehicleComponent());
 	ptr->AddComponent(new MachineGunComponent());*/
 
-	for (int i = 0; i < nodesPerRing; i++) {
+	for (int i = 0; i < nodesPerRing; i++) 
+	{
 		GameObject tempNode = GameObject();
 		tempNode.name = "InnerNode" + to_string(i);
 		tempNode.transform.position = innerNodePositions.at(i);
-		tempNode.mesh = GeoGenerator::MakeBox(1, 1, 1, false);
+		//tempNode.mesh = GeoGenerator::MakeBox(1, 1, 1, false);
+		tempNode.staticGeo = SG_POWERUP;
 		tempNode.tag = TAGS_AI_NODE;
-		ptr = Game::CreateWorldObject(tempNode);
+		//ptr = Game::CreateWorldObject(tempNode);
+		ptr = Game::CreateStaticObject(tempNode);
 		ptr->AddComponent(new AINodeComponent());
 		innerNodes.push_back(ptr);
 	}
@@ -173,8 +175,10 @@ void Game::BuildWorld()
 		if (i == 0 || i == 6) {
 		//if (remainder(i, 4) == 0) {
 
-			tempNode.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
-			ptr = Game::CreateWorldObject(tempNode);
+			//tempNode.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
+			tempNode.staticGeo = SG_POWERUP;
+			//ptr = Game::CreateWorldObject(tempNode);
+			ptr = Game::CreateStaticObject(tempNode);
 			ptr->AddComponent(new PowerUpComponent(GameWeapons::GW_FLAMETHROWER));
 			ptr->AddComponent(new FloatComponent());
 			ptr->AddComponent(new RotateComponent());
@@ -182,16 +186,21 @@ void Game::BuildWorld()
 		}
 		else if (i == 2 || i == 4) {
 		//else if (remainder(i, 2) == 0) {
-			tempNode.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
-			ptr = Game::CreateWorldObject(tempNode);
+			//tempNode.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
+			tempNode.staticGeo = SG_POWERUP;
+			//ptr = Game::CreateWorldObject(tempNode);
+			ptr = Game::CreateStaticObject(tempNode);
 			ptr->AddComponent(new PowerUpComponent(GameWeapons::GW_MACHINE_GUN));
 			ptr->AddComponent(new FloatComponent());
 			ptr->AddComponent(new RotateComponent());
 			ptr->AddComponent(new AINodeComponent(NodeTypes::NT_MG_POWERUP));
 		}
-		else {
-			tempNode.mesh = GeoGenerator::MakeBox(1, 1, 1, false);
-			ptr = Game::CreateWorldObject(tempNode);
+		else 
+		{
+			//tempNode.mesh = GeoGenerator::MakeBox(1, 1, 1, false);
+			tempNode.staticGeo = SG_POWERUP;
+			//ptr = Game::CreateWorldObject(tempNode);
+			ptr = Game::CreateStaticObject(tempNode);
 			ptr->AddComponent(new AINodeComponent());
 		}
 
@@ -226,9 +235,11 @@ void Game::BuildWorld()
 		GameObject tempNode = GameObject();
 		tempNode.name = "OuterNode" + to_string(i);
 		tempNode.transform.position = outerNodePositions.at(i);
-		tempNode.mesh = GeoGenerator::MakeBox(1, 1, 1, false);
+		//tempNode.mesh = GeoGenerator::MakeBox(1, 1, 1, false);
+		tempNode.staticGeo = SG_POWERUP;
 		tempNode.tag = TAGS_AI_NODE;
-		ptr = Game::CreateWorldObject(tempNode);
+		//ptr = Game::CreateWorldObject(tempNode);
+		ptr = Game::CreateStaticObject(tempNode);
 		ptr->AddComponent(new AINodeComponent());
 		outerNodes.push_back(ptr);
 	}
@@ -260,9 +271,11 @@ void Game::BuildWorld()
 	GameObject centerNode = GameObject();
 	centerNode.name = "CenterNode0";
 	centerNode.transform.position = vec3(0.0, 38.0, 0.0);
-	centerNode.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
+	//centerNode.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
+	centerNode.staticGeo = SG_POWERUP;
 	centerNode.tag = TAGS_AI_NODE;
-	ptr = Game::CreateWorldObject(centerNode);
+	//ptr = Game::CreateWorldObject(centerNode);
+	ptr = Game::CreateStaticObject(centerNode);
 	ptr->AddComponent(new FloatComponent());
 	ptr->AddComponent(new RotateComponent());
 	ptr->AddComponent(new PowerUpComponent(GameWeapons::GW_MISSILE_LAUNCHER));
