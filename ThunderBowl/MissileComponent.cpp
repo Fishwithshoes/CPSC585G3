@@ -71,7 +71,7 @@ void MissileComponent::Update()
 		missile->release();
 		ParticleSystem* temp = (ParticleSystem*)Game::Find(particleTrailName);
 		temp->spawnRate = 0;
-		Game::DestroyWorldObjectAt(selfID);
+		Game::DestroyStaticObjectAt(selfID);
 	}
 }
 

@@ -7,6 +7,7 @@ in vec2 TexCoord;
 //Post Process
 uniform vec2 screenDims;
 uniform vec3 cameraPos;
+uniform int cameraCount;
 
 uniform sampler2D colorBufferMap;
 uniform sampler2D positionBufferMap;
@@ -75,21 +76,29 @@ void main()
 		finalBlur = clamp(abs(dist - farDist)*farBlur, blurMinSize, blurFarSize);
 	
 	int index = 0;
-	for(int i = 0; i < DOF_SAMPLES; i++)
+	
+	if(cameraCount <= 1)
 	{
-		for(int j = 0; j < DOF_SAMPLES; j++)
+		for(int i = 0; i < DOF_SAMPLES; i++)
 		{
-			//DOF is sampled at a different radius based on dist from focus			
-			float x = TexCoord.x -DOF_STRIDE*finalBlur + i*DOF_STEP*finalBlur;
-			float y = TexCoord.y -DOF_STRIDE*finalBlur + j*DOF_STEP*finalBlur;
-			
-			// float fade = clamp((DOF_STRIDE - distance(vec2(x,y), TexCoord))*DOF_FILLER, 0, 1);
-			
-			vec4 current = texture2D(colorBufferMap, vec2(x, y)) * CURRENT_WEIGHT * DOF_SAMPLE_CONTRIB;
-			vec4 previous = texture2D(previousBufferMap, vec2(x, y)) * PREVIOUS_WEIGHT * DOF_SAMPLE_CONTRIB;
-			
-			final += current + previous;
+			for(int j = 0; j < DOF_SAMPLES; j++)
+			{
+				//DOF is sampled at a different radius based on dist from focus			
+				float x = TexCoord.x -DOF_STRIDE*finalBlur + i*DOF_STEP*finalBlur;
+				float y = TexCoord.y -DOF_STRIDE*finalBlur + j*DOF_STEP*finalBlur;
+				
+				// float fade = clamp((DOF_STRIDE - distance(vec2(x,y), TexCoord))*DOF_FILLER, 0, 1);
+				
+				vec4 current = texture2D(colorBufferMap, vec2(x, y)) * CURRENT_WEIGHT * DOF_SAMPLE_CONTRIB;
+				vec4 previous = texture2D(previousBufferMap, vec2(x, y)) * PREVIOUS_WEIGHT * DOF_SAMPLE_CONTRIB;
+				
+				final += current + previous;
+			}
 		}
+	}
+	else
+	{
+		final = colorSample;
 	}
 	
 	//PERFORM BLOOM WITH COLOR SAMPLES

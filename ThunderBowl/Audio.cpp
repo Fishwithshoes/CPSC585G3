@@ -35,7 +35,7 @@ vector<string> Audio::soundFilePaths =
 vector<string> Audio::musicFilePaths =
 {
 
-	"Sounds/Automation.wav",
+	"Sounds/menu_MUS.wav",
 	"Sounds/Contra_MUS.wav",
 	"Sounds/menu_MUS.wav",
 	"Sounds/battle_MUS.wav",

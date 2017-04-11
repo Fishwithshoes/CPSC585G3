@@ -71,11 +71,19 @@ void MissileLauncherComponent::FireMissile()
 	{
 		GameObject missile = GameObject("Missile" + selfName + to_string(currentMissile), TAGS_MISSILE);
 		vec3 size = vec3(1.8, 1.8, 5.0);
-		missile.mesh = GeoGenerator::MakeBox(size.x, size.y, size.z, false);
-		missile.standardMat.diffuseColor = vec3(1.0, 0.5, 0.0);
+		//missile.mesh = GeoGenerator::MakeBox(size.x, size.y, size.z, false);
+		missile.staticGeo = SG_MISSILE;
+		missile.standardMat.diffuseMap = MAP_MISSILE_DIFFUSE;
+		//missile.standardMat.diffuseColor = vec3(1.0, 0.3, 0.0);
+		missile.standardMat.metalness = 0.3;
+		missile.standardMat.roughness = 0.2;
+		missile.standardMat.isMetallic = true;
+		missile.standardMat.bumpLevel = 0.2;
+		missile.standardMat.normalMap = MAP_MOON_NORMAL;
 		missile.transform = transform;
-		missile.transform.position.y += 4.5;
-		GameObject* ptr = Game::CreateWorldObject(missile);
+		missile.transform.position.y += 3.5;
+		//GameObject* ptr = Game::CreateWorldObject(missile);
+		GameObject* ptr = Game::CreateStaticObject(missile);
 		ptr->AddComponent(new MissileComponent(size, ownerVelocity, selfName));
 	
 		PlayerComponent* player = &PlayerComponent();

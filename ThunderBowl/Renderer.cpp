@@ -28,6 +28,7 @@ vector<string> Renderer::textureFilePaths =
 	"GL_TEXTURE_PREVIOUS_BUFFER",
 	"GL_TEXTURE_PARTICLE_FADE",
 	"GL_TEXTURE_GRAB_PASS",
+	"Textures/thunderbowl_LOGO.png",
 	"Textures/zero_TEXT.png",
 	"Textures/one_TEXT.png",
 	"Textures/two_TEXT.png",
@@ -53,6 +54,8 @@ vector<string> Renderer::textureFilePaths =
 	"Textures/ring2_ICON.png",
 	"Textures/ring3_ICON.png",
 	"Textures/ring4_ICON.png",
+	"Textures/speedometer_ICON.png",
+	"Textures/needle_ICON.png",
 	"Textures/default_GRAD.png",
 	"Textures/jhcBlue_GRAD.png",
 	"Textures/jhcGray_GRAD.png",
@@ -107,7 +110,8 @@ vector<string> Renderer::textureFilePaths =
 	"Textures/wheel_DIFF.png",
 	"Textures/wheel_ROUG.png",
 	"Textures/wheel_META.png",
-	"Textures/wheel_NORM.png"
+	"Textures/wheel_NORM.png",
+	"Textures/missile_DIFF.png"
 };
 vector<string> Renderer::cubemapTextureFilePaths =
 {
@@ -340,6 +344,11 @@ void Renderer::LoadStaticGeo(Renderer *renderer)
 	RendererUtility::InitializeGeometry(&renderer->skyGeo);
 	BufferStaticGeoData(&renderer->skyGeo, &GeoGenerator::MakeSphere(0.5, 32, 64, true));
 
+	loader = Loader();
+	loader.loadModel("Models/Missile002.obj", vec3(4.0), false);
+	RendererUtility::InitializeGeometry(&renderer->missileGeo);
+	BufferStaticGeoData(&renderer->missileGeo, &loader.getMeshes()[0]);
+
 	//TODO Possible redo of map model to include platform and rigging
 	loader = Loader();
 	loader.loadModel("Models/thunderbowl001.obj", vec3(15, 13, 15), true);
@@ -475,7 +484,7 @@ void Renderer::SetupShadowMapping(Renderer *renderer)
 
 void Renderer::RenderScene(Renderer *renderer)
 {
-//**TURN OVER TO THE SHADOW MAP FRAMEBUFFER TO DEPTH MAP PHYSICAL WORLD OBJECTS**********
+	//**TURN OVER TO THE SHADOW MAP FRAMEBUFFER TO DEPTH MAP PHYSICAL WORLD OBJECTS**********
 	glBindFramebuffer(GL_FRAMEBUFFER, renderer->shadowBufferID);
 	glViewport(0, 0, shadowSize, shadowSize);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -495,16 +504,16 @@ void Renderer::RenderScene(Renderer *renderer)
 	//Calculate an orthographic worldToView and viewToProjection for light's perspective
 	mat4 lightWorldToView = glm::lookAt(lightTransform.position, vec3(0), Transform::Up());
 	mat4 lightViewToProjection = glm::ortho(-250.0f, 250.0f, -80.0f, 160.0f, nearClip, farClip);
-	
+
 	//Program Uniforms for WorldToView and ViewToProjection
 	glUniformMatrix4fv(renderer->worldToViewDepthMap_uniform, 1, GL_FALSE, value_ptr(lightWorldToView));
 	glUniformMatrix4fv(renderer->viewToProjectionDepthMap_uniform, 1, GL_FALSE, value_ptr(lightViewToProjection));
-	
+
 	DrawPhysicalObjects(renderer, false);
 
 	glCullFace(GL_BACK);
 
-//**TURN OVER TO THE DEFERRED FRAMEBUFFER TO DRAW WORLD AND PARTICLES**********
+	//**TURN OVER TO THE DEFERRED FRAMEBUFFER TO DRAW WORLD AND PARTICLES**********
 	glBindFramebuffer(GL_FRAMEBUFFER, renderer->framebufferID);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -706,17 +715,18 @@ void Renderer::RenderScene(Renderer *renderer)
 			glDrawElements(GL_TRIANGLES, renderer->geometry.elementCount, GL_UNSIGNED_INT, nullptr);
 		}
 	}
-//#pragma omp barrier
-//**TURN OVER TO THE DEFAULT FRAMEBUFFER TO DRAW POST-PROCESS AND OVERLAY**********
+	//#pragma omp barrier
+	//**TURN OVER TO THE DEFAULT FRAMEBUFFER TO DRAW POST-PROCESS AND OVERLAY**********
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(0, 0, Camera::WIDTH, Camera::HEIGHT);
 
-//**CLEAR DEPTH BUFFER AND DRAW POST-PROCESS RECT**********
+	//**CLEAR DEPTH BUFFER AND DRAW POST-PROCESS RECT**********
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glUseProgram(renderer->fsppShader.program);
 	//Program Post-Process Uniforms
 	GLint screenDims_uniform = glGetUniformLocation(renderer->fsppShader.program, "screenDims");
 	GLint cameraPosPost_uniform = glGetUniformLocation(renderer->fsppShader.program, "cameraPos");
+	GLint cameraCount_uniform = glGetUniformLocation(renderer->fsppShader.program, "cameraCount");
 	GLint colorBuffer_uniform = glGetUniformLocation(renderer->fsppShader.program, "colorBufferMap");
 	GLint positionBuffer_uniform = glGetUniformLocation(renderer->fsppShader.program, "positionBufferMap");
 	GLint normalBuffer_uniform = glGetUniformLocation(renderer->fsppShader.program, "normalBufferMap");
@@ -725,19 +735,20 @@ void Renderer::RenderScene(Renderer *renderer)
 
 	glUniform2f(screenDims_uniform, (float)Camera::WIDTH, (float)Camera::HEIGHT);
 	glUniform3fv(cameraPosPost_uniform, 1, value_ptr(finalCameraPos));
+	glUniform1i(cameraCount_uniform, cameraCount);
 	glUniform1i(colorBuffer_uniform, MAP_COLOR_BUFFER);
 	glUniform1i(positionBuffer_uniform, MAP_POSITION_BUFFER);
 	glUniform1i(normalBuffer_uniform, MAP_NORMAL_BUFFER);
 	glUniform1i(previousBuffer_uniform, MAP_PREVIOUS_BUFFER);
 	glUniform1i(depthBuffer_uniform, MAP_DEPTH_BUFFER);
 	{
-		Mesh mesh = GeoGenerator::MakeRect(2.0, 2.0, GA_CENTER);
+		Mesh mesh = GeoGenerator::MakeRect(2.0, 2.0, GA_CENTER, 0.0);
 		renderer->geometry.elementCount = mesh.indices.size();
 		BufferGeoData(renderer, &mesh);
 		glDrawElements(GL_TRIANGLES, renderer->geometry.elementCount, GL_UNSIGNED_INT, nullptr);
 	}
 
-//**CLEAR DEPTH BUFFER AND DRAW OVERLAY OBJECTS**********
+	//**CLEAR DEPTH BUFFER AND DRAW OVERLAY OBJECTS**********
 	glViewport(0, 0, Camera::WIDTH, Camera::HEIGHT);
 	glClear(GL_DEPTH_BUFFER_BIT);
 	glUseProgram(renderer->overlayShader.program);
@@ -767,12 +778,15 @@ void Renderer::RenderScene(Renderer *renderer)
 			glDrawElements(GL_TRIANGLES, renderer->geometry.elementCount, GL_UNSIGNED_INT, nullptr);
 		}
 	}
-//#pragma omp barrier
+	//#pragma omp barrier
 
-	//Store this frame's color buffer for next frame
+		//Store this frame's color buffer for next frame
 	glCopyImageSubData(MAP_COLOR_BUFFER + 1, GL_TEXTURE_2D, 0, 0, 0, 0, MAP_PREVIOUS_BUFFER + 1, GL_TEXTURE_2D, 0, 0, 0, 0, Camera::WIDTH, Camera::HEIGHT, 1);
-	pointLightColors = {};
-	pointLightPositions = {};
+	if (GameManager::GetGameState() != GS_PAUSED)
+	{
+		pointLightColors = {};
+		pointLightPositions = {};
+	}
 
 	//Unbind geometry and shader
 	glBindVertexArray(0);
@@ -901,6 +915,9 @@ void Renderer::DrawPhysicalObjects(Renderer *renderer, bool programStandardUnifo
 				break;
 			case SG_SPHERE:
 				geoToUse = renderer->sphereGeo;
+				break;
+			case SG_MISSILE:
+				geoToUse = renderer->missileGeo;
 				break;
 			case SG_MAP:
 				geoToUse = renderer->mapGeo;
