@@ -45,9 +45,9 @@ Renderer.cpp(979): warning C4267: 'argument': conversion from 'size_t' to 'GLsiz
 Renderer.cpp(1020): warning C4267: '=': conversion from 'size_t' to 'GLsizei', possible loss of data
 LINK : warning LNK4075: ignoring '/INCREMENTAL' due to '/LTCG' specification
   Generating code
-  227 of 2946 functions ( 7.7%) were compiled, the rest were copied from previous compilation.
+  228 of 2946 functions ( 7.7%) were compiled, the rest were copied from previous compilation.
     1 functions were new in current compilation
-    25 functions had inline decision re-evaluated but remain unchanged
+    26 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
   ThunderBowl.vcxproj -> C:\CPSC585G3\ThunderBowl\x64\Release\ThunderBowl.exe
   ThunderBowl.vcxproj -> C:\CPSC585G3\ThunderBowl\x64\Release\ThunderBowl.pdb (Full PDB)
