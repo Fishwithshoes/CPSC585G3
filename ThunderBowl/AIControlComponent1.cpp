@@ -15,8 +15,7 @@ void AIControlComponent1::Start() {
 	thisAIPlayer = (PlayerComponent*)Game::Find(selfName)->GetComponent(tempAiPlayer);
 
 	gameNodes = Game::FindGameObjectsWithTag(TAGS_AI_NODE);
-	gamePlayers = Game::FindGameObjectsWithTag(TAGS_HUMAN_PLAYER);
-	//ADD in AI PLAYERS
+
 
 	AINodeComponent* tempNode = &AINodeComponent();
 	for (int i = 0; i < gameNodes.size(); i++) {
@@ -33,10 +32,7 @@ void AIControlComponent1::Start() {
 	}
 	cout << "Node size: " << currentAINodes.size() << endl;
 
-	for (int i = 0; i < currentPlayers.size(); i++) {
-		cout << "Player names: " << currentPlayers.at(i)->getName() << endl;
-	}
-	cout << "Player size: " << currentPlayers.size() << endl;
+
 
 	AINodeComponent* outerNode7 = &AINodeComponent();
 	outerNode7 = (AINodeComponent*)Game::Find("OuterNode6")->GetComponent(outerNode7);
@@ -49,6 +45,25 @@ void AIControlComponent1::Start() {
 
 void AIControlComponent1::Update() {
 	Initialize();
+
+	if (addAI) {
+		gamePlayers = Game::FindGameObjectsWithTag(TAGS_HUMAN_PLAYER);
+
+		vector<GameObject*> tempVector = Game::FindGameObjectsWithTag(TAGS_AI_PLAYER);
+		gamePlayers.insert(gamePlayers.end(), tempVector.begin(), tempVector.end());
+		gamePlayers.erase(std::remove(gamePlayers.begin(), gamePlayers.end(), thisEnemy), gamePlayers.end());
+		addAI = false;
+
+		PlayerComponent* tempPlayer = &PlayerComponent();
+		for (int i = 0; i < gamePlayers.size(); i++) {
+			currentPlayers.push_back((PlayerComponent*)gamePlayers[i]->GetComponent(tempPlayer));
+		}
+
+		for (int i = 0; i < currentPlayers.size(); i++) {
+			cout << selfName << " Player names: " << currentPlayers.at(i)->getName() << endl;
+		}
+		cout << "Player size: " << currentPlayers.size() << endl;
+	}
 
 	detectEnemy();
 	timer += Time::getDeltaTime();
@@ -130,20 +145,6 @@ void AIControlComponent1::repathOnTimout() {
 	}
 }
 
-
-/*for (int i = 0; i < currentNode->adjacentNodes.size(); i++) {
-if (currentNode != previousNode) {
-if (currentNode->adjacentNodes.at(i)->getName().find("Middle") != string::npos) {
-previousNode = currentNode;
-currentNode = currentNode->adjacentNodes.at(i);
-currentHeading = (currentNode->nodeCurrentPosition - transform.position);
-timer = 0.0;
-cout << selfName << " Repath to Node: " << currentNode->getName() << endl;
-
-break;
-}
-}
-}*/
 void AIControlComponent1::resetCurrent()
 {
 	currentNode = findNearest();

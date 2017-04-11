@@ -17,13 +17,12 @@ public:
 	float flamethrowerAmmo;
 
 	vec3 playerCurrentPosition;
+	PlayerComponent* lastDamaging;
 
 	void Start();
 	void Update();
 	void OnCollision(Component::CollisionPair collisionPair, Component* collider);
 	void PlayerStateToConsole();
-	//void BurnCheck();
-	//void Burning();
 
 	void StartParticles();
 	void UpdateParticles();

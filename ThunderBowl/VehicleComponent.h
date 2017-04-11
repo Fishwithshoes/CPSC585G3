@@ -32,6 +32,7 @@ public:
 	PlayerComponent* vehPlayer;
 
 	physx::PxVec3 myStartPosition;
+	physx::PxQuat myStartRotation;
 
 	int GetPlayerNum();
 	void SetPlayerNum(int playerNumber);

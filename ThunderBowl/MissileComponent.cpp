@@ -111,15 +111,20 @@ void MissileComponent::OnCollision(CollisionPair collisionPair, Component* colli
 }
 
 void MissileComponent::DirectHit(Component* collider) {
+	PlayerComponent* victimRef = &PlayerComponent();
 	PlayerComponent* playerRef = &PlayerComponent();
+
 
 	GameObject* hitDirectly = Game::Find(collider->getName());
 	HealthComponent* health = &HealthComponent();
 	health = (HealthComponent*)hitDirectly->GetComponent(health);
 	health->currentHealth = 0.0;
 	lifeRemaining = 0.0;
-	MissileShooter = (PlayerComponent*)Game::Find(missileOwnerName)->GetComponent(playerRef);
-	MissileShooter->playerScore += 100.00;
+	playerRef = (PlayerComponent*)Game::Find(collider->getName())->GetComponent(playerRef);
+	victimRef = (PlayerComponent*)hitDirectly->GetComponent(victimRef);
+	victimRef->lastDamaging = playerRef;
+	//MissileShooter = (PlayerComponent*)Game::Find(missileOwnerName)->GetComponent(playerRef);
+	//MissileShooter->playerScore += 100.00;
 }
 
 void MissileComponent::Explode()
@@ -136,6 +141,8 @@ void MissileComponent::Explode()
 	{
 		if (players[i]->name != missileOwnerName)
 		{
+			HealthComponent* victimHealth = &HealthComponent();
+			victimHealth = (HealthComponent*)players[i]->GetComponent(victimHealth);
 			float distance = glm::distance(transform.position, players[i]->transform.position);
 			if (distance < 50)
 			{
@@ -148,24 +155,20 @@ void MissileComponent::Explode()
 				explosionForce *= 150000 - distance * 1000;
 
 				//Do damage to Health Component
-				HealthComponent* victimHealth = &HealthComponent();
-				victimHealth = (HealthComponent*)players[i]->GetComponent(victimHealth);
+
 				float damage = 100 - distance * 2;
 				victimHealth->currentHealth -= damage;
 
-				if (victimHealth->currentHealth <= 0.0)//Points for making a kill
-				{
-					ownerPlayer->playerScore += 100;
-				}
-				else//Points for damage
-				{
-					ownerPlayer->playerScore += damage*0.5;
-				}
+				ownerPlayer->playerScore += damage*0.5;
+
+				PlayerComponent* victimRef = &PlayerComponent();
+				victimRef = (PlayerComponent*)players[i]->GetComponent(victimRef);
+				victimRef->lastDamaging = ownerPlayer;
 
 				//Add score to Player Component
-				PlayerComponent* playerRef = &PlayerComponent();
-				MissileShooter = (PlayerComponent*)Game::Find(missileOwnerName)->GetComponent(playerRef);
-				MissileShooter->playerScore += 100 - distance * 2;
+				//PlayerComponent* playerRef = &PlayerComponent();
+				//MissileShooter = (PlayerComponent*)Game::Find(missileOwnerName)->GetComponent(playerRef);
+				//MissileShooter->playerScore += 100 - distance * 2;
 
 				//Add force at rigid body position
 				if (players[i]->tag == TAGS_AI_PLAYER)

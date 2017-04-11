@@ -363,7 +363,8 @@ enum Sounds
 	SFX_Engine7,
 	SFX_Engine8,
 	SFX_Engine9,
-	SFX_Horn
+	SFX_Horn,
+	SFX_CarImpact
 
 };
 

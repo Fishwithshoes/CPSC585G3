@@ -139,6 +139,7 @@ void BulletComponent::OnCollision(Component::CollisionPair collisionPair, Compon
 	{
 	case(Component::CollisionPair::CP_VEHICLE_PROJECTILE):
 
+		targetHealth = (HealthComponent*)Game::Find(collider->getName())->GetComponent(targetHealthRef);
 		if (ownerName != collider->getName())//Thou shalt not shoot thyself!
 		{
 			//IF_DEF SPARKS
@@ -171,13 +172,14 @@ void BulletComponent::OnCollision(Component::CollisionPair collisionPair, Compon
 			Audio::Play2DSound(SFX_Hit, Random::rangef(0.20, 0.50), 0.0);
 			MGShooter = (PlayerComponent*)Game::Find(ownerName)->GetComponent(playerRef);
 			MGShooter->playerScore += 10.0;
-			targetHealth = (HealthComponent*)Game::Find(collider->getName())->GetComponent(targetHealthRef);
 			targetHealth->currentHealth -= 10.0;
 
-			if (targetHealth->isDead())
-			{
-				MGShooter->playerScore += 100.0;
-			}
+			PlayerComponent* victimRef = &PlayerComponent();
+			victimRef = (PlayerComponent*)Game::Find(collider->getName())->GetComponent(victimRef);
+			victimRef->lastDamaging = MGShooter;
+		}
+		else {
+			cout << "no damage" << endl;
 		}
 
 		break;

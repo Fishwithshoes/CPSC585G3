@@ -14,9 +14,14 @@ void PlayerComponent::Start()
 	playerScore = 0;
 	oldScore = playerScore;
 
-	machineGunAmmo = 500;// GameManager::START_MG_AMMO;
-	missileLauncherAmmo = 4;// GameManager::START_MISSILE_AMMO;
-	flamethrowerAmmo = 10.0; // GameManager::START_FLAMETHROWER_AMMO;
+	machineGunAmmo = 100;// GameManager::START_MG_AMMO;
+	missileLauncherAmmo = 1;// GameManager::START_MISSILE_AMMO;
+	flamethrowerAmmo = 5.0; // GameManager::START_FLAMETHROWER_AMMO;
+
+	//GameObject* self = Game::Find(selfName);
+	//PlayerComponent* tempLastDamaging = &PlayerComponent();
+	//lastDamaging = (PlayerComponent*)self->GetComponent(tempLastDamaging);
+	lastDamaging = this;
 
 	StartParticles();
 
@@ -31,23 +36,15 @@ void PlayerComponent::StartParticles()
 void PlayerComponent::Update() 
 {
 	Initialize();
+
 	playerCurrentPosition = transform.position;
 
 	if (oldScore != playerScore) 
 	{
-		//PlayerStateToConsole();
+		PlayerStateToConsole();
 		oldScore = playerScore;
 	}
 
-	//SBurnCheck();
-
-	//function to resolve damage to player
-
-	//function to resolve score for:
-		//damage to enemy
-		//destroying enemy
-		//driving without taking damage
-		//driving at high speed
 
 	GameObject* self = Game::Find(selfName);
 	HealthComponent* playerHealth = &HealthComponent();
@@ -259,6 +256,10 @@ void PlayerComponent::OnCollision(Component::CollisionPair collisionPair, Compon
 		playerHealth = (HealthComponent*)Game::Find(selfName)->GetComponent(playerHealth);
 		playerHealth->currentHealth -= 10.0;
 		break;
+	case(Component::CollisionPair::CP_VEHICLE_VEHICLE):
+	{
+		Audio::Play2DSound(SFX_CarImpact, Random::rangef(0.20, 0.50), 0.0);
+	}
 	default:
 		break;
 	}
@@ -275,22 +276,3 @@ void PlayerComponent::PlayerStateToConsole()
 	cout << "Player Score: " << playerScore << endl;
 	cout << endl;
 }
-
-/*void PlayerComponent::BurnCheck() {
-	VehicleComponent* vehRef = &VehicleComponent();
-	playerVeh = (VehicleComponent*)Game::Find(selfName)->GetComponent(vehRef);
-	if (!burning) {
-		double currentVelocity = playerVeh->currentSpeed;
-		cout << currentVelocity << endl;
-		if (currentVelocity >= 100.00)
-			burnDetectionTime -= Time::getDeltaTime();
-		else
-			burnDetectionTime = 2.5;
-	}
-
-	if (burnDetectionTime <= 0.0) {
-		burning = true;
-		cout << selfName << " is Burning" << endl;
-	}
-
-}*/

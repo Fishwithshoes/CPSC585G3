@@ -11,6 +11,7 @@ vector<GameObject> Game::overlayObjectList = {};
 vector<GameObject> Game::aiObjectList = {};
 vector<vec3> Game::plVehStartPositions = {};
 vector<float> Game::plVehStartRotations = {};
+vector<float> Game::aiVehStartRotations = {};
 vector<vec3> Game::aiVehStartPositions = {};
 vector<vec3> Game::innerNodePositions = {}; //For assigning center node positions
 vector<GameObject*> Game::innerNodes = {}; //For assigning center node positions
@@ -27,24 +28,25 @@ void Game::BuildWorld()
 	worldObjectList.reserve(1000);
 	particleObjectList.reserve(100);
 	overlayObjectList.reserve(50);
-	aiObjectList.reserve(100);
-	aiVehStartPositions.reserve(2);
 	aiVehStartPositions.reserve(5);
 
 	plVehStartPositions.push_back(vec3(0.0, 35.0, -150.0));
+	plVehStartPositions.push_back(vec3(-150.0, 35.0, 0.0));
 	plVehStartPositions.push_back(vec3(0.0, 35.0, 150.0));
 	plVehStartPositions.push_back(vec3(150.0, 35.0, 0.0));
-	plVehStartPositions.push_back(vec3(-150.0, 35.0, 0.0));
 
-
-	plVehStartRotations.push_back(3*Mathf::PI/2);
+	plVehStartRotations.push_back(0.0);
+	plVehStartRotations.push_back(Mathf::PI / 2);
 	plVehStartRotations.push_back(Mathf::PI);
-	plVehStartRotations.push_back(Mathf::PI/2);
-
+	plVehStartRotations.push_back(3 * Mathf::PI / 2);
 
 	aiVehStartPositions.push_back(vec3(150.0, 35.0, 0.0));
 	aiVehStartPositions.push_back(vec3(0.0, 35.0, 150.0));
 	aiVehStartPositions.push_back(vec3(-150.0, 35.0, 0.0));
+
+	aiVehStartRotations.push_back(3*Mathf::PI/2);
+	aiVehStartRotations.push_back(Mathf::PI);
+	aiVehStartRotations.push_back(Mathf::PI/2);
 
 	innerNodePositions.push_back(vec3(60.0, 20.0, 0.0));
 	innerNodePositions.push_back(vec3(42.42, 20.0, 42.42));
@@ -177,6 +179,7 @@ void Game::BuildWorld()
 
 			//tempNode.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
 			tempNode.staticGeo = SG_POWERUP;
+			tempNode.tag = TAGS_AI_NODE;
 			//ptr = Game::CreateWorldObject(tempNode);
 			ptr = Game::CreateStaticObject(tempNode);
 			ptr->AddComponent(new PowerUpComponent(GameWeapons::GW_FLAMETHROWER));
@@ -188,6 +191,7 @@ void Game::BuildWorld()
 		//else if (remainder(i, 2) == 0) {
 			//tempNode.mesh = GeoGenerator::MakeBox(2, 2, 2, false);
 			tempNode.staticGeo = SG_POWERUP;
+			tempNode.tag = TAGS_AI_NODE;
 			//ptr = Game::CreateWorldObject(tempNode);
 			ptr = Game::CreateStaticObject(tempNode);
 			ptr->AddComponent(new PowerUpComponent(GameWeapons::GW_MACHINE_GUN));
@@ -198,7 +202,6 @@ void Game::BuildWorld()
 
 		else 
 		{
-
 			tempNode.staticGeo = SG_POWERUP;
 			tempNode.isVisible = false;
 			tempNode.castShadow = false;

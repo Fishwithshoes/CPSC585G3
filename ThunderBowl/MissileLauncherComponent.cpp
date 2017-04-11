@@ -74,7 +74,7 @@ void MissileLauncherComponent::FireMissile()
 		missile.mesh = GeoGenerator::MakeBox(size.x, size.y, size.z, false);
 		missile.standardMat.diffuseColor = vec3(1.0, 0.5, 0.0);
 		missile.transform = transform;
-		missile.transform.position.y += 3.5;
+		missile.transform.position.y += 4.5;
 		GameObject* ptr = Game::CreateWorldObject(missile);
 		ptr->AddComponent(new MissileComponent(size, ownerVelocity, selfName));
 	

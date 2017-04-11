@@ -12,6 +12,8 @@ void HealthComponent::Start()
 	//respawnTime = GameManager::RESPAWN_TIME;
 	currentHealth = 100.0;
 	respawnTime = 20.0;
+	newSpawn = true;
+	newSpawnTimer = 100.0;
 	//standardMat.diffuseColor = glm::vec3(0.0, 1.0, 0.0);
 
 	ParticleSystem ps = ParticleSystem();
@@ -41,25 +43,17 @@ void HealthComponent::Start()
 void HealthComponent::Update()
 {
 	Initialize();
-
-	//vector<GameObject*> currBullets = Game::FindGameObjectsWithTag(Tags::TAGS_PROJECTILE);
-	//for (int i = 0; i < currBullets.size(); i++) 
-	//{
-	//	if (glm::distance(currBullets[i]->transform.position, transform.position) < 1.75) 
-	//	{
-	//		currentHealth -= 25.0;
-	//		Audio::Play2DSound(SFX_Hit, Random::rangef(0.20, 0.50), 0.0);
-	//
-	//		BulletComponent* bullet = &BulletComponent();
-	//		bullet = (BulletComponent*)Game::Find(currBullets[i]->name)->GetComponent(bullet);
-	//
-	//		Physics::getGScene()->removeActor(*bullet->bullet);
-	//		Game::DestroyWorldObjectAt(currBullets[i]->objectID);
-	//	}
-	//}
-	//
-
-	//standardMat.diffuseColor = glm::vec3(0.0, currentHealth/100.0, 0.0);
+	if (newSpawn) {
+		if (selfName == "Player0") {
+			cout << selfName << " new spawn" << endl;
+			cout << newSpawnTimer << endl;
+		}
+		newSpawnTimer -= Time::getDeltaTime();
+		if (newSpawnTimer <= 0.0) {
+			newSpawn = false;
+			newSpawnTimer = 100.0;
+		}
+	}
 
 	GameObject* self = Game::Find(selfName);
 
@@ -79,6 +73,11 @@ void HealthComponent::Update()
 
 	if (currentHealth <= 0.0 && !shouldRespawn)
 	{
+		PlayerComponent* player = &PlayerComponent();
+		player = (PlayerComponent*)self->GetComponent(player);
+		if (player->lastDamaging != player)
+			player->lastDamaging->playerScore += 100;
+
 		self->isVisible = false;
 		if (self->tag == TAGS_AI_PLAYER)
 		{
@@ -140,6 +139,16 @@ void HealthComponent::Update()
 		self->isVisible = true;
 		self->staticGeo = SG_CAR;
 		damageModel = 0;
+		newSpawn = true;
+
+		PlayerComponent* player = &PlayerComponent();
+		player = (PlayerComponent*)self->GetComponent(player);
+		player->lastDamaging = player;
+
+		player->machineGunAmmo = 100;// GameManager::START_MG_AMMO;
+		player->missileLauncherAmmo = 1;// GameManager::START_MISSILE_AMMO;
+		player->flamethrowerAmmo = 5.0; // GameManager::START_FLAMETHROWER_AMMO;
+
 		if (self->tag == TAGS_AI_PLAYER)
 		{
 			EnemyComponent* enemy = &EnemyComponent();
@@ -197,4 +206,9 @@ bool HealthComponent::isDead()
 		return true;
 	else
 		return false;
+}
+
+bool HealthComponent::isNewSpawn()
+{
+	return newSpawn;
 }

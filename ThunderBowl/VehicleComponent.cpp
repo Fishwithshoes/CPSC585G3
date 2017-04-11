@@ -15,6 +15,8 @@ void VehicleComponent::Start()
 	physx::PxCooking* worldCook = Physics::getGCooking();
 	physx::PxScene* worldScene = Physics::getGScene();	
 	myStartPosition = physx::PxVec3(transform.position.x, transform.position.y, transform.position.z);
+	myStartRotation = physx::PxQuat(transform.rotation.x, transform.rotation.y, transform.rotation.z, transform.rotation.w);
+
 	
 	Physics::VehicleDesc vehicleDesc = Physics::initVehicleDesc();
 	gVehicleNoDrive = Physics::createVehicleNoDrive(vehicleDesc, worldPhys, worldCook);
@@ -25,7 +27,7 @@ void VehicleComponent::Start()
 	worldScene->addActor(*gVehicleNoDrive->getRigidDynamicActor());
 	
 	physVehicle = gVehicleNoDrive->getRigidDynamicActor();
-	physVehicle->setGlobalPose(physx::PxTransform(myStartPosition, physx::PxQuat(physx::PxIdentity))); //set global position based on vec created in Game
+	physVehicle->setGlobalPose(physx::PxTransform(myStartPosition, myStartRotation)); //set global position based on vec created in Game
 	PlayerComponent* player = &PlayerComponent();
 	player = (PlayerComponent*)Game::Find(selfName)->GetComponent(player);
 	physVehicle->userData = player;
@@ -462,29 +464,6 @@ void VehicleComponent::Update()
 void VehicleComponent::OnCollision(Component::CollisionPair collisionPair, Component* collider) 
 {
 	Initialize();
-
-	//Note: Ammo and damage now handled in PlayerComponent OnCollision() to avoid duplicate logic
-
-	//MachineGunComponent* mgRef = &MachineGunComponent();
-	//HealthComponent* playerHealth = &HealthComponent();
-	//PlayerComponent* playerRef = &PlayerComponent();
-	//
-	//switch (collisionPair) 
-	//{
-	//case(Component::CollisionPair::CP_VEHICLE_POWERUP):
-	//	Audio::Play2DSound(SFX_Powerup, Random::rangef(0.20, 0.50), 0.0);
-	//	playerRef = (PlayerComponent*)Game::Find(selfName)->GetComponent(playerRef);
-	//	playerRef->playerScore += 10.0;
-	//	playerRef->machineGunAmmo += 50;
-	//	if (playerRef->machineGunAmmo > playerRef->MAX_MACHINE_GUN_AMMO)
-	//		playerRef->machineGunAmmo = playerRef->MAX_MACHINE_GUN_AMMO;
-	//	break;
-	//case(Component::CollisionPair::CP_VEHICLE_PROJECTILE):
-	//	Audio::Play2DSound(SFX_Hit, Random::rangef(0.20, 0.50), 0.0);
-	//	playerHealth = (HealthComponent*)Game::Find(selfName)->GetComponent(playerHealth);
-	//	playerHealth->currentHealth -= 10.0;
-	//	break;
-	//}
 
 	Finalize();
 }

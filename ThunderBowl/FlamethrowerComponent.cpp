@@ -169,16 +169,14 @@ void FlamethrowerComponent::UpdateParticles()
 				damage += Mathf::Clamp(10.0f - distance(vPos, pPos), 0, 10) * 1.5 *		//FLAME DAMAGE HERE
 					streamPower * Time::timeScale * Time::getDeltaTime();
 			}
-				
-			victimHealth->currentHealth -= damage;
 
-			if (victimHealth->currentHealth <= 0.0)//Points for making a kill
-			{
-				ownerPlayer->playerScore += 100;
-			}
-			else//Points for damage
-			{
-				ownerPlayer->playerScore += damage*0.5;
+			if (damage != 0.0) {
+				PlayerComponent* victimRef = &PlayerComponent();
+				victimRef = (PlayerComponent*)players[i]->GetComponent(victimRef);
+				victimRef->lastDamaging = ownerPlayer;
+				victimHealth->currentHealth -= damage;
+
+				ownerPlayer->playerScore += damage*2.0;
 			}
 		}
 	}

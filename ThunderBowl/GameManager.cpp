@@ -114,6 +114,7 @@ void GameManager::StartGame()
 		//player.mesh = GeoGenerator::MakeBox(3, 1, 3, false);
 		player.staticGeo = SG_CAR;
 		player.transform.position = Game::plVehStartPositions[i];
+		player.transform.Rotate(Transform::Up(), Game::plVehStartRotations[i], false);
 		player.name = "Player" + to_string(i);
 		player.tag = TAGS_HUMAN_PLAYER;
 		player.standardMat.diffuseMap = paintColor;
@@ -144,7 +145,7 @@ void GameManager::StartGame()
 		//opponent.mesh = GeoGenerator::MakeBox(2, 1, 2, false);
 		opponent.staticGeo = SG_CAR;
 		opponent.transform.position = Game::aiVehStartPositions[i];
-		opponent.transform.Rotate(Transform::Up(), Game::plVehStartRotations[i], false);
+		opponent.transform.Rotate(Transform::Up(), Game::aiVehStartRotations[i], false);
 		opponent.name = "AI" + to_string(i);
 		opponent.tag = TAGS_AI_PLAYER;
 		opponent.standardMat.diffuseMap = paintColor;

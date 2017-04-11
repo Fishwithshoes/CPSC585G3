@@ -31,6 +31,7 @@ public:
 	static vector<glm::vec3> plVehStartPositions; //For assigning player vehicle start positions
 	static vector<float> plVehStartRotations; //For assigning player vehicle start positions
 	static vector<glm::vec3> aiVehStartPositions; //For assigning AI vehicle start positions
+	static vector<float> aiVehStartRotations; //For assigning player vehicle start position
 	static vector<glm::vec3> innerNodePositions; //For assigning center node positions
 	static vector<GameObject*> innerNodes; //For assigning center node positions
 	static vector<glm::vec3> middleNodePositions; //For assigning center node positions

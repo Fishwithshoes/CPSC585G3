@@ -18,8 +18,6 @@ public:
 	void detectEnemy();
 	void trackEnemy();
 	void chooseWeapon();
-	void getTheta();
-	void getPhi();
 	vec3 getFiringVector();
 
 	vec3 currentHeading;
@@ -41,6 +39,7 @@ public:
 	bool newPath = true;
 	bool reversing = false;
 	bool tracking = false;
+	bool addAI = true;
 
 
 private:
