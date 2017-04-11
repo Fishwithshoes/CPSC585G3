@@ -33,11 +33,11 @@ void Time::EndFrame()
 
 	//SLEEP AND SYNC TO 60fps
 	double sleepTime = (1.0 / 60.0) - deltaTime;
-
+	
 	//cout << deltaTime << " : " << (int)(sleepTime * 100) << endl;
 	if(sleepTime > 0.0000001)
 		Sleep((int)(sleepTime*1000));
-
+	
 	//update the delta time to account for possible sleeping
 	QueryPerformanceCounter(&endTime);
 	deltaTicks.QuadPart = endTime.QuadPart - startTime.QuadPart;

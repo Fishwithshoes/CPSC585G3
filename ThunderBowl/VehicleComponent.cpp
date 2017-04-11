@@ -255,6 +255,12 @@ void VehicleComponent::Update()
 		//CAMERA OFFSET
 		followCam->transform.Translate(followCam->transform.GetForward() * -12.0f, false);
 		followCam->transform.Translate(followCam->transform.GetUp() * 4.0f, false);
+
+		if (Input::GetXBoxButton(playerNum, ButtonCode::XBOX_X))
+		{
+			followCam->transform.Rotate(followCam->transform.GetUp(), Mathf::PI, false);
+			followCam->transform.Translate(followCam->transform.GetForward() * -24.0f, false);
+		}
 	}
 	//transform.rotationMatrix = newRot;
 	//glm::vec4 forward = glm::vec4(0.0, 0.0, 1.0, 0.0);
@@ -274,25 +280,26 @@ void VehicleComponent::Update()
 	//IFNDEF_SPEEDOMETER
 	GameObject* speedNeedle = Game::Find("SpeedometerNeedle"+playerNum);
 	speedNeedle->transform.rotation = vec4(0, 0, 0, 1);
-	float speed = physVehicle->getLinearVelocity().magnitude() * 3.6;
-	float angle = -0.002 * Mathf::PI * speed; //At full the needle points to 500 km/h
+	speedNeedle->transform.scale = vec3(1);
+	float speed = physVehicle->getLinearVelocity().magnitude() * 3.6f;
+	float angle = -0.002f * Mathf::PI * speed; //At full the needle points to 500 km/h
+	float difference = abs(Mathf::PI*0.5f - abs(angle))/(Mathf::PI*0.5f);
+	cout << "D " << difference << endl;
+	float scale = (1.0f - difference) * 0.5f;
 	if (myHealth->currentHealth > 0.0)
+	{
 		speedNeedle->transform.Rotate(Transform::Forward(), angle, false);
+		speedNeedle->transform.scale.x = 1.0 + scale;
+	}
 	//ENDIF_SPEEDOMETER
 	if(followCam->mode == Camera::Modes::MODE_GAME)
 		followCam->SetVerticalFOV(60 + speed*0.08);
 
-	//Input::SetControllerVibration(playerNum, 0.08 + speed*0.0003, 0.0);
+	Input::SetControllerVibration(playerNum, 0.06 + speed*0.0001, 0.0);
 
 	//IF_DEF Wheel Spray Particles
 	UpdateParticles();
 	//END_IF Wheel Spray Particles
-
-	//IF_DEF ENGINE LOOP SOUND
-	nextEngine -= Time::getDeltaTime();
-
-	//if (nextEngine <= 0.0f)
-	//{
 
 	//using the game timer play engine sound so it doesn't overplay
 	float time = GameManager::GetGameTime();

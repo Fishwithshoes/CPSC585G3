@@ -90,7 +90,7 @@ void MachineGunComponent::FireMG()
 		if (player->machineGunAmmo < 0)
 			player->machineGunAmmo = 0;
 
-		GameObject temp = GameObject(selfName + "Bullet" + to_string(currentBullet), Tags::TAGS_PROJECTILE);
+		GameObject temp = GameObject(selfName + "Bullet" + to_string(currentBullet), Tags::TAGS_MG_BULLET);
 		//temp.mesh = bulletMesh;
 		temp.staticGeo = SG_MG_BULLET;
 		temp.transform = transform;
@@ -108,6 +108,8 @@ void MachineGunComponent::FireMG()
 
 			temp.transform.Rotate(temp.transform.GetUp(), theta, false);
 			temp.transform.Rotate(temp.transform.GetRight(), phi, false);
+
+			Input::SetControllerVibration(vehicle->GetPlayerNum(), 1.0, 1.0);
 		}
 		else {
 

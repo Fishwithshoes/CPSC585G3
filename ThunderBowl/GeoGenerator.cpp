@@ -583,7 +583,7 @@ Mesh GeoGenerator::MakeCircle(float sweep, int segments, float radius)
 	return result;
 }
 
-Mesh GeoGenerator::MakeRect(float width, float height, GeoAnchors anchor)
+Mesh GeoGenerator::MakeRect(float width, float height, GeoAnchors anchor, float inset)
 {
 	Mesh result;
 
@@ -601,16 +601,16 @@ Mesh GeoGenerator::MakeRect(float width, float height, GeoAnchors anchor)
 			//No effect
 			break;
 		case GA_LEFT:
-			result.positions[i] += vec3(width*0.5, 0, 0);
+			result.positions[i] += vec3(width*0.5-width*inset, 0, 0);
 			break;
 		case GA_RIGHT:
-			result.positions[i] -= vec3(width*0.5, 0, 0);
+			result.positions[i] -= vec3(width*0.5-width*inset, 0, 0);
 			break;
 		case GA_TOP:
-			result.positions[i] -= vec3(0, height*0.5, 0);
+			result.positions[i] -= vec3(0, height*0.5-height*inset, 0);
 			break;
 		case GA_BOTTOM:
-			result.positions[i] += vec3(0, height*0.5, 0);
+			result.positions[i] += vec3(0, height*0.5-height*inset, 0);
 			break;
 		default:
 			cout << "Illegal GeoAnchor used in GeoGenerator::MakeRect!" << endl;

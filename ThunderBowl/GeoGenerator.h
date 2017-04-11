@@ -23,7 +23,7 @@ public:
 
 	//2D - For Overlay GameObjects
 	static Mesh MakeCircle(float sweep, int segments, float radius);//sweep from 0-1
-	static Mesh MakeRect(float width, float height, GeoAnchors anchor);
+	static Mesh MakeRect(float width, float height, GeoAnchors anchor, float inset);
 protected:
 
 private:

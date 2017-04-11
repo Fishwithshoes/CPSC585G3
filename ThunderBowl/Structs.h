@@ -70,6 +70,7 @@ enum StaticGeos
 	SG_CAR_LOW,
 	SG_POWERUP,
 	SG_SPHERE,
+	SG_MISSILE,
 	SG_MAP
 };
 
@@ -93,6 +94,7 @@ enum Tags
 	TAGS_AI_PLAYER,
 	TAGS_AI_NODE,
 	TAGS_PROJECTILE,
+	TAGS_MG_BULLET,
 	TAGS_MISSILE,
 	TAGS_DECORATION,
 	TAGS_PARTICLE_SYSTEM,
@@ -190,6 +192,7 @@ enum Maps
 	MAP_PARTICLE_FADE,//Store copy of position buffer to depth test particles
 	MAP_GRAB_PASS,//Feed Color Buffer into this when an object requests it (For refraction)
 	//Overlay
+	MAP_THUNDERBOWL_LOGO,
 	MAP_ZERO,
 	MAP_ONE,
 	MAP_TWO,
@@ -215,6 +218,8 @@ enum Maps
 	MAP_RING02_ICON,
 	MAP_RING03_ICON,
 	MAP_RING04_ICON,
+	MAP_SPEEDOMETER_ICON,
+	MAP_NEEDLE_ICON,
 	MAP_DEFAULT_GRAD,
 	MAP_JHCBLUE_GRAD,
 	MAP_JHCGRAY_GRAD,
@@ -272,6 +277,7 @@ enum Maps
 	MAP_WHEEL_ROUGHNESS,
 	MAP_WHEEL_METALNESS,
 	MAP_WHEEL_NORMAL,
+	MAP_MISSILE_DIFFUSE
 };
 
 //Particles

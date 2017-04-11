@@ -36,7 +36,7 @@ public:
 private:
 	static void HandleMenu();
 	static void RedrawTimers();
-	static void CreateHUD();
+	static void CreateHUD(int paintColor);
 	static void DestroyHUD();
 	static void EndBloodMoon();
 
