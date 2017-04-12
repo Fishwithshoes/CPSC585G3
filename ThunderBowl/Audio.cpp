@@ -29,7 +29,8 @@ vector<string> Audio::soundFilePaths =
 	"Sounds/engine_SFX8.wav",
 	"Sounds/engine_SFX9.wav",
 	"Sounds/horn_SFX.wav",
-	"Sounds/carimpact_SFX.wav"
+	"Sounds/carimpact_SFX.wav",
+	"Sounds/TireScreech_SFX.wav"
 };
 
 vector<string> Audio::musicFilePaths =

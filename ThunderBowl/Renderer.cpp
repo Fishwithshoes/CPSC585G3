@@ -27,6 +27,7 @@ vector<string> Renderer::textureFilePaths =
 	"GL_TEXTURE_NORMAL_BUFFER",
 	"GL_TEXTURE_PREVIOUS_BUFFER",
 	"GL_TEXTURE_PARTICLE_FADE",
+	"GL_TEXTURE_PARTICLE_DEPTH",
 	"GL_TEXTURE_GRAB_PASS",
 	"Textures/thunderbowl_LOGO.png",
 	"Textures/zero_TEXT.png",
@@ -192,6 +193,7 @@ void Renderer::LoadTextures(Renderer *renderer)
 			i != MAP_NORMAL_BUFFER &&
 			i != MAP_PREVIOUS_BUFFER &&
 			i != MAP_PARTICLE_FADE &&
+			i != MAP_PARTICLE_DEPTH &&
 			i != MAP_GRAB_PASS)//Bind images to GL_TEXTURE_2D
 		{
 			stbi_set_flip_vertically_on_load(true);
@@ -232,6 +234,19 @@ void Renderer::LoadTextures(Renderer *renderer)
 			//glGenerateMipmap(GL_TEXTURE_2D);
 
 			cout << "Created shadow mapping image at: " << texID << "!" << endl;
+		}
+		else if (i == MAP_PARTICLE_DEPTH)//For particle softening
+		{
+			glGenTextures(1, &texID);
+			glActiveTexture(GL_TEXTURE0 + i);
+			glBindTexture(GL_TEXTURE_2D, texID);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, Camera::WIDTH, Camera::HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+			cout << "Created Particle Depth Softening Image at: " << texID << endl;
 		}
 		else if (i == MAP_COLOR_BUFFER || i == MAP_POSITION_BUFFER || i == MAP_NORMAL_BUFFER || i == MAP_PARTICLE_FADE || i == MAP_PREVIOUS_BUFFER)//These are for the Post Process Effects
 		{
@@ -453,6 +468,7 @@ void Renderer::SetupDeferedRendering(Renderer *renderer)
 	glBindRenderbuffer(GL_RENDERBUFFER, renderer->depthBufferID);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, Camera::WIDTH, Camera::HEIGHT);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, renderer->depthBufferID);
+	//glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_COMPONENT, MAP_PARTICLE_DEPTH, 0);
 	
 	//Configure final framebuffer
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, MAP_COLOR_BUFFER + 1, 0);
@@ -472,7 +488,7 @@ void Renderer::SetupShadowMapping(Renderer *renderer)
 	//Create and bind a depth buffer
 	glGenRenderbuffers(1, &renderer->shadowDepthBufferID);
 	glBindRenderbuffer(GL_RENDERBUFFER, renderer->shadowDepthBufferID);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 4096, 4096);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, Renderer::shadowSize, Renderer::shadowSize);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, renderer->shadowDepthBufferID);
 
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, MAP_DEPTH_BUFFER + 1, 0);
@@ -554,10 +570,10 @@ void Renderer::RenderScene(Renderer *renderer)
 				glViewport(0, Camera::HEIGHT*0.5, Camera::WIDTH*0.5, Camera::HEIGHT*0.5);
 				break;
 			case 1:
-				glViewport(0, 0, Camera::WIDTH*0.5, Camera::HEIGHT*0.5);
+				glViewport(Camera::WIDTH*0.5, Camera::HEIGHT*0.5, Camera::WIDTH*0.5, Camera::HEIGHT*0.5);
 				break;
 			case 2:
-				glViewport(Camera::WIDTH*0.5, Camera::HEIGHT*0.5, Camera::WIDTH*0.5, Camera::HEIGHT*0.5);
+				glViewport(0, 0, Camera::WIDTH*0.5, Camera::HEIGHT*0.5);
 				break;
 			case 3:
 				glViewport(Camera::WIDTH*0.5, 0, Camera::WIDTH*0.5, Camera::HEIGHT*0.5);

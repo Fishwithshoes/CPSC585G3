@@ -31,7 +31,7 @@ const float BLOOM_STRIDE = 0.05;
 const float BLOOM_FILLER = 1.0/BLOOM_STRIDE;
 const float BLOOM_STEP = BLOOM_STRIDE/BLOOM_SAMPLES*2;
 
-const int AO_SAMPLES = 8;
+const int AO_SAMPLES = 4;
 const float AO_SAMPLE_CONTRIB = 1.0/(AO_SAMPLES*AO_SAMPLES);
 const float AO_STRIDE = 0.01;
 const float AO_FILLER = 1.0/AO_STRIDE;

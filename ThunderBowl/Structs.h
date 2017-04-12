@@ -190,6 +190,7 @@ enum Maps
 	MAP_NORMAL_BUFFER,//Store normal for post-process
 	MAP_PREVIOUS_BUFFER,//Store last frame's color buffer for motion blur
 	MAP_PARTICLE_FADE,//Store copy of position buffer to depth test particles
+	MAP_PARTICLE_DEPTH,//Store depth buffer to soften particle intersections
 	MAP_GRAB_PASS,//Feed Color Buffer into this when an object requests it (For refraction)
 	//Overlay
 	MAP_THUNDERBOWL_LOGO,
@@ -370,14 +371,14 @@ enum Sounds
 	SFX_Engine8,
 	SFX_Engine9,
 	SFX_Horn,
-	SFX_CarImpact
-
+	SFX_CarImpact,
+	SFX_TireScreech,
 };
 
 enum Musics
 {
 	MUS_Automation,
-	MUS_Conta,
+	MUS_Contra,
 	MUS_Menu,
 	MUS_Battle,
 	MUS_BloodMoon
