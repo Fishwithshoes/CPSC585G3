@@ -81,7 +81,7 @@ void MissileLauncherComponent::FireMissile()
 		missile.standardMat.bumpLevel = 0.2;
 		missile.standardMat.normalMap = MAP_MOON_NORMAL;
 		missile.transform = transform;
-		missile.transform.position.y += 3.5;
+		missile.transform.position.y += 4.5;
 		//GameObject* ptr = Game::CreateWorldObject(missile);
 		GameObject* ptr = Game::CreateStaticObject(missile);
 		ptr->AddComponent(new MissileComponent(size, ownerVelocity, selfName));

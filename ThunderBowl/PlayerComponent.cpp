@@ -41,7 +41,7 @@ void PlayerComponent::Update()
 
 	if (oldScore != playerScore) 
 	{
-		PlayerStateToConsole();
+		//PlayerStateToConsole();
 		oldScore = playerScore;
 	}
 

@@ -309,7 +309,6 @@ void VehicleComponent::Update()
 	float speed = physVehicle->getLinearVelocity().magnitude() * 3.6f;
 	float angle = -0.002f * Mathf::PI * speed; //At full the needle points to 500 km/h
 	float difference = abs(Mathf::PI*0.5f - abs(angle))/(Mathf::PI*0.5f);
-	cout << "D " << difference << endl;
 	float scale = (1.0f - difference) * 0.5f;
 	if (myHealth->currentHealth > 0.0)
 	{

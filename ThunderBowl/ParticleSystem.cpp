@@ -79,7 +79,7 @@ ParticleSystemDesc ParticleSystem::descriptionIdentity()
 //Use this for initialization
 void ParticleSystem::Start()
 {
-	cout << "I am a ParticleSystem!" << endl;
+	//cout << "I am a ParticleSystem!" << endl;
 	nextSpawn = 0.0f;
 	systemCurrentTime = 0.0f;
 }

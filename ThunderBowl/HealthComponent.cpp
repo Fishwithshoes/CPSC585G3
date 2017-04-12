@@ -43,17 +43,6 @@ void HealthComponent::Start()
 void HealthComponent::Update()
 {
 	Initialize();
-	if (newSpawn) {
-		if (selfName == "Player0") {
-			cout << selfName << " new spawn" << endl;
-			cout << newSpawnTimer << endl;
-		}
-		newSpawnTimer -= Time::getDeltaTime();
-		if (newSpawnTimer <= 0.0) {
-			newSpawn = false;
-			newSpawnTimer = 100.0;
-		}
-	}
 
 	GameObject* self = Game::Find(selfName);
 
