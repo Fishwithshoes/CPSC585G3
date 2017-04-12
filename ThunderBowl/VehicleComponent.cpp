@@ -155,6 +155,13 @@ void VehicleComponent::Update()
 		gVehicleNoDrive->setDriveTorque(1, 0.0);
 	}
 
+	//using the game timer play engine sound so it doesn't overplay
+	float time = GameManager::GetGameTime();
+	time = time * 1000;
+	int time2 = (int)time;
+	time = time - time2;
+	time2 = (int)(time * 10);
+
 	if (Input::GetXBoxAxis(playerNum, ButtonCode::XBOX_LEFT_TRIGGER) > 0.0f)
 	{
 		gVehicleNoDrive->setDriveTorque(0, -Input::GetXBoxAxis(playerNum, ButtonCode::XBOX_LEFT_TRIGGER)*brakeTorque);
@@ -186,6 +193,22 @@ void VehicleComponent::Update()
 			light.Pos = vec4(t.position + 1.2f*t.GetRight(), 1.8);
 			Renderer::AddPointLight(light);
 		}
+		//Tire screeching noise
+		GameObject* car1 = Game::Find(selfName);
+		float playerSpeed = 0;
+
+		if (car1->tag == TAGS_HUMAN_PLAYER)
+		{
+			VehicleComponent* vehicle = &VehicleComponent();
+			vehicle = (VehicleComponent*)car1->GetComponent(vehicle);
+			playerSpeed = vehicle->physVehicle->getLinearVelocity().magnitude();
+		}
+
+		if ((time2 == 9 || time2 == 8) && playerSpeed > 30)
+		{
+			Audio::Play2DSound(SFX_TireScreech, 0.0015*playerSpeed, 0.0);
+		}
+		//End Tire Screech
 	}
 
 	if (Input::GetXBoxButton(playerNum, ButtonCode::XBOX_A))
@@ -302,13 +325,6 @@ void VehicleComponent::Update()
 	//IF_DEF Wheel Spray Particles
 	UpdateParticles();
 	//END_IF Wheel Spray Particles
-
-	//using the game timer play engine sound so it doesn't overplay
-	float time = GameManager::GetGameTime();
-	time = time * 1000;
-	int time2 = (int)time;
-	time = time - time2;
-	time2 = (int)(time * 10);
 
 	if (time2 == 9)
 	{
@@ -452,10 +468,6 @@ void VehicleComponent::Update()
 		}
 		
 	}
-	nextEngine = engineDelay;
-
-	//}
-	//END_IF ENGINE LOOP SOUND
 
 	if (Input::GetXBoxButton(playerNum, ButtonCode::XBOX_LEFT_STICK) && hornReady)
 	{

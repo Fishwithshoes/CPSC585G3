@@ -108,8 +108,9 @@ void GameManager::StartGame()
 	Time::timeScale = 1.0;
 
 	int paintColor = MAP_CHASSIS_DIFFUSE_STEEL;
+	Audio::StopMusic();
 
-	isBloodMoon = Random::rangei(1, 10, true) == 10 ? true : false;
+	isBloodMoon = Random::rangei(10, 10, true) == 10 ? true : false;
 	if (isBloodMoon)
 	{
 		Game::Find("Moon")->standardMat.selfIllumColor = vec3(1.0, 0.45, 0.45);
@@ -119,11 +120,13 @@ void GameManager::StartGame()
 		Game::Find("OceanBottom")->standardMat.transparency = 0.3;
 		Game::Find("OceanTop")->standardMat.roughness = 0.2;
 		Game::Find("OceanBottom")->standardMat.roughness = 0.2;
-		Audio::PlayMusic(MUS_BloodMoon, 0.8);
+		Audio::PlayMusic(MUS_BloodMoon, 0.55);
 		paintColor = MAP_CHASSIS_DIFFUSE_RED;
 	}
 	else
-		Audio::PlayMusic(MUS_Battle, 0.8);
+		Audio::PlayMusic(MUS_Contra, 0.3);
+
+	
 
 	for (int i = 0; i < humanPlayerCount; i++) //CREATE PLAYERS
 	{
@@ -201,7 +204,6 @@ void GameManager::StartGame()
 		menuItems[i]->isVisible = false;
 
 	Audio::Play2DSound(SFX_Select, 0.20, 0.0);
-	Audio::StopMusic();
 
 	//Nuclear fallout
 	ParticleSystem ps = ParticleSystem();
@@ -574,39 +576,50 @@ void GameManager::RedrawTimers()
 void GameManager::CreateHUD(int paintColor)
 {
 	vec3 playerColor = vec3(1);
-	switch (paintColor)
-	{
-	case MAP_CHASSIS_DIFFUSE_RED:
-		playerColor = vec3(1, 0, 0);
-		break;
-	case MAP_CHASSIS_DIFFUSE_ORANGE:
-		playerColor = vec3(1, 0.5, 0);
-		break;
-	case MAP_CHASSIS_DIFFUSE_MAROON:
-		playerColor = vec3(0.5, 0, 0);
-		break;
-	case MAP_CHASSIS_DIFFUSE_PINK:
-		playerColor = vec3(1, 0, 1);
-		break;
-	case MAP_CHASSIS_DIFFUSE_STEEL:
-		playerColor = vec3(0, 0.3, 0.5);
-		break;
-	case MAP_CHASSIS_DIFFUSE_TEAL:
-		playerColor = vec3(0, 1, 0.5);
-		break;
-	case MAP_CHASSIS_DIFFUSE_BLUE:
-		playerColor = vec3(0, 0, 1);
-		break;
-	case MAP_CHASSIS_DIFFUSE_BLACK:
-		playerColor = vec3(1);
-		break;
-	default:
-		cout << "Bad Paint Color in GameManager::CreateHUD" << endl;
-		break;
-	}
 
 	for (int i = 0; i < Renderer::GetCameraCount(); i++)
 	{
+		if (isBloodMoon)
+		{
+			switch (i)
+			{
+			case 0:
+				playerColor = vec3(1, 0, 0);
+				break;
+			case 1:
+				playerColor = vec3(1, 0.5, 0);
+				break;
+			case 2:
+				playerColor = vec3(0.5, 0, 0);
+				break;
+			case 3:
+				playerColor = vec3(1, 0, 1);
+				break;
+			default:
+				break;
+			}
+		}
+		else
+		{
+			switch (i)
+			{
+			case 0:
+				playerColor = vec3(0, 0.3, 0.5);
+				break;
+			case 1:
+				playerColor = vec3(0, 1, 0.5);
+				break;
+			case 2:
+				playerColor = vec3(0, 0, 1);
+				break;
+			case 3:
+				playerColor = vec3(1);
+				break;
+			default:
+				break;
+			}
+		}
+
 		float rescale = 1.0;
 		vec3 metersOffset = vec3(0);
 		vec3 timerOffset = vec3(0);
