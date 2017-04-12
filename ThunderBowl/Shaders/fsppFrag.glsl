@@ -17,7 +17,8 @@ uniform sampler2D depthBufferMap;
 
 out vec4 FragmentColor;
 
-const int DOF_SAMPLES = 12;//Setting this to 0 will render black
+//const int DOF_SAMPLES = 12;//Setting this to 0 will render black
+const int DOF_SAMPLES = 0;//Setting this to 0 will render black
 const float DOF_SAMPLE_CONTRIB = 1.0/(DOF_SAMPLES*DOF_SAMPLES);
 const float DOF_STRIDE = 0.01;
 const float DOF_FILLER = 1.0/DOF_STRIDE;
@@ -25,13 +26,15 @@ const float DOF_STEP = DOF_STRIDE/DOF_SAMPLES*2;
 const float CURRENT_WEIGHT = 0.67;
 const float PREVIOUS_WEIGHT = 1.0 - CURRENT_WEIGHT;
 
-const int BLOOM_SAMPLES = 16;
+//const int BLOOM_SAMPLES = 16;
+const int BLOOM_SAMPLES = 0;
 const float BLOOM_SAMPLE_CONTRIB = 1.0/(BLOOM_SAMPLES*BLOOM_SAMPLES);
 const float BLOOM_STRIDE = 0.05;
 const float BLOOM_FILLER = 1.0/BLOOM_STRIDE;
 const float BLOOM_STEP = BLOOM_STRIDE/BLOOM_SAMPLES*2;
 
-const int AO_SAMPLES = 4;
+//const int AO_SAMPLES = 4;
+const int AO_SAMPLES = 0;
 const float AO_SAMPLE_CONTRIB = 1.0/(AO_SAMPLES*AO_SAMPLES);
 const float AO_STRIDE = 0.01;
 const float AO_FILLER = 1.0/AO_STRIDE;
@@ -181,11 +184,11 @@ void main()
 	// float c = 0.1;//Cuts component down
 	// final.xyz = vec3(clamp(final.x-(final.x-0.5)*m-c,0,1),clamp(final.y-(final.y-0.5)*m-c,0,1),clamp(final.z-(final.z-0.5)*m-c,0,1));
 	
-	FragmentColor = vec4(final.xyz, 1.0);//Allow all effects
-	// FragmentColor = vec4(colorSample.xyz, 1.0);//Turn off all effects. This does NOT shut off sampling.
+	//FragmentColor = vec4(final.xyz, 1.0);//Allow all effects
+	FragmentColor = vec4(colorSample.xyz, 1.0);//Turn off all effects. This does NOT shut off sampling.
 	
 	// FragmentColor = vec4(Color, 1);
-    // FragmentColor = vec4(TexCoord.x, 0, 0, 1);
+    	// FragmentColor = vec4(TexCoord.x, 0, 0, 1);
 	// FragmentColor = vec4(0, TexCoord.y, 0, 1);
 	// FragmentColor = vec4(TexCoord.xy, 0, 1);
 	

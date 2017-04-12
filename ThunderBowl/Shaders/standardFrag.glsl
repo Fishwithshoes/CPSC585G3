@@ -58,9 +58,11 @@ layout(location = 2) out vec4 OutputNormal;
 //OHH SUCH CHOICES!!
 const float EPSILON = 0.003;
 const float SHADOW_STRIDE = 0.02;//Global shadow blur multiplier. Set to 0 if SHADOW_SAMPLES = 1
-const int SHADOW_SAMPLES = 4;//4 is quite high enough, methinks!
+//const int SHADOW_SAMPLES = 4;//4 is quite high enough, methinks!
+const int SHADOW_SAMPLES = 0;//4 is quite high enough, methinks!
 const float GLOSSY_STRIDE = 0.5;//Set to 0 if GLOSSY_SAMPLES = 1
-const int GLOSSY_SAMPLES = 4;//Again, 4 should satisfy thee!
+//const int GLOSSY_SAMPLES = 4;//Again, 4 should satisfy thee!
+const int GLOSSY_SAMPLES = 0;//Again, 4 should satisfy thee!
 //Eat memory, gain performance!
 const float SHADOW_STEP = SHADOW_STRIDE/SHADOW_SAMPLES * 2.0;
 const float SHADOW_CONTRIB = 0.6/(SHADOW_SAMPLES*SHADOW_SAMPLES);
