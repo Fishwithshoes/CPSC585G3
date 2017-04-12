@@ -137,7 +137,7 @@ void MachineGunComponent::FireMG()
 			//temp.transform.Rotate(temp.transform.GetRight(), phi, false);
 		}
 		temp.transform.Translate(temp.transform.GetUp() * 0.8f, false);
-		temp.transform.Translate(temp.transform.GetForward() * 7.5f, false);
+		temp.transform.Translate(temp.transform.GetForward() * 8.5f, false);
 		temp.standardMat.roughness = 1.0;
 		temp.standardMat.metalness = 0.0;
 		temp.standardMat.diffuseLevel = 0.0;
@@ -159,7 +159,7 @@ void MachineGunComponent::FireMG()
 		ps.transform = transform;
 		ps.transform.rotation = ps.transform.GetInverseRotation();
 		ps.transform.Translate(ps.transform.GetUp()*0.8f, false);
-		ps.transform.Translate(ps.transform.GetForward()*7.0f, false);
+		ps.transform.Translate(ps.transform.GetForward()*7.5f, false);
 		ps.initialRadius.min = 0.4;
 		ps.initialRadius.max = 0.7;
 		ps.initialColor.alpha = vec4(vec3(1), 1.0);

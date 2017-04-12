@@ -170,7 +170,7 @@ void HealthComponent::Update()
 			VehicleComponent* human = &VehicleComponent();
 			human = (VehicleComponent*)self->GetComponent(human);
 
-			human->physVehicle->setGlobalPose(physx::PxTransform(human->myStartPosition, physx::PxQuat(0, 0, 0, 1)));
+			human->physVehicle->setGlobalPose(physx::PxTransform(human->myStartPosition, human->myStartRotation));
 			human->physVehicle->setAngularVelocity(physx::PxVec3(0, 0, 0));
 			human->physVehicle->setLinearVelocity(physx::PxVec3(0, 0, 0));
 
