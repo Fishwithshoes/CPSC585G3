@@ -1,5 +1,0 @@
-﻿  CudaWrapperWindows.cpp
-  CudaWrapper.cpp
-  TaskManager.cpp
-LINK : warning LNK4044: unrecognized option '/INCREMENTAL:NO'; ignored
-  PxTask.vcxproj -> C:\CPSC585G3\middleware\PhysX-3.3-master\PhysXSDK\Source\compiler\vc14win64\./../../../Lib/vc14win64\PxTask.lib

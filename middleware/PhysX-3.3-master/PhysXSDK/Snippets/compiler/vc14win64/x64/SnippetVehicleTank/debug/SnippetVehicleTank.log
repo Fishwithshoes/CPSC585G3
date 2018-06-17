@@ -1,4 +1,0 @@
-﻿  SnippetVehicleRaycast.cpp
-  LINK : ./../../../bin/vc14win64\SnippetVehicleTankDEBUG.exe not found or not built by the last incremental link; performing full link
-  SnippetVehicleTank.vcxproj -> C:\CPSC585G3\middleware\PhysX-3.3-master\PhysXSDK\Snippets\compiler\vc14win64\./../../../bin/vc14win64\SnippetVehicleTankDEBUG.exe
-  SnippetVehicleTank.vcxproj -> C:\CPSC585G3\middleware\PhysX-3.3-master\PhysXSDK\bin\vc14win64\\SnippetVehicleTankDEBUG.pdb (Full PDB)
